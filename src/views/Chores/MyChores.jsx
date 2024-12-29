@@ -119,10 +119,11 @@ const MyChores = () => {
           Overdue: [],
           Anytime: [],
         }
+        var now = new Date()
         chores.forEach(chore => {
           if (chore.nextDueDate === null) {
             groupRaw['Anytime'].push(chore)
-          } else if (new Date(chore.nextDueDate) < new Date()) {
+          } else if (new Date(chore.nextDueDate) < now) {
             groupRaw['Overdue'].push(chore)
           } else if (
             new Date(chore.nextDueDate).toDateString() ===
@@ -136,7 +137,8 @@ const MyChores = () => {
           ) {
             groupRaw['In a week'].push(chore)
           } else if (
-            new Date(chore.nextDueDate).getMonth() === new Date().getMonth()
+            new Date(chore.nextDueDate) <
+            new Date(now.getFullYear(), now.getMonth() + 1, 1)
           ) {
             groupRaw['This month'].push(chore)
           } else {
