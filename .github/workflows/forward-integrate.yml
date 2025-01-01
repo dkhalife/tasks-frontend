@@ -8,6 +8,8 @@ on:
 jobs:
   merge-main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       new-commits: ${{ steps.check-changes.outputs.new-commits }}
     steps:
@@ -35,6 +37,8 @@ jobs:
     - name: Merge upstream/main into local main
       id: merge
       run: |
+        git config --global user.email "automerge@dkhalife.com"
+        git config --global user.name "AutoMerge"
         git merge upstream/main
     - name: Check for merge conflicts
       run: |
@@ -93,6 +97,8 @@ jobs:
     - name: Merge main into local develop
       id: merge
       run: |
+        git config --global user.email "automerge@dkhalife.com"
+        git config --global user.name "AutoMerge"
         git merge origin/main
     - name: Check for merge conflicts
       run: |
