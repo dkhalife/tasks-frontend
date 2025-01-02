@@ -42,18 +42,19 @@ import {
 import moment from 'moment'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { API_URL } from '../../Config'
 import { UserContext } from '../../contexts/UserContext'
+import { notInCompletionWindow } from '../../utils/Chores.jsx'
+import { getTextColorFromBackgroundColor } from '../../utils/Colors.jsx'
 import {
   ArchiveChore,
+  DeleteChore,
   MarkChoreComplete,
   SkipChore,
   UnArchiveChore,
   UpdateChoreAssignee,
+  UpdateDueDate,
 } from '../../utils/Fetcher'
-import { getTextColorFromBackgroundColor } from '../../utils/LabelColors'
 import Priorities from '../../utils/Priorities'
-import { Fetch } from '../../utils/TokenManager'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 import DateModal from '../Modals/Inputs/DateModal'
 import SelectModal from '../Modals/Inputs/SelectModal'
@@ -127,11 +128,8 @@ const ChoreCard = ({
       cancelText: 'Cancel',
       message: 'Are you sure you want to delete this chore?',
       onClose: isConfirmed => {
-        console.log('isConfirmed', isConfirmed)
         if (isConfirmed === true) {
-          Fetch(`${API_URL}/chores/${chore.id}`, {
-            method: 'DELETE',
-          }).then(response => {
+          DeleteChore(chore.id).then(response => {
             if (response.ok) {
               onChoreRemove(chore)
             }
@@ -181,7 +179,7 @@ const ChoreCard = ({
     }, 1000)
 
     const id = setTimeout(() => {
-      MarkChoreComplete(chore.id)
+      MarkChoreComplete(chore.id, null, null, null)
         .then(resp => {
           if (resp.ok) {
             return resp.json().then(data => {
@@ -206,16 +204,7 @@ const ChoreCard = ({
       alert('Please select a performer')
       return
     }
-    Fetch(`${API_URL}/chores/${chore.id}/dueDate`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        dueDate: newDate ? new Date(newDate).toISOString() : null,
-        UpdatedBy: activeUserId,
-      }),
-    }).then(response => {
+    UpdateDueDate.then(response => {
       if (response.ok) {
         response.json().then(data => {
           const newChore = data.res
@@ -230,17 +219,12 @@ const ChoreCard = ({
       alert('Please select a performer')
       return
     }
-    Fetch(
-      `${API_URL}/chores/${chore.id}/do?completedDate=${new Date(
-        newDate,
-      ).toISOString()}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-      },
+
+    MarkChoreComplete(
+      chore.id,
+      null,
+      new Date(newDate).toISOString(),
+      null,
     ).then(response => {
       if (response.ok) {
         response.json().then(data => {
@@ -261,15 +245,7 @@ const ChoreCard = ({
     })
   }
   const handleCompleteWithNote = note => {
-    Fetch(`${API_URL}/chores/${chore.id}/do`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        note: note,
-      }),
-    }).then(response => {
+    MarkChoreComplete(chore.id, note, null, null).then(response => {
       if (response.ok) {
         response.json().then(data => {
           const newChore = data.res
@@ -437,7 +413,6 @@ const ChoreCard = ({
     }
     return name
   }
-
   return (
     <Box key={chore.id + '-box'}>
       <Chip
@@ -596,7 +571,7 @@ const ChoreCard = ({
                 variant='solid'
                 color='success'
                 onClick={handleTaskCompletion}
-                disabled={isPendingCompletion}
+                disabled={isPendingCompletion || notInCompletionWindow(chore)}
                 sx={{
                   borderRadius: '50%',
                   minWidth: 50,

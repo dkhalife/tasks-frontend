@@ -1,6 +1,7 @@
 import Logo from '@/assets/logo.svg'
 import {
   AccountBox,
+  History,
   HomeOutlined,
   ListAlt,
   Logout,
@@ -8,6 +9,7 @@ import {
   Message,
   SettingsOutlined,
   ShareOutlined,
+  Toll,
   Widgets,
 } from '@mui/icons-material'
 import {
@@ -23,6 +25,7 @@ import {
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { version } from '../../../package.json'
+import ThemeToggleButton from '../Settings/ThemeToggleButton'
 import NavBarLink from './NavBarLink'
 const links = [
   {
@@ -45,6 +48,16 @@ const links = [
     to: 'labels',
     label: 'Labels',
     icon: <ListAlt />,
+  },
+  {
+    to: 'activities',
+    label: 'Activities',
+    icon: <History />,
+  },
+  {
+    to: 'points',
+    label: 'Points',
+    icon: <Toll />,
   },
   {
     to: '/settings#sharing',
@@ -120,6 +133,12 @@ const NavBar = () => {
             tick✓
           </span>
         </Typography>
+        <ThemeToggleButton
+          sx={{
+            position: 'absolute',
+            right: 10,
+          }}
+        />
       </Box>
       <Drawer
         open={drawerOpen}
