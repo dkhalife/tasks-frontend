@@ -32,14 +32,14 @@ jobs:
       id: create-branch
       run: |
         BRANCH_NAME="automerge/upstream/to/main/$(date +%Y%m%d%H%M%S)"
-        git checkout -b $BRANCH_NAME
+        git checkout -b $BRANCH_NAME origin/main
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
     - name: Merge upstream/main into local main
       id: merge
       run: |
         git config --global user.email "automerge@dkhalife.com"
         git config --global user.name "AutoMerge"
-        git merge upstream/main
+        git merge upstream/main --no-edit
     - name: Check for changes
       id: check-changes
       run: |
@@ -59,7 +59,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: 'Forward integration from upstream/main'
         branch: ${{ steps.create-branch.outputs.BRANCH_NAME }}
-        base: main
         title: 'Forward integration from upstream/main'
         body: 'This is an automated pull request to integrate changes from upstream/main'
 
@@ -83,14 +82,14 @@ jobs:
       id: create-branch
       run: |
         BRANCH_NAME="automerge/main/to/develop/$(date +%Y%m%d%H%M%S)"
-        git checkout -b $BRANCH_NAME
+        git checkout -b $BRANCH_NAME origin/develop
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
     - name: Merge main into local develop
       id: merge
       run: |
         git config --global user.email "automerge@dkhalife.com"
         git config --global user.name "AutoMerge"
-        git merge origin/main
+        git merge origin/main --no-edit
     - name: Check for changes
       id: check-changes
       run: |
@@ -110,6 +109,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: 'Forward integration from main to develop'
         branch: ${{ steps.create-branch.outputs.BRANCH_NAME }}
-        base: develop
         title: 'Forward integration from main to develop'
         body: 'This is an automated pull request to integrate changes from main'
