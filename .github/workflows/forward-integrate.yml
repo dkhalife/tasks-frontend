@@ -43,7 +43,7 @@ jobs:
     - name: Check for changes
       id: check-changes
       run: |
-        if [ -z "$(git log origin/main..HEAD)" ]; then
+        if [ -z "$(git diff origin/main..HEAD)" ]; then
           echo "new-commits=false" >> $GITHUB_OUTPUT
         else
           echo "new-commits=true" >> $GITHUB_OUTPUT
@@ -94,7 +94,7 @@ jobs:
     - name: Check for changes
       id: check-changes
       run: |
-        if [ -z "$(git log origin/develop..HEAD)" ]; then
+        if [ -z "$(git diff origin/develop..HEAD)" ]; then
           echo "new-commits=false" >> $GITHUB_OUTPUT
         else
           echo "new-commits=true" >> $GITHUB_OUTPUT
