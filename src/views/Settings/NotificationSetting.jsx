@@ -387,7 +387,7 @@ const NotificationSetting = () => {
             <Option value='1'>Telegram</Option>
             <Option value='2'>Pushover</Option>
             <Option value='3'>Mqtt</Option>
-      </Select>
+          </Select>
           {notificationTarget === '1' && (
             <>
               <Typography level='body-xs'>
