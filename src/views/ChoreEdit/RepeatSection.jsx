@@ -19,7 +19,6 @@ import {
 import moment from 'moment'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
-import { isPlusAccount } from '../../utils/Helpers'
 
 const FREQUANCY_TYPES_RADIOS = [
   'daily',

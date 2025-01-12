@@ -37,7 +37,6 @@ import {
   GetChoreHistory,
   SaveChore,
 } from '../../utils/Fetcher'
-import { isPlusAccount } from '../../utils/Helpers'
 import { useLabels } from '../Labels/LabelQueries'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 import LabelModal from '../Modals/Inputs/LabelModal'
@@ -641,11 +640,6 @@ const ChoreEdit = () => {
         <Typography level='h4'>Notifications : </Typography>
         <Typography level='h5'>
           Get Reminders when this task is due or completed
-          {!isPlusAccount(userProfile) && (
-            <Chip variant='soft' color='warning'>
-              Not available in Basic Plan
-            </Chip>
-          )}
         </Typography>
 
         <FormControl sx={{ mt: 1 }}>
@@ -656,15 +650,10 @@ const ChoreEdit = () => {
             defaultChecked={isNotificable}
             checked={isNotificable}
             value={isNotificable}
-            disabled={!isPlusAccount(userProfile)}
             overlay
             label='Notify for this task'
           />
-          <FormHelperText
-            sx={{
-              opacity: !isPlusAccount(userProfile) ? 0.5 : 1,
-            }}
-          >
+          <FormHelperText>
             When should receive notifications for this task
           </FormHelperText>
         </FormControl>

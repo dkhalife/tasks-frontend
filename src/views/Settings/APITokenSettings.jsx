@@ -17,7 +17,6 @@ import {
   DeleteLongLiveToken,
   GetLongLiveTokens,
 } from '../../utils/Fetcher'
-import { isPlusAccount } from '../../utils/Helpers'
 import TextModal from '../Modals/Inputs/TextModal'
 
 const APITokenSettings = () => {
@@ -54,11 +53,6 @@ const APITokenSettings = () => {
       <Typography level='body-sm'>
         Create token to use with the API to update chores
       </Typography>
-      {!isPlusAccount(userProfile) && (
-        <Chip variant='soft' color='warning'>
-          Not available in Basic Plan
-        </Chip>
-      )}
 
       {tokens.map(token => (
         <Card key={token.token} className='p-4'>
@@ -137,7 +131,6 @@ const APITokenSettings = () => {
       <Button
         variant='soft'
         color='primary'
-        disabled={!isPlusAccount(userProfile)}
         sx={{
           width: '210px',
           mb: 1,

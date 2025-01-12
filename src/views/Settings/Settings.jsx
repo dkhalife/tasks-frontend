@@ -71,34 +71,6 @@ const Settings = () => {
     }
   }, [])
 
-  const getSubscriptionDetails = () => {
-    if (userProfile?.subscription === 'active') {
-      return `You are currently subscribed to the Plus plan. Your subscription will renew on ${moment(
-        userProfile?.expiration,
-      ).format('MMM DD, YYYY')}.`
-    } else if (userProfile?.subscription === 'canceled') {
-      return `You have cancelled your subscription. Your account will be downgraded to the Free plan on ${moment(
-        userProfile?.expiration,
-      ).format('MMM DD, YYYY')}.`
-    } else {
-      return `You are currently on the Free plan. Upgrade to the Plus plan to unlock more features.`
-    }
-  }
-  const getSubscriptionStatus = () => {
-    if (userProfile?.subscription === 'active') {
-      return `Plus`
-    } else if (userProfile?.subscription === 'canceled') {
-      if (moment().isBefore(userProfile?.expiration)) {
-        return `Plus(until ${moment(userProfile?.expiration).format(
-          'MMM DD, YYYY',
-        )})`
-      }
-      return `Free`
-    } else {
-      return `Free`
-    }
-  }
-
   if (userProfile === null) {
     return (
       <Container className='flex h-full items-center justify-center'>
@@ -317,10 +289,6 @@ const Settings = () => {
         <Typography level='body-md'>
           Change your account settings, type or update your password
         </Typography>
-        <Typography level='title-md' mb={-1}>
-          Account Type : {getSubscriptionStatus()}
-        </Typography>
-        <Typography level='body-sm'>{getSubscriptionDetails()}</Typography>
         <Box>
           <Button
             sx={{
