@@ -14,8 +14,6 @@ import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
 import Logo from '../../Logo'
 import {
-  CancelSubscription,
-  GetSubscriptionSession,
   GetUserProfile,
   UpdatePassword,
 } from '../../utils/Fetcher'
@@ -55,53 +53,8 @@ const Settings = () => {
         <Typography level='h3'>Account Settings</Typography>
         <Divider />
         <Typography level='body-md'>
-          Change your account settings, type or update your password
+          Update your password
         </Typography>
-        <Box>
-          <Button
-            sx={{
-              width: '110px',
-              mb: 1,
-            }}
-            disabled={
-              userProfile?.subscription === 'active' ||
-              moment(userProfile?.expiration).isAfter(moment())
-            }
-            onClick={() => {
-              GetSubscriptionSession().then(data => {
-                data.json().then(data => {
-                  console.log(data)
-                  window.location.href = data.sessionURL
-                  // open in new window:
-                  // window.open(data.sessionURL, '_blank')
-                })
-              })
-            }}
-          >
-            Upgrade
-          </Button>
-
-          {userProfile?.subscription === 'active' && (
-            <Button
-              sx={{
-                width: '110px',
-                mb: 1,
-                ml: 1,
-              }}
-              variant='outlined'
-              onClick={() => {
-                CancelSubscription().then(resp => {
-                  if (resp.ok) {
-                    alert('Subscription cancelled.')
-                    window.location.reload()
-                  }
-                })
-              }}
-            >
-              Cancel
-            </Button>
-          )}
-        </Box>
         {import.meta.env.VITE_IS_SELF_HOSTED === 'true' && (
           <Box>
             <Typography level='title-md' mb={1}>

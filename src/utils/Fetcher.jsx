@@ -218,20 +218,6 @@ const UpdateNotificationTarget = notificationTarget => {
   })
 }
 
-const GetSubscriptionSession = () => {
-  return Fetch(`/payments/create-subscription`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
-}
-
-const CancelSubscription = () => {
-  return Fetch(`/payments/cancel-subscription`, {
-    method: 'POST',
-    headers: HEADERS(),
-  })
-}
-
 const CreateLongLiveToken = name => {
   return Fetch(`/users/tokens`, {
     method: 'POST',
@@ -348,7 +334,6 @@ const GetChoresHistory = async (limit, includeMembers) => {
 }
 export {
   ArchiveChore,
-  CancelSubscription,
   ChangePassword,
   CreateChore,
   CreateLabel,
@@ -367,7 +352,6 @@ export {
   GetChoresNew,
   GetLabels,
   GetLongLiveTokens,
-  GetSubscriptionSession,
   GetUserProfile,
   MarkChoreComplete,
   PutNotificationTarget,

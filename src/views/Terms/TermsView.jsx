@@ -30,63 +30,6 @@ const TermsView = () => {
           or in any way that violates these Terms.
         </li>
       </ul>
-      <h2>Subscriptions</h2>
-
-      <ul>
-        <li>
-          Some parts of the Service are billed on a subscription basis
-          ("Subscription(s)"). You will be billed in advance on a recurring and
-          periodic basis ("Billing Cycle"). Billing cycles are set either on a
-          monthly or annual basis, depending on the type of subscription plan
-          you select when purchasing a Subscription.
-        </li>
-        <li>
-          At the end of each Billing Cycle, your Subscription will automatically
-          renew under the exact same conditions unless you cancel it or Favoro
-          cancels it. You may cancel your Subscription renewal either through
-          your online account management page or by contacting Donetickcustomer
-          support team.
-        </li>
-        <li>
-          A valid payment method, including credit or debit card, is required to
-          process the payment for your Subscription. You shall provide Favoro
-          with accurate and complete billing information including full name,
-          address, state, zip code, telephone number, and a valid payment method
-          information. By submitting such payment information, you automatically
-          authorize Donetickto charge all Subscription fees incurred through
-          your account to any such payment instruments.
-        </li>
-        <li>
-          Should automatic billing fail to occur for any reason, Donetickwill
-          issue an electronic invoice indicating that you must proceed manually,
-          within a certain deadline date, with the full payment corresponding to
-          the billing period as indicated on the invoice.
-        </li>
-      </ul>
-
-      <h2>Fee Changes</h2>
-      <ul>
-        <li>
-          {' '}
-          Favoro, in its sole discretion and at any time, may modify the
-          Subscription fees for the Subscriptions. Any Subscription fee change
-          will become effective at the end of the then-current Billing Cycle.
-        </li>
-        <li>
-          Donetickwill provide you with reasonable prior notice of any change in
-          Subscription fees to give you an opportunity to terminate your
-          Subscription before such change becomes effective.
-        </li>
-      </ul>
-
-      <h2>Refunds</h2>
-      <ul>
-        <li>
-          Certain refund requests for Subscriptions may be considered by Favoro
-          on a case-by-case basis and granted at the sole discretion of Favoro.
-        </li>
-      </ul>
-
       <h2>Content</h2>
       <ul>
         <li>
