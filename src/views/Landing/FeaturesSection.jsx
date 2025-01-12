@@ -31,12 +31,6 @@ const CardData = [
     icon: CodeRounded,
   },
   {
-    title: 'Circles: Your Task Hub',
-    description:
-      'build with sharing in mind. invite other to the circle and you can assign tasks to each other. and only see the tasks the should be shared',
-    icon: GroupRounded,
-  },
-  {
     title: 'Track Your Progress',
     description:
       'View a history of completed tasks',

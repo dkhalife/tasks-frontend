@@ -32,7 +32,6 @@ import { getTextColorFromBackgroundColor } from '../../utils/Colors.jsx'
 import {
   CreateChore,
   DeleteChore,
-  GetAllCircleMembers,
   GetChoreByID,
   GetChoreHistory,
   SaveChore,
@@ -204,10 +203,6 @@ const ChoreEdit = () => {
     })
   }
   useEffect(() => {
-    //fetch performers:
-    GetAllCircleMembers().then(data => {
-      setPerformers(data.res)
-    })
     // fetch chores:
     if (choreId > 0) {
       GetChoreByID(choreId)
@@ -726,52 +721,6 @@ const ChoreEdit = () => {
               />
               <FormHelperText>Notify all assignees</FormHelperText>
             </FormControl>
-
-            <FormControl>
-              <Checkbox
-                overlay
-                onClick={() => {
-                  if (notificationMetadata['circleGroup']) {
-                    delete notificationMetadata['circleGroupID']
-                  }
-
-                  setNotificationMetadata({
-                    ...notificationMetadata,
-                    ['circleGroup']: !notificationMetadata['circleGroup'],
-                  })
-                }}
-                checked={
-                  notificationMetadata
-                    ? notificationMetadata['circleGroup']
-                    : false
-                }
-                label='Specific Group'
-              />
-              <FormHelperText>Notify a specific group</FormHelperText>
-            </FormControl>
-
-            {notificationMetadata['circleGroup'] && (
-              <Box
-                sx={{
-                  mt: 0,
-                  ml: 4,
-                }}
-              >
-                <Typography level='body-sm'>Telegram Group ID:</Typography>
-
-                <Input
-                  type='number'
-                  value={notificationMetadata['circleGroupID']}
-                  placeholder='Telegram Group ID'
-                  onChange={e => {
-                    setNotificationMetadata({
-                      ...notificationMetadata,
-                      ['circleGroupID']: parseInt(e.target.value),
-                    })
-                  }}
-                />
-              </Box>
-            )}
           </Card>
         </Box>
       )}

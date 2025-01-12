@@ -195,59 +195,9 @@ const UpdateChoreHistory = (choreId, id, choreHistory) => {
   })
 }
 
-const GetAllCircleMembers = async () => {
-  const resp = await Fetch(`/circles/members`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
-  return resp.json()
-}
-
 const GetUserProfile = () => {
   return Fetch(`/users/profile`, {
     method: 'GET',
-    headers: HEADERS(),
-  })
-}
-
-const GetUserCircle = () => {
-  return Fetch(`/circles/`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
-}
-
-const JoinCircle = inviteCode => {
-  return Fetch(`/circles/join?invite_code=${inviteCode}`, {
-    method: 'POST',
-    headers: HEADERS(),
-  })
-}
-
-const GetCircleMemberRequests = () => {
-  return Fetch(`/circles/members/requests`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
-}
-
-const AcceptCircleMemberRequest = id => {
-  return Fetch(`/circles/members/requests/accept?requestId=${id}`, {
-    method: 'PUT',
-    headers: HEADERS(),
-  })
-}
-
-const LeaveCircle = id => {
-  return Fetch(`/circles/leave?circle_id=${id}`, {
-    method: 'DELETE',
-    headers: HEADERS(),
-  })
-}
-
-const DeleteCircleMember = (circleID, memberID) => {
-  return Fetch(`/circles/${circleID}/members/delete?member_id=${memberID}`, {
-    method: 'DELETE',
     headers: HEADERS(),
   })
 }
@@ -397,7 +347,6 @@ const GetChoresHistory = async (limit, includeMembers) => {
   return resp.json()
 }
 export {
-  AcceptCircleMemberRequest,
   ArchiveChore,
   CancelSubscription,
   ChangePassword,
@@ -406,10 +355,8 @@ export {
   CreateLongLiveToken,
   DeleteChore,
   DeleteChoreHistory,
-  DeleteCircleMember,
   DeleteLabel,
   DeleteLongLiveToken,
-  GetAllCircleMembers,
   GetAllUsers,
   GetArchivedChores,
   GetChoreByID,
@@ -418,14 +365,10 @@ export {
   GetChores,
   GetChoresHistory,
   GetChoresNew,
-  GetCircleMemberRequests,
   GetLabels,
   GetLongLiveTokens,
   GetSubscriptionSession,
-  GetUserCircle,
   GetUserProfile,
-  JoinCircle,
-  LeaveCircle,
   MarkChoreComplete,
   PutNotificationTarget,
   RefreshToken,

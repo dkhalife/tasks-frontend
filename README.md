@@ -15,8 +15,6 @@ As an avid for open-source, I was eager to create a solution that could benefit 
 ## Features
 
 - Task and Chore Management: Easily create, edit, and manage tasks and chores for yourself or your group.
-- Shared To-Do Lists: Create "Circles" to collaborate on tasks with family or your group
-- Assignee Assignment: Assign tasks to specific individuals or rotate them automatically using customizable strategies.
 - Recurring Tasks: Schedule tasks to repeat daily, weekly, monthly, or yearly, with flexible customization options.
 - Progress Tracking: Track the completion status of tasks and view historical data.
 

@@ -16,7 +16,6 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   DeleteChoreHistory,
-  GetAllCircleMembers,
   GetChoreHistory,
   UpdateChoreHistory,
 } from '../../utils/Fetcher'
@@ -38,10 +37,7 @@ const ChoreHistory = () => {
   useEffect(() => {
     setIsLoading(true) // Start loading
 
-    Promise.all([
-      GetChoreHistory(choreId).then(res => res.json()),
-      GetAllCircleMembers(),
-    ])
+    GetChoreHistory(choreId).then(res => res.json())
       .then(([historyData, usersData]) => {
         setChoresHistory(historyData.res)
 

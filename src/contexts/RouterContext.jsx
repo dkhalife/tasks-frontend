@@ -11,7 +11,6 @@ import SignupView from '../views/Authorization/Signup'
 import UpdatePasswordView from '../views/Authorization/UpdatePasswordView'
 import ChoreView from '../views/ChoreEdit/ChoreView'
 import MyChores from '../views/Chores/MyChores'
-import JoinCircleView from '../views/Circles/JoinCircle'
 import ChoreHistory from '../views/History/ChoreHistory'
 import LabelView from '../views/Labels/LabelView'
 import Landing from '../views/Landing/Landing'
@@ -100,10 +99,6 @@ const Router = createBrowserRouter([
       {
         path: '/terms',
         element: <TermsView />,
-      },
-      {
-        path: 'circle/join',
-        element: <JoinCircleView />,
       },
       {
         path: 'payments/success',

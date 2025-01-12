@@ -14,16 +14,9 @@ import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
 import Logo from '../../Logo'
 import {
-  AcceptCircleMemberRequest,
   CancelSubscription,
-  DeleteCircleMember,
-  GetAllCircleMembers,
-  GetCircleMemberRequests,
   GetSubscriptionSession,
-  GetUserCircle,
   GetUserProfile,
-  JoinCircle,
-  LeaveCircle,
   UpdatePassword,
 } from '../../utils/Fetcher'
 import PassowrdChangeModal from '../Modals/Inputs/PasswordChangeModal'
@@ -33,29 +26,12 @@ import ThemeToggle from './ThemeToggle'
 
 const Settings = () => {
   const { userProfile, setUserProfile } = useContext(UserContext)
-  const [userCircles, setUserCircles] = useState([])
-  const [circleMemberRequests, setCircleMemberRequests] = useState([])
-  const [circleInviteCode, setCircleInviteCode] = useState('')
-  const [circleMembers, setCircleMembers] = useState([])
   const [changePasswordModal, setChangePasswordModal] = useState(false)
   useEffect(() => {
     GetUserProfile().then(resp => {
       resp.json().then(data => {
         setUserProfile(data.res)
       })
-    })
-    GetUserCircle().then(resp => {
-      resp.json().then(data => {
-        setUserCircles(data.res ? data.res : [])
-      })
-    })
-    GetCircleMemberRequests().then(resp => {
-      resp.json().then(data => {
-        setCircleMemberRequests(data.res ? data.res : [])
-      })
-    })
-    GetAllCircleMembers().then(data => {
-      setCircleMembers(data.res ? data.res : [])
     })
   }, [])
 
@@ -87,202 +63,6 @@ const Settings = () => {
   }
   return (
     <Container>
-      <div className='grid gap-4 py-4' id='sharing'>
-        <Typography level='h3'>Sharing settings</Typography>
-        <Divider />
-        <Typography level='body-md'>
-          Your account is automatically connected to a Circle when you create or
-          join one. Easily invite friends by sharing the unique Circle code or
-          link below. You'll receive a notification below when someone requests
-          to join your Circle.
-        </Typography>
-        <Typography level='title-sm' mb={-1}>
-          {userCircles[0]?.userRole === 'member'
-            ? `You part of ${userCircles[0]?.name} `
-            : `You circle code is:`}
-
-          <Input
-            value={userCircles[0]?.invite_code}
-            disabled
-            size='lg'
-            sx={{
-              width: '220px',
-              mb: 1,
-            }}
-          />
-          <Button
-            variant='soft'
-            onClick={() => {
-              navigator.clipboard.writeText(userCircles[0]?.invite_code)
-              alert('Code Copied to clipboard')
-            }}
-          >
-            Copy Code
-          </Button>
-          <Button
-            variant='soft'
-            sx={{ ml: 1 }}
-            onClick={() => {
-              navigator.clipboard.writeText(
-                window.location.protocol +
-                  '//' +
-                  window.location.host +
-                  `/circle/join?code=${userCircles[0]?.invite_code}`,
-              )
-              alert('Link Copied to clipboard')
-            }}
-          >
-            Copy Link
-          </Button>
-          {userCircles.length > 0 && userCircles[0]?.userRole === 'member' && (
-            <Button
-              sx={{ ml: 1 }}
-              onClick={() => {
-                const confirmed = confirm(
-                  `Are you sure you want to leave your circle?`,
-                )
-                if (confirmed) {
-                  LeaveCircle(userCircles[0]?.id).then(resp => {
-                    if (resp.ok) {
-                      alert('Left circle successfully.')
-                    } else {
-                      alert('Failed to leave circle.')
-                    }
-                  })
-                }
-              }}
-            >
-              Leave Circle
-            </Button>
-          )}
-        </Typography>
-        <Typography level='title-md'>Circle Members</Typography>
-        {circleMembers.map(member => (
-          <Card key={member.id} className='p-4'>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography level='body-md'>
-                  {member.displayName.charAt(0).toUpperCase() +
-                    member.displayName.slice(1)}
-                  {member.userId === userProfile.id ? '(You)' : ''}{' '}
-                  <Chip>
-                    {' '}
-                    {member.isActive ? member.role : 'Pending Approval'}
-                  </Chip>
-                </Typography>
-                {member.isActive ? (
-                  <Typography level='body-sm'>
-                    Joined on {moment(member.createdAt).format('MMM DD, YYYY')}
-                  </Typography>
-                ) : (
-                  <Typography level='body-sm' color='danger'>
-                    Request to join{' '}
-                    {moment(member.updatedAt).format('MMM DD, YYYY')}
-                  </Typography>
-                )}
-              </Box>
-              {member.userId !== userProfile.id && member.isActive && (
-                <Button
-                  disabled={
-                    circleMembers.find(m => userProfile.id == m.userId).role !==
-                    'admin'
-                  }
-                  variant='outlined'
-                  color='danger'
-                  size='sm'
-                  onClick={() => {
-                    const confirmed = confirm(
-                      `Are you sure you want to remove ${member.displayName} from your circle?`,
-                    )
-                    if (confirmed) {
-                      DeleteCircleMember(member.circleId, member.userId).then(
-                        resp => {
-                          if (resp.ok) {
-                            alert('Removed member successfully.')
-                          }
-                        },
-                      )
-                    }
-                  }}
-                >
-                  Remove
-                </Button>
-              )}
-            </Box>
-          </Card>
-        ))}
-
-        {circleMemberRequests.length > 0 && (
-          <Typography level='title-md'>Circle Member Requests</Typography>
-        )}
-        {circleMemberRequests.map(request => (
-          <Card key={request.id} className='p-4'>
-            <Typography level='body-md'>
-              {request.displayName} wants to join your circle.
-            </Typography>
-            <Button
-              variant='soft'
-              color='success'
-              onClick={() => {
-                const confirmed = confirm(
-                  `Are you sure you want to accept ${request.displayName}(username:${request.username}) to join your circle?`,
-                )
-                if (confirmed) {
-                  AcceptCircleMemberRequest(request.id).then(resp => {
-                    if (resp.ok) {
-                      alert('Accepted request successfully.')
-                      // reload the page
-                      window.location.reload()
-                    }
-                  })
-                }
-              }}
-            >
-              Accept
-            </Button>
-          </Card>
-        ))}
-        <Divider> or </Divider>
-
-        <Typography level='body-md'>
-          if want to join someone else's Circle? Ask them for their unique
-          Circle code or join link. Enter the code below to join their Circle.
-        </Typography>
-
-        <Typography level='title-sm' mb={-1}>
-          Enter Circle code:
-          <Input
-            placeholder='Enter code'
-            value={circleInviteCode}
-            onChange={e => setCircleInviteCode(e.target.value)}
-            size='lg'
-            sx={{
-              width: '220px',
-              mb: 1,
-            }}
-          />
-          <Button
-            variant='soft'
-            onClick={() => {
-              const confirmed = confirm(
-                `Are you sure you want to leave you circle and join '${circleInviteCode}'?`,
-              )
-              if (confirmed) {
-                JoinCircle(circleInviteCode).then(resp => {
-                  if (resp.ok) {
-                    alert(
-                      'Joined circle successfully, wait for the circle owner to accept your request.',
-                    )
-                  }
-                })
-              }
-            }}
-          >
-            Join Circle
-          </Button>
-        </Typography>
-      </div>
-
       <div className='grid gap-4 py-4' id='account'>
         <Typography level='h3'>Account Settings</Typography>
         <Divider />
