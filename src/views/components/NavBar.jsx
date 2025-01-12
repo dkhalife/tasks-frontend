@@ -42,11 +42,6 @@ const links = [
     icon: <ListAlt />,
   },
   {
-    to: '/settings#sharing',
-    label: 'Sharing',
-    icon: <ShareOutlined />,
-  },
-  {
     to: '/settings#notifications',
     label: 'Notifications',
     icon: <Message />,

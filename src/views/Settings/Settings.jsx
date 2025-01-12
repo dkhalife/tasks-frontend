@@ -35,18 +35,6 @@ const Settings = () => {
     })
   }, [])
 
-  useEffect(() => {
-    const hash = window.location.hash
-    if (hash) {
-      const sharingSection = document.getElementById(
-        window.location.hash.slice(1),
-      )
-      if (sharingSection) {
-        sharingSection.scrollIntoView({ behavior: 'smooth' })
-      }
-    }
-  }, [])
-
   if (userProfile === null) {
     return (
       <Container className='flex h-full items-center justify-center'>
