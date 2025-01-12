@@ -2,8 +2,6 @@ import Cookies from 'js-cookie'
 import { API_URL } from '../Config'
 import { RefreshToken } from './Fetcher'
 
-import { Preferences } from '@capacitor/preferences'
-
 class ApiManager {
   constructor() {
     this.customServerURL = `${API_URL}/api/v1`
@@ -13,11 +11,8 @@ class ApiManager {
     if (this.initialized) {
       return
     }
-    const { value: serverURL } = await Preferences.get({
-      key: 'customServerUrl',
-    })
 
-    this.customServerURL = `${serverURL || API_URL}/api/v1`
+    this.customServerURL = `${API_URL}/api/v1`
     this.initialized = true
   }
   getApiURL() {

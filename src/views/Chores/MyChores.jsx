@@ -44,11 +44,6 @@ import ChoreCard from './ChoreCard'
 import IconButtonWithMenu from './IconButtonWithMenu'
 
 import { ChoresGrouper } from '../../utils/Chores'
-import {
-  canScheduleNotification,
-  scheduleChoreNotification,
-} from './LocalNotificationScheduler'
-import NotificationAccessSnackbar from './NotificationAccessSnackbar'
 
 const MyChores = () => {
   const { userProfile, setUserProfile } = useContext(UserContext)
@@ -120,13 +115,6 @@ const MyChores = () => {
           setChores(choresData.res)
           setFilteredChores(choresData.res)
           setPerformers(usersData.res)
-          if (canScheduleNotification()) {
-            scheduleChoreNotification(
-              choresData.res,
-              userProfileData.res,
-              usersData.res,
-            )
-          }
         })
       },
     )
@@ -715,7 +703,6 @@ const MyChores = () => {
       >
         <Typography level='title-md'>{snackBarMessage}</Typography>
       </Snackbar>
-      <NotificationAccessSnackbar />
     </Container>
   )
 }
