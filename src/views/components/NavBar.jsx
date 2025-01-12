@@ -1,7 +1,6 @@
 import Logo from '@/assets/logo.svg'
 import {
   AccountBox,
-  History,
   HomeOutlined,
   ListAlt,
   Logout,
@@ -9,7 +8,6 @@ import {
   Message,
   SettingsOutlined,
   ShareOutlined,
-  Toll,
   Widgets,
 } from '@mui/icons-material'
 import {
@@ -48,16 +46,6 @@ const links = [
     to: 'labels',
     label: 'Labels',
     icon: <ListAlt />,
-  },
-  {
-    to: 'activities',
-    label: 'Activities',
-    icon: <History />,
-  },
-  {
-    to: 'points',
-    label: 'Points',
-    icon: <Toll />,
   },
   {
     to: '/settings#sharing',

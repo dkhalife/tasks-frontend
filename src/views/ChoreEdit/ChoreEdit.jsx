@@ -74,7 +74,6 @@ const ChoreEdit = () => {
   const [frequencyMetadata, setFrequencyMetadata] = useState({})
   const [labels, setLabels] = useState([])
   const [labelsV2, setLabelsV2] = useState([])
-  const [points, setPoints] = useState(-1)
   const [completionWindow, setCompletionWindow] = useState(-1)
   const [allUserThings, setAllUserThings] = useState([])
   const [thingTrigger, setThingTrigger] = useState(null)
@@ -200,7 +199,6 @@ const ChoreEdit = () => {
       labelsV2: labelsV2,
       notificationMetadata: notificationMetadata,
       thingTrigger: thingTrigger,
-      points: points < 0 ? null : points,
       completionWindow: completionWindow < 0 ? null : completionWindow,
     }
     let SaveFunction = CreateChore
@@ -251,9 +249,6 @@ const ChoreEdit = () => {
           setFrequency(data.res.frequency)
 
           setNotificationMetadata(JSON.parse(data.res.notificationMetadata))
-          setPoints(
-            data.res.points && data.res.points > -1 ? data.res.points : -1,
-          )
           setCompletionWindow(
             data.res.completionWindow && data.res.completionWindow > -1
               ? data.res.completionWindow
@@ -599,7 +594,6 @@ const ChoreEdit = () => {
             }}
             color={completionWindow !== -1 ? 'success' : 'neutral'}
             variant={completionWindow !== -1 ? 'solid' : 'outlined'}
-            // endDecorator={points !== -1 ? 'On' : 'Off'}
             slotProps={{
               endDecorator: {
                 sx: {
@@ -623,7 +617,6 @@ const ChoreEdit = () => {
                 type='number'
                 value={completionWindow}
                 sx={{ maxWidth: 100 }}
-                // add min points is 0 and max is 1000
                 slotProps={{
                   input: {
                     min: 0,
@@ -897,76 +890,6 @@ const ChoreEdit = () => {
             Add New Label
           </MenuItem>
         </Select>
-      </Box>
-
-      <Box mt={2}>
-        <Typography level='h4' gutterBottom>
-          Others :
-        </Typography>
-
-        <FormControl
-          orientation='horizontal'
-          sx={{ width: 400, justifyContent: 'space-between' }}
-        >
-          <div>
-            <FormLabel>Assign Points</FormLabel>
-            <FormHelperText sx={{ mt: 0 }}>
-              Assign points to this task and user will earn points when they
-              completed it
-            </FormHelperText>
-          </div>
-          <Switch
-            checked={points > -1}
-            onClick={event => {
-              event.preventDefault()
-              if (points > -1) {
-                setPoints(-1)
-              } else {
-                setPoints(1)
-              }
-            }}
-            color={points !== -1 ? 'success' : 'neutral'}
-            variant={points !== -1 ? 'solid' : 'outlined'}
-            // endDecorator={points !== -1 ? 'On' : 'Off'}
-            slotProps={{
-              endDecorator: {
-                sx: {
-                  minWidth: 24,
-                },
-              },
-            }}
-          />
-        </FormControl>
-
-        {points != -1 && (
-          <Card variant='outlined'>
-            <Box
-              sx={{
-                mt: 0,
-                ml: 4,
-              }}
-            >
-              <Typography level='body-sm'>Points:</Typography>
-
-              <Input
-                type='number'
-                value={points}
-                sx={{ maxWidth: 100 }}
-                // add min points is 0 and max is 1000
-                slotProps={{
-                  input: {
-                    min: 0,
-                    max: 1000,
-                  },
-                }}
-                placeholder='Points'
-                onChange={e => {
-                  setPoints(parseInt(e.target.value))
-                }}
-              />
-            </Box>
-          </Card>
-        )}
       </Box>
 
       {choreId > 0 && (
