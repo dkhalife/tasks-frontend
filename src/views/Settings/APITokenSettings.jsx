@@ -52,8 +52,7 @@ const APITokenSettings = () => {
       <Typography level='h3'>Access Token</Typography>
       <Divider />
       <Typography level='body-sm'>
-        Create token to use with the API to update things that trigger task or
-        chores
+        Create token to use with the API to update chores
       </Typography>
       {!isPlusAccount(userProfile) && (
         <Chip variant='soft' color='warning'>

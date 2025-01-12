@@ -20,8 +20,7 @@ import PaymentSuccessView from '../views/Payments/PaymentSuccessView'
 import PrivacyPolicyView from '../views/PrivacyPolicy/PrivacyPolicyView'
 import TermsView from '../views/Terms/TermsView'
 import TestView from '../views/TestView/Test'
-import ThingsHistory from '../views/Things/ThingsHistory'
-import ThingsView from '../views/Things/ThingsView'
+
 const getMainRoute = () => {
   if (import.meta.env.VITE_IS_LANDING_DEFAULT === 'true') {
     return <Landing />
@@ -113,14 +112,6 @@ const Router = createBrowserRouter([
       {
         path: 'payments/cancel',
         element: <PaymentCancelledView />,
-      },
-      {
-        path: 'things',
-        element: <ThingsView />,
-      },
-      {
-        path: 'things/:id',
-        element: <ThingsHistory />,
       },
       {
         path: 'labels/',

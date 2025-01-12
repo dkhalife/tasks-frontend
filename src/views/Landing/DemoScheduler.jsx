@@ -27,11 +27,7 @@ const DemoScheduler = () => {
             onFrequencyMetadataUpdate={setFrequencyMetadata}
             onFrequencyTimeUpdate={t => {}}
             frequencyError={null}
-            allUserThings={[]}
-            onTriggerUpdate={thingUpdate => {}}
-            OnTriggerValidate={() => {}}
             isAttemptToSave={false}
-            selectedThing={null}
           />
         </Box>
       </Grid>

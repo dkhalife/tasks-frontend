@@ -39,7 +39,7 @@ const CardData = [
   {
     title: 'Track Your Progress',
     description:
-      'View a history of completed tasks. or use things to track simply things!',
+      'View a history of completed tasks',
     icon: HistoryRounded,
   },
   {
@@ -53,12 +53,6 @@ const CardData = [
     description:
       'For shared tasks, Donetick can randomly rotate assignments or choose based on last completion or least assigned.',
     icon: AutoAwesomeRounded,
-  },
-  {
-    title: 'Integrations & Webhooks',
-    description:
-      'Donetick can update things programmatically with API call. you can update things from other services like IFTTT, Homeassistant or even your own service',
-    icon: Webhook,
   },
 ]
 

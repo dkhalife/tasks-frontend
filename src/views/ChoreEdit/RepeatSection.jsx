@@ -20,7 +20,6 @@ import moment from 'moment'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
 import { isPlusAccount } from '../../utils/Helpers'
-import ThingTriggerSection from './ThingTriggerSection'
 
 const FREQUANCY_TYPES_RADIOS = [
   'daily',
@@ -86,7 +85,6 @@ const RepeatOnSections = ({
   frequencyMetadata,
   onFrequencyMetadataUpdate,
   onFrequencyTimeUpdate,
-  things,
 }) => {
   const [months, setMonths] = useState({})
   // const [dayOftheMonth, setDayOftheMonth] = useState(1)
@@ -351,11 +349,9 @@ const RepeatSection = ({
   onFrequencyMetadataUpdate,
   onFrequencyTimeUpdate,
   frequencyError,
-  allUserThings,
   onTriggerUpdate,
   OnTriggerValidate,
   isAttemptToSave,
-  selectedThing,
 }) => {
   const [repeatOn, setRepeatOn] = useState('interval')
   const { userProfile, setUserProfile } = useContext(UserContext)
@@ -539,7 +535,6 @@ const RepeatSection = ({
                       frequencyMetadata={frequencyMetadata || {}}
                       onFrequencyMetadataUpdate={onFrequencyMetadataUpdate}
                       onFrequencyTimeUpdate={onFrequencyTimeUpdate}
-                      things={allUserThings}
                     />
                   </Grid>
                 </>
@@ -549,44 +544,6 @@ const RepeatSection = ({
             </FormControl>
           </Card>
         </>
-      )}
-      <FormControl sx={{ mt: 1 }}>
-        <Checkbox
-          onChange={e => {
-            onFrequencyTypeUpdate(e.target.checked ? 'trigger' : 'once')
-            //  if unchecked, set selectedThing to null:
-            if (!e.target.checked) {
-              onTriggerUpdate(null)
-            }
-          }}
-          defaultChecked={frequencyType === 'trigger'}
-          checked={frequencyType === 'trigger'}
-          value={frequencyType === 'trigger'}
-          disabled={!isPlusAccount(userProfile)}
-          overlay
-          label='Trigger this task based on a thing state'
-        />
-        <FormHelperText
-          sx={{
-            opacity: !isPlusAccount(userProfile) ? 0.5 : 1,
-          }}
-        >
-          Is this something that should be done when a thing state changes?{' '}
-          {userProfile && !isPlusAccount(userProfile) && (
-            <Chip variant='soft' color='warning'>
-              Not available in Basic Plan
-            </Chip>
-          )}
-        </FormHelperText>
-      </FormControl>
-      {frequencyType === 'trigger' && (
-        <ThingTriggerSection
-          things={allUserThings}
-          onTriggerUpdate={onTriggerUpdate}
-          onValidate={OnTriggerValidate}
-          isAttemptToSave={isAttemptToSave}
-          selected={selectedThing}
-        />
       )}
     </Box>
   )

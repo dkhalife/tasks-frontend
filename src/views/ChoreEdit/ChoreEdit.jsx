@@ -35,7 +35,6 @@ import {
   GetAllCircleMembers,
   GetChoreByID,
   GetChoreHistory,
-  GetThings,
   SaveChore,
 } from '../../utils/Fetcher'
 import { isPlusAccount } from '../../utils/Helpers'
@@ -75,9 +74,6 @@ const ChoreEdit = () => {
   const [labels, setLabels] = useState([])
   const [labelsV2, setLabelsV2] = useState([])
   const [completionWindow, setCompletionWindow] = useState(-1)
-  const [allUserThings, setAllUserThings] = useState([])
-  const [thingTrigger, setThingTrigger] = useState(null)
-  const [isThingValid, setIsThingValid] = useState(false)
 
   const [notificationMetadata, setNotificationMetadata] = useState({})
 
@@ -142,11 +138,6 @@ const ChoreEdit = () => {
         errors.dueDate = 'Due date is required'
       }
     }
-    if (frequencyType === 'trigger') {
-      if (!isThingValid) {
-        errors.thingTrigger = 'Thing trigger is invalid'
-      }
-    }
 
     // if there is any error then return false:
     setErrors(errors)
@@ -198,7 +189,6 @@ const ChoreEdit = () => {
       labels: labels.map(l => l.name),
       labelsV2: labelsV2,
       notificationMetadata: notificationMetadata,
-      thingTrigger: thingTrigger,
       completionWindow: completionWindow < 0 ? null : completionWindow,
     }
     let SaveFunction = CreateChore
@@ -218,11 +208,6 @@ const ChoreEdit = () => {
     //fetch performers:
     GetAllCircleMembers().then(data => {
       setPerformers(data.res)
-    })
-    GetThings().then(response => {
-      response.json().then(data => {
-        setAllUserThings(data.res)
-      })
     })
     // fetch chores:
     if (choreId > 0) {
@@ -273,7 +258,6 @@ const ChoreEdit = () => {
           setUpdatedBy(data.res.updatedBy)
           setCreatedBy(data.res.createdBy)
           setIsNotificable(data.res.notification)
-          setThingTrigger(data.res.thingChore)
           // setDueDate(data.res.dueDate)
           // setCompleted(data.res.completed)
           // setCompletedDate(data.res.completedDate)
@@ -506,21 +490,7 @@ const ChoreEdit = () => {
           })
         }}
         frequencyError={errors?.frequency}
-        allUserThings={allUserThings}
-        onTriggerUpdate={thingUpdate => {
-          if (thingUpdate === null) {
-            setThingTrigger(null)
-            return
-          }
-          setThingTrigger({
-            triggerState: thingUpdate.triggerState,
-            condition: thingUpdate.condition,
-            thingID: thingUpdate.thing.id,
-          })
-        }}
-        OnTriggerValidate={setIsThingValid}
         isAttemptToSave={attemptToSave}
-        selectedThing={thingTrigger}
       />
 
       <Box mt={2}>
@@ -712,7 +682,7 @@ const ChoreEdit = () => {
         >
           <Card variant='outlined'>
             <Typography level='h5'>
-              What things should trigger the notification?
+              What should trigger the notification?
             </Typography>
             {[
               {
@@ -720,11 +690,6 @@ const ChoreEdit = () => {
                 description: 'A simple reminder that a task is due',
                 id: 'dueDate',
               },
-              // {
-              //   title: 'Upon Completion',
-              //   description: 'A notification when a task is completed',
-              //   id: 'completion',
-              // },
               {
                 title: 'Predued',
                 description: 'before a task is due in few hours',
@@ -761,7 +726,7 @@ const ChoreEdit = () => {
             ))}
 
             <Typography level='h5'>
-              What things should trigger the notification?
+              What should trigger the notification?
             </Typography>
             <FormControl>
               <Checkbox

@@ -8,7 +8,6 @@ import {
   Message,
   SettingsOutlined,
   ShareOutlined,
-  Widgets,
 } from '@mui/icons-material'
 import {
   Box,
@@ -37,11 +36,6 @@ const links = [
   //   label: 'Desktop View',
   //   icon: <ListAltRounded />,
   // },
-  {
-    to: '/things',
-    label: 'Things',
-    icon: <Widgets />,
-  },
   {
     to: 'labels',
     label: 'Labels',
