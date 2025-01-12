@@ -9,7 +9,6 @@ import { UserContext } from './contexts/UserContext'
 import { AuthenticationProvider } from './service/AuthenticationService'
 import { GetUserProfile } from './utils/Fetcher'
 import { isTokenValid } from './utils/TokenManager'
-import { registerCapacitorListeners } from './CapacitorListener'
 import {apiManager} from './utils/TokenManager'
 
 const add = className => {
@@ -91,7 +90,6 @@ function App() {
     setThemeClass()
   }, [mode, systemMode])
   useEffect(() => {
-    registerCapacitorListeners()
     if (isTokenValid()) {
       if (!userProfile) getUserProfile()
     }
