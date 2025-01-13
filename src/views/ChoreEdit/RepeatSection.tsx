@@ -342,8 +342,6 @@ const RepeatSection = ({
             onFrequencyTypeUpdate(e.target.checked ? 'daily' : 'once')
           }}
           defaultChecked={!['once', 'trigger'].includes(frequencyType)}
-          checked={!['once', 'trigger'].includes(frequencyType)}
-          value={!['once', 'trigger'].includes(frequencyType)}
           overlay
           label='Repeat this task'
         />
@@ -367,13 +365,11 @@ const RepeatSection = ({
               {FREQUANCY_TYPES_RADIOS.map(item => (
                 <ListItem key={item}>
                   <Checkbox
-                    // disabled={index === 0}
                     checked={
                       item === frequencyType ||
                       (item === 'custom' &&
                         REPEAT_ON_TYPE.includes(frequencyType))
                     }
-                    // defaultChecked={item === frequencyType}
                     onClick={() => {
                       if (item === 'custom') {
                         onFrequencyTypeUpdate(REPEAT_ON_TYPE[0])
