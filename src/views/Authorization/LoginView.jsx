@@ -137,26 +137,6 @@ const LoginView = () => {
             boxShadow: 'md',
           }}
         >
-         <IconButton 
-        //  on top right of the screen:
-          sx={{
-            position: 'absolute',
-            top: 2,
-            right: 2,
-            color: 'black',
-          }}
-          onClick={() => {
-            Navigate('/login/settings')
-
-          }
-          }
-          > <Settings /></IconButton>
-          {/* <img
-            src='/src/assets/logo.svg'
-            alt='logo'
-            width='128px'
-            height='128px'
-          /> */}
           <Logo />
 
           <Typography level='h2'>

@@ -5,7 +5,6 @@ import Error from '@/views/Error'
 import Settings from '@/views/Settings/Settings'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import ForgotPasswordView from '../views/Authorization/ForgotPasswordView'
-import LoginSettings from '../views/Authorization/LoginSettings'
 import LoginView from '../views/Authorization/LoginView'
 import SignupView from '../views/Authorization/Signup'
 import UpdatePasswordView from '../views/Authorization/UpdatePasswordView'
@@ -60,10 +59,6 @@ const Router = createBrowserRouter([
       {
         path: '/login',
         element: <LoginView />,
-      },
-      {
-        path: '/login/settings',
-        element: <LoginSettings />,
       },
       {
         path: '/signup',
