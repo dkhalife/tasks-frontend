@@ -14,11 +14,8 @@ import MyChores from '../views/Chores/MyChores'
 import ChoreHistory from '../views/History/ChoreHistory'
 import LabelView from '../views/Labels/LabelView'
 import Landing from '../views/Landing/Landing'
-import PaymentCancelledView from '../views/Payments/PaymentFailView'
-import PaymentSuccessView from '../views/Payments/PaymentSuccessView'
 import PrivacyPolicyView from '../views/PrivacyPolicy/PrivacyPolicyView'
 import TermsView from '../views/Terms/TermsView'
-import TestView from '../views/TestView/Test'
 
 const getMainRoute = () => {
   if (import.meta.env.VITE_IS_LANDING_DEFAULT === 'true') {
@@ -81,10 +78,6 @@ const Router = createBrowserRouter([
         element: <Landing />,
       },
       {
-        path: '/test',
-        element: <TestView />,
-      },
-      {
         path: '/forgot-password',
         element: <ForgotPasswordView />,
       },
@@ -99,14 +92,6 @@ const Router = createBrowserRouter([
       {
         path: '/terms',
         element: <TermsView />,
-      },
-      {
-        path: 'payments/success',
-        element: <PaymentSuccessView />,
-      },
-      {
-        path: 'payments/cancel',
-        element: <PaymentCancelledView />,
       },
       {
         path: 'labels/',
