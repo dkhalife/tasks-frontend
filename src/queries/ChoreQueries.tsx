@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { CreateChore, GetChoresHistory, GetChoresNew } from '../utils/Fetcher'

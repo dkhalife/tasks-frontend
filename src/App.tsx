@@ -1,9 +1,8 @@
 import { NavBar } from './views/components/NavBar'
-import { Button, Snackbar, Typography, useColorScheme } from '@mui/joy'
+import { useColorScheme } from '@mui/joy'
 import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Outlet } from 'react-router-dom'
-import { useRegisterSW } from 'virtual:pwa-register/react'
 import { UserContext } from './contexts/UserContext'
 import { AuthenticationProvider } from './service/AuthenticationService'
 import { GetUserProfile } from './utils/Fetcher'
@@ -19,30 +18,11 @@ const remove = className => {
   document.getElementById('root')?.classList.remove(className)
 }
 
-const intervalMS = 5 * 60 * 1000 // 5 minutes
-
 export function App() {
   startApiManager()
   const queryClient = new QueryClient()
   const { mode, systemMode } = useColorScheme()
   const [userProfile, setUserProfile] = useState<any>(null)
-  const [showUpdateSnackbar, setShowUpdateSnackbar] = useState(true)
-
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegistered(r) {
-      r &&
-        setInterval(() => {
-          r.update()
-        }, intervalMS)
-    },
-    onRegisterError(error) {
-      throw new Error('SW registration error', error)
-    },
-  })
 
   const getUserProfile = () => {
     GetUserProfile()
@@ -51,7 +31,6 @@ export function App() {
           setUserProfile(data.res)
         })
       })
-      .catch(_ => {})
   }
   useEffect(() => {
     const value = JSON.parse(localStorage.getItem('themeMode') ?? "") || mode
@@ -84,23 +63,6 @@ export function App() {
           <NavBar />
           <Outlet />
         </UserContext.Provider>
-        {needRefresh && (
-          <Snackbar open={showUpdateSnackbar}>
-            <Typography level='body-md'>
-              A new version is now available.Click on reload button to update.
-            </Typography>
-            <Button
-              color='secondary'
-              size='small'
-              onClick={() => {
-                updateServiceWorker(true)
-                setShowUpdateSnackbar(false)
-              }}
-            >
-              Refresh
-            </Button>
-          </Snackbar>
-        )}
       </QueryClientProvider>
     </div>
   )
