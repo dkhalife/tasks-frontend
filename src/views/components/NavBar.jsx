@@ -1,13 +1,11 @@
 import Logo from '@/assets/logo.svg'
 import {
-  AccountBox,
   HomeOutlined,
   ListAlt,
   Logout,
   MenuRounded,
   Message,
   SettingsOutlined,
-  ShareOutlined,
 } from '@mui/icons-material'
 import {
   Box,
@@ -31,6 +29,7 @@ const links = [
     icon: <HomeOutlined />,
   },
 
+  // TODO: alternate between home desktep view based on device
   // {
   //   to: '/chores',
   //   label: 'Desktop View',
@@ -40,16 +39,6 @@ const links = [
     to: 'labels',
     label: 'Labels',
     icon: <ListAlt />,
-  },
-  {
-    to: '/settings#notifications',
-    label: 'Notifications',
-    icon: <Message />,
-  },
-  {
-    to: '/settings#account',
-    label: 'Account',
-    icon: <AccountBox />,
   },
   {
     to: '/settings',
