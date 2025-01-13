@@ -48,8 +48,8 @@ const ChoreView = () => {
   const [searchParams] = useSearchParams()
 
   const [isPendingCompletion, setIsPendingCompletion] = useState(false)
-  const [timeoutId, setTimeoutId] = useState(null)
-  const [secondsLeftToCancel, setSecondsLeftToCancel] = useState(null)
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
+  const [secondsLeftToCancel, setSecondsLeftToCancel] = useState<number | null>(null)
   const [completedDate, setCompletedDate] = useState(null)
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
 
@@ -68,7 +68,7 @@ const ChoreView = () => {
     }, 1000)
 
     const id = setTimeout(() => {
-      MarkChoreComplete(choreId, note, completedDate, null)
+      MarkChoreComplete(choreId, note, completedDate)
         .then(resp => {
           if (resp.ok) {
             return resp.json().then(data => {

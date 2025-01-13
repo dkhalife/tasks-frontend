@@ -1,4 +1,4 @@
-import useStickyState from '@/hooks/useStickyState'
+import useStickyState from '../../hooks/useStickyState'
 import {
   DarkModeOutlined,
   LaptopOutlined,
@@ -11,6 +11,7 @@ import {
   ToggleButtonGroup,
   useColorScheme,
 } from '@mui/joy'
+import React from 'react'
 
 const ELEMENTID = 'select-theme-mode'
 

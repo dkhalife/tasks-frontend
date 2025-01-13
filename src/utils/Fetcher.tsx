@@ -97,7 +97,7 @@ const GetChoreDetailById = id => {
     headers: HEADERS(),
   })
 }
-const MarkChoreComplete = (id, note, completedDate, performer) => {
+const MarkChoreComplete = (id, note, completedDate) => {
   var markChoreURL = `/chores/${id}/do`
 
   const body = {
@@ -109,14 +109,6 @@ const MarkChoreComplete = (id, note, completedDate, performer) => {
       completedDate,
     ).toISOString()}`
     markChoreURL += completedDateFormated
-  }
-  if (performer) {
-    body.performer = Number(performer)
-    if (completedDateFormated === '') {
-      markChoreURL += `&performer=${performer}`
-    } else {
-      markChoreURL += `?performer=${performer}`
-    }
   }
 
   return Fetch(markChoreURL, {

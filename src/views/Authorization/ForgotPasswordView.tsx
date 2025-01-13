@@ -1,5 +1,5 @@
 // create boilerplate for ResetPasswordView:
-import LogoSVG from '@/assets/logo.svg'
+import LogoSVG from '../../assets/logo.svg'
 import {
   Box,
   Button,
@@ -14,14 +14,13 @@ import {
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ResetPassword } from '../../utils/Fetcher'
+import React from 'react'
 
 const ForgotPasswordView = () => {
   const navigate = useNavigate()
-  // const [showLoginSnackbar, setShowLoginSnackbar] = useState(false)
-  // const [snackbarMessage, setSnackbarMessage] = useState('')
-  const [resetStatusOk, setResetStatusOk] = useState(null)
+  const [resetStatusOk, setResetStatusOk] = useState<boolean>(false)
   const [email, setEmail] = useState('')
-  const [emailError, setEmailError] = useState<string>("")
+  const [emailError, setEmailError] = useState<string | null>()
 
   const validateEmail = email => {
     return !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
@@ -32,7 +31,6 @@ const ForgotPasswordView = () => {
       return setEmailError('Email is required')
     }
 
-    // validate email:
     if (validateEmail(email)) {
       setEmailError('Please enter a valid email address')
       return

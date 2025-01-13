@@ -19,7 +19,7 @@ const LoginView = () => {
   const { userProfile, setUserProfile } = React.useContext(UserContext)
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
-  const [error, setError] = React.useState(null)
+  const [error, setError] = React.useState<string | null>(null)
   const Navigate = useNavigate()
   const handleSubmit = async e => {
     e.preventDefault()

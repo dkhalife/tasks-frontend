@@ -10,11 +10,12 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
+import React, { ReactElement } from 'react'
 
 export const getCompletedChip = historyEntry => {
   var text = 'No Due Date'
   var color = 'info'
-  var icon = <CalendarViewDay />
+  let icon: ReactElement
   // if completed few hours +-6 hours
   if (
     historyEntry.dueDate &&

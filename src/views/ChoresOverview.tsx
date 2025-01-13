@@ -54,7 +54,7 @@ const ChoresOverview = () => {
     }
     const dueDate = new Date(chore.nextDueDate)
     const now = new Date()
-    const diff = dueDate - now
+    const diff = dueDate.getTime() - now.getTime()
     if (diff < 0) {
       return CHORE_STATUS.OVER_DUE
     }

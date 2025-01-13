@@ -1,4 +1,5 @@
 import { Typography } from '@mui/joy'
+import React from 'react'
 
 const Error = () => {
   return (

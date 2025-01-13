@@ -58,9 +58,9 @@ const ChoreCard = ({
   const menuRef = React.useRef(null)
   const navigate = useNavigate()
 
-  const [isPendingCompletion, setIsPendingCompletion] = React.useState(false)
-  const [secondsLeftToCancel, setSecondsLeftToCancel] = React.useState(null)
-  const [timeoutId, setTimeoutId] = React.useState(null)
+  const [isPendingCompletion, setIsPendingCompletion] = React.useState<boolean>(false)
+  const [secondsLeftToCancel, setSecondsLeftToCancel] = React.useState<number | null>(null)
+  const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null)
   const { userProfile } = React.useContext(UserContext)
 
   const handleMenuOutsideClick = event => {
@@ -125,7 +125,7 @@ const ChoreCard = ({
     }, 1000)
 
     const id = setTimeout(() => {
-      MarkChoreComplete(chore.id, null, null, null)
+      MarkChoreComplete(chore.id, null, null)
         .then(resp => {
           if (resp.ok) {
             return resp.json().then(data => {
@@ -170,7 +170,6 @@ const ChoreCard = ({
       chore.id,
       null,
       new Date(newDate).toISOString(),
-      null,
     ).then(response => {
       if (response.ok) {
         response.json().then(data => {

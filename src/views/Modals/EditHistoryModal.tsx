@@ -10,6 +10,7 @@ import {
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import ConfirmationModal from './Inputs/ConfirmationModal'
+import React from 'react'
 
 function EditHistoryModal({ config, historyRecord }) {
   useEffect(() => {

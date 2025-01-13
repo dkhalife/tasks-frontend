@@ -15,17 +15,18 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import Logo from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
+import React from 'react'
 
 const UpdatePasswordView = () => {
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [passwordError, setPasswordError] = useState(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
   const [passworConfirmationError, setPasswordConfirmationError] =
-    useState(null)
+    useState<string | null>(null)
   const [searchParams] = useSearchParams()
 
-  const [updateStatusOk, setUpdateStatusOk] = useState(null)
+  const [updateStatusOk, setUpdateStatusOk] = useState<boolean | null>(null)
 
   const verifiticationCode = searchParams.get('c')
 

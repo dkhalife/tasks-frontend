@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import Contexts from './contexts/Contexts'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLDivElement).render(
   <React.StrictMode>
     <Contexts />
   </React.StrictMode>,

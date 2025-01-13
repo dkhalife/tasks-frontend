@@ -68,10 +68,6 @@ export const TASK_COLOR = {
   THIS_MONTH: '#00bcd4',
   LATER: '#d7ccc8',
   ANYTIME: '#90a4ae',
-
-  // FOR ASSIGNEE:
-  ASSIGNED_TO_ME: '#4ec1a2',
-  ASSIGNED_TO_OTHER: '#b39ddb',
 }
 export default LABEL_COLORS
 

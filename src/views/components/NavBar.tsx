@@ -21,6 +21,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { version } from '../../../package.json'
 import ThemeToggleButton from '../Settings/ThemeToggleButton'
 import NavBarLink from './NavBarLink'
+import React from 'react'
 const links = [
   {
     to: '/my/chores',
@@ -148,7 +149,7 @@ const NavBar = () => {
             <Typography
               onClick={
                 // force service worker to update:
-                () => window.location.reload(true)
+                () => window.location.reload()
               }
               level='body-xs'
               sx={{

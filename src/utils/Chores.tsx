@@ -9,7 +9,7 @@ export const ChoresGrouper = (groupBy, chores) => {
     if (b.nextDueDate === null) {
       return -1
     }
-    return new Date(a.nextDueDate) - new Date(b.nextDueDate)
+    return new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
   })
 
   var groups = []
@@ -53,7 +53,9 @@ export const ChoresGrouper = (groupBy, chores) => {
           content: groupRaw['Overdue'],
           color: TASK_COLOR.OVERDUE,
         },
-        { name: 'Today', content: groupRaw['Today'], color: TASK_COLOR.TODAY },
+        { name: 'Today',
+          content: groupRaw['Today'],
+          color: TASK_COLOR.TODAY },
         {
           name: 'In a week',
           content: groupRaw['In a week'],
@@ -64,7 +66,9 @@ export const ChoresGrouper = (groupBy, chores) => {
           content: groupRaw['This month'],
           color: TASK_COLOR.THIS_MONTH,
         },
-        { name: 'Later', content: groupRaw['Later'], color: TASK_COLOR.LATER },
+        { name: 'Later',
+          content: groupRaw['Later'],
+          color: TASK_COLOR.LATER },
         {
           name: 'Anytime',
           content: groupRaw['Anytime'],

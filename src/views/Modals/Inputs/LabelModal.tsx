@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from 'react-query'
 import LABEL_COLORS from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import { useLabels } from '../../Labels/LabelQueries'
+import React from 'react'
 
 function LabelModal({ isOpen, onClose, label }) {
   const [labelName, setLabelName] = useState('')

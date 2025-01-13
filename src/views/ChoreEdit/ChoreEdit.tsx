@@ -339,9 +339,6 @@ const ChoreEdit = () => {
 
   return (
     <Container maxWidth='md'>
-      {/* <Typography level='h3' mb={1.5}>
-        Edit Chore
-      </Typography> */}
       <Box>
         <FormControl error={errors.name}>
           <Typography level='h4'>Description :</Typography>

@@ -10,6 +10,7 @@ import { AuthenticationProvider } from './service/AuthenticationService'
 import { GetUserProfile } from './utils/Fetcher'
 import { isTokenValid } from './utils/TokenManager'
 import { apiManager } from './utils/TokenManager'
+import React from 'react'
 
 const add = className => {
   document.getElementById('root').classList.add(className)
@@ -56,7 +57,7 @@ function App() {
       .catch(_ => {})
   }
   useEffect(() => {
-    const value = JSON.parse(localStorage.getItem('themeMode')) || mode
+    const value = JSON.parse(localStorage.getItem('themeMode') ?? "") || mode
 
     if (value === 'system') {
       if (systemMode === 'dark') {

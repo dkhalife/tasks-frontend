@@ -42,11 +42,12 @@ import ChoreCard from './ChoreCard'
 import IconButtonWithMenu from './IconButtonWithMenu'
 
 import { ChoresGrouper } from '../../utils/Chores'
+import React from 'react'
 
 const MyChores = () => {
   const { userProfile, setUserProfile } = useContext(UserContext)
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
-  const [snackBarMessage, setSnackBarMessage] = useState(null)
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false)
+  const [snackBarMessage, setSnackBarMessage] = useState<string | null>(null)
   const [chores, setChores] = useState([])
   const [archivedChores, setArchivedChores] = useState(null)
   const [filteredChores, setFilteredChores] = useState([])
@@ -86,7 +87,7 @@ const MyChores = () => {
     if (!aOverdue && bOverdue) return 1 // b is overdue, comes earlier
 
     // 4. Sort future tasks by due date:
-    return aDueDate - bDueDate // Sort ascending by due date
+    return aDueDate.getTime() - bDueDate.getTime() // Sort ascending by due date
   }
 
   useEffect(() => {
