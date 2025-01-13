@@ -4,7 +4,6 @@ import {
   ListAlt,
   Logout,
   MenuRounded,
-  Message,
   SettingsOutlined,
 } from '@mui/icons-material'
 import {
@@ -70,7 +69,7 @@ const NavBar = () => {
           navigate('/my/chores')
         }}
       >
-        <img component='img' src={Logo} width='34' />
+        <img src={Logo} width='34' />
         <Typography
           level='title-lg'
           sx={{

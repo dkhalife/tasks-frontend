@@ -26,8 +26,6 @@ const SignupView = () => {
   const [emailError, setEmailError] = React.useState('')
   const [displayNameError, setDisplayNameError] = React.useState('')
   const [error, setError] = React.useState(null)
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
-  const [snackbarMessage, setSnackbarMessage] = React.useState('')
   const handleLogin = (username, password) => {
     login(username, password).then(response => {
       if (response.status === 200) {
@@ -35,8 +33,6 @@ const SignupView = () => {
           localStorage.setItem('ca_token', res.token)
           localStorage.setItem('ca_expiration', res.expire)
           setTimeout(() => {
-            // TODO: not sure if there is a race condition here
-            // but on first sign up it renavigates to login.
             Navigate('/my/chores')
           }, 500)
         })

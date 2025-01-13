@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   Checkbox,
-  Chip,
   FormControl,
   FormHelperText,
   Grid,
@@ -19,6 +18,7 @@ import {
 import moment from 'moment'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
+import React from 'react'
 
 const FREQUANCY_TYPES_RADIOS = [
   'daily',
@@ -35,23 +35,6 @@ const FREQUENCY_TYPE_MESSAGE = {
   custom: 'This chore will be scheduled based on a custom frequency.',
 }
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
-const FREQUANCY_TYPES = [
-  'once',
-  'daily',
-  'weekly',
-  'monthly',
-  'yearly',
-  'adaptive',
-  ...REPEAT_ON_TYPE,
-]
-const MONTH_WITH_NO_31_DAYS = [
-  // TODO: Handle these months if day is 31
-  'february',
-  'april',
-  'june',
-  'september',
-  'november',
-]
 const MONTHS = [
   'january',
   'february',
@@ -80,7 +63,6 @@ const RepeatOnSections = ({
   frequencyType,
   frequency,
   onFrequencyUpdate,
-  onFrequencyTypeUpdate,
   frequencyMetadata,
   onFrequencyMetadataUpdate,
   onFrequencyTimeUpdate,
@@ -348,7 +330,6 @@ const RepeatSection = ({
   onFrequencyMetadataUpdate,
   onFrequencyTimeUpdate,
   frequencyError,
-  isAttemptToSave,
 }) => {
   const [repeatOn, setRepeatOn] = useState('interval')
   const { userProfile, setUserProfile } = useContext(UserContext)
@@ -383,7 +364,7 @@ const RepeatSection = ({
                 '--ListItem-radius': '20px',
               }}
             >
-              {FREQUANCY_TYPES_RADIOS.map((item, index) => (
+              {FREQUANCY_TYPES_RADIOS.map(item => (
                 <ListItem key={item}>
                   <Checkbox
                     // disabled={index === 0}

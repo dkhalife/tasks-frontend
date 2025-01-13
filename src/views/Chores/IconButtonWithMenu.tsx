@@ -8,7 +8,6 @@ const IconButtonWithMenu = ({
   icon,
   options,
   onItemSelect,
-  selectedItem,
   setSelectedItem,
   isActive,
   useChips,
@@ -92,17 +91,6 @@ const IconButtonWithMenu = ({
             )}
           </MenuItem>
         ))}
-        {/* {selectedItem && selectedItem !== 'All' && (
-            <MenuItem
-              id={`${id}cancel-all-filters`}
-              onClick={() => {
-                onItemSelect(null)
-                setSelectedItem?.setSelectedItem('All')
-              }}
-            >
-              Cancel All Filters
-            </MenuItem>
-          )} */}
       </Menu>
     </>
   )

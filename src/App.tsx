@@ -18,7 +18,7 @@ const add = className => {
 const remove = className => {
   document.getElementById('root').classList.remove(className)
 }
-// TODO: Update the interval to at 60 minutes
+
 const intervalMS = 5 * 60 * 1000 // 5 minutes
 
 function App() {
@@ -45,19 +45,7 @@ function App() {
       console.log('SW registration error', error)
     },
   })
-  const close = () => {
-    setOfflineReady(false)
-    setNeedRefresh(false)
-  }
 
-  // const updateServiceWorker = useRegisterSW({
-  //   onRegistered(r) {
-  //     r &&
-  //       setInterval(() => {
-  //         r.update()
-  //       }, intervalMS)
-  //   },
-  // })
   const setThemeClass = () => {
     const value = JSON.parse(localStorage.getItem('themeMode')) || mode
 
@@ -81,16 +69,16 @@ function App() {
           setUserProfile(data.res)
         })
       })
-      .catch(error => {})
+      .catch(_ => {})
   }
   useEffect(() => {
     setThemeClass()
-  }, [mode, systemMode])
+  }, [mode, systemMode, setThemeClass])
   useEffect(() => {
-    if (isTokenValid()) {
-      if (!userProfile) getUserProfile()
+    if (isTokenValid() && !userProfile) {
+      getUserProfile()
     }
-  }, [])
+  }, [userProfile])
 
   return (
     <div className='min-h-screen'>

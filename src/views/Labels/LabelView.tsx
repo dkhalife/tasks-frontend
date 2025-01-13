@@ -16,7 +16,6 @@ import { useLabels } from './LabelQueries'
 // import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Add } from '@mui/icons-material'
 import { useQueryClient } from 'react-query'
-import { useNavigate } from 'react-router-dom'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import { DeleteLabel } from '../../utils/Fetcher'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal.tsx'
@@ -30,7 +29,7 @@ const LabelView = () => {
   const [currentLabel, setCurrentLabel] = useState(null)
   const queryClient = useQueryClient()
   const [confirmationModel, setConfirmationModel] = useState({})
-  const Navigate = useNavigate()
+
   const handleAddLabel = () => {
     setCurrentLabel(null)
     setModalOpen(true)
@@ -39,26 +38,6 @@ const LabelView = () => {
   const handleEditLabel = label => {
     setCurrentLabel(label)
     setModalOpen(true)
-  }
-
-  const handleDeleteClicked = id => {
-    setConfirmationModel({
-      isOpen: true,
-      title: 'Delete Label',
-
-      message:
-        'Are you sure you want to delete this label? This will remove the label from all tasks.',
-
-      confirmText: 'Delete',
-      color: 'danger',
-      cancelText: 'Cancel',
-      onClose: confirmed => {
-        if (confirmed) {
-          handleDeleteLabel(id)
-        }
-        setConfirmationModel({})
-      },
-    })
   }
 
   const handleDeleteLabel = id => {

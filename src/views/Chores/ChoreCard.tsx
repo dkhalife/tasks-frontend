@@ -3,15 +3,10 @@ import {
   Check,
   Delete,
   Edit,
-  HorizontalRule,
-  KeyboardControlKey,
-  KeyboardDoubleArrowUp,
-  LocalOffer,
   ManageSearch,
   MoreTime,
   MoreVert,
   Repeat,
-  Report,
   SwitchAccessShortcut,
   TimesOneMobiledata,
   Webhook,
@@ -38,11 +33,9 @@ import { UserContext } from '../../contexts/UserContext'
 import { notInCompletionWindow } from '../../utils/Chores'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
-  ArchiveChore,
   DeleteChore,
   MarkChoreComplete,
   SkipChore,
-  UnArchiveChore,
   UpdateDueDate,
 } from '../../utils/Fetcher'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
@@ -54,7 +47,6 @@ const ChoreCard = ({
   onChoreRemove,
   sx,
   viewOnly,
-  onChipClick,
 }) => {
   const [activeUserId, setActiveUserId] = React.useState(0)
   const [isChangeDueDateModalOpen, setIsChangeDueDateModalOpen] =

@@ -25,7 +25,6 @@ import HistoryCard from './HistoryCard'
 
 const ChoreHistory = () => {
   const [choreHistory, setChoresHistory] = useState([])
-  const [userHistory, setUserHistory] = useState([])
   const [performers, setPerformers] = useState([])
   const [historyInfo, setHistoryInfo] = useState([])
 
@@ -47,7 +46,6 @@ const ChoreHistory = () => {
           const userId = choreHistory.completedBy
           newUserChoreHistory[userId] = (newUserChoreHistory[userId] || 0) + 1
         })
-        setUserHistory(newUserChoreHistory)
 
         setPerformers(usersData.res)
         updateHistoryInfo(historyData.res, newUserChoreHistory, usersData.res)
@@ -87,9 +85,6 @@ const ChoreHistory = () => {
     // find max value in userHistories:
     const userCompletedByMost = Object.keys(userHistories).reduce((a, b) =>
       userHistories[a] > userHistories[b] ? a : b,
-    )
-    const userCompletedByLeast = Object.keys(userHistories).reduce((a, b) =>
-      userHistories[a] < userHistories[b] ? a : b,
     )
 
     const historyInfo = [
@@ -131,8 +126,6 @@ const ChoreHistory = () => {
         }`,
       },
     ]
-
-    setHistoryInfo(historyInfo)
   }
 
   if (isLoading) {

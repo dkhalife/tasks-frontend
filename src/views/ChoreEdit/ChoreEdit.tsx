@@ -40,6 +40,7 @@ import { useLabels } from '../Labels/LabelQueries'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 import LabelModal from '../Modals/Inputs/LabelModal'
 import RepeatSection from './RepeatSection'
+import React from 'react'
 const ASSIGN_STRATEGIES = [
   'random',
   'least_assigned',

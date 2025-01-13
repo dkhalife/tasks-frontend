@@ -13,7 +13,6 @@ import {
 } from '@mui/joy'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { API_URL } from './../../Config'
 import { ResetPassword } from '../../utils/Fetcher'
 
 const ForgotPasswordView = () => {
@@ -22,7 +21,7 @@ const ForgotPasswordView = () => {
   // const [snackbarMessage, setSnackbarMessage] = useState('')
   const [resetStatusOk, setResetStatusOk] = useState(null)
   const [email, setEmail] = useState('')
-  const [emailError, setEmailError] = useState(null)
+  const [emailError, setEmailError] = useState<string>()
 
   const validateEmail = email => {
     return !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)

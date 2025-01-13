@@ -1,4 +1,4 @@
-import { Card, IconButton, Typography } from '@mui/joy'
+import { Card, Typography } from '@mui/joy'
 
 const SummaryCard = () => {
   return (
@@ -10,9 +10,6 @@ const SummaryCard = () => {
             This is a summary of your chores
           </Typography>
         </div>
-        <IconButton>
-          <MoreVert />
-        </IconButton>
       </div>
       <div className='flex justify-between'>
         <div>

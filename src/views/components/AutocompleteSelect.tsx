@@ -17,16 +17,12 @@ export default function FreeSoloCreateOption({
   }, [options])
 
   const [value, setValue] = React.useState([selected])
-  const [selectOptions, setSelectOptions] = React.useState(
-    selected ? selected : [],
-  )
   return (
     <FormControl id='free-solo-with-text-demo'>
       <Autocomplete
         value={value}
         multiple
         size='lg'
-        on
         onChange={(event, newValue) => {
           if (typeof newValue === 'string') {
             setValue({

@@ -13,7 +13,6 @@ import {
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { API_URL } from '../../Config'
 import Logo from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
 
@@ -121,11 +120,6 @@ const UpdatePasswordView = () => {
               value={password}
               onChange={handlePasswordChange}
               error={passwordError !== null}
-              // onKeyDown={e => {
-              //   if (e.key === 'Enter' && validateForm(validateFormInput)) {
-              //     handleSubmit(e)
-              //   }
-              // }}
             />
             <FormHelperText>{passwordError}</FormHelperText>
           </FormControl>
@@ -137,11 +131,6 @@ const UpdatePasswordView = () => {
               value={passwordConfirm}
               onChange={handlePasswordConfirmChange}
               error={passworConfirmationError !== null}
-              // onKeyDown={e => {
-              //   if (e.key === 'Enter' && validateForm(validateFormInput)) {
-              //     handleSubmit(e)
-              //   }
-              // }}
             />
             <FormHelperText>{passworConfirmationError}</FormHelperText>
           </FormControl>

@@ -16,18 +16,13 @@ import {
   Card,
   Chip,
   Container,
-  Dropdown,
   Grid,
   ListItem,
   ListItemContent,
-  Menu,
-  MenuButton,
-  MenuItem,
   Sheet,
   Snackbar,
   Typography,
 } from '@mui/joy'
-import { Divider } from '@mui/material'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -40,6 +35,7 @@ import {
   SkipChore,
 } from '../../utils/Fetcher'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
+import React from 'react'
 
 const ChoreView = () => {
   const [chore, setChore] = useState({})

@@ -1,11 +1,8 @@
-import GoogleIcon from '@mui/icons-material/Google'
 import {
   Avatar,
   Box,
   Button,
   Container,
-  Divider,
-  IconButton,
   Input,
   Sheet,
   Snackbar,
@@ -18,7 +15,6 @@ import { API_URL } from '../../Config'
 import { UserContext } from '../../contexts/UserContext'
 import Logo from '../../Logo'
 import { GetUserProfile, login } from '../../utils/Fetcher'
-import { Settings } from '@mui/icons-material'
 
 const LoginView = () => {
   const { userProfile, setUserProfile } = React.useContext(UserContext)
@@ -56,39 +52,6 @@ const LoginView = () => {
       })
   }
 
-  const loggedWithProvider = function (provider, data) {
-    return fetch(API_URL + `/auth/${provider}/callback`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        provider: provider,
-        token:
-          data['access_token'] || // data["access_token"] is for Google
-          data['accessToken'], // data["accessToken"] is for Google Capacitor
-        data: data,
-      }),
-    }).then(response => {
-      if (response.status === 200) {
-        return response.json().then(data => {
-          localStorage.setItem('ca_token', data.token)
-          localStorage.setItem('ca_expiration', data.expire)
-
-          const redirectUrl = Cookies.get('ca_redirect')
-          if (redirectUrl) {
-            Cookies.remove('ca_redirect')
-            Navigate(redirectUrl)
-          } else {
-            getUserProfileAndNavigateToHome()
-          }
-        })
-      }
-      return response.json().then(error => {
-        setError("Couldn't log in with Google, please try again")
-      })
-    })
-  }
   const getUserProfileAndNavigateToHome = () => {
     GetUserProfile().then(data => {
       data.json().then(data => {

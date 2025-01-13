@@ -2,17 +2,10 @@ import { Box, Button, Container, Typography } from '@mui/joy'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useState } from 'react'
 import Logo from '../Logo'
+import React from 'react'
 const Home = () => {
   const Navigate = useNavigate()
-  const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem('user'))
-  }
-  const [users, setUsers] = useState([])
-  const [currentUser, setCurrentUser] = useState(getCurrentUser())
-
-  useEffect(() => {}, [])
 
   return (
     <Container className='flex h-full items-center justify-center'>

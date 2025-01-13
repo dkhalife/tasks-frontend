@@ -12,6 +12,7 @@ import ChoreView from '../views/ChoreEdit/ChoreView'
 import MyChores from '../views/Chores/MyChores'
 import ChoreHistory from '../views/History/ChoreHistory'
 import LabelView from '../views/Labels/LabelView'
+import React from 'react'
 
 const getMainRoute = () => {
   return <MyChores />

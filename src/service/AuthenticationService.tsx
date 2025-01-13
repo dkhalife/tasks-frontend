@@ -13,6 +13,5 @@ const AuthenticationProvider = ({ children }) => {
     </AuthenticationContext.Provider>
   )
 }
-export { AuthenticationContext, AuthenticationProvider }
 
-// export default AuthenticationProvider;
+export { AuthenticationContext, AuthenticationProvider }

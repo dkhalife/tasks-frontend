@@ -1,6 +1,6 @@
-// import Logo from 'Components/Logo'
 import { Box, Paper } from '@mui/material'
 import { styled } from '@mui/material/styles'
+import React from 'react'
 
 const Container = styled('div')(({ theme }) => ({
   minHeight: '100vh',
@@ -25,7 +25,7 @@ const AuthCard = styled(Paper)(({ theme }) => ({
   },
 }))
 
-export default function AuthCardContainer({ children, ...props }) {
+export default function AuthCardContainer({ children }) {
   return (
     <Container>
       <AuthCard elevation={0}>

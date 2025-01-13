@@ -1,15 +1,11 @@
 import {
   Box,
   Button,
-  Card,
-  Chip,
   CircularProgress,
   Container,
   Divider,
-  Input,
   Typography,
 } from '@mui/joy'
-import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
 import Logo from '../../Logo'
@@ -28,7 +24,7 @@ const Settings = () => {
         setUserProfile(data.res)
       })
     })
-  }, [])
+  }, [setUserProfile])
 
   if (userProfile === null) {
     return (

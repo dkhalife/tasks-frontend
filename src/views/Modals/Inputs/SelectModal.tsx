@@ -29,7 +29,7 @@ function SelectModal({
       <ModalDialog>
         <Typography variant='h4'>{title}</Typography>
         <Select placeholder={placeholder}>
-          {options.map((item, index) => (
+          {options.map(item => (
             <Option
               value={item.id}
               key={item[displayKey]}

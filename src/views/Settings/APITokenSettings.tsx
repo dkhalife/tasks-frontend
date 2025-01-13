@@ -3,27 +3,25 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   Divider,
   IconButton,
   Input,
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../../contexts/UserContext'
+import { useEffect, useState } from 'react'
 import {
   CreateLongLiveToken,
   DeleteLongLiveToken,
   GetLongLiveTokens,
 } from '../../utils/Fetcher'
 import TextModal from '../Modals/Inputs/TextModal'
+import React from 'react'
 
 const APITokenSettings = () => {
   const [tokens, setTokens] = useState([])
   const [isGetTokenNameModalOpen, setIsGetTokenNameModalOpen] = useState(false)
   const [showTokenId, setShowTokenId] = useState(null)
-  const { userProfile, setUserProfile } = useContext(UserContext)
   useEffect(() => {
     GetLongLiveTokens().then(resp => {
       resp.json().then(data => {

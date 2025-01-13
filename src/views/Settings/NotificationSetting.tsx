@@ -2,7 +2,6 @@ import { Close } from '@mui/icons-material'
 import {
   Box,
   Button,
-  Card,
   Divider,
   FormControl,
   FormHelperText,
@@ -35,55 +34,6 @@ const NotificationSetting = () => {
         })
       })
     }
-  }, [])
-  const getNotificationPreferences = async () => {
-    const ret = await Preferences.get({ key: 'notificationPreferences' })
-    return JSON.parse(ret.value)
-  }
-  const setNotificationPreferences = async value => {
-    if (value.granted === false) {
-      await Preferences.set({
-        key: 'notificationPreferences',
-        value: JSON.stringify({ granted: false }),
-      })
-      return
-    }
-    const currentSettings = await getNotificationPreferences()
-    await Preferences.set({
-      key: 'notificationPreferences',
-      value: JSON.stringify({ ...currentSettings, ...value }),
-    })
-  }
-
-  const getPushNotificationPreferences = async () => {
-    const ret = await Preferences.get({ key: 'pushNotificationPreferences' })
-    return JSON.parse(ret.value)
-  }
-
-  const setPushNotificationPreferences = async value => {
-    await Preferences.set({
-      key: 'pushNotificationPreferences',
-      value: JSON.stringify(value),
-    })
-  }
-
-  const [deviceNotification, setDeviceNotification] = useState(false)
-
-  const [dueNotification, setDueNotification] = useState(true)
-  const [preDueNotification, setPreDueNotification] = useState(false)
-  const [naggingNotification, setNaggingNotification] = useState(false)
-  const [pushNotification, setPushNotification] = useState(false)
-
-  useEffect(() => {
-    getNotificationPreferences().then(resp => {
-      setDeviceNotification(resp.granted)
-      setDueNotification(resp.dueNotification)
-      setPreDueNotification(resp.preDueNotification)
-      setNaggingNotification(resp.naggingNotification)
-    })
-    getPushNotificationPreferences().then(resp => {
-      setPushNotification(resp.granted)
-    })
   }, [])
 
   const [notificationTarget, setNotificationTarget] = useState(

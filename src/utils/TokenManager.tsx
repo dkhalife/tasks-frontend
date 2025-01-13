@@ -52,11 +52,9 @@ export const HEADERS = () => {
 }
 
 export const isTokenValid = () => {
-  const expiration = localStorage.getItem('ca_expiration')
-  const token = localStorage.getItem('ca_token')
-
   if (localStorage.getItem('ca_token')) {
     const now = new Date()
+    const expiration = localStorage.getItem('ca_expiration')
     const expire = new Date(expiration)
     if (now < expire) {
       if (now.getTime() + 24 * 60 * 60 * 1000 > expire.getTime()) {

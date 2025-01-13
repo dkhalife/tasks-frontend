@@ -1,13 +1,6 @@
-import React, { useState } from 'react'
-import {
-  Modal,
-  Button,
-  Input,
-  ModalDialog,
-  ModalClose,
-  Box,
-  Typography,
-} from '@mui/joy'
+import { useState } from 'react'
+import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
+import React from 'react'
 
 function DateModal({ isOpen, onClose, onSave, current, title }) {
   const [date, setDate] = useState(
