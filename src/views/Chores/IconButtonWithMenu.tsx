@@ -23,18 +23,19 @@ const IconButtonWithMenu = ({
   const handleMenuClose = () => {
     setAnchorEl(null)
   }
-  useEffect(() => {
-    document.addEventListener('mousedown', handleMenuOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleMenuOutsideClick)
-    }
-  }, [anchorEl])
 
   const handleMenuOutsideClick = event => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       handleMenuClose()
     }
   }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleMenuOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleMenuOutsideClick)
+    }
+  }, [anchorEl, handleMenuOutsideClick])
 
   return (
     <>

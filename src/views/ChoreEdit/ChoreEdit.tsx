@@ -280,15 +280,7 @@ const ChoreEdit = () => {
       // new task/ chore set focus on the first input field:
       document.querySelector('input').focus()
     }
-  }, [])
-
-  // useEffect(() => {
-  //   if (userLabels && userLabels.length == 0 && labelsV2.length == 0) {
-  //     return
-  //   }
-  //   const labelIds = labelsV2.map(l => l.id)
-  //   setLabelsV2(userLabels.filter(l => labelIds.indexOf(l.id) > -1))
-  // }, [userLabels, labelsV2])
+  }, [Navigate, choreId])
 
   useEffect(() => {
     // if frequancy type change to somthing need a due date then set it to the current date:
@@ -298,7 +290,7 @@ const ChoreEdit = () => {
     if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
       setDueDate(null)
     }
-  }, [frequencyType])
+  }, [frequencyType, dueDate])
 
   useEffect(() => {
     if (assignees.length === 1) {

@@ -241,7 +241,7 @@ const ChoreHistory = () => {
                 return
               }
 
-              const newRecord = res.json().then(data => {
+              res.json().then(data => {
                 const newRecord = data.res
                 const newHistory = choreHistory.map(record =>
                   record.id === newRecord.id ? newRecord : record,

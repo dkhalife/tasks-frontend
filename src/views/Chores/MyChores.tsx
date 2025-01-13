@@ -116,21 +116,7 @@ const MyChores = () => {
         })
       },
     )
-
-    // GetAllUsers()
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     setPerformers(data.res)
-    //   })
-    // GetUserProfile().then(response => response.json()).then(data => {
-    //   setUserProfile(data.res)
-    // })
-
-    // const currentUser = JSON.parse(localStorage.getItem('user'))
-    // if (currentUser !== null) {
-    //   setActiveUserId(currentUser.id)
-    // }
-  }, [])
+  }, [setUserProfile])
 
   useEffect(() => {
     if (choresData) {
@@ -153,7 +139,7 @@ const MyChores = () => {
     return () => {
       document.removeEventListener('mousedown', handleMenuOutsideClick)
     }
-  }, [anchorEl])
+  }, [anchorEl, handleMenuOutsideClick])
 
   const handleMenuOutsideClick = event => {
     if (

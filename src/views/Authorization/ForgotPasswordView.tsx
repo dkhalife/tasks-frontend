@@ -21,7 +21,7 @@ const ForgotPasswordView = () => {
   // const [snackbarMessage, setSnackbarMessage] = useState('')
   const [resetStatusOk, setResetStatusOk] = useState(null)
   const [email, setEmail] = useState('')
-  const [emailError, setEmailError] = useState<string>()
+  const [emailError, setEmailError] = useState<string>("")
 
   const validateEmail = email => {
     return !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)

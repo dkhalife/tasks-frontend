@@ -62,20 +62,6 @@ const ChoreCard = ({
   const [secondsLeftToCancel, setSecondsLeftToCancel] = React.useState(null)
   const [timeoutId, setTimeoutId] = React.useState(null)
   const { userProfile } = React.useContext(UserContext)
-  useEffect(() => {
-    document.addEventListener('mousedown', handleMenuOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleMenuOutsideClick)
-    }
-  }, [anchorEl])
-
-  const handleMenuOpen = event => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
 
   const handleMenuOutsideClick = event => {
     if (
@@ -86,6 +72,22 @@ const ChoreCard = ({
       handleMenuClose()
     }
   }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleMenuOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleMenuOutsideClick)
+    }
+  }, [anchorEl, handleMenuOutsideClick])
+
+  const handleMenuOpen = event => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
+
   const handleEdit = () => {
     navigate(`/chores/${chore.id}/edit`)
   }

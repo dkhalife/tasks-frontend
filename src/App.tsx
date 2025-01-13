@@ -46,7 +46,16 @@ function App() {
     },
   })
 
-  const setThemeClass = () => {
+  const getUserProfile = () => {
+    GetUserProfile()
+      .then(res => {
+        res.json().then(data => {
+          setUserProfile(data.res)
+        })
+      })
+      .catch(_ => {})
+  }
+  useEffect(() => {
     const value = JSON.parse(localStorage.getItem('themeMode')) || mode
 
     if (value === 'system') {
@@ -61,19 +70,7 @@ function App() {
     }
 
     return remove('dark')
-  }
-  const getUserProfile = () => {
-    GetUserProfile()
-      .then(res => {
-        res.json().then(data => {
-          setUserProfile(data.res)
-        })
-      })
-      .catch(_ => {})
-  }
-  useEffect(() => {
-    setThemeClass()
-  }, [mode, systemMode, setThemeClass])
+  }, [mode, systemMode])
   useEffect(() => {
     if (isTokenValid() && !userProfile) {
       getUserProfile()

@@ -41,7 +41,7 @@ const LabelView = () => {
   }
 
   const handleDeleteLabel = id => {
-    DeleteLabel(id).then(res => {
+    DeleteLabel(id).then(() => {
       const updatedLabels = userLabels.filter(label => label.id !== id)
       setUserLabels(updatedLabels)
 

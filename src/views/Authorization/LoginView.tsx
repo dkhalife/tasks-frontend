@@ -11,7 +11,6 @@ import {
 import Cookies from 'js-cookie'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { API_URL } from '../../Config'
 import { UserContext } from '../../contexts/UserContext'
 import Logo from '../../Logo'
 import { GetUserProfile, login } from '../../utils/Fetcher'

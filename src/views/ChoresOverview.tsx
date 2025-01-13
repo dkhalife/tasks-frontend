@@ -99,9 +99,6 @@ const ChoresOverview = () => {
     GetChores()
       .then(response => response.json())
       .then(data => {
-        const filteredData = data.res.filter(
-          chore => chore.assignedTo === activeUserId || chore.assignedTo === 0,
-        )
         setChores(data.res)
         setFilteredChores(data.res)
       })
@@ -114,7 +111,7 @@ const ChoresOverview = () => {
     if (user != null && user.id > 0) {
       setActiveUserId(user.id)
     }
-  }, [])
+  }, [activeUserId, setActiveUserId])
 
   return (
     <Container>

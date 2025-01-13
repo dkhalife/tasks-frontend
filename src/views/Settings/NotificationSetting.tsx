@@ -34,7 +34,7 @@ const NotificationSetting = () => {
         })
       })
     }
-  }, [])
+  }, [userProfile, setUserProfile, setChatID])
 
   const [notificationTarget, setNotificationTarget] = useState(
     userProfile?.notification_target

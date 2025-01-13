@@ -72,12 +72,12 @@ const ChoreView = () => {
     if (auto_complete === 'true') {
       handleTaskCompletion()
     }
-  }, [])
+  }, [choreId, handleTaskCompletion, searchParams])
   useEffect(() => {
     if (chore && performers.length > 0) {
       generateInfoCards(chore)
     }
-  }, [chore, performers])
+  }, [chore, performers, generateInfoCards])
 
   const generateInfoCards = chore => {
     const cards = [
