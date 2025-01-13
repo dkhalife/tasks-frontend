@@ -12,6 +12,7 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
     return new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
   })
 
+  const labels: any = {}
   let groups: any[] = []
   let groupRaw: any = {
     Today: [],
@@ -78,7 +79,6 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
       break
     case 'labels':
       groupRaw = {}
-      var labels = {}
       chores.forEach(chore => {
         chore.labelsV2.forEach(label => {
           labels[label.id] = label

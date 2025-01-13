@@ -111,7 +111,7 @@ export const ForgotPasswordView = () => {
             <form onSubmit={handleSubmit}>
               <div className='grid gap-6'>
                 <Typography level='body2' gutterBottom>
-                  Enter your email, and we'll send you a link to get into your
+                  Enter your email, and we&lsquo;ll send you a link to get into your
                   account.
                 </Typography>
                 <FormControl error={emailError !== null}>

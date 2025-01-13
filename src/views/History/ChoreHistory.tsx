@@ -128,8 +128,7 @@ export const ChoreHistory = () => {
           No History Yet
         </Typography>
         <Typography level='body1'>
-          You haven't completed any tasks. Once you start finishing tasks,
-          they'll show up here.
+          You haven&lsquo;t completed any tasks. Once you start finishing tasks, they&lsquo;ll show up here.
         </Typography>
         <Button variant='soft' sx={{ mt: 2 }}>
           <Link to='/my/chores'>Go back to chores</Link>

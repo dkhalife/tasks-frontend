@@ -1,3 +1,4 @@
+import React from 'react'
 import { QueryContext } from './QueryContext'
 import { RouterContext } from './RouterContext'
 import { ThemeContext } from './ThemeContext'
