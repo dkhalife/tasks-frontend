@@ -167,13 +167,6 @@ const SaveChore = chore => {
   })
 }
 
-const UpdateChorePriority = (id, priority) => {
-  return Fetch(`/chores/${id}/priority `, {
-    method: 'PUT',
-    headers: HEADERS(),
-    body: JSON.stringify({ priority: priority }),
-  })
-}
 const GetChoreHistory = choreId => {
   return Fetch(`/chores/${choreId}/history`, {
     method: 'GET',
@@ -362,7 +355,6 @@ export {
   UnArchiveChore,
   UpdateChoreAssignee,
   UpdateChoreHistory,
-  UpdateChorePriority,
   UpdateDueDate,
   UpdateLabel,
   UpdateNotificationTarget,

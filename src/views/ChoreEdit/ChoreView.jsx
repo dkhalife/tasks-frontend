@@ -5,7 +5,6 @@ import {
   Checklist,
   Edit,
   History,
-  LowPriority,
   PeopleAlt,
   Person,
   SwitchAccessShortcut,
@@ -39,9 +38,7 @@ import {
   GetChoreDetailById,
   MarkChoreComplete,
   SkipChore,
-  UpdateChorePriority,
 } from '../../utils/Fetcher'
-import Priorities from '../../utils/Priorities'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 
 const ChoreView = () => {
@@ -59,16 +56,12 @@ const ChoreView = () => {
   const [secondsLeftToCancel, setSecondsLeftToCancel] = useState(null)
   const [completedDate, setCompletedDate] = useState(null)
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
-  const [chorePriority, setChorePriority] = useState(null)
   useEffect(() => {
     Promise.all([
       GetChoreDetailById(choreId).then(resp => {
         if (resp.ok) {
           return resp.json().then(data => {
             setChore(data.res)
-            setChorePriority(
-              Priorities.find(p => p.value === data.res.priority),
-            )
             document.title = 'Donetick: ' + data.res.name
           })
         }
@@ -89,15 +82,7 @@ const ChoreView = () => {
       generateInfoCards(chore)
     }
   }, [chore, performers])
-  const handleUpdatePriority = priority => {
-    UpdateChorePriority(choreId, priority.value).then(response => {
-      if (response.ok) {
-        response.json().then(_ => {
-          setChorePriority(priority)
-        })
-      }
-    })
-  }
+
   const generateInfoCards = chore => {
     const cards = [
       {
@@ -294,62 +279,6 @@ const ChoreView = () => {
             mb: 1,
           }}
         >
-          <Dropdown>
-            <MenuButton
-              color={
-                chorePriority?.name === 'P1'
-                  ? 'danger'
-                  : chorePriority?.name === 'P2'
-                    ? 'warning'
-                    : 'neutral'
-              }
-              sx={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                p: 1,
-              }}
-              fullWidth
-            >
-              {chorePriority ? chorePriority.icon : <LowPriority />}
-              {chorePriority ? chorePriority.name : 'No Priority'}
-            </MenuButton>
-            <Menu>
-              {Priorities.map((priority, index) => (
-                <MenuItem
-                  sx={{
-                    pr: 1,
-                    py: 1,
-                  }}
-                  key={index}
-                  onClick={() => {
-                    handleUpdatePriority(priority)
-                  }}
-                  color={priority.color}
-                >
-                  {priority.icon}
-                  {priority.name}
-                </MenuItem>
-              ))}
-              <Divider />
-              <MenuItem
-                sx={{
-                  pr: 1,
-                  py: 1,
-                }}
-                onClick={() => {
-                  handleUpdatePriority({
-                    name: 'No Priority',
-                    value: 0,
-                  })
-                  setChorePriority(null)
-                }}
-              >
-                No Priority
-              </MenuItem>
-            </Menu>
-          </Dropdown>
-
           <Button
             size='sm'
             color='neutral'

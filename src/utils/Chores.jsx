@@ -2,15 +2,7 @@ import moment from 'moment'
 import { TASK_COLOR } from './Colors.jsx'
 
 export const ChoresGrouper = (groupBy, chores) => {
-  // sort by priority then due date:
   chores.sort((a, b) => {
-    // no priority is lowest priority:
-    if (a.priority === 0) {
-      return 1
-    }
-    if (a.priority !== b.priority) {
-      return a.priority - b.priority
-    }
     if (a.nextDueDate === null) {
       return 1
     }
@@ -77,61 +69,6 @@ export const ChoresGrouper = (groupBy, chores) => {
           name: 'Anytime',
           content: groupRaw['Anytime'],
           color: TASK_COLOR.ANYTIME,
-        },
-      ]
-      break
-    case 'priority':
-      groupRaw = {
-        p1: [],
-        p2: [],
-        p3: [],
-        p4: [],
-        no_priority: [],
-      }
-      chores.forEach(chore => {
-        switch (chore.priority) {
-          case 1:
-            groupRaw['p1'].push(chore)
-            break
-          case 2:
-            groupRaw['p2'].push(chore)
-            break
-          case 3:
-            groupRaw['p3'].push(chore)
-            break
-          case 4:
-            groupRaw['p4'].push(chore)
-            break
-          default:
-            groupRaw['no_priority'].push(chore)
-            break
-        }
-      })
-      groups = [
-        {
-          name: 'Priority 1',
-          content: groupRaw['p1'],
-          color: TASK_COLOR.PRIORITY_1,
-        },
-        {
-          name: 'Priority 2',
-          content: groupRaw['p2'],
-          color: TASK_COLOR.PRIORITY_2,
-        },
-        {
-          name: 'Priority 3',
-          content: groupRaw['p3'],
-          color: TASK_COLOR.PRIORITY_3,
-        },
-        {
-          name: 'Priority 4',
-          content: groupRaw['p4'],
-          color: TASK_COLOR.PRIORITY_4,
-        },
-        {
-          name: 'No Priority',
-          content: groupRaw['no_priority'],
-          color: TASK_COLOR.NO_PRIORITY,
         },
       ]
       break

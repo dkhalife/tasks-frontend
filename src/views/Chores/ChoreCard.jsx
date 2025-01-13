@@ -10,7 +10,6 @@ import {
   ManageSearch,
   MoreTime,
   MoreVert,
-  PriorityHigh,
   Repeat,
   Report,
   SwitchAccessShortcut,
@@ -46,7 +45,6 @@ import {
   UnArchiveChore,
   UpdateDueDate,
 } from '../../utils/Fetcher'
-import Priorities from '../../utils/Priorities'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 import DateModal from '../Modals/Inputs/DateModal'
 const ChoreCard = ({
@@ -405,32 +403,6 @@ const ChoreCard = ({
                   </Typography>
                 )}
                 <Box key={`${chore.id}-labels`}>
-                  {chore.priority > 0 && (
-                    <Chip
-                      sx={{
-                        position: 'relative',
-                        mr: 0.5,
-                        top: 2,
-                        zIndex: 1,
-                      }}
-                      color={
-                        chore.priority === 1
-                          ? 'danger'
-                          : chore.priority === 2
-                            ? 'warning'
-                            : 'neutral'
-                      }
-                      startDecorator={
-                        Priorities.find(p => p.value === chore.priority)?.icon
-                      }
-                      onClick={e => {
-                        e.stopPropagation()
-                        onChipClick({ priority: chore.priority })
-                      }}
-                    >
-                      P{chore.priority}
-                    </Chip>
-                  )}
                   {chore.labelsV2?.map((l, index) => {
                     return (
                       <Chip

@@ -4,7 +4,6 @@ import {
   EditCalendar,
   ExpandCircleDown,
   FilterAlt,
-  PriorityHigh,
   Sort,
   Style,
   Unarchive,
@@ -37,7 +36,6 @@ import {
   GetChores,
   GetUserProfile,
 } from '../../utils/Fetcher'
-import Priorities from '../../utils/Priorities'
 import LoadingComponent from '../components/Loading'
 import { useLabels } from '../Labels/LabelQueries'
 import ChoreCard from './ChoreCard'
@@ -185,13 +183,6 @@ const MyChores = () => {
       )
       setFilteredChores(labelFiltered)
       setSelectedFilter('Label: ' + label.name)
-    } else if (chipClicked.priority) {
-      const priority = chipClicked.priority
-      const priorityFiltered = chores.filter(
-        chore => chore.priority === priority,
-      )
-      setFilteredChores(priorityFiltered)
-      setSelectedFilter('Priority: ' + priority)
     }
   }
 
@@ -338,17 +329,6 @@ const MyChores = () => {
           }
         />
         <IconButtonWithMenu
-          icon={<PriorityHigh />}
-          title='Filter by Priority'
-          options={Priorities}
-          selectedItem={selectedFilter}
-          onItemSelect={selected => {
-            handleLabelFiltering({ priority: selected.value })
-          }}
-          mouseClickHandler={handleMenuOutsideClick}
-          isActive={selectedFilter.startsWith('Priority: ')}
-        />
-        <IconButtonWithMenu
           icon={<Style />}
           // TODO : this need simplification we want to display both user labels and chore labels
           // that why we are merging them here.
@@ -428,18 +408,17 @@ const MyChores = () => {
                 </Chip>
               </MenuItem>
             ))}
-            {selectedFilter.startsWith('Label: ') ||
-              (selectedFilter.startsWith('Priority: ') && (
-                <MenuItem
-                  key={`filter-list-cancel-all-filters`}
-                  onClick={() => {
-                    setFilteredChores(chores)
-                    setSelectedFilter('All')
-                  }}
-                >
-                  Cancel All Filters
-                </MenuItem>
-              ))}
+            {selectedFilter.startsWith('Label: ') && (
+              <MenuItem
+                key={`filter-list-cancel-all-filters`}
+                onClick={() => {
+                  setFilteredChores(chores)
+                  setSelectedFilter('All')
+                }}
+              >
+                Cancel All Filters
+              </MenuItem>
+            )}
           </Menu>
         </List>
         <Divider orientation='vertical' />
@@ -448,7 +427,6 @@ const MyChores = () => {
           icon={<Sort />}
           options={[
             { name: 'Due Date', value: 'due_date' },
-            { name: 'Priority', value: 'priority' },
             { name: 'Labels', value: 'labels' },
           ]}
           selectedItem={selectedChoreSection}
