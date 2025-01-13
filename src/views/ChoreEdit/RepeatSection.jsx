@@ -348,8 +348,6 @@ const RepeatSection = ({
   onFrequencyMetadataUpdate,
   onFrequencyTimeUpdate,
   frequencyError,
-  onTriggerUpdate,
-  OnTriggerValidate,
   isAttemptToSave,
 }) => {
   const [repeatOn, setRepeatOn] = useState('interval')
@@ -361,9 +359,6 @@ const RepeatSection = ({
         <Checkbox
           onChange={e => {
             onFrequencyTypeUpdate(e.target.checked ? 'daily' : 'once')
-            if (e.target.checked) {
-              onTriggerUpdate(null)
-            }
           }}
           defaultChecked={!['once', 'trigger'].includes(frequencyType)}
           checked={!['once', 'trigger'].includes(frequencyType)}
