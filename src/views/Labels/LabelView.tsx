@@ -24,7 +24,7 @@ import React from 'react'
 const LabelView = () => {
   const { data: labels, isLabelsLoading, isError } = useLabels()
 
-  const [userLabels, setUserLabels] = useState([labels])
+  const [userLabels, setUserLabels] = useState<any[]>(labels)
   const [modalOpen, setModalOpen] = useState(false)
 
   const [currentLabel, setCurrentLabel] = useState(null)
@@ -91,7 +91,7 @@ const LabelView = () => {
       <div className='flex flex-col gap-2'>
         {userLabels.map(label => (
           <div
-            key={label}
+            key={label.name}
             className='grid w-full grid-cols-[1fr,auto,auto] rounded-lg border border-zinc-200/80 p-4 shadow-sm dark:bg-zinc-900'
           >
             <Chip
