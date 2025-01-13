@@ -12,8 +12,6 @@ import ChoreView from '../views/ChoreEdit/ChoreView'
 import MyChores from '../views/Chores/MyChores'
 import ChoreHistory from '../views/History/ChoreHistory'
 import LabelView from '../views/Labels/LabelView'
-import PrivacyPolicyView from '../views/PrivacyPolicy/PrivacyPolicyView'
-import TermsView from '../views/Terms/TermsView'
 
 const getMainRoute = () => {
   return <MyChores />
@@ -71,14 +69,6 @@ const Router = createBrowserRouter([
       {
         path: '/password/update',
         element: <UpdatePasswordView />,
-      },
-      {
-        path: '/privacy',
-        element: <PrivacyPolicyView />,
-      },
-      {
-        path: '/terms',
-        element: <TermsView />,
       },
       {
         path: 'labels/',
