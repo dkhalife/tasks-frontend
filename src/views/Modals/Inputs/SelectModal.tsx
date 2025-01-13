@@ -9,7 +9,15 @@ import {
 } from '@mui/joy'
 import React from 'react'
 
-function SelectModal({ isOpen, onClose, onSave, options, title, displayKey,placeholder }) {
+function SelectModal({
+  isOpen,
+  onClose,
+  onSave,
+  options,
+  title,
+  displayKey,
+  placeholder,
+}) {
   const [selected, setSelected] = React.useState(null)
   const handleSave = () => {
     onSave(options.find(item => item.id === selected))

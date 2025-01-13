@@ -37,7 +37,8 @@ const ChoreHistory = () => {
   useEffect(() => {
     setIsLoading(true) // Start loading
 
-    GetChoreHistory(choreId).then(res => res.json())
+    GetChoreHistory(choreId)
+      .then(res => res.json())
       .then(([historyData, usersData]) => {
         setChoresHistory(historyData.res)
 

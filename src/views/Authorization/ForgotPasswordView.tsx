@@ -14,7 +14,7 @@ import {
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API_URL } from './../../Config'
-import {  ResetPassword } from '../../utils/Fetcher'
+import { ResetPassword } from '../../utils/Fetcher'
 
 const ForgotPasswordView = () => {
   const navigate = useNavigate()

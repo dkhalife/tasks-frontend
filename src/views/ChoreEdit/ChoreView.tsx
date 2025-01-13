@@ -109,7 +109,8 @@ const ChoreView = () => {
         size: 6,
         icon: <Timelapse />,
         text: 'Last Completed',
-        subtext: chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
+        subtext:
+          chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
       },
       {
         size: 6,

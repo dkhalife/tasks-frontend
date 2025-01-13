@@ -54,7 +54,7 @@ const UpdatePasswordView = () => {
     }
     try {
       const response = await ChangePassword(verifiticationCode, password)
-    
+
       if (response.ok) {
         setUpdateStatusOk(true)
         //  wait 3 seconds and then redirect to login:

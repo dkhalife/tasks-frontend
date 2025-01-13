@@ -20,8 +20,6 @@ import Logo from '../../Logo'
 import { GetUserProfile, login } from '../../utils/Fetcher'
 import { Settings } from '@mui/icons-material'
 
-
-
 const LoginView = () => {
   const { userProfile, setUserProfile } = React.useContext(UserContext)
   const [username, setUsername] = React.useState('')

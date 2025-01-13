@@ -55,11 +55,7 @@ const NavBar = () => {
     () => setDrawerOpen(false),
   ]
   const location = useLocation()
-  if (
-    ['/signup', '/login', '/forgot-password'].includes(
-      location.pathname,
-    )
-  ) {
+  if (['/signup', '/login', '/forgot-password'].includes(location.pathname)) {
     return null
   }
 
