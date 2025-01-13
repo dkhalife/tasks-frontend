@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { TASK_COLOR } from './Colors.jsx'
+import { TASK_COLOR } from './Colors'
 
 export const ChoresGrouper = (groupBy, chores) => {
   chores.sort((a, b) => {

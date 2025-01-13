@@ -28,7 +28,7 @@ import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors.jsx'
+import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   CreateChore,
   DeleteChore,

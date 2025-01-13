@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from 'react'
 
 import { useMutation, useQueryClient } from 'react-query'
-import LABEL_COLORS from '../../../utils/Colors.jsx'
+import LABEL_COLORS from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import { useLabels } from '../../Labels/LabelQueries'
 

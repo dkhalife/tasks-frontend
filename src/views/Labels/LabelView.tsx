@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/joy'
 import { useEffect, useState } from 'react'
-import LabelModal from '../Modals/Inputs/LabelModal'
+import LabelModal from '../Modals/Inputs/LabelModal.tsx'
 import { useLabels } from './LabelQueries'
 
 // import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -19,7 +19,7 @@ import { useQueryClient } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import { DeleteLabel } from '../../utils/Fetcher'
-import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
+import ConfirmationModal from '../Modals/Inputs/ConfirmationModal.tsx'
 
 const LabelView = () => {
   const { data: labels, isLabelsLoading, isError } = useLabels()

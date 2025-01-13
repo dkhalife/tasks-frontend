@@ -31,8 +31,8 @@ import { Divider } from '@mui/material'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { notInCompletionWindow } from '../../utils/Chores.jsx'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors.jsx'
+import { notInCompletionWindow } from '../../utils/Chores'
+import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   GetAllUsers,
   GetChoreDetailById,

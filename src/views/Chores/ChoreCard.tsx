@@ -35,8 +35,8 @@ import moment from 'moment'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
-import { notInCompletionWindow } from '../../utils/Chores.jsx'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors.jsx'
+import { notInCompletionWindow } from '../../utils/Chores'
+import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   ArchiveChore,
   DeleteChore,
