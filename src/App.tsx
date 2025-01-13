@@ -1,6 +1,5 @@
 import NavBar from '@/views/components/NavBar'
 import { Button, Snackbar, Typography, useColorScheme } from '@mui/joy'
-import Tracker from '@openreplay/tracker'
 import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Outlet } from 'react-router-dom'
@@ -24,7 +23,6 @@ const intervalMS = 5 * 60 * 1000 // 5 minutes
 
 function App() {
   startApiManager()
-  startOpenReplay()
   const queryClient = new QueryClient()
   const { mode, systemMode } = useColorScheme()
   const [userProfile, setUserProfile] = useState(null)
@@ -108,13 +106,6 @@ function App() {
   )
 }
 
-const startOpenReplay = () => {
-  if (!import.meta.env.VITE_OPENREPLAY_PROJECT_KEY) return
-  const tracker = new Tracker({
-    projectKey: import.meta.env.VITE_OPENREPLAY_PROJECT_KEY,
-  })
-  tracker.start()
-}
 export default App
 
 const startApiManager = () => {

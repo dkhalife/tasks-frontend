@@ -46,7 +46,6 @@ const Settings = () => {
         <Typography level='h3'>Account Settings</Typography>
         <Divider />
         <Typography level='body-md'>Update your password</Typography>
-        {import.meta.env.VITE_IS_SELF_HOSTED === 'true' && (
           <Box>
             <Typography level='title-md' mb={1}>
               Password :
@@ -77,8 +76,7 @@ const Settings = () => {
                 }}
               />
             ) : null}
-          </Box>
-        )}
+        </Box>
       </div>
       <NotificationSetting />
       <APITokenSettings />
