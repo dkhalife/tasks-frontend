@@ -57,7 +57,7 @@ const MyChores = () => {
   const [openChoreSections, setOpenChoreSections] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
     const menuRef = useRef(null)
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
   const { data: userLabels, isLoading: userLabelsLoading } = useLabels()
   const { data: choresData, isLoading: choresLoading } = useChores()
   const choreSorter = (a, b) => {
@@ -601,7 +601,7 @@ const MyChores = () => {
             height: 50,
           }}
           onClick={() => {
-            Navigate(`/chores/create`)
+            navigate(`/chores/create`)
           }}
         >
           <Add />

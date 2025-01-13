@@ -20,7 +20,7 @@ const LoginView = () => {
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState<string | null>(null)
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
   const handleSubmit = async e => {
     e.preventDefault()
     login(username, password)
@@ -32,9 +32,9 @@ const LoginView = () => {
             const redirectUrl = Cookies.get('ca_redirect')
             if (redirectUrl) {
               Cookies.remove('ca_redirect')
-              Navigate(redirectUrl)
+              navigate(redirectUrl)
             } else {
-              Navigate('/my/chores')
+              navigate('/my/chores')
             }
           })
         } else if (response.status === 401) {
@@ -57,15 +57,15 @@ const LoginView = () => {
         const redirectUrl = Cookies.get('ca_redirect')
         if (redirectUrl) {
           Cookies.remove('ca_redirect')
-          Navigate(redirectUrl)
+          navigate(redirectUrl)
         } else {
-          Navigate('/my/chores')
+          navigate('/my/chores')
         }
       })
     })
   }
   const handleForgotPassword = () => {
-    Navigate('/forgot-password')
+    navigate('/forgot-password')
   }
   return (
     <Container
@@ -232,7 +232,7 @@ const LoginView = () => {
 
           <Button
             onClick={() => {
-              Navigate('/signup')
+              navigate('/signup')
             }}
             fullWidth
             variant='soft'

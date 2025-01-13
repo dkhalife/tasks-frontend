@@ -18,7 +18,7 @@ import { login, signUp } from '../../utils/Fetcher'
 const SignupView = () => {
   const [username, setUsername] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
   const [displayName, setDisplayName] = React.useState<string>('')
   const [email, setEmail] = React.useState<string>('')
   const [usernameError, setUsernameError] = React.useState<string|null>(null)
@@ -32,9 +32,7 @@ const SignupView = () => {
         response.json().then(res => {
           localStorage.setItem('ca_token', res.token)
           localStorage.setItem('ca_expiration', res.expire)
-          setTimeout(() => {
-            Navigate('/my/chores')
-          }, 500)
+          navigate('/my/chores')
         })
       } else {
         console.log('Login failed', response)
@@ -248,7 +246,7 @@ const SignupView = () => {
           <Button
             size='lg'
             onClick={() => {
-              Navigate('/login')
+              navigate('/login')
             }}
             fullWidth
             variant='soft'

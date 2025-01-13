@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import Logo from '../Logo'
 import React from 'react'
 const Home = () => {
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
 
   return (
     <Container className='flex h-full items-center justify-center'>
@@ -26,7 +26,7 @@ const Home = () => {
         <Button
           sx={{ mt: 1 }}
           onClick={() => {
-            Navigate('/my/chores')
+            navigate('/my/chores')
           }}
         >
           Get Started!

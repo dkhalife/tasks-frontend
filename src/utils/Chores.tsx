@@ -100,12 +100,3 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
   }
   return groups
 }
-
-export const notInCompletionWindow = chore => {
-  return (
-    chore.completionWindow &&
-    chore.completionWindow > -1 &&
-    chore.nextDueDate &&
-    moment().add(chore.completionWindow, 'hours') < moment(chore.nextDueDate)
-  )
-}

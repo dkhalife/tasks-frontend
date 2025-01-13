@@ -44,7 +44,7 @@ const ChoresOverview = () => {
   const [isDateModalOpen, setIsDateModalOpen] = useState(false)
   const [choreId, setChoreId] = useState(null)
   const [search, setSearch] = useState('')
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
 
   const getChoreStatus = chore => {
     if (chore.nextDueDate === null) {
@@ -142,7 +142,7 @@ const ChoresOverview = () => {
         <Grid item sm={6} justifyContent={'flex-end'} display={'flex'} gap={2}>
           <Button
             onClick={() => {
-              Navigate(`/chores/create`)
+              navigate(`/chores/create`)
             }}
           >
             New Chore
@@ -169,7 +169,7 @@ const ChoresOverview = () => {
               </td>
               <td
                 onClick={() => {
-                  Navigate(`/chores/${chore.id}/edit`)
+                  navigate(`/chores/${chore.id}/edit`)
                 }}
               >
                 {chore.name || '--'}
@@ -233,7 +233,7 @@ const ChoresOverview = () => {
                     variant='outlined'
                     size='sm'
                     onClick={() => {
-                      Navigate(`/chores/${chore.id}/edit`)
+                      navigate(`/chores/${chore.id}/edit`)
                     }}
                   >
                     <Edit />

@@ -53,7 +53,6 @@ const ChoreEdit = () => {
   const [frequencyMetadata, setFrequencyMetadata] = useState<any>({})
   const [labels, setLabels] = useState([])
   const [labelsV2, setLabelsV2] = useState([])
-  const [completionWindow, setCompletionWindow] = useState(-1)
 
   const [notificationMetadata, setNotificationMetadata] = useState({})
 
@@ -78,7 +77,7 @@ const ChoreEdit = () => {
     }
   }, [userLabelsRaw])
 
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
 
   const HandleValidateChore = () => {
     const errors: { [key: string]: string } = {}
@@ -160,7 +159,6 @@ const ChoreEdit = () => {
       labels: labels.map(l => l.name),
       labelsV2: labelsV2,
       notificationMetadata: notificationMetadata,
-      completionWindow: completionWindow < 0 ? null : completionWindow,
     }
     let SaveFunction = CreateChore
     if (choreId > 0) {
@@ -169,7 +167,7 @@ const ChoreEdit = () => {
 
     SaveFunction(chore).then(response => {
       if (response.status === 200) {
-        Navigate(`/my/chores`)
+        navigate(`/my/chores`)
       } else {
         alert('Failed to save chore')
       }
@@ -181,7 +179,7 @@ const ChoreEdit = () => {
         .then(response => {
           if (response.status !== 200) {
             alert('You are not authorized to view this chore.')
-            Navigate('/my/chores')
+            navigate('/my/chores')
             return null
           } else {
             return response.json()
@@ -198,11 +196,6 @@ const ChoreEdit = () => {
           setFrequency(data.res.frequency)
 
           setNotificationMetadata(JSON.parse(data.res.notificationMetadata))
-          setCompletionWindow(
-            data.res.completionWindow && data.res.completionWindow > -1
-              ? data.res.completionWindow
-              : -1,
-          )
 
           setLabelsV2(data.res.labelsV2)
           setIsRolling(data.res.isRolling)
@@ -227,7 +220,7 @@ const ChoreEdit = () => {
       // new task/ chore set focus on the first input field:
       document.querySelector('input')?.focus()
     }
-  }, [Navigate, choreId])
+  }, [navigate, choreId])
 
   useEffect(() => {
     // if frequancy type change to somthing need a due date then set it to the current date:
@@ -257,7 +250,7 @@ const ChoreEdit = () => {
         if (isConfirmed === true) {
           DeleteChore(choreId).then(response => {
             if (response.status === 200) {
-              Navigate('/my/chores')
+              navigate('/my/chores')
             } else {
               alert('Failed to delete chore')
             }

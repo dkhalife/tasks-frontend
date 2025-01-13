@@ -30,7 +30,6 @@ import moment from 'moment'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
-import { notInCompletionWindow } from '../../utils/Chores'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   DeleteChore,
@@ -56,10 +55,6 @@ const ChoreCard = ({
   const menuRef = React.useRef(null)
   const navigate = useNavigate()
 
-  const [isPendingCompletion, setIsPendingCompletion] = React.useState<boolean>(false)
-  const [secondsLeftToCancel, setSecondsLeftToCancel] = React.useState<number | null>(null)
-  const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null)
-
   const handleEdit = () => {
     navigate(`/chores/${chore.id}/edit`)
   }
@@ -83,38 +78,14 @@ const ChoreCard = ({
     })
   }
   const handleTaskCompletion = () => {
-    setIsPendingCompletion(true)
-    let seconds = 3
-    setSecondsLeftToCancel(seconds)
-
-    const countdownInterval = setInterval(() => {
-      seconds -= 1
-      setSecondsLeftToCancel(seconds)
-
-      if (seconds <= 0) {
-        clearInterval(countdownInterval)
-      }
-    }, 1000)
-
-    const id = setTimeout(() => {
-      MarkChoreComplete(chore.id, null, null)
-        .then(resp => {
-          if (resp.ok) {
-            return resp.json().then(data => {
-              onChoreUpdate(data.res, 'completed')
-            })
-          }
-        })
-        .then(() => {
-          setIsPendingCompletion(false)
-          clearTimeout(id)
-          clearInterval(countdownInterval)
-          setTimeoutId(null)
-          setSecondsLeftToCancel(null)
-        })
-    }, 3000)
-
-    setTimeoutId(id)
+    MarkChoreComplete(chore.id, null, null)
+      .then(resp => {
+        if (resp.ok) {
+          return resp.json().then(data => {
+            onChoreUpdate(data.res, 'completed')
+          })
+        }
+      })
   }
 
   const handleChangeDueDate = newDate => {
@@ -389,7 +360,6 @@ const ChoreCard = ({
                 variant='solid'
                 color='success'
                 onClick={handleTaskCompletion}
-                disabled={isPendingCompletion || notInCompletionWindow(chore)}
                 sx={{
                   borderRadius: '50%',
                   minWidth: 50,
@@ -399,18 +369,6 @@ const ChoreCard = ({
               >
                 <div className='relative grid place-items-center'>
                   <Check />
-                  {isPendingCompletion && (
-                    <CircularProgress
-                      variant='solid'
-                      color='success'
-                      size='md'
-                      sx={{
-                        color: 'success.main',
-                        position: 'absolute',
-                        zIndex: 0,
-                      }}
-                    />
-                  )}
                 </div>
               </IconButton>
               <IconButton
@@ -501,31 +459,6 @@ const ChoreCard = ({
           <ConfirmationModal config={confirmModelConfig} />
         )}
 
-        <Snackbar
-          open={isPendingCompletion}
-          endDecorator={
-            <Button
-              onClick={() => {
-                if (timeoutId) {
-                  clearTimeout(timeoutId)
-                  setIsPendingCompletion(false)
-                  setTimeoutId(null)
-                  setSecondsLeftToCancel(null) // Reset or adjust as needed
-                }
-              }}
-              size='md'
-              variant='outlined'
-              color='primary'
-              startDecorator={<CancelScheduleSend />}
-            >
-              Cancel
-            </Button>
-          }
-        >
-          <Typography level='body2' textAlign={'center'}>
-            Task will be marked as completed in {secondsLeftToCancel} seconds
-          </Typography>
-        </Snackbar>
       </Card>
     </Box>
   )

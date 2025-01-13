@@ -24,7 +24,6 @@ import {
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { notInCompletionWindow } from '../../utils/Chores'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   GetChoreDetailById,
@@ -43,55 +42,29 @@ const ChoreView = () => {
 
   const [searchParams] = useSearchParams()
 
-  const [isPendingCompletion, setIsPendingCompletion] = useState(false)
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
   const [secondsLeftToCancel, setSecondsLeftToCancel] = useState<number | null>(null)
   const [completedDate, setCompletedDate] = useState(null)
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
 
   const handleTaskCompletion = () => {
-    setIsPendingCompletion(true)
-    let seconds = 3
-    setSecondsLeftToCancel(seconds)
-
-    const countdownInterval = setInterval(() => {
-      seconds -= 1
-      setSecondsLeftToCancel(seconds)
-
-      if (seconds <= 0) {
-        clearInterval(countdownInterval)
-      }
-    }, 1000)
-
-    const id = setTimeout(() => {
-      MarkChoreComplete(choreId, note, completedDate)
-        .then(resp => {
+    MarkChoreComplete(choreId, note, completedDate)
+      .then(resp => {
+        if (resp.ok) {
+          return resp.json().then(data => {
+            setNote(null)
+            setChore(data.res)
+          })
+        }
+      })
+      .then(() => {
+        GetChoreDetailById(choreId).then(resp => {
           if (resp.ok) {
             return resp.json().then(data => {
-              setNote(null)
               setChore(data.res)
             })
           }
         })
-        .then(() => {
-          setIsPendingCompletion(false)
-          clearTimeout(id)
-          clearInterval(countdownInterval)
-          setTimeoutId(null)
-          setSecondsLeftToCancel(null)
-        })
-        .then(() => {
-          GetChoreDetailById(choreId).then(resp => {
-            if (resp.ok) {
-              return resp.json().then(data => {
-                setChore(data.res)
-              })
-            }
-          })
-        })
-    }, 3000)
-
-    setTimeoutId(id)
+      })
   }
 
   useEffect(() => {
@@ -312,8 +285,7 @@ const ChoreView = () => {
             fullWidth
             size='lg'
             onClick={handleTaskCompletion}
-            disabled={isPendingCompletion || notInCompletionWindow(chore)}
-            color={isPendingCompletion ? 'danger' : 'success'}
+            color={'success'}
             startDecorator={<Check />}
             sx={{
               flex: 4,
@@ -351,31 +323,6 @@ const ChoreView = () => {
           </Button>
         </Box>
 
-        <Snackbar
-          open={isPendingCompletion}
-          endDecorator={
-            <Button
-              onClick={() => {
-                if (timeoutId) {
-                  clearTimeout(timeoutId)
-                  setIsPendingCompletion(false)
-                  setTimeoutId(null)
-                  setSecondsLeftToCancel(null)
-                }
-              }}
-              size='lg'
-              variant='outlined'
-              color='danger'
-              startDecorator={<CancelScheduleSend />}
-            >
-              Cancel
-            </Button>
-          }
-        >
-          <Typography level='body-md' textAlign={'center'}>
-            Task will be marked as completed in {secondsLeftToCancel} seconds
-          </Typography>
-        </Snackbar>
         <ConfirmationModal config={confirmModelConfig} />
       </Card>
     </Container>
