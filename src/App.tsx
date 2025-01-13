@@ -69,11 +69,12 @@ export function App() {
 
     return remove('dark')
   }, [mode, systemMode])
+
   useEffect(() => {
     if (isTokenValid() && !userProfile) {
       getUserProfile()
     }
-  }, [userProfile])
+  }, [userProfile, getUserProfile, isTokenValid])
 
   return (
     <div className='min-h-screen'>

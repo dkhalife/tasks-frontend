@@ -22,7 +22,7 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
@@ -46,7 +46,7 @@ export const ChoreView = () => {
   const [completedDate, setCompletedDate] = useState(null)
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
 
-  const handleTaskCompletion = () => {
+  const handleTaskCompletion = useCallback(() => {
     MarkChoreComplete(choreId, note, completedDate)
       .then(resp => {
         if (resp.ok) {
@@ -65,7 +65,7 @@ export const ChoreView = () => {
           }
         })
       })
-  }
+  }, [MarkChoreComplete, GetChoreDetailById, setNote, setChore, choreId, note, completedDate])
 
   useEffect(() => {
     GetChoreDetailById(choreId).then(resp => {
@@ -82,36 +82,37 @@ export const ChoreView = () => {
     }
   }, [choreId, handleTaskCompletion, searchParams])
 
-  const generateInfoCards = chore => {
-    const cards = [
-      {
-        size: 6,
-        icon: <CalendarMonth />,
-        text: 'Due Date',
-        subtext: chore.nextDueDate
-          ? moment(chore.nextDueDate).fromNow()
-          : 'N/A',
-      },
-      {
-        size: 6,
-        icon: <Checklist />,
-        text: 'Total Completed',
-        subtext: `${chore.totalCompletedCount} times`,
-      },
-      {
-        size: 6,
-        icon: <Timelapse />,
-        text: 'Last Completed',
-        subtext:
-          chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
-      }
-    ]
-    setInfoCards(cards)
-  }
-
   useEffect(() => {
+
+    const generateInfoCards = chore => {
+      const cards = [
+        {
+          size: 6,
+          icon: <CalendarMonth />,
+          text: 'Due Date',
+          subtext: chore.nextDueDate
+            ? moment(chore.nextDueDate).fromNow()
+            : 'N/A',
+        },
+        {
+          size: 6,
+          icon: <Checklist />,
+          text: 'Total Completed',
+          subtext: `${chore.totalCompletedCount} times`,
+        },
+        {
+          size: 6,
+          icon: <Timelapse />,
+          text: 'Last Completed',
+          subtext:
+            chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
+        }
+      ]
+      setInfoCards(cards)
+    }
+
     generateInfoCards(chore)
-  }, [chore, generateInfoCards])
+  }, [chore])
 
   const handleSkippingTask = () => {
     SkipChore(choreId).then(response => {

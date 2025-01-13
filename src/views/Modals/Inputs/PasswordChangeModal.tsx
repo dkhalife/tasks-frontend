@@ -29,7 +29,7 @@ export function PassowrdChangeModal({ isOpen, onClose }) {
     } else {
       setPasswordError(null)
     }
-  }, [password, confirmPassword, passwordTouched, confirmPasswordTouched])
+  }, [password, confirmPassword, passwordTouched, confirmPasswordTouched, setPasswordError])
 
   const handleAction = isConfirmed => {
     if (!isConfirmed) {
