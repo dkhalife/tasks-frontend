@@ -509,7 +509,6 @@ const ChoreEdit = () => {
               }}
               defaultChecked={dueDate !== null}
               checked={dueDate !== null}
-              value={dueDate !== null}
               overlay
               label='Give this task a due date'
             />
@@ -644,7 +643,6 @@ const ChoreEdit = () => {
             }}
             defaultChecked={isNotificable}
             checked={isNotificable}
-            value={isNotificable}
             overlay
             label='Notify for this task'
           />
