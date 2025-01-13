@@ -13,34 +13,11 @@ const IconButtonWithMenu = ({
   useChips,
   title,
 }) => {
-  const [anchorEl, setAnchorEl] = useState(null)
   const menuRef = useRef(null)
-
-  const handleMenuOpen = event => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleMenuOutsideClick = event => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      handleMenuClose()
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleMenuOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleMenuOutsideClick)
-    }
-  }, [anchorEl, handleMenuOutsideClick])
 
   return (
     <>
       <IconButton
-        onClick={handleMenuOpen}
         variant='outlined'
         color={isActive ? 'primary' : 'neutral'}
         size='sm'
@@ -55,9 +32,6 @@ const IconButtonWithMenu = ({
       <Menu
         key={key}
         ref={menuRef}
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
       >
         {title && (
           <MenuItem key={`${key}-title`} disabled>
@@ -72,7 +46,6 @@ const IconButtonWithMenu = ({
             onClick={() => {
               onItemSelect(item)
               setSelectedItem?.selectedItem(item.name)
-              handleMenuClose()
             }}
           >
             {useChips ? (

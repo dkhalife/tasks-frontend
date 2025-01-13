@@ -54,7 +54,6 @@ const ChoreCard = ({
   const [isCompleteWithPastDateModalOpen, setIsCompleteWithPastDateModalOpen] =
     React.useState(false)
   const [confirmModelConfig, setConfirmModelConfig] = React.useState({})
-  const [anchorEl, setAnchorEl] = React.useState(null)
   const menuRef = React.useRef(null)
   const navigate = useNavigate()
 
@@ -62,31 +61,6 @@ const ChoreCard = ({
   const [secondsLeftToCancel, setSecondsLeftToCancel] = React.useState<number | null>(null)
   const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null)
   const { userProfile } = React.useContext(UserContext)
-
-  const handleMenuOutsideClick = event => {
-    if (
-      anchorEl &&
-      !anchorEl.contains(event.target) &&
-      !menuRef.current.contains(event.target)
-    ) {
-      handleMenuClose()
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleMenuOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleMenuOutsideClick)
-    }
-  }, [anchorEl, handleMenuOutsideClick])
-
-  const handleMenuOpen = event => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
 
   const handleEdit = () => {
     navigate(`/chores/${chore.id}/edit`)
@@ -461,7 +435,6 @@ const ChoreCard = ({
                 // sx={{ width: 15 }}
                 variant='soft'
                 color='success'
-                onClick={handleMenuOpen}
                 sx={{
                   borderRadius: '50%',
                   width: 25,
@@ -472,13 +445,9 @@ const ChoreCard = ({
               >
                 <MoreVert />
               </IconButton>
-              {/* </ButtonGroup> */}
               <Menu
                 size='lg'
                 ref={menuRef}
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
               >
                 <MenuItem
                   onClick={() => {
@@ -487,7 +456,6 @@ const ChoreCard = ({
                         response.json().then(data => {
                           const newChore = data.res
                           onChoreUpdate(newChore, 'skipped')
-                          handleMenuClose()
                         })
                       }
                     })

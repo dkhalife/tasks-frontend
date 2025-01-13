@@ -57,8 +57,7 @@ const MyChores = () => {
   const [openChoreSections, setOpenChoreSections] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [performers, setPerformers] = useState([])
-  const [anchorEl, setAnchorEl] = useState(null)
-  const menuRef = useRef(null)
+    const menuRef = useRef(null)
   const Navigate = useNavigate()
   const { data: userLabels, isLoading: userLabelsLoading } = useLabels()
   const { data: choresData, isLoading: choresLoading } = useChores()
@@ -75,8 +74,8 @@ const MyChores = () => {
     const oneDayInMs = 24 * 60 * 60 * 1000
 
     // 2. Prioritize tasks due today +- 1 day:
-    const aTodayOrNear = Math.abs(aDueDate - now) <= oneDayInMs
-    const bTodayOrNear = Math.abs(bDueDate - now) <= oneDayInMs
+    const aTodayOrNear = Math.abs(aDueDate.getTime() - now.getTime()) <= oneDayInMs
+    const bTodayOrNear = Math.abs(bDueDate.getTime() - now.getTime()) <= oneDayInMs
     if (aTodayOrNear && !bTodayOrNear) return -1 // a is closer
     if (!aTodayOrNear && bTodayOrNear) return 1 // b is closer
 
@@ -135,31 +134,6 @@ const MyChores = () => {
     }
   }, [choresData, choresLoading])
 
-  const handleMenuOutsideClick = event => {
-    if (
-      anchorEl &&
-      !anchorEl.contains(event.target) &&
-      !menuRef.current.contains(event.target)
-    ) {
-      handleFilterMenuClose()
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleMenuOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleMenuOutsideClick)
-    }
-  }, [anchorEl, handleMenuOutsideClick])
-
-  const handleFilterMenuOpen = event => {
-    event.preventDefault()
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleFilterMenuClose = () => {
-    setAnchorEl(null)
-  }
 
   const handleLabelFiltering = chipClicked => {
     if (chipClicked.label) {
@@ -341,12 +315,10 @@ const MyChores = () => {
             handleLabelFiltering({ label: selected })
           }}
           isActive={selectedFilter.startsWith('Label: ')}
-          mouseClickHandler={handleMenuOutsideClick}
           useChips
         />
 
         <IconButton
-          onClick={handleFilterMenuOpen}
           variant='outlined'
           color={
             selectedFilter && FILTERS[selectedFilter] && selectedFilter != 'All'
@@ -368,12 +340,7 @@ const MyChores = () => {
             mt: 0.2,
           }}
         >
-          <Menu
-            ref={menuRef}
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleFilterMenuClose}
-          >
+          <Menu ref={menuRef}>
             {Object.keys(FILTERS).map((filter, index) => (
               <MenuItem
                 key={`filter-list-${filter}-${index}`}
@@ -385,7 +352,6 @@ const MyChores = () => {
                       : filterFunction(chores)
                   setFilteredChores(filteredChores)
                   setSelectedFilter(filter)
-                  handleFilterMenuClose()
                 }}
               >
                 {filter}
@@ -425,7 +391,6 @@ const MyChores = () => {
             setFilteredChores(chores)
             setSelectedFilter('All')
           }}
-          mouseClickHandler={handleMenuOutsideClick}
         />
       </Box>
       {selectedFilter !== 'All' && (
