@@ -52,6 +52,53 @@ const ChoreView = () => {
   const [secondsLeftToCancel, setSecondsLeftToCancel] = useState(null)
   const [completedDate, setCompletedDate] = useState(null)
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
+
+  const handleTaskCompletion = () => {
+    setIsPendingCompletion(true)
+    let seconds = 3 // Starting countdown from 3 seconds
+    setSecondsLeftToCancel(seconds)
+
+    const countdownInterval = setInterval(() => {
+      seconds -= 1
+      setSecondsLeftToCancel(seconds)
+
+      if (seconds <= 0) {
+        clearInterval(countdownInterval) // Stop the countdown when it reaches 0
+      }
+    }, 1000)
+
+    const id = setTimeout(() => {
+      MarkChoreComplete(choreId, note, completedDate, null)
+        .then(resp => {
+          if (resp.ok) {
+            return resp.json().then(data => {
+              setNote(null)
+              setChore(data.res)
+            })
+          }
+        })
+        .then(() => {
+          setIsPendingCompletion(false)
+          clearTimeout(id)
+          clearInterval(countdownInterval) // Ensure to clear this interval as well
+          setTimeoutId(null)
+          setSecondsLeftToCancel(null)
+        })
+        .then(() => {
+          // refetch the chore details
+          GetChoreDetailById(choreId).then(resp => {
+            if (resp.ok) {
+              return resp.json().then(data => {
+                setChore(data.res)
+              })
+            }
+          })
+        })
+    }, 3000)
+
+    setTimeoutId(id)
+  }
+
   useEffect(() => {
     Promise.all([
       GetChoreDetailById(choreId).then(resp => {
@@ -73,11 +120,6 @@ const ChoreView = () => {
       handleTaskCompletion()
     }
   }, [choreId, handleTaskCompletion, searchParams])
-  useEffect(() => {
-    if (chore && performers.length > 0) {
-      generateInfoCards(chore)
-    }
-  }, [chore, performers, generateInfoCards])
 
   const generateInfoCards = chore => {
     const cards = [
@@ -127,51 +169,13 @@ const ChoreView = () => {
     ]
     setInfoCards(cards)
   }
-  const handleTaskCompletion = () => {
-    setIsPendingCompletion(true)
-    let seconds = 3 // Starting countdown from 3 seconds
-    setSecondsLeftToCancel(seconds)
 
-    const countdownInterval = setInterval(() => {
-      seconds -= 1
-      setSecondsLeftToCancel(seconds)
+  useEffect(() => {
+    if (chore && performers.length > 0) {
+      generateInfoCards(chore)
+    }
+  }, [chore, performers, generateInfoCards])
 
-      if (seconds <= 0) {
-        clearInterval(countdownInterval) // Stop the countdown when it reaches 0
-      }
-    }, 1000)
-
-    const id = setTimeout(() => {
-      MarkChoreComplete(choreId, note, completedDate, null)
-        .then(resp => {
-          if (resp.ok) {
-            return resp.json().then(data => {
-              setNote(null)
-              setChore(data.res)
-            })
-          }
-        })
-        .then(() => {
-          setIsPendingCompletion(false)
-          clearTimeout(id)
-          clearInterval(countdownInterval) // Ensure to clear this interval as well
-          setTimeoutId(null)
-          setSecondsLeftToCancel(null)
-        })
-        .then(() => {
-          // refetch the chore details
-          GetChoreDetailById(choreId).then(resp => {
-            if (resp.ok) {
-              return resp.json().then(data => {
-                setChore(data.res)
-              })
-            }
-          })
-        })
-    }, 3000)
-
-    setTimeoutId(id)
-  }
   const handleSkippingTask = () => {
     SkipChore(choreId).then(response => {
       if (response.ok) {
