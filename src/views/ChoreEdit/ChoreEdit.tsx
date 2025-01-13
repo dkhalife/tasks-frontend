@@ -344,7 +344,7 @@ const ChoreEdit = () => {
           <Typography level='h4'>Description :</Typography>
           <Typography level='h5'>What is this chore about?</Typography>
           <Input value={name} onChange={e => setName(e.target.value)} />
-          <FormHelperText error>{errors.name}</FormHelperText>
+          <FormHelperText>{errors.name}</FormHelperText>
         </FormControl>
       </Box>
       <Box mt={2}>
@@ -383,8 +383,8 @@ const ChoreEdit = () => {
             ))}
           </List>
         </Card>
-        <FormControl error={Boolean(errors.assignee)}>
-          <FormHelperText error>{Boolean(errors.assignee)}</FormHelperText>
+        <FormControl error={errors.assignee}>
+          <FormHelperText>{Boolean(errors.assignee)}</FormHelperText>
         </FormControl>
       </Box>
       {assignees.length > 1 && (
@@ -498,7 +498,6 @@ const ChoreEdit = () => {
                 }
               }}
               defaultChecked={dueDate !== null}
-              checked={dueDate !== null}
               overlay
               label='Give this task a due date'
             />
@@ -570,7 +569,6 @@ const ChoreEdit = () => {
               setIsNotificable(e.target.checked)
             }}
             defaultChecked={isNotificable}
-            checked={isNotificable}
             overlay
             label='Notify for this task'
           />
