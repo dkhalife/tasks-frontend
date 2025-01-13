@@ -142,8 +142,6 @@ const ChoreEdit = () => {
   const HandleSaveChore = () => {
     setAttemptToSave(true)
     if (!HandleValidateChore()) {
-      console.log('validation failed')
-      console.log(errors)
       return
     }
     const chore = {
@@ -585,8 +583,6 @@ const ChoreEdit = () => {
         <LabelModal
           isOpen={addLabelModalOpen}
           onSave={label => {
-            console.log('label', label)
-
             const newLabels = [...labelsV2]
             newLabels.push(label)
             setUserLabels([...userLabels, label])

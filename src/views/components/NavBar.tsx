@@ -28,8 +28,6 @@ const links = [
     label: 'Home',
     icon: <HomeOutlined />,
   },
-
-  // TODO: alternate between home desktep view based on device
   {
     to: '/chores',
     label: 'Desktop View',

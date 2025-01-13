@@ -122,8 +122,7 @@ const HistoryCard = ({
                   {formatTimeDifference(
                     historyEntry.completedAt,
                     allHistory[index + 1].completedAt,
-                  )}{' '}
-                  before
+                  )}&nbsp;before
                 </Typography>
               )}
           </ListDivider>

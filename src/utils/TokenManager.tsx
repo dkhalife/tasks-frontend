@@ -77,9 +77,7 @@ export const refreshAccessToken = () => {
         localStorage.setItem('ca_expiration', data.expire)
       })
     } else {
-      return res.json().then(error => {
-        console.log(error)
-      })
+      return res.json()
     }
   })
 }

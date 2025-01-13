@@ -34,8 +34,6 @@ const APITokenSettings = () => {
     CreateLongLiveToken(name).then(resp => {
       if (resp.ok) {
         resp.json().then(data => {
-          // add the token to the list:
-          console.log(data)
           const newTokens = [...tokens]
           newTokens.push(data.res)
           setTokens(newTokens)

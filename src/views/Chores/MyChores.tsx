@@ -287,9 +287,6 @@ const MyChores = () => {
         />
         <IconButtonWithMenu
           icon={<Style />}
-          // TODO : this need simplification we want to display both user labels and chore labels
-          // that why we are merging them here.
-          // we also filter out the labels that user created as those will be part of user labels
           title='Filter by Label'
           options={[
             ...userLabels,

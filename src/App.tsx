@@ -34,14 +34,13 @@ function App() {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(r) {
-      console.log('SW Registered: ' + r)
       r &&
         setInterval(() => {
           r.update()
         }, intervalMS)
     },
     onRegisterError(error) {
-      console.log('SW registration error', error)
+      throw new Error('SW registration error', error)
     },
   })
 

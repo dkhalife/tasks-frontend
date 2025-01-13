@@ -41,12 +41,10 @@ const LoginView = () => {
           setError('Wrong username or password')
         } else {
           setError('An error occurred, please try again')
-          console.log('Login failed')
         }
       })
       .catch(err => {
         setError('Unable to communicate with server, please try again')
-        console.log('Login failed', err)
       })
   }
 
@@ -120,7 +118,7 @@ const LoginView = () => {
                 }}
               />
               <Typography level='body-md' alignSelf={'center'}>
-                Welcome back,{' '}
+                Welcome back,&nbsp;
                 {userProfile?.displayName || userProfile?.username}
               </Typography>
 

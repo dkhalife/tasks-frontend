@@ -35,7 +35,7 @@ const SignupView = () => {
           navigate('/my/chores')
         })
       } else {
-        console.log('Login failed', response)
+        alert('Login failed')
       }
     })
   }
@@ -98,7 +98,7 @@ const SignupView = () => {
       } else if (response.status === 403) {
         setError('Signup disabled, please contact admin')
       } else {
-        console.log('Signup failed')
+        alert('Signup failed')
         response.json().then(res => {
           setError(res.error)
         })
