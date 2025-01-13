@@ -26,11 +26,4 @@ module.exports = {
 
     'tailwindcss',
   ],
-  rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-    'react/prop-types': 'off',
-  },
 }

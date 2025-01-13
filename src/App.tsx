@@ -1,4 +1,4 @@
-import NavBar from '@/views/components/NavBar'
+import NavBar from './views/components/NavBar'
 import { Button, Snackbar, Typography, useColorScheme } from '@mui/joy'
 import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
