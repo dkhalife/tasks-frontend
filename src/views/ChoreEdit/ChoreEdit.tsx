@@ -41,13 +41,6 @@ import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 import LabelModal from '../Modals/Inputs/LabelModal'
 import RepeatSection from './RepeatSection'
 import React from 'react'
-const ASSIGN_STRATEGIES = [
-  'random',
-  'least_assigned',
-  'least_completed',
-  'keep_last_assigned',
-  'random_except_last_assigned',
-]
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -60,13 +53,9 @@ const ChoreEdit = () => {
   const { choreId } = useParams()
   const [name, setName] = useState('')
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
-  const [assignees, setAssignees] = useState([])
-  const [performers, setPerformers] = useState([])
-  const [assignStrategy, setAssignStrategy] = useState(ASSIGN_STRATEGIES[2])
   const [dueDate, setDueDate] = useState(null)
   const [completed, setCompleted] = useState(false)
   const [completedDate, setCompletedDate] = useState('')
-  const [assignedTo, setAssignedTo] = useState(-1)
   const [frequencyType, setFrequencyType] = useState('once')
   const [frequency, setFrequency] = useState(1)
   const [frequencyMetadata, setFrequencyMetadata] = useState({})
@@ -104,12 +93,6 @@ const ChoreEdit = () => {
 
     if (name.trim() === '') {
       errors.name = 'Name is required'
-    }
-    if (assignees.length === 0) {
-      errors.assignees = 'At least 1 assignees is required'
-    }
-    if (assignedTo < 0) {
-      errors.assignedTo = 'Assigned to is required'
     }
     if (frequencyType === 'interval' && !frequency > 0) {
       errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
@@ -175,13 +158,10 @@ const ChoreEdit = () => {
     const chore = {
       id: Number(choreId),
       name: name,
-      assignees: assignees,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
       frequencyType: frequencyType,
       frequency: Number(frequency),
       frequencyMetadata: frequencyMetadata,
-      assignedTo: assignedTo,
-      assignStrategy: assignStrategy,
       isRolling: isRolling,
       isActive: isActive,
       notification: isNotificable,
@@ -219,8 +199,6 @@ const ChoreEdit = () => {
         .then(data => {
           setChore(data.res)
           setName(data.res.name ? data.res.name : '')
-          setAssignees(data.res.assignees ? data.res.assignees : [])
-          setAssignedTo(data.res.assignedTo)
           setFrequencyType(
             data.res.frequencyType ? data.res.frequencyType : 'once',
           )
@@ -236,11 +214,6 @@ const ChoreEdit = () => {
           )
 
           setLabelsV2(data.res.labelsV2)
-          setAssignStrategy(
-            data.res.assignStrategy
-              ? data.res.assignStrategy
-              : ASSIGN_STRATEGIES[2],
-          )
           setIsRolling(data.res.isRolling)
           setIsActive(data.res.isActive)
           // parse the due date to a string from this format "2021-10-10T00:00:00.000Z"
@@ -292,28 +265,12 @@ const ChoreEdit = () => {
     }
   }, [frequencyType, dueDate])
 
-  useEffect(() => {
-    if (assignees.length === 1) {
-      setAssignedTo(assignees[0].userId)
-    }
-  }, [assignees])
-
-  useEffect(() => {
-    if (performers.length > 0 && assignees.length === 0) {
-      setAssignees([
-        {
-          userId: userProfile.id,
-        },
-      ])
-    }
-  }, [performers])
-
   // if user resolve the error trigger validation to remove the error message from the respective field
   useEffect(() => {
     if (attemptToSave) {
       HandleValidateChore()
     }
-  }, [assignees, name, frequencyMetadata, attemptToSave, dueDate])
+  }, [name, frequencyMetadata, attemptToSave, dueDate])
 
   const handleDelete = () => {
     setConfirmModelConfig({
@@ -347,119 +304,6 @@ const ChoreEdit = () => {
           <FormHelperText>{errors.name}</FormHelperText>
         </FormControl>
       </Box>
-      <Box mt={2}>
-        <Typography level='h4'>Assignees :</Typography>
-        <Typography level='h5'>Who can do this chore?</Typography>
-        <Card>
-          <List
-            orientation='horizontal'
-            wrap
-            sx={{
-              '--List-gap': '8px',
-              '--ListItem-radius': '20px',
-            }}
-          >
-            {performers?.map((item, index) => (
-              <ListItem key={item.id}>
-                <Checkbox
-                  // disabled={index === 0}
-                  checked={assignees.find(a => a.userId == item.userId) != null}
-                  onClick={() => {
-                    if (assignees.some(a => a.userId === item.userId)) {
-                      const newAssignees = assignees.filter(
-                        a => a.userId !== item.userId,
-                      )
-                      setAssignees(newAssignees)
-                    } else {
-                      setAssignees([...assignees, { userId: item.userId }])
-                    }
-                  }}
-                  overlay
-                  disableIcon
-                  variant='soft'
-                  label={item.displayName}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Card>
-        <FormControl error={errors.assignee}>
-          <FormHelperText>{Boolean(errors.assignee)}</FormHelperText>
-        </FormControl>
-      </Box>
-      {assignees.length > 1 && (
-        // this wrap the details that needed if we have more than one assingee
-        // we need to pick the next assignedTo and also the strategy to pick the next assignee.
-        // if we have only one then no need to display this section
-        <>
-          <Box mt={2}>
-            <Typography level='h4'>Assigned :</Typography>
-            <Typography level='h5'>
-              Who is assigned the next due chore?
-            </Typography>
-
-            <Select
-              placeholder={
-                assignees.length === 0
-                  ? 'No Assignees yet can perform this chore'
-                  : 'Select an assignee for this chore'
-              }
-              disabled={assignees.length === 0}
-              value={assignedTo > -1 ? assignedTo : null}
-            >
-              {performers
-                ?.filter(p => assignees.find(a => a.userId == p.userId))
-                .map((item, index) => (
-                  <Option
-                    value={item.userId}
-                    key={item.displayName}
-                    onClick={() => {
-                      setAssignedTo(item.userId)
-                    }}
-                  >
-                    {item.displayName}
-                    {/* <Chip size='sm' color='neutral' variant='soft'>
-                </Chip> */}
-                  </Option>
-                ))}
-            </Select>
-          </Box>
-          <Box mt={2}>
-            <Typography level='h4'>Picking Mode :</Typography>
-            <Typography level='h5'>
-              How to pick the next assignee for the following chore?
-            </Typography>
-
-            <Card>
-              <List
-                orientation='horizontal'
-                wrap
-                sx={{
-                  '--List-gap': '8px',
-                  '--ListItem-radius': '20px',
-                }}
-              >
-                {ASSIGN_STRATEGIES.map((item, idx) => (
-                  <ListItem key={item}>
-                    <Checkbox
-                      // disabled={index === 0}
-                      checked={assignStrategy === item}
-                      onClick={() => setAssignStrategy(item)}
-                      overlay
-                      disableIcon
-                      variant='soft'
-                      label={item
-                        .split('_')
-                        .map(x => x.charAt(0).toUpperCase() + x.slice(1))
-                        .join(' ')}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Card>
-          </Box>
-        </>
-      )}
       <RepeatSection
         frequency={frequency}
         onFrequencyUpdate={setFrequency}
@@ -632,19 +476,6 @@ const ChoreEdit = () => {
                 <FormHelperText>{item.description}</FormHelperText>
               </FormControl>
             ))}
-
-            <Typography level='h5'>
-              What should trigger the notification?
-            </Typography>
-            <FormControl>
-              <Checkbox
-                overlay
-                disabled={true}
-                checked={true}
-                label='All Assignees'
-              />
-              <FormHelperText>Notify all assignees</FormHelperText>
-            </FormControl>
           </Card>
         </Box>
       )}
@@ -728,23 +559,12 @@ const ChoreEdit = () => {
               boxShadow: 'sm',
             }}
           >
-            <Typography level='body1'>
-              Created by{' '}
-              <Chip variant='solid'>
-                {performers.find(f => f.id === createdBy)?.displayName}
-              </Chip>{' '}
-              {moment(chore.createdAt).fromNow()}
-            </Typography>
             {(chore.updatedAt && updatedBy > 0 && (
               <>
                 <Divider sx={{ my: 1 }} />
 
                 <Typography level='body1'>
-                  Updated by{' '}
-                  <Chip variant='solid'>
-                    {performers.find(f => f.id === updatedBy)?.displayName}
-                  </Chip>{' '}
-                  {moment(chore.updatedAt).fromNow()}
+                  Updated at {moment(chore.updatedAt).fromNow()}
                 </Typography>
               </>
             )) || <></>}
@@ -815,7 +635,6 @@ const ChoreEdit = () => {
           onClose={() => setAddLabelModalOpen(false)}
         />
       )}
-      {/* <ChoreHistory ChoreHistory={choresHistory} UsersData={performers} /> */}
       <Snackbar
         open={isSnackbarOpen}
         onClose={() => {

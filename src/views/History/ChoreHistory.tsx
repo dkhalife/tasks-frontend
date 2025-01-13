@@ -25,7 +25,6 @@ import HistoryCard from './HistoryCard'
 
 const ChoreHistory = () => {
   const [choreHistory, setChoresHistory] = useState([])
-  const [performers, setPerformers] = useState([])
   const [historyInfo, setHistoryInfo] = useState([])
 
   const [isLoading, setIsLoading] = useState(true) // Add loading state
@@ -47,7 +46,6 @@ const ChoreHistory = () => {
           newUserChoreHistory[userId] = (newUserChoreHistory[userId] || 0) + 1
         })
 
-        setPerformers(usersData.res)
         updateHistoryInfo(historyData.res, newUserChoreHistory, usersData.res)
       })
       .catch(error => {
@@ -59,9 +57,8 @@ const ChoreHistory = () => {
       })
   }, [choreId])
 
-  const updateHistoryInfo = (histories, userHistories, performers) => {
+  const updateHistoryInfo = (histories, userHistories) => {
     // average delay for task completaion from due date:
-
     const averageDelay =
       histories.reduce((acc, chore) => {
         if (chore.dueDate && chore.completedAt) {
@@ -102,28 +99,6 @@ const ChoreHistory = () => {
         icon: <Timelapse />,
         text: 'Maximum Delay',
         subtext: moment.duration(maxDelayMoment).humanize(),
-      },
-      {
-        icon: <Avatar />,
-        text: ' Completed Most',
-        subtext: `${
-          performers.find(p => p.userId === Number(userCompletedByMost))
-            ?.displayName
-        } `,
-      },
-      //  contributes:
-      {
-        icon: <Group />,
-        text: 'Total Performers',
-        subtext: `${Object.keys(userHistories).length} users`,
-      },
-      {
-        icon: <Avatar />,
-        text: 'Last Completed',
-        subtext: `${
-          performers.find(p => p.userId === Number(histories[0].completedBy))
-            ?.displayName
-        }`,
       },
     ]
   }
@@ -216,7 +191,6 @@ const ChoreHistory = () => {
                 setEditHistory(historyEntry)
               }}
               historyEntry={historyEntry}
-              performers={performers}
               allHistory={choreHistory}
               key={index}
               index={index}

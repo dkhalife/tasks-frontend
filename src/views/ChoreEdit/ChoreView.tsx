@@ -40,7 +40,6 @@ import React from 'react'
 const ChoreView = () => {
   const [chore, setChore] = useState({})
   const navigate = useNavigate()
-  const [performers, setPerformers] = useState([])
   const [infoCards, setInfoCards] = useState([])
   const { choreId } = useParams()
   const [note, setNote] = useState(null)
@@ -100,21 +99,14 @@ const ChoreView = () => {
   }
 
   useEffect(() => {
-    Promise.all([
-      GetChoreDetailById(choreId).then(resp => {
-        if (resp.ok) {
-          return resp.json().then(data => {
-            setChore(data.res)
-            document.title = 'Donetick: ' + data.res.name
-          })
-        }
-      }),
-      GetAllUsers()
-        .then(response => response.json())
-        .then(data => {
-          setPerformers(data.res)
-        }),
-    ])
+    GetChoreDetailById(choreId).then(resp => {
+      if (resp.ok) {
+        return resp.json().then(data => {
+          setChore(data.res)
+          document.title = 'Donetick: ' + data.res.name
+        })
+      }
+    })
     const auto_complete = searchParams.get('auto_complete')
     if (auto_complete === 'true') {
       handleTaskCompletion()
@@ -123,12 +115,6 @@ const ChoreView = () => {
 
   const generateInfoCards = chore => {
     const cards = [
-      {
-        size: 6,
-        icon: <PeopleAlt />,
-        text: 'Assigned To',
-        subtext: performers.find(p => p.id === chore.assignedTo)?.displayName,
-      },
       {
         size: 6,
         icon: <CalendarMonth />,
@@ -149,32 +135,14 @@ const ChoreView = () => {
         text: 'Last Completed',
         subtext:
           chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
-      },
-      {
-        size: 6,
-        icon: <Person />,
-        text: 'Last Performer',
-        subtext: chore.lastCompletedDate
-          ? `${
-              performers.find(p => p.id === chore.lastCompletedBy)?.displayName
-            }`
-          : '--',
-      },
-      {
-        size: 6,
-        icon: <Person />,
-        text: 'Created By',
-        subtext: performers.find(p => p.id === chore.createdBy)?.displayName,
-      },
+      }
     ]
     setInfoCards(cards)
   }
 
   useEffect(() => {
-    if (chore && performers.length > 0) {
-      generateInfoCards(chore)
-    }
-  }, [chore, performers, generateInfoCards])
+    generateInfoCards(chore)
+  }, [chore, generateInfoCards])
 
   const handleSkippingTask = () => {
     SkipChore(choreId).then(response => {
@@ -249,7 +217,7 @@ const ChoreView = () => {
         >
           <Grid container spacing={1}>
             {infoCards.map((detail, index) => (
-              <Grid item xs={6} key={index}>
+              <Grid item xs={4} key={index}>
                 {/* divider between the list items: */}
 
                 <ListItem key={index}>

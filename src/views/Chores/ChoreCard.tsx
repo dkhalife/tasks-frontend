@@ -42,7 +42,6 @@ import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
 import DateModal from '../Modals/Inputs/DateModal'
 const ChoreCard = ({
   chore,
-  performers,
   onChoreUpdate,
   onChoreRemove,
   sx,
@@ -358,17 +357,6 @@ const ChoreCard = ({
               </Avatar>
               <Box display='flex' flexDirection='column'>
                 <Typography level='title-md'>{getName(chore.name)}</Typography>
-                {userProfile && chore.assignedTo !== userProfile.id && (
-                  <Typography level='body-md' color='text.disabled'>
-                    Assigned to{' '}
-                    <Chip variant='outlined'>
-                      {
-                        performers.find(p => p.id === chore.assignedTo)
-                          ?.displayName
-                      }
-                    </Chip>
-                  </Typography>
-                )}
                 <Box key={`${chore.id}-labels`}>
                   {chore.labelsV2?.map((l, index) => {
                     return (

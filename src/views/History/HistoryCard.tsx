@@ -57,7 +57,6 @@ export const getCompletedChip = historyEntry => {
 
 const HistoryCard = ({
   allHistory,
-  performers,
   historyEntry,
   index,
   onClick,
@@ -85,15 +84,6 @@ const HistoryCard = ({
   return (
     <>
       <ListItem sx={{ gap: 1.5, alignItems: 'flex-start' }} onClick={onClick}>
-        {' '}
-        {/* Adjusted spacing and alignment */}
-        <ListItemDecorator>
-          <Avatar sx={{ mr: 1 }}>
-            {performers
-              .find(p => p.userId === historyEntry.completedBy)
-              ?.displayName?.charAt(0) || '?'}
-          </Avatar>
-        </ListItemDecorator>
         <ListItemContent sx={{ my: 0 }}>
           {' '}
           {/* Removed vertical margin */}
@@ -113,27 +103,6 @@ const HistoryCard = ({
             </Typography>
             {getCompletedChip(historyEntry)}
           </Box>
-          <Typography level='body2' color='text.tertiary'>
-            <Chip>
-              {
-                performers.find(p => p.userId === historyEntry.completedBy)
-                  ?.displayName
-              }
-            </Chip>{' '}
-            completed
-            {historyEntry.completedBy !== historyEntry.assignedTo && (
-              <>
-                {', '}
-                assigned to{' '}
-                <Chip>
-                  {
-                    performers.find(p => p.userId === historyEntry.assignedTo)
-                      ?.displayName
-                  }
-                </Chip>
-              </>
-            )}
-          </Typography>
           {historyEntry.dueDate && (
             <Typography level='body2' color='text.tertiary'>
               Due: {moment(historyEntry.dueDate).format('ddd MM/DD/yyyy')}

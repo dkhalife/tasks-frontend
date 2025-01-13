@@ -56,7 +56,6 @@ const MyChores = () => {
   const [selectedChoreSection, setSelectedChoreSection] = useState('due_date')
   const [openChoreSections, setOpenChoreSections] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
-  const [performers, setPerformers] = useState([])
     const menuRef = useRef(null)
   const Navigate = useNavigate()
   const { data: userLabels, isLoading: userLabelsLoading } = useLabels()
@@ -112,7 +111,6 @@ const MyChores = () => {
           choresData.res.sort(choreSorter)
           setChores(choresData.res)
           setFilteredChores(choresData.res)
-          setPerformers(usersData.res)
         })
       },
     )
@@ -249,7 +247,6 @@ const MyChores = () => {
   if (
     userProfile === null ||
     userLabelsLoading ||
-    performers.length === 0 ||
     choresLoading
   ) {
     return <LoadingComponent />
@@ -455,7 +452,6 @@ const MyChores = () => {
             chore={chore}
             onChoreUpdate={handleChoreUpdated}
             onChoreRemove={handleChoreDeleted}
-            performers={performers}
             onChipClick={handleLabelFiltering}
           />
         ))}
@@ -522,7 +518,6 @@ const MyChores = () => {
                       chore={chore}
                       onChoreUpdate={handleChoreUpdated}
                       onChoreRemove={handleChoreDeleted}
-                      performers={performers}
                       onChipClick={handleLabelFiltering}
                     />
                   ))}
@@ -583,7 +578,6 @@ const MyChores = () => {
                 chore={chore}
                 onChoreUpdate={handleChoreUpdated}
                 onChoreRemove={handleChoreDeleted}
-                performers={performers}
                 onChipClick={handleLabelFiltering}
               />
             ))}

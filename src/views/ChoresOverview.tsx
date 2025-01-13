@@ -41,7 +41,6 @@ const CHORE_STATUS = {
 const ChoresOverview = () => {
   const [chores, setChores] = useState([])
   const [filteredChores, setFilteredChores] = useState([])
-  const [performers, setPerformers] = useState([])
   const [activeUserId, setActiveUserId] = useState(null)
   const [isDateModalOpen, setIsDateModalOpen] = useState(false)
   const [choreId, setChoreId] = useState(null)
@@ -101,11 +100,6 @@ const ChoresOverview = () => {
       .then(data => {
         setChores(data.res)
         setFilteredChores(data.res)
-      })
-    GetAllUsers()
-      .then(response => response.json())
-      .then(data => {
-        setPerformers(data.res)
       })
     const user = JSON.parse(localStorage.getItem('user'))
     if (user != null && user.id > 0) {
@@ -174,10 +168,8 @@ const ChoresOverview = () => {
       <Table>
         <thead>
           <tr>
-            {/* first column has minium size because its icon */}
             <th style={{ width: 100 }}>Due</th>
             <th>Chore</th>
-            <th>Assignee</th>
             <th>Due</th>
             <th>Action</th>
           </tr>
@@ -197,37 +189,6 @@ const ChoresOverview = () => {
                 }}
               >
                 {chore.name || '--'}
-              </td>
-              <td>
-                {chore.assignedTo > 0 ? (
-                  <Tooltip
-                    title={
-                      performers.find(p => p.id === chore.assignedTo)
-                        ?.displayName
-                    }
-                    size='sm'
-                  >
-                    <Chip
-                      startDecorator={
-                        <Avatar color='primary'>
-                          {
-                            performers.find(p => p.id === chore.assignedTo)
-                              ?.displayName[0]
-                          }
-                        </Avatar>
-                      }
-                    >
-                      {performers.find(p => p.id === chore.assignedTo)?.name}
-                    </Chip>
-                  </Tooltip>
-                ) : (
-                  <Chip
-                    color='warning'
-                    startDecorator={<Avatar color='primary'>?</Avatar>}
-                  >
-                    Unassigned
-                  </Chip>
-                )}
               </td>
               <td>
                 <Tooltip
