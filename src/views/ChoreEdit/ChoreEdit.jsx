@@ -532,68 +532,6 @@ const ChoreEdit = () => {
             <FormHelperText>{errors.dueDate}</FormHelperText>
           </FormControl>
         )}
-
-        <FormControl
-          orientation='horizontal'
-          sx={{ width: 400, justifyContent: 'space-between' }}
-        >
-          <div>
-            {/* <FormLabel>Completion window (hours)</FormLabel> */}
-            <Typography level='h5'>Completion window (hours)</Typography>
-
-            <FormHelperText sx={{ mt: 0 }}>
-              {"Set a time window that task can't be completed before"}
-            </FormHelperText>
-          </div>
-          <Switch
-            checked={completionWindow != -1}
-            onClick={event => {
-              event.preventDefault()
-              if (completionWindow != -1) {
-                setCompletionWindow(-1)
-              } else {
-                setCompletionWindow(1)
-              }
-            }}
-            color={completionWindow !== -1 ? 'success' : 'neutral'}
-            variant={completionWindow !== -1 ? 'solid' : 'outlined'}
-            slotProps={{
-              endDecorator: {
-                sx: {
-                  minWidth: 24,
-                },
-              },
-            }}
-          />
-        </FormControl>
-        {completionWindow != -1 && (
-          <Card variant='outlined'>
-            <Box
-              sx={{
-                mt: 0,
-                ml: 4,
-              }}
-            >
-              <Typography level='body-sm'>Hours:</Typography>
-
-              <Input
-                type='number'
-                value={completionWindow}
-                sx={{ maxWidth: 100 }}
-                slotProps={{
-                  input: {
-                    min: 0,
-                    max: 24 * 7,
-                  },
-                }}
-                placeholder='Hours'
-                onChange={e => {
-                  setCompletionWindow(parseInt(e.target.value))
-                }}
-              />
-            </Box>
-          </Card>
-        )}
       </Box>
       {!['once', 'no_repeat'].includes(frequencyType) && (
         <Box mt={2}>
