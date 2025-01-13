@@ -7,7 +7,7 @@ import {
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const NavBarLink = ({ link }) => {
+export const NavBarLink = ({ link }) => {
   const { to, icon, label } = link
   return (
     <ListItem>
@@ -28,5 +28,3 @@ const NavBarLink = ({ link }) => {
     </ListItem>
   )
 }
-
-export default NavBarLink

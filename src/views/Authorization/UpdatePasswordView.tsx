@@ -12,11 +12,11 @@ import {
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import Logo from '../../Logo'
+import { Logo } from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
 import React from 'react'
 
-const UpdatePasswordView = () => {
+export const UpdatePasswordView = () => {
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -166,5 +166,3 @@ const UpdatePasswordView = () => {
     </Container>
   )
 }
-
-export default UpdatePasswordView

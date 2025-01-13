@@ -34,15 +34,16 @@ import {
   SaveChore,
 } from '../../utils/Fetcher'
 import { useLabels } from '../Labels/LabelQueries'
-import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
-import LabelModal from '../Modals/Inputs/LabelModal'
-import RepeatSection from './RepeatSection'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { LabelModal } from '../Modals/Inputs/LabelModal'
+import { RepeatSection } from './RepeatSection'
 import React from 'react'
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
 const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
-const ChoreEdit = () => {
+
+export const ChoreEdit = () => {
   const [chore, setChore] = useState([])
   const { choreId } = useParams()
   const [name, setName] = useState('')
@@ -610,5 +611,3 @@ const ChoreEdit = () => {
     </Container>
   )
 }
-
-export default ChoreEdit

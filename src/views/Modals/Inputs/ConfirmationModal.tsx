@@ -1,7 +1,7 @@
 import { Box, Button, Modal, ModalDialog, Typography } from '@mui/joy'
 import React from 'react'
 
-function ConfirmationModal({ config }) {
+export function ConfirmationModal({ config }) {
   const handleAction = isConfirmed => {
     config.onClose(isConfirmed)
   }
@@ -41,4 +41,3 @@ function ConfirmationModal({ config }) {
     </Modal>
   )
 }
-export default ConfirmationModal

@@ -9,7 +9,7 @@ import {
 } from '@mui/joy'
 import React from 'react'
 
-function SelectModal({
+export function SelectModal({
   isOpen,
   onClose,
   onSave,
@@ -54,4 +54,3 @@ function SelectModal({
     </Modal>
   )
 }
-export default SelectModal

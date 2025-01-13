@@ -10,7 +10,7 @@ import {
 } from '@mui/joy'
 import React, { useEffect } from 'react'
 
-function PassowrdChangeModal({ isOpen, onClose }) {
+export function PassowrdChangeModal({ isOpen, onClose }) {
   const [password, setPassword] = React.useState('')
   const [confirmPassword, setConfirmPassword] = React.useState('')
   const [passwordError, setPasswordError] = React.useState<string | null>(null)
@@ -114,4 +114,3 @@ function PassowrdChangeModal({ isOpen, onClose }) {
     </Modal>
   )
 }
-export default PassowrdChangeModal

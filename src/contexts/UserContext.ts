@@ -1,8 +1,6 @@
 import { createContext } from 'react'
 
-const UserContext = createContext({
+export const UserContext = createContext({
   userProfile: null,
   setUserProfile: () => {},
 })
-
-export { UserContext }

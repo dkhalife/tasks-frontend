@@ -2,9 +2,10 @@ import { Box, Button, Container, Typography } from '@mui/joy'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import Logo from '../Logo'
+import { Logo } from '../Logo'
 import React from 'react'
-const Home = () => {
+
+export const Home = () => {
   const navigate = useNavigate()
 
   return (
@@ -35,5 +36,3 @@ const Home = () => {
     </Container>
   )
 }
-
-export default Home

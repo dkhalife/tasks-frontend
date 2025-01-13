@@ -1,6 +1,6 @@
 import { Fetch, HEADERS, apiManager } from './TokenManager'
 
-const createChore = userID => {
+export const createChore = userID => {
   return Fetch(`/chores/`, {
     method: 'POST',
     headers: HEADERS(),
@@ -10,7 +10,7 @@ const createChore = userID => {
   }).then(response => response.json())
 }
 
-const signUp = (username, password, displayName, email) => {
+export const signUp = (username, password, displayName, email) => {
   const baseURL = apiManager.getApiURL()
   return fetch(`${baseURL}/auth/`, {
     method: 'POST',
@@ -21,7 +21,7 @@ const signUp = (username, password, displayName, email) => {
   })
 }
 
-const UpdatePassword = newPassword => {
+export const UpdatePassword = newPassword => {
   const baseURL = apiManager.getApiURL()
   return fetch(`${baseURL}/users/change_password`, {
     method: 'PUT',
@@ -30,7 +30,7 @@ const UpdatePassword = newPassword => {
   })
 }
 
-const login = (username, password) => {
+export const login = (username, password) => {
   const baseURL = apiManager.getApiURL()
   return fetch(`${baseURL}/auth/login`, {
     headers: {
@@ -41,13 +41,13 @@ const login = (username, password) => {
   })
 }
 
-const GetAllUsers = () => {
+export const GetAllUsers = () => {
   return Fetch(`/users/`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const GetChoresNew = async includeArchived => {
+export const GetChoresNew = async includeArchived => {
   var url = `/chores/`
   if (includeArchived) {
     url += `?includeArchived=true`
@@ -60,44 +60,44 @@ const GetChoresNew = async includeArchived => {
   return resp.json()
 }
 
-const GetChores = () => {
+export const GetChores = () => {
   return Fetch(`/chores/`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const GetArchivedChores = () => {
+export const GetArchivedChores = () => {
   return Fetch(`/chores/archived`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const ArchiveChore = id => {
+export const ArchiveChore = id => {
   return Fetch(`/chores/${id}/archive`, {
     method: 'PUT',
     headers: HEADERS(),
   })
 }
-const UnArchiveChore = id => {
+export const UnArchiveChore = id => {
   return Fetch(`/chores/${id}/unarchive`, {
     method: 'PUT',
     headers: HEADERS(),
   })
 }
 
-const GetChoreByID = id => {
+export const GetChoreByID = id => {
   return Fetch(`/chores/${id}`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const GetChoreDetailById = id => {
+export const GetChoreDetailById = id => {
   return Fetch(`/chores/${id}/details`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const MarkChoreComplete = (id, note, completedDate) => {
+export const MarkChoreComplete = (id, note, completedDate) => {
   var markChoreURL = `/chores/${id}/do`
 
   const body = {
@@ -118,7 +118,7 @@ const MarkChoreComplete = (id, note, completedDate) => {
   })
 }
 
-const SkipChore = id => {
+export const SkipChore = id => {
   return Fetch(`/chores/${id}/skip`, {
     method: 'POST',
     headers: {
@@ -128,7 +128,7 @@ const SkipChore = id => {
   })
 }
 
-const UpdateChoreAssignee = (id, assignee) => {
+export const UpdateChoreAssignee = (id, assignee) => {
   return Fetch(`/chores/${id}/assignee`, {
     method: 'PUT',
     headers: HEADERS(),
@@ -136,7 +136,7 @@ const UpdateChoreAssignee = (id, assignee) => {
   })
 }
 
-const CreateChore = chore => {
+export const CreateChore = chore => {
   return Fetch(`/chores/`, {
     method: 'POST',
     headers: HEADERS(),
@@ -144,14 +144,14 @@ const CreateChore = chore => {
   })
 }
 
-const DeleteChore = id => {
+export const DeleteChore = id => {
   return Fetch(`/chores/${id}`, {
     method: 'DELETE',
     headers: HEADERS(),
   })
 }
 
-const SaveChore = chore => {
+export const SaveChore = chore => {
   return Fetch(`/chores/`, {
     method: 'PUT',
     headers: HEADERS(),
@@ -159,20 +159,20 @@ const SaveChore = chore => {
   })
 }
 
-const GetChoreHistory = choreId => {
+export const GetChoreHistory = choreId => {
   return Fetch(`/chores/${choreId}/history`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const DeleteChoreHistory = (choreId, id) => {
+export const DeleteChoreHistory = (choreId, id) => {
   return Fetch(`/chores/${choreId}/history/${id}`, {
     method: 'DELETE',
     headers: HEADERS(),
   })
 }
 
-const UpdateChoreHistory = (choreId, id, choreHistory) => {
+export const UpdateChoreHistory = (choreId, id, choreHistory) => {
   return Fetch(`/chores/${choreId}/history/${id}`, {
     method: 'PUT',
     headers: HEADERS(),
@@ -180,14 +180,14 @@ const UpdateChoreHistory = (choreId, id, choreHistory) => {
   })
 }
 
-const GetUserProfile = () => {
+export const GetUserProfile = () => {
   return Fetch(`/users/profile`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
 
-const UpdateUserDetails = userDetails => {
+export const UpdateUserDetails = userDetails => {
   return Fetch(`/users`, {
     method: 'PUT',
     headers: HEADERS(),
@@ -195,7 +195,7 @@ const UpdateUserDetails = userDetails => {
   })
 }
 
-const UpdateNotificationTarget = notificationTarget => {
+export const UpdateNotificationTarget = notificationTarget => {
   return Fetch(`/users/targets`, {
     method: 'PUT',
     headers: HEADERS(),
@@ -203,34 +203,34 @@ const UpdateNotificationTarget = notificationTarget => {
   })
 }
 
-const CreateLongLiveToken = name => {
+export const CreateLongLiveToken = name => {
   return Fetch(`/users/tokens`, {
     method: 'POST',
     headers: HEADERS(),
     body: JSON.stringify({ name }),
   })
 }
-const DeleteLongLiveToken = id => {
+export const DeleteLongLiveToken = id => {
   return Fetch(`/users/tokens/${id}`, {
     method: 'DELETE',
     headers: HEADERS(),
   })
 }
 
-const GetLongLiveTokens = () => {
+export const GetLongLiveTokens = () => {
   return Fetch(`/users/tokens`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const PutNotificationTarget = (platform, deviceToken) => {
+export const PutNotificationTarget = (platform, deviceToken) => {
   return Fetch(`/users/targets`, {
     method: 'PUT',
     headers: HEADERS(),
     body: JSON.stringify({ platform, deviceToken }),
   })
 }
-const CreateLabel = label => {
+export const CreateLabel = label => {
   return Fetch(`/labels`, {
     method: 'POST',
     headers: HEADERS(),
@@ -238,7 +238,7 @@ const CreateLabel = label => {
   })
 }
 
-const GetLabels = async () => {
+export const GetLabels = async () => {
   const resp = await Fetch(`/labels`, {
     method: 'GET',
     headers: HEADERS(),
@@ -246,21 +246,21 @@ const GetLabels = async () => {
   return resp.json()
 }
 
-const UpdateLabel = label => {
+export const UpdateLabel = label => {
   return Fetch(`/labels`, {
     method: 'PUT',
     headers: HEADERS(),
     body: JSON.stringify(label),
   })
 }
-const DeleteLabel = id => {
+export const DeleteLabel = id => {
   return Fetch(`/labels/${id}`, {
     method: 'DELETE',
     headers: HEADERS(),
   })
 }
 
-const ChangePassword = (verifiticationCode, password) => {
+export const ChangePassword = (verifiticationCode, password) => {
   const baseURL = apiManager.getApiURL()
   return fetch(`${baseURL}/auth/password?c=${verifiticationCode}`, {
     method: 'POST',
@@ -271,7 +271,7 @@ const ChangePassword = (verifiticationCode, password) => {
   })
 }
 
-const ResetPassword = email => {
+export const ResetPassword = email => {
   const basedURL = apiManager.getApiURL()
   return fetch(`${basedURL}/auth/reset`, {
     method: 'POST',
@@ -282,7 +282,7 @@ const ResetPassword = email => {
   })
 }
 
-const UpdateDueDate = (id, dueDate) => {
+export const UpdateDueDate = (id, dueDate) => {
   return Fetch(`/chores/${id}/dueDate`, {
     method: 'PUT',
     headers: {
@@ -294,14 +294,14 @@ const UpdateDueDate = (id, dueDate) => {
   })
 }
 
-const RefreshToken = () => {
+export const RefreshToken = () => {
   const basedURL = apiManager.getApiURL()
   return fetch(`${basedURL}/auth/refresh`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
-const GetChoresHistory = async (limit, includeMembers) => {
+export const GetChoresHistory = async (limit, includeMembers) => {
   var url = `/chores/history`
   if (!limit) limit = 7
 
@@ -316,43 +316,4 @@ const GetChoresHistory = async (limit, includeMembers) => {
     headers: HEADERS(),
   })
   return resp.json()
-}
-export {
-  ArchiveChore,
-  ChangePassword,
-  CreateChore,
-  CreateLabel,
-  CreateLongLiveToken,
-  DeleteChore,
-  DeleteChoreHistory,
-  DeleteLabel,
-  DeleteLongLiveToken,
-  GetAllUsers,
-  GetArchivedChores,
-  GetChoreByID,
-  GetChoreDetailById,
-  GetChoreHistory,
-  GetChores,
-  GetChoresHistory,
-  GetChoresNew,
-  GetLabels,
-  GetLongLiveTokens,
-  GetUserProfile,
-  MarkChoreComplete,
-  PutNotificationTarget,
-  RefreshToken,
-  ResetPassword,
-  SaveChore,
-  SkipChore,
-  UnArchiveChore,
-  UpdateChoreAssignee,
-  UpdateChoreHistory,
-  UpdateDueDate,
-  UpdateLabel,
-  UpdateNotificationTarget,
-  UpdatePassword,
-  UpdateUserDetails,
-  createChore,
-  login,
-  signUp,
 }

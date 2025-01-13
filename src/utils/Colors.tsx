@@ -1,4 +1,4 @@
-const LABEL_COLORS = [
+export const LABEL_COLORS = [
   { name: 'Default', value: '#FFFFFF' },
   { name: 'Salmon', value: '#ff7961' },
   { name: 'Teal', value: '#26a69a' },
@@ -69,7 +69,6 @@ export const TASK_COLOR = {
   LATER: '#d7ccc8',
   ANYTIME: '#90a4ae',
 }
-export default LABEL_COLORS
 
 export const getTextColorFromBackgroundColor = bgColor => {
   if (!bgColor) return ''

@@ -27,7 +27,7 @@ import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GetAllUsers, GetChores, MarkChoreComplete } from '../utils/Fetcher'
-import DateModal from './Modals/Inputs/DateModal'
+import { DateModal } from './Modals/Inputs/DateModal'
 import React from 'react'
 
 const CHORE_STATUS = {
@@ -37,7 +37,7 @@ const CHORE_STATUS = {
   OVER_DUE: 'Overdue',
 }
 
-const ChoresOverview = () => {
+export const ChoresOverview = () => {
   const [chores, setChores] = useState([])
   const [filteredChores, setFilteredChores] = useState([])
   const [activeUserId, setActiveUserId] = useState(null)
@@ -271,5 +271,3 @@ const ChoresOverview = () => {
     </Container>
   )
 }
-
-export default ChoresOverview

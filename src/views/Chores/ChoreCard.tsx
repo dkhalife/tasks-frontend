@@ -37,9 +37,10 @@ import {
   SkipChore,
   UpdateDueDate,
 } from '../../utils/Fetcher'
-import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
-import DateModal from '../Modals/Inputs/DateModal'
-const ChoreCard = ({
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { DateModal } from '../Modals/Inputs/DateModal'
+
+export const ChoreCard = ({
   chore,
   onChoreUpdate,
   onChoreRemove,
@@ -463,5 +464,3 @@ const ChoreCard = ({
     </Box>
   )
 }
-
-export default ChoreCard

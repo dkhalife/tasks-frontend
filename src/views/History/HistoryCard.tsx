@@ -55,7 +55,7 @@ export const getCompletedChip = historyEntry => {
   )
 }
 
-const HistoryCard = ({
+export const HistoryCard = ({
   allHistory,
   historyEntry,
   index,
@@ -131,5 +131,3 @@ const HistoryCard = ({
     </>
   )
 }
-
-export default HistoryCard

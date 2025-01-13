@@ -18,11 +18,11 @@ import {
   GetChoreHistory,
   UpdateChoreHistory,
 } from '../../utils/Fetcher'
-import LoadingComponent from '../components/Loading'
-import EditHistoryModal from '../Modals/EditHistoryModal'
-import HistoryCard from './HistoryCard'
+import { LoadingComponent } from '../components/Loading'
+import { EditHistoryModal } from '../Modals/EditHistoryModal'
+import { HistoryCard } from './HistoryCard'
 
-const ChoreHistory = () => {
+export const ChoreHistory = () => {
   const [choreHistory, setChoresHistory] = useState([])
   const [historyInfo, setHistoryInfo] = useState([])
 
@@ -227,5 +227,3 @@ const ChoreHistory = () => {
     </Container>
   )
 }
-
-export default ChoreHistory

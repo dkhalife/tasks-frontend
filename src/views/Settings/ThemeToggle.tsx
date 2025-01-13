@@ -1,4 +1,4 @@
-import useStickyState from '../../hooks/useStickyState'
+import { useStickyState } from '../../hooks/useStickyState'
 import {
   DarkModeOutlined,
   LaptopOutlined,
@@ -15,7 +15,7 @@ import React from 'react'
 
 const ELEMENTID = 'select-theme-mode'
 
-const ThemeToggle = () => {
+export const ThemeToggle = () => {
   const { mode, setMode } = useColorScheme()
   const [themeMode, setThemeMode] = useStickyState(mode, 'themeMode')
 
@@ -59,5 +59,3 @@ const ThemeToggle = () => {
     </FormControl>
   )
 }
-
-export default ThemeToggle

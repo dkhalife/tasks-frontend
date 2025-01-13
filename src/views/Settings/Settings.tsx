@@ -8,15 +8,15 @@ import {
 } from '@mui/joy'
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../contexts/UserContext'
-import Logo from '../../Logo'
+import { Logo } from '../../Logo'
 import { GetUserProfile, UpdatePassword } from '../../utils/Fetcher'
-import PassowrdChangeModal from '../Modals/Inputs/PasswordChangeModal'
-import APITokenSettings from './APITokenSettings'
-import NotificationSetting from './NotificationSetting'
-import ThemeToggle from './ThemeToggle'
+import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
+import { APITokenSettings } from './APITokenSettings'
+import { NotificationSetting } from './NotificationSetting'
+import { ThemeToggle } from './ThemeToggle'
 import React from 'react'
 
-const Settings = () => {
+export const Settings = () => {
   const { userProfile, setUserProfile } = useContext<any>(UserContext)
   const [changePasswordModal, setChangePasswordModal] = useState(false)
   useEffect(() => {
@@ -93,5 +93,3 @@ const Settings = () => {
     </Container>
   )
 }
-
-export default Settings

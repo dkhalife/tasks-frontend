@@ -12,10 +12,10 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import Logo from '../../Logo'
+import { Logo } from '../../Logo'
 import { login, signUp } from '../../utils/Fetcher'
 
-const SignupView = () => {
+export const SignupView = () => {
   const [username, setUsername] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
   const navigate = useNavigate()
@@ -268,4 +268,3 @@ const SignupView = () => {
   )
 }
 
-export default SignupView

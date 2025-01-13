@@ -1,4 +1,4 @@
-import NavBar from './views/components/NavBar'
+import { NavBar } from './views/components/NavBar'
 import { Button, Snackbar, Typography, useColorScheme } from '@mui/joy'
 import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -21,7 +21,7 @@ const remove = className => {
 
 const intervalMS = 5 * 60 * 1000 // 5 minutes
 
-function App() {
+export function App() {
   startApiManager()
   const queryClient = new QueryClient()
   const { mode, systemMode } = useColorScheme()
@@ -104,8 +104,6 @@ function App() {
     </div>
   )
 }
-
-export default App
 
 const startApiManager = () => {
   apiManager.init()

@@ -9,10 +9,10 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
-import ConfirmationModal from './Inputs/ConfirmationModal'
+import { ConfirmationModal } from './Inputs/ConfirmationModal'
 import React from 'react'
 
-function EditHistoryModal({ config, historyRecord }) {
+export function EditHistoryModal({ config, historyRecord }) {
   useEffect(() => {
     setCompletedDate(
       moment(historyRecord.completedAt).format('YYYY-MM-DDTHH:mm'),
@@ -118,4 +118,3 @@ function EditHistoryModal({ config, historyRecord }) {
     </Modal>
   )
 }
-export default EditHistoryModal

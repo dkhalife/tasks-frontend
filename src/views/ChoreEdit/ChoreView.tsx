@@ -30,10 +30,10 @@ import {
   MarkChoreComplete,
   SkipChore,
 } from '../../utils/Fetcher'
-import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
 
-const ChoreView = () => {
+export const ChoreView = () => {
   const [chore, setChore] = useState({})
   const navigate = useNavigate()
   const [infoCards, setInfoCards] = useState([])
@@ -328,5 +328,3 @@ const ChoreView = () => {
     </Container>
   )
 }
-
-export default ChoreView

@@ -19,8 +19,8 @@ import {
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { version } from '../../../package.json'
-import ThemeToggleButton from '../Settings/ThemeToggleButton'
-import NavBarLink from './NavBarLink'
+import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
+import { NavBarLink } from './NavBarLink'
 import React from 'react'
 const links = [
   {
@@ -45,7 +45,7 @@ const links = [
   },
 ]
 
-const NavBar = () => {
+export const NavBar = () => {
   const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [openDrawer, closeDrawer] = [
@@ -160,5 +160,3 @@ const NavBar = () => {
     </nav>
   )
 }
-
-export default NavBar

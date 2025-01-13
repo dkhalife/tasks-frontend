@@ -12,10 +12,10 @@ import Cookies from 'js-cookie'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
-import Logo from '../../Logo'
+import { Logo } from '../../Logo'
 import { GetUserProfile, login } from '../../utils/Fetcher'
 
-const LoginView = () => {
+export const LoginView = () => {
   const { userProfile, setUserProfile } = React.useContext<any>(UserContext)
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -251,5 +251,3 @@ const LoginView = () => {
     </Container>
   )
 }
-
-export default LoginView

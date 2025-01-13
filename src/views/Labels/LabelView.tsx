@@ -10,17 +10,17 @@ import {
   Typography,
 } from '@mui/joy'
 import { useEffect, useState } from 'react'
-import LabelModal from '../Modals/Inputs/LabelModal.tsx'
+import { LabelModal } from '../Modals/Inputs/LabelModal.tsx'
 import { useLabels } from './LabelQueries'
 
 import { Add } from '@mui/icons-material'
 import { useQueryClient } from 'react-query'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import { DeleteLabel } from '../../utils/Fetcher'
-import ConfirmationModal from '../Modals/Inputs/ConfirmationModal.tsx'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal.tsx'
 import React from 'react'
 
-const LabelView = () => {
+export const LabelView = () => {
   const { data: labels, isLabelsLoading, isError } = useLabels()
 
   const [userLabels, setUserLabels] = useState<any[]>(labels)
@@ -173,5 +173,3 @@ const LabelView = () => {
     </Container>
   )
 }
-
-export default LabelView

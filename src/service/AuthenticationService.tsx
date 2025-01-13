@@ -1,8 +1,8 @@
 import React, { createContext, useState } from 'react'
 
-const AuthenticationContext = createContext({})
+export const AuthenticationContext = createContext({})
 
-const AuthenticationProvider = ({ children }) => {
+export const AuthenticationProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userProfile, setUserProfile] = useState({})
   return (
@@ -13,5 +13,3 @@ const AuthenticationProvider = ({ children }) => {
     </AuthenticationContext.Provider>
   )
 }
-
-export { AuthenticationContext, AuthenticationProvider }

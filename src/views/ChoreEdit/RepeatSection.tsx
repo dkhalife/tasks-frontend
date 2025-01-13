@@ -310,7 +310,7 @@ const RepeatOnSections = ({
   }
 }
 
-const RepeatSection = ({
+export const RepeatSection = ({
   frequencyType,
   frequency,
   onFrequencyUpdate,
@@ -502,5 +502,3 @@ const RepeatSection = ({
     </Box>
   )
 }
-
-export default RepeatSection

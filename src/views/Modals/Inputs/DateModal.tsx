@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
 import React from 'react'
 
-function DateModal({ isOpen, onClose, onSave, current, title }) {
+export function DateModal({ isOpen, onClose, onSave, current, title }) {
   const [date, setDate] = useState(
     current ? new Date(current).toISOString().split('T')[0] : null,
   )
@@ -34,4 +34,3 @@ function DateModal({ isOpen, onClose, onSave, current, title }) {
     </Modal>
   )
 }
-export default DateModal

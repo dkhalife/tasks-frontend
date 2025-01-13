@@ -12,12 +12,12 @@ import {
 import { useEffect, useState } from 'react'
 
 import { useMutation, useQueryClient } from 'react-query'
-import LABEL_COLORS from '../../../utils/Colors'
+import { LABEL_COLORS } from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import { useLabels } from '../../Labels/LabelQueries'
 import React from 'react'
 
-function LabelModal({ isOpen, onClose, label }) {
+export function LabelModal({ isOpen, onClose, label }) {
   const [labelName, setLabelName] = useState('')
   const [color, setColor] = useState('')
   const [error, setError] = useState('')
@@ -156,5 +156,3 @@ function LabelModal({ isOpen, onClose, label }) {
     </Modal>
   )
 }
-
-export default LabelModal

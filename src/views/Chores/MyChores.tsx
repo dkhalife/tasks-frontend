@@ -36,15 +36,15 @@ import {
   GetChores,
   GetUserProfile,
 } from '../../utils/Fetcher'
-import LoadingComponent from '../components/Loading'
+import { LoadingComponent } from '../components/Loading'
 import { useLabels } from '../Labels/LabelQueries'
-import ChoreCard from './ChoreCard'
-import IconButtonWithMenu from './IconButtonWithMenu'
+import { ChoreCard } from './ChoreCard'
+import { IconButtonWithMenu } from './IconButtonWithMenu'
 
 import { ChoresGrouper } from '../../utils/Chores'
 import React from 'react'
 
-const MyChores = () => {
+export const MyChores = () => {
   const { userProfile, setUserProfile } = useContext(UserContext)
   const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false)
   const [snackBarMessage, setSnackBarMessage] = useState<string | null>(null)
@@ -660,5 +660,3 @@ const FILTERS = {
     })
   },
 }
-
-export default MyChores

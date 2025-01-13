@@ -71,7 +71,7 @@ const theme = extendTheme({
   },
 })
 
-const ThemeContext = ({ children }) => {
+export const ThemeContext = ({ children }) => {
   return (
     <CssVarsProvider theme={theme}>
       <CssBaseline />
@@ -83,5 +83,3 @@ const ThemeContext = ({ children }) => {
 ThemeContext.propTypes = {
   children: PropType.node,
 }
-
-export default ThemeContext

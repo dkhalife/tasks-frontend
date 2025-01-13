@@ -1,4 +1,4 @@
-import useStickyState from '../../hooks/useStickyState'
+import { useStickyState } from '../../hooks/useStickyState'
 import {
   BrightnessAuto,
   DarkModeOutlined,
@@ -7,7 +7,7 @@ import {
 import { FormControl, IconButton, useColorScheme } from '@mui/joy'
 import React from 'react'
 
-const ThemeToggleButton = ({ sx }) => {
+export const ThemeToggleButton = ({ sx }) => {
   const { mode, setMode } = useColorScheme()
   const [themeMode, setThemeMode] = useStickyState(mode, 'themeMode')
 
@@ -46,5 +46,3 @@ const ThemeToggleButton = ({ sx }) => {
     </FormControl>
   )
 }
-
-export default ThemeToggleButton

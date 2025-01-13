@@ -2,7 +2,7 @@ import { Box, Button, Modal, ModalDialog, Textarea, Typography } from '@mui/joy'
 import React from 'react'
 import { useState } from 'react'
 
-function TextModal({
+export function TextModal({
   isOpen,
   onClose,
   onSave,
@@ -43,4 +43,3 @@ function TextModal({
     </Modal>
   )
 }
-export default TextModal

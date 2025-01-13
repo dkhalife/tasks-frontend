@@ -1,10 +1,10 @@
 import { Box, CircularProgress, Container } from '@mui/joy'
 import { Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import Logo from '../../Logo'
+import { Logo } from '../../Logo'
 import React from 'react'
 
-const LoadingComponent = () => {
+export const LoadingComponent = () => {
   const [message, setMessage] = useState('Loading...')
   const [subMessage, setSubMessage] = useState('')
   useEffect(() => {
@@ -47,5 +47,3 @@ const LoadingComponent = () => {
     </Container>
   )
 }
-
-export default LoadingComponent

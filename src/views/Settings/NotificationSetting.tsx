@@ -19,7 +19,7 @@ import {
   UpdateNotificationTarget,
 } from '../../utils/Fetcher'
 
-const NotificationSetting = () => {
+export const NotificationSetting = () => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
   const { userProfile, setUserProfile } = useContext<any>(UserContext)
   useEffect(() => {
@@ -140,5 +140,3 @@ const NotificationSetting = () => {
     </div>
   )
 }
-
-export default NotificationSetting

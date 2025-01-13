@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { ResetPassword } from '../../utils/Fetcher'
 import React from 'react'
 
-const ForgotPasswordView = () => {
+export const ForgotPasswordView = () => {
   const navigate = useNavigate()
   const [resetStatusOk, setResetStatusOk] = useState<boolean>(false)
   const [email, setEmail] = useState('')
@@ -205,5 +205,3 @@ const ForgotPasswordView = () => {
     </Container>
   )
 }
-
-export default ForgotPasswordView

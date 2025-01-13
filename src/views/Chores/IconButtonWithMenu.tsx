@@ -3,7 +3,7 @@ import IconButton from '@mui/joy/IconButton'
 import React, { useRef } from 'react'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 
-const IconButtonWithMenu = ({
+export const IconButtonWithMenu = ({
   key,
   icon,
   options,
@@ -69,4 +69,3 @@ const IconButtonWithMenu = ({
     </>
   )
 }
-export default IconButtonWithMenu

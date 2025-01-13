@@ -15,10 +15,10 @@ import {
   DeleteLongLiveToken,
   GetLongLiveTokens,
 } from '../../utils/Fetcher'
-import TextModal from '../Modals/Inputs/TextModal'
+import { TextModal } from '../Modals/Inputs/TextModal'
 import React from 'react'
 
-const APITokenSettings = () => {
+export const APITokenSettings = () => {
   const [tokens, setTokens] = useState([])
   const [isGetTokenNameModalOpen, setIsGetTokenNameModalOpen] = useState(false)
   const [showTokenId, setShowTokenId] = useState(null)
@@ -149,5 +149,3 @@ const APITokenSettings = () => {
     </div>
   )
 }
-
-export default APITokenSettings
