@@ -7,7 +7,7 @@ function ConfirmationModal({ config }) {
   }
 
   return (
-    <Modal open={config?.isOpen} onClose={config?.onClose}>
+    <Modal open={config?.isOpen ?? false} onClose={config?.onClose}>
       <ModalDialog>
         <Typography level='h4' mb={1}>
           {config?.title}
