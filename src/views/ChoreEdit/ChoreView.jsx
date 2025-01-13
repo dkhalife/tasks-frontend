@@ -15,13 +15,10 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
   Chip,
   Container,
   Dropdown,
-  FormControl,
   Grid,
-  Input,
   ListItem,
   ListItemContent,
   Menu,
@@ -29,7 +26,6 @@ import {
   MenuItem,
   Sheet,
   Snackbar,
-  styled,
   Typography,
 } from '@mui/joy'
 import { Divider } from '@mui/material'
@@ -47,16 +43,6 @@ import {
 } from '../../utils/Fetcher'
 import Priorities from '../../utils/Priorities'
 import ConfirmationModal from '../Modals/Inputs/ConfirmationModal'
-const IconCard = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '#f0f0f0', // Adjust the background color as needed
-  borderRadius: '50%',
-  minWidth: '40px',
-  height: '40px',
-  marginRight: '16px',
-})
 
 const ChoreView = () => {
   const [chore, setChore] = useState({})
@@ -106,7 +92,7 @@ const ChoreView = () => {
   const handleUpdatePriority = priority => {
     UpdateChorePriority(choreId, priority.value).then(response => {
       if (response.ok) {
-        response.json().then(data => {
+        response.json().then(_ => {
           setChorePriority(priority)
         })
       }
@@ -128,14 +114,6 @@ const ChoreView = () => {
           ? moment(chore.nextDueDate).fromNow()
           : 'N/A',
       },
-
-      //   {
-      //     icon: <TextFields />,
-      //     text: 'Frequency',
-      //     subtext:
-      //       chore.frequencyType.charAt(0).toUpperCase() +
-      //       chore.frequencyType.slice(1),
-      //   },
       {
         size: 6,
         icon: <Checklist />,
@@ -146,10 +124,7 @@ const ChoreView = () => {
         size: 6,
         icon: <Timelapse />,
         text: 'Last Completed',
-        subtext:
-          // chore.lastCompletedDate &&
-          // moment(chore.lastCompletedDate).format('MM/DD/YYYY hh:mm A'),
-          chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
+        subtext: chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
       },
       {
         size: 6,
@@ -167,12 +142,6 @@ const ChoreView = () => {
         text: 'Created By',
         subtext: performers.find(p => p.id === chore.createdBy)?.displayName,
       },
-      // {
-      //   size: 12,
-      //   icon: <Note />,
-      //   text: 'Recent Note',
-      //   subtext: chore.notes || '--',
-      // },
     ]
     setInfoCards(cards)
   }
@@ -433,11 +402,6 @@ const ChoreView = () => {
           </>
         )}
       </Box>
-      {/* <Divider
-        sx={{
-          my: 2,
-        }}
-      /> */}
 
       <Card
         sx={{
@@ -447,110 +411,6 @@ const ChoreView = () => {
           mt: 2,
         }}
       >
-        <Typography level='body-md' sx={{ mb: 1 }}>
-          Complete the task
-        </Typography>
-
-        <FormControl size='sm'>
-          <Checkbox
-            defaultChecked={note !== null}
-            checked={note !== null}
-            value={note !== null}
-            size='lg'
-            onChange={e => {
-              if (e.target.checked) {
-                setNote('')
-              } else {
-                setNote(null)
-              }
-            }}
-            overlay
-            sx={
-              {
-                // my: 1,
-              }
-            }
-            label={
-              <Typography
-                level='body-sm'
-                sx={{
-                  // center vertically
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                Add Additional Notes
-              </Typography>
-            }
-          />
-        </FormControl>
-        {note !== null && (
-          <Input
-            fullWidth
-            multiline
-            label='Additional Notes'
-            placeholder='note or information about the task'
-            value={note || ''}
-            onChange={e => {
-              if (e.target.value.trim() === '') {
-                setNote(null)
-                return
-              }
-              setNote(e.target.value)
-            }}
-            size='md'
-            sx={{
-              mb: 1,
-            }}
-          />
-        )}
-
-        <FormControl size='sm'>
-          <Checkbox
-            defaultChecked={completedDate !== null}
-            checked={completedDate !== null}
-            value={completedDate !== null}
-            size='lg'
-            onChange={e => {
-              if (e.target.checked) {
-                setCompletedDate(
-                  moment(new Date()).format('YYYY-MM-DDTHH:00:00'),
-                )
-              } else {
-                setCompletedDate(null)
-              }
-            }}
-            overlay
-            sx={
-              {
-                // my: 1,
-              }
-            }
-            label={
-              <Typography
-                level='body-sm'
-                sx={{
-                  // center vertically
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                Specify completion date
-              </Typography>
-            }
-          />
-        </FormControl>
-        {completedDate !== null && (
-          <Input
-            sx={{ mt: 1, mb: 1.5, width: 300 }}
-            type='datetime-local'
-            value={completedDate}
-            onChange={e => {
-              setCompletedDate(e.target.value)
-            }}
-          />
-        )}
-
         <Box
           sx={{
             display: 'flex',

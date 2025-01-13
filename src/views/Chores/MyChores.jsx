@@ -525,7 +525,6 @@ const MyChores = () => {
             onChoreUpdate={handleChoreUpdated}
             onChoreRemove={handleChoreDeleted}
             performers={performers}
-            userLabels={userLabels}
             onChipClick={handleLabelFiltering}
           />
         ))}
@@ -593,7 +592,6 @@ const MyChores = () => {
                       onChoreUpdate={handleChoreUpdated}
                       onChoreRemove={handleChoreDeleted}
                       performers={performers}
-                      userLabels={userLabels}
                       onChipClick={handleLabelFiltering}
                     />
                   ))}
@@ -655,7 +653,6 @@ const MyChores = () => {
                 onChoreUpdate={handleChoreUpdated}
                 onChoreRemove={handleChoreDeleted}
                 performers={performers}
-                userLabels={userLabels}
                 onChipClick={handleLabelFiltering}
               />
             ))}
