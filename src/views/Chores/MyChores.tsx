@@ -147,14 +147,14 @@ export const MyChores = () => {
   }
 
   const handleChoreUpdated = (updatedChore, event) => {
-    var newChores = chores.map(chore => {
+    let newChores = chores.map(chore => {
       if (chore.id === updatedChore.id) {
         return updatedChore
       }
       return chore
     })
 
-    var newFilteredChores = filteredChores.map(chore => {
+    let newFilteredChores = filteredChores.map(chore => {
       if (chore.id === updatedChore.id) {
         return updatedChore
       }

@@ -13,8 +13,8 @@ import moment from 'moment'
 import React, { ReactElement } from 'react'
 
 export const getCompletedChip = historyEntry => {
-  var text = 'No Due Date'
-  var color = 'info'
+  let text = 'No Due Date'
+  let color = 'info'
   let icon: ReactElement
   // if completed few hours +-6 hours
   if (

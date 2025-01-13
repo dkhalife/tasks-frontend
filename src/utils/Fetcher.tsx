@@ -48,7 +48,7 @@ export const GetAllUsers = () => {
   })
 }
 export const GetChoresNew = async includeArchived => {
-  var url = `/chores/`
+  let url = `/chores/`
   if (includeArchived) {
     url += `?includeArchived=true`
   }
@@ -98,7 +98,7 @@ export const GetChoreDetailById = id => {
   })
 }
 export const MarkChoreComplete = (id, note, completedDate) => {
-  var markChoreURL = `/chores/${id}/do`
+  let markChoreURL = `/chores/${id}/do`
 
   const body = {
     note,
@@ -302,7 +302,7 @@ export const RefreshToken = () => {
   })
 }
 export const GetChoresHistory = async (limit, includeMembers) => {
-  var url = `/chores/history`
+  let url = `/chores/history`
   if (!limit) limit = 7
 
   if (limit) {

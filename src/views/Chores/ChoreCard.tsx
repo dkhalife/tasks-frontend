@@ -201,7 +201,7 @@ export const ChoreCard = ({
         return days.join(', ')
       }
     } else if (chore.frequencyType === 'day_of_the_month') {
-      let months = JSON.parse(chore.frequencyMetadata).months
+      const months = JSON.parse(chore.frequencyMetadata).months
       if (months.length > 6) {
         const allMonths = [
           'January',
@@ -228,7 +228,7 @@ export const ChoreCard = ({
           chore.frequency,
         )} except ${notSelectedShortMonths.join(', ')}`
       } else {
-        let freqData = JSON.parse(chore.frequencyMetadata)
+        const freqData = JSON.parse(chore.frequencyMetadata)
         const months = freqData.months.map(m => moment().month(m).format('MMM'))
         return `${chore.frequency}${dayOfMonthSuffix(
           chore.frequency,
