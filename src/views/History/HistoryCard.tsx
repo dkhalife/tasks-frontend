@@ -85,8 +85,6 @@ const HistoryCard = ({
     <>
       <ListItem sx={{ gap: 1.5, alignItems: 'flex-start' }} onClick={onClick}>
         <ListItemContent sx={{ my: 0 }}>
-          {' '}
-          {/* Removed vertical margin */}
           <Box
             sx={{
               display: 'flex',
@@ -118,7 +116,6 @@ const HistoryCard = ({
       {index < allHistory.length - 1 && (
         <>
           <ListDivider component='li'>
-            {/* time between two completion: */}
             {index < allHistory.length - 1 &&
               allHistory[index + 1].completedAt && (
                 <Typography level='body3' color='text.tertiary'>

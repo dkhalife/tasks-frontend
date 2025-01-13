@@ -52,7 +52,7 @@ const APITokenSettings = () => {
         Create token to use with the API to update chores
       </Typography>
 
-      {tokens.map(token => (
+      {tokens.map((token: any) => (
         <Card key={token.token} className='p-4'>
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box>

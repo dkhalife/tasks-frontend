@@ -67,13 +67,7 @@ const RepeatOnSections = ({
   onFrequencyMetadataUpdate,
   onFrequencyTimeUpdate,
 }) => {
-  const [months, setMonths] = useState({})
-  // const [dayOftheMonth, setDayOftheMonth] = useState(1)
-  const [daysOfTheWeek, setDaysOfTheWeek] = useState({})
-  const [monthsOfTheYear, setMonthsOfTheYear] = useState({})
   const [intervalUnit, setIntervalUnit] = useState('days')
-  const [frequancyMetadata, setFrequancyMetadata] = useState({})
-  const [time, setTime] = useState('18:00')
   const timePickerComponent = (
     <Grid item sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
       <Typography level='h5'>At: </Typography>
@@ -85,7 +79,6 @@ const RepeatOnSections = ({
             : '18:00'
         }
         onChange={e => {
-          // create new today date with selected time with Timezone:
           onFrequencyTimeUpdate(
             moment(
               moment(new Date()).format('YYYY-MM-DD') + 'T' + e.target.value,
@@ -249,8 +242,6 @@ const RepeatOnSections = ({
                           ...frequencyMetadata,
                           months: newMonthsOfTheYear.sort(),
                         })
-                        console.log('newMonthsOfTheYear', newMonthsOfTheYear)
-                        // setDaysOfTheWeek(newDaysOfTheWeek)
                       }}
                       overlay
                       disableIcon
@@ -305,8 +296,6 @@ const RepeatOnSections = ({
                 } else if (e.target.value > 31) {
                   e.target.value = 31
                 }
-                // setDayOftheMonth(e.target.value)
-
                 onFrequencyUpdate(e.target.value)
               }}
             />
@@ -317,7 +306,7 @@ const RepeatOnSections = ({
       )
 
     default:
-      return <></>
+      return null
   }
 }
 
@@ -331,8 +320,6 @@ const RepeatSection = ({
   onFrequencyTimeUpdate,
   frequencyError,
 }) => {
-  const [repeatOn, setRepeatOn] = useState('interval')
-  const { userProfile, setUserProfile } = useContext(UserContext)
   return (
     <Box mt={2}>
       <Typography level='h4'>Repeat :</Typography>
@@ -414,8 +401,6 @@ const RepeatSection = ({
                           orientation='horizontal'
                           aria-labelledby='segmented-controls-example'
                           name='justify'
-                          // value={justify}
-                          // onChange={event => setJustify(event.target.value)}
                           sx={{
                             minHeight: 48,
                             padding: '4px',
@@ -455,14 +440,12 @@ const RepeatSection = ({
                                     unit: 'days',
                                   })
                                 }
-                                // setRepeatOn(item)
                               }}
                               value={item}
                               disableIcon
                               label={item
                                 .split('_')
                                 .map((i, idx) => {
-                                  // first or last word
                                   if (
                                     idx === 0 ||
                                     idx === item.split('_').length - 1
@@ -511,7 +494,7 @@ const RepeatSection = ({
                 </>
               ))}
             <FormControl error={Boolean(frequencyError)}>
-              <FormHelperText error>{frequencyError}</FormHelperText>
+              <FormHelperText>{frequencyError}</FormHelperText>
             </FormControl>
           </Card>
         </>

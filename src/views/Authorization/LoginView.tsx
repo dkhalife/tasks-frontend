@@ -16,7 +16,7 @@ import Logo from '../../Logo'
 import { GetUserProfile, login } from '../../utils/Fetcher'
 
 const LoginView = () => {
-  const { userProfile, setUserProfile } = React.useContext(UserContext)
+  const { userProfile, setUserProfile } = React.useContext<any>(UserContext)
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState<string | null>(null)
@@ -30,7 +30,6 @@ const LoginView = () => {
             localStorage.setItem('ca_token', data.token)
             localStorage.setItem('ca_expiration', data.expire)
             const redirectUrl = Cookies.get('ca_redirect')
-            // console.log('redirectUrl', redirectUrl)
             if (redirectUrl) {
               Cookies.remove('ca_redirect')
               Navigate(redirectUrl)
@@ -55,7 +54,6 @@ const LoginView = () => {
     GetUserProfile().then(data => {
       data.json().then(data => {
         setUserProfile(data.res)
-        // check if redirect url is set in cookie:
         const redirectUrl = Cookies.get('ca_redirect')
         if (redirectUrl) {
           Cookies.remove('ca_redirect')
@@ -73,8 +71,6 @@ const LoginView = () => {
     <Container
       component='main'
       maxWidth='xs'
-
-      // make content center in the middle of the page:
     >
       <Box
         sx={{
@@ -142,7 +138,6 @@ const LoginView = () => {
                 type='submit'
                 fullWidth
                 size='lg'
-                q
                 variant='plain'
                 sx={{
                   width: '100%',
@@ -221,7 +216,6 @@ const LoginView = () => {
                 type='submit'
                 fullWidth
                 size='lg'
-                q
                 variant='plain'
                 sx={{
                   width: '100%',
@@ -243,7 +237,6 @@ const LoginView = () => {
             fullWidth
             variant='soft'
             size='lg'
-            // sx={{ mt: 3, mb: 2 }}
           >
             Create new account
           </Button>

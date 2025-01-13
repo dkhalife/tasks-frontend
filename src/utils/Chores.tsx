@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { TASK_COLOR } from './Colors'
 
-export const ChoresGrouper = (groupBy, chores) => {
+export const ChoresGrouper = (groupBy, chores: any[]) => {
   chores.sort((a, b) => {
     if (a.nextDueDate === null) {
       return 1
@@ -12,20 +12,20 @@ export const ChoresGrouper = (groupBy, chores) => {
     return new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
   })
 
-  var groups = []
+  let groups: any[] = []
+  let groupRaw: any = {
+    Today: [],
+    'In a week': [],
+    'This month': [],
+    Later: [],
+    Overdue: [],
+    Anytime: [],
+  }
   switch (groupBy) {
     case 'due_date':
-      var groupRaw = {
-        Today: [],
-        'In a week': [],
-        'This month': [],
-        Later: [],
-        Overdue: [],
-        Anytime: [],
-      }
       chores.forEach(chore => {
         if (chore.nextDueDate === null) {
-          groupRaw['Anytime'].push(chore)
+          groupRaw.Anytime.push(chore)
         } else if (new Date(chore.nextDueDate) < new Date()) {
           groupRaw['Overdue'].push(chore)
         } else if (
@@ -95,7 +95,7 @@ export const ChoresGrouper = (groupBy, chores) => {
         }
       })
       groups.sort((a, b) => {
-        a.name < b.name ? 1 : -1
+        return a.name < b.name ? 1 : -1
       })
   }
   return groups

@@ -12,11 +12,11 @@ import { apiManager } from './utils/TokenManager'
 import React from 'react'
 
 const add = className => {
-  document.getElementById('root').classList.add(className)
+  document.getElementById('root')?.classList.add(className)
 }
 
 const remove = className => {
-  document.getElementById('root').classList.remove(className)
+  document.getElementById('root')?.classList.remove(className)
 }
 
 const intervalMS = 5 * 60 * 1000 // 5 minutes
@@ -25,7 +25,7 @@ function App() {
   startApiManager()
   const queryClient = new QueryClient()
   const { mode, systemMode } = useColorScheme()
-  const [userProfile, setUserProfile] = useState(null)
+  const [userProfile, setUserProfile] = useState<any>(null)
   const [showUpdateSnackbar, setShowUpdateSnackbar] = useState(true)
 
   const {

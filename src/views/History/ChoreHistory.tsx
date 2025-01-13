@@ -1,6 +1,5 @@
-import { Checklist, EventBusy, Group, Timelapse } from '@mui/icons-material'
+import { Checklist, EventBusy, Timelapse } from '@mui/icons-material'
 import {
-  Avatar,
   Button,
   Chip,
   Container,
@@ -27,13 +26,13 @@ const ChoreHistory = () => {
   const [choreHistory, setChoresHistory] = useState([])
   const [historyInfo, setHistoryInfo] = useState([])
 
-  const [isLoading, setIsLoading] = useState(true) // Add loading state
+  const [isLoading, setIsLoading] = useState(true)
   const { choreId } = useParams()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editHistory, setEditHistory] = useState({})
 
   useEffect(() => {
-    setIsLoading(true) // Start loading
+    setIsLoading(true)
 
     GetChoreHistory(choreId)
       .then(res => res.json())
@@ -50,7 +49,6 @@ const ChoreHistory = () => {
       })
       .catch(error => {
         console.error('Error fetching data:', error)
-        // Handle errors, e.g., show an error message to the user
       })
       .finally(() => {
         setIsLoading(false) // Finish loading
@@ -113,7 +111,6 @@ const ChoreHistory = () => {
         sx={{
           textAlign: 'center',
           display: 'flex',
-          // make sure the content is centered vertically:
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'column',
@@ -123,7 +120,6 @@ const ChoreHistory = () => {
         <EventBusy
           sx={{
             fontSize: '6rem',
-            // color: 'text.disabled',
             mb: 1,
           }}
         />
@@ -148,19 +144,12 @@ const ChoreHistory = () => {
         Summary:
       </Typography>
       <Sheet
-        // sx={{
-        //   mb: 1,
-        //   borderRadius: 'lg',
-        //   p: 2,
-        // }}
         sx={{ borderRadius: 'sm', p: 2 }}
         variant='outlined'
       >
         <Grid container spacing={1}>
           {historyInfo.map((info, index) => (
             <Grid item xs={4} key={index}>
-              {/* divider between the list items: */}
-
               <ListItem key={index}>
                 <ListItemContent>
                   <Typography level='body-xs' sx={{ fontWeight: 'md' }}>
@@ -176,13 +165,10 @@ const ChoreHistory = () => {
         </Grid>
       </Sheet>
 
-      {/* User History Cards */}
       <Typography level='title-md' my={1.5}>
         History:
       </Typography>
       <Sheet sx={{ borderRadius: 'sm', p: 2, boxShadow: 'md' }}>
-        {/* Chore History List (Updated Style) */}
-
         <List sx={{ p: 0 }}>
           {choreHistory.map((historyEntry, index) => (
             <HistoryCard

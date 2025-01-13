@@ -59,7 +59,6 @@ const ChoreCard = ({
   const [isPendingCompletion, setIsPendingCompletion] = React.useState<boolean>(false)
   const [secondsLeftToCancel, setSecondsLeftToCancel] = React.useState<number | null>(null)
   const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null)
-  const { userProfile } = React.useContext(UserContext)
 
   const handleEdit = () => {
     navigate(`/chores/${chore.id}/edit`)
@@ -85,7 +84,7 @@ const ChoreCard = ({
   }
   const handleTaskCompletion = () => {
     setIsPendingCompletion(true)
-    let seconds = 3 // Starting countdown from 3 seconds
+    let seconds = 3
     setSecondsLeftToCancel(seconds)
 
     const countdownInterval = setInterval(() => {
@@ -93,7 +92,7 @@ const ChoreCard = ({
       setSecondsLeftToCancel(seconds)
 
       if (seconds <= 0) {
-        clearInterval(countdownInterval) // Stop the countdown when it reaches 0
+        clearInterval(countdownInterval)
       }
     }, 1000)
 
@@ -109,7 +108,7 @@ const ChoreCard = ({
         .then(() => {
           setIsPendingCompletion(false)
           clearTimeout(id)
-          clearInterval(countdownInterval) // Ensure to clear this interval as well
+          clearInterval(countdownInterval)
           setTimeoutId(null)
           setSecondsLeftToCancel(null)
         })
@@ -335,12 +334,9 @@ const ChoreCard = ({
           flexDirection: 'column',
           justifyContent: 'space-between',
           p: 2,
-          // backgroundColor: 'white',
           boxShadow: 'sm',
           borderRadius: 20,
           key: `${chore.id}-card`,
-
-          // mb: 2,
         }}
       >
         <Grid container>
@@ -350,7 +346,6 @@ const ChoreCard = ({
               navigate(`/chores/${chore.id}`)
             }}
           >
-            {/* Box in top right with Chip showing next due date  */}
             <Box display='flex' justifyContent='start' alignItems='center'>
               <Avatar sx={{ mr: 1, fontSize: 22 }}>
                 {Array.from(chore.name)[0]}
@@ -390,7 +385,6 @@ const ChoreCard = ({
             }}
           >
             <Box display='flex' justifyContent='flex-end' alignItems='flex-end'>
-              {/* <ButtonGroup> */}
               <IconButton
                 variant='solid'
                 color='success'
@@ -420,7 +414,6 @@ const ChoreCard = ({
                 </div>
               </IconButton>
               <IconButton
-                // sx={{ width: 15 }}
                 variant='soft'
                 color='success'
                 sx={{

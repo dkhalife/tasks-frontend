@@ -1,6 +1,6 @@
 import { Chip, Menu, MenuItem, Typography } from '@mui/joy'
 import IconButton from '@mui/joy/IconButton'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 
 const IconButtonWithMenu = ({

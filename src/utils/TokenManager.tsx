@@ -3,6 +3,9 @@ import { API_URL } from '../Config'
 import { RefreshToken } from './Fetcher'
 
 class ApiManager {
+  private customServerURL: string
+  private initialized: boolean
+
   constructor() {
     this.customServerURL = `${API_URL}/api/v1`
     this.initialized = false
@@ -27,15 +30,11 @@ export const apiManager = new ApiManager()
 
 export function Fetch(url, options) {
   if (!isTokenValid()) {
-    // store current location in cookie
     Cookies.set('ca_redirect', window.location.pathname)
-    // Assuming you have a function isTokenValid() that checks token validity
-    window.location.href = '/login' // Redirect to login page
-    // return Promise.reject("Token is not valid");
+    window.location.href = '/login'
   }
-  if (!options) {
-    options = {}
-  }
+
+  options = options || {}
   options.headers = { ...options.headers, ...HEADERS() }
 
   const baseURL = apiManager.getApiURL()

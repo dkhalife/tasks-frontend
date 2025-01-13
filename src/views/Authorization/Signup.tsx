@@ -16,16 +16,16 @@ import Logo from '../../Logo'
 import { login, signUp } from '../../utils/Fetcher'
 
 const SignupView = () => {
-  const [username, setUsername] = React.useState('')
-  const [password, setPassword] = React.useState('')
+  const [username, setUsername] = React.useState<string>('')
+  const [password, setPassword] = React.useState<string>('')
   const Navigate = useNavigate()
-  const [displayName, setDisplayName] = React.useState('')
-  const [email, setEmail] = React.useState('')
-  const [usernameError, setUsernameError] = React.useState('')
-  const [passwordError, setPasswordError] = React.useState('')
-  const [emailError, setEmailError] = React.useState('')
-  const [displayNameError, setDisplayNameError] = React.useState('')
-  const [error, setError] = React.useState(null)
+  const [displayName, setDisplayName] = React.useState<string>('')
+  const [email, setEmail] = React.useState<string>('')
+  const [usernameError, setUsernameError] = React.useState<string|null>(null)
+  const [passwordError, setPasswordError] = React.useState<string|null>(null)
+  const [emailError, setEmailError] = React.useState<string|null>(null)
+  const [displayNameError, setDisplayNameError] = React.useState<string|null>(null)
+  const [error, setError] = React.useState<string|null>(null)
   const handleLogin = (username, password) => {
     login(username, password).then(response => {
       if (response.status === 200) {
@@ -38,8 +38,6 @@ const SignupView = () => {
         })
       } else {
         console.log('Login failed', response)
-
-        // Navigate('/login')
       }
     })
   }
@@ -174,7 +172,7 @@ const SignupView = () => {
             }}
           />
           <FormControl error={usernameError}>
-            <FormHelperText c>{usernameError}</FormHelperText>
+            <FormHelperText>{usernameError}</FormHelperText>
           </FormControl>
           {/* Error message display */}
           <Typography level='body2' alignSelf={'start'}>
@@ -195,7 +193,7 @@ const SignupView = () => {
             }}
           />
           <FormControl error={emailError}>
-            <FormHelperText c>{emailError}</FormHelperText>
+            <FormHelperText>{emailError}</FormHelperText>
           </FormControl>
           <Typography level='body2' alignSelf={'start'}>
             Password:

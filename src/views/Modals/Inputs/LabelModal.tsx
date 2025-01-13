@@ -24,7 +24,6 @@ function LabelModal({ isOpen, onClose, label }) {
   const { data: userLabels = [] } = useLabels()
   const queryClient = useQueryClient()
 
-  // Populate the form fields when editing
   useEffect(() => {
     if (label) {
       setLabelName(label.name)
@@ -36,7 +35,6 @@ function LabelModal({ isOpen, onClose, label }) {
     setError('')
   }, [label])
 
-  // Validation logic
   const validateLabel = () => {
     if (!labelName.trim()) {
       setError('Name cannot be empty')
@@ -57,7 +55,6 @@ function LabelModal({ isOpen, onClose, label }) {
     return true
   }
 
-  // Mutation for saving labels
   const saveLabelMutation = useMutation(
     newLabel =>
       label

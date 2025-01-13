@@ -1,4 +1,5 @@
 import { Box, Button, Modal, ModalDialog, Textarea, Typography } from '@mui/joy'
+import React from 'react'
 import { useState } from 'react'
 
 function TextModal({
@@ -20,7 +21,6 @@ function TextModal({
   return (
     <Modal open={isOpen} onClose={onClose}>
       <ModalDialog>
-        {/* <ModalClose /> */}
         <Typography variant='h4'>{title}</Typography>
         <Textarea
           placeholder='Type in here…'

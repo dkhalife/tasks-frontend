@@ -14,13 +14,14 @@ import PassowrdChangeModal from '../Modals/Inputs/PasswordChangeModal'
 import APITokenSettings from './APITokenSettings'
 import NotificationSetting from './NotificationSetting'
 import ThemeToggle from './ThemeToggle'
+import React from 'react'
 
 const Settings = () => {
-  const { userProfile, setUserProfile } = useContext(UserContext)
+  const { userProfile, setUserProfile } = useContext<any>(UserContext)
   const [changePasswordModal, setChangePasswordModal] = useState(false)
   useEffect(() => {
     GetUserProfile().then(resp => {
-      resp.json().then(data => {
+      resp.json().then((data: any) => {
         setUserProfile(data.res)
       })
     })

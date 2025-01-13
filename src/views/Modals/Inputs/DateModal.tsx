@@ -15,7 +15,6 @@ function DateModal({ isOpen, onClose, onSave, current, title }) {
   return (
     <Modal open={isOpen} onClose={onClose}>
       <ModalDialog>
-        {/* <ModalClose /> */}
         <Typography variant='h4'>{title}</Typography>
         <Input
           sx={{ mt: 3 }}

@@ -30,7 +30,6 @@ import { GetAllUsers, GetChores, MarkChoreComplete } from '../utils/Fetcher'
 import DateModal from './Modals/Inputs/DateModal'
 import React from 'react'
 
-// enum for chore status:
 const CHORE_STATUS = {
   NO_DUE_DATE: 'No due date',
   DUE_SOON: 'Soon',
@@ -79,22 +78,8 @@ const ChoresOverview = () => {
         return 'neutral'
     }
   }
-  const getChoreStatusIcon = chore => {
-    switch (getChoreStatus(chore)) {
-      case CHORE_STATUS.NO_DUE_DATE:
-        return <HelpOutline />
-      case CHORE_STATUS.DUE_SOON:
-        return <QueryBuilder />
-      case CHORE_STATUS.DUE_NOW:
-        return <Adjust />
-      case CHORE_STATUS.OVER_DUE:
-        return <Warning />
-      default:
-        return <HelpOutline />
-    }
-  }
+
   useEffect(() => {
-    // fetch chores:
     GetChores()
       .then(response => response.json())
       .then(data => {
@@ -112,7 +97,7 @@ const ChoresOverview = () => {
       <Typography level='h4' mb={1.5}>
         Chores Overviews
       </Typography>
-      {/* <SummaryCard /> */}
+
       <Grid container>
         <Grid
           item
@@ -175,9 +160,8 @@ const ChoresOverview = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredChores.map(chore => (
+          {filteredChores.map((chore: any) => (
             <tr key={chore.id}>
-              {/* cirular icon if the chore is due will be red else yellow: */}
               <td>
                 <Chip color={getChoreStatusColor(chore)}>
                   {getChoreStatus(chore)}
@@ -208,18 +192,12 @@ const ChoresOverview = () => {
               </td>
 
               <td>
-                <ButtonGroup
-                // display='flex'
-                // // justifyContent='space-around'
-                // alignItems={'center'}
-                // gap={0.5}
-                >
+                <ButtonGroup>
                   <IconButton
                     variant='outlined'
                     size='sm'
-                    // sx={{ borderRadius: '50%' }}
                     onClick={() => {
-                      MarkChoreComplete(chore.id, null, null, null).then(
+                      MarkChoreComplete(chore.id, null, null).then(
                         response => {
                           if (response.ok) {
                             response.json().then(data => {
@@ -243,7 +221,6 @@ const ChoresOverview = () => {
                   <IconButton
                     variant='outlined'
                     size='sm'
-                    // sx={{ borderRadius: '50%' }}
                     onClick={() => {
                       setChoreId(chore.id)
                       setIsDateModalOpen(true)
@@ -255,9 +232,6 @@ const ChoresOverview = () => {
                   <IconButton
                     variant='outlined'
                     size='sm'
-                    // sx={{
-                    //   borderRadius: '50%',
-                    // }}
                     onClick={() => {
                       Navigate(`/chores/${chore.id}/edit`)
                     }}
@@ -278,11 +252,7 @@ const ChoresOverview = () => {
           setIsDateModalOpen(false)
         }}
         onSave={date => {
-          if (activeUserId === null) {
-            alert('Please select a performer')
-            return
-          }
-          MarkChoreComplete(choreId, null, date, activeUserId).then(
+          MarkChoreComplete(choreId, null, date).then(
             response => {
               if (response.ok) {
                 response.json().then(data => {

@@ -9,7 +9,6 @@ import {
   Divider,
   FormControl,
   FormHelperText,
-  FormLabel,
   Input,
   List,
   ListItem,
@@ -21,13 +20,11 @@ import {
   Sheet,
   Snackbar,
   Stack,
-  Switch,
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { UserContext } from '../../contexts/UserContext'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   CreateChore,
@@ -46,19 +43,14 @@ const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
 const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 const ChoreEdit = () => {
-  const { userProfile, setUserProfile } = useContext(UserContext)
   const [chore, setChore] = useState([])
-  const [choresHistory, setChoresHistory] = useState([])
-  const [userHistory, setUserHistory] = useState({})
   const { choreId } = useParams()
   const [name, setName] = useState('')
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
-  const [dueDate, setDueDate] = useState(null)
-  const [completed, setCompleted] = useState(false)
-  const [completedDate, setCompletedDate] = useState('')
+  const [dueDate, setDueDate] = useState<any>(null)
   const [frequencyType, setFrequencyType] = useState('once')
   const [frequency, setFrequency] = useState(1)
-  const [frequencyMetadata, setFrequencyMetadata] = useState({})
+  const [frequencyMetadata, setFrequencyMetadata] = useState<any>({})
   const [labels, setLabels] = useState([])
   const [labelsV2, setLabelsV2] = useState([])
   const [completionWindow, setCompletionWindow] = useState(-1)
@@ -73,7 +65,7 @@ const ChoreEdit = () => {
   const [errors, setErrors] = useState({})
   const [attemptToSave, setAttemptToSave] = useState(false)
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
-  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarMessage, setSnackbarMessage] = useState<any>(null)
   const [snackbarColor, setSnackbarColor] = useState('warning')
   const [addLabelModalOpen, setAddLabelModalOpen] = useState(false)
   const { data: userLabelsRaw, isLoading: isUserLabelsLoading } = useLabels()
@@ -89,12 +81,12 @@ const ChoreEdit = () => {
   const Navigate = useNavigate()
 
   const HandleValidateChore = () => {
-    const errors = {}
+    const errors: { [key: string]: string } = {}
 
     if (name.trim() === '') {
       errors.name = 'Name is required'
     }
-    if (frequencyType === 'interval' && !frequency > 0) {
+    if (frequencyType === 'interval' && frequency <= 0) {
       errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
     }
     if (
@@ -184,7 +176,6 @@ const ChoreEdit = () => {
     })
   }
   useEffect(() => {
-    // fetch chores:
     if (choreId > 0) {
       GetChoreByID(choreId)
         .then(response => {
@@ -230,28 +221,11 @@ const ChoreEdit = () => {
           // setCompleted(data.res.completed)
           // setCompletedDate(data.res.completedDate)
         })
-
-      // fetch chores history:
-      GetChoreHistory(choreId)
-        .then(response => response.json())
-        .then(data => {
-          setChoresHistory(data.res)
-          const newUserChoreHistory = {}
-          data.res.forEach(choreHistory => {
-            if (newUserChoreHistory[choreHistory.completedBy]) {
-              newUserChoreHistory[choreHistory.completedBy] += 1
-            } else {
-              newUserChoreHistory[choreHistory.completedBy] = 1
-            }
-          })
-
-          setUserHistory(newUserChoreHistory)
-        })
     }
     // set focus on the first input field:
     else {
       // new task/ chore set focus on the first input field:
-      document.querySelector('input').focus()
+      document.querySelector('input')?.focus()
     }
   }, [Navigate, choreId])
 
@@ -447,11 +421,11 @@ const ChoreEdit = () => {
                 description: 'before a task is due in few hours',
                 id: 'predue',
               },
-              // {
-              //   title: 'Overdue',
-              //   description: 'A notification when a task is overdue',
-              //   id: 'overdue',
-              // },
+              {
+                title: 'Overdue',
+                description: 'A notification when a task is overdue',
+                id: 'overdue',
+              },
               {
                 title: 'Nagging',
                 description: 'Daily reminders until the task is completed',
@@ -523,7 +497,6 @@ const ChoreEdit = () => {
         >
           {userLabels &&
             userLabels
-              // .map(l => l.name)
               .map(label => (
                 <Option key={label.id + label.name} value={label.name}>
                   <div
@@ -574,9 +547,6 @@ const ChoreEdit = () => {
 
       <Divider sx={{ mb: 9 }} />
 
-      {/* <Box mt={2} alignSelf={'flex-start'} display='flex' gap={2}>
-        <Button onClick={SaveChore}>Save</Button>
-      </Box> */}
       <Sheet
         variant='outlined'
         sx={{
@@ -584,13 +554,13 @@ const ChoreEdit = () => {
           bottom: 0,
           left: 0,
           right: 0,
-          p: 2, // padding
+          padding: 2,
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 2,
           'z-index': 1000,
           bgcolor: 'background.body',
-          boxShadow: 'md', // Add a subtle shadow
+          boxShadow: 'md',
         }}
       >
         {choreId > 0 && (
@@ -598,7 +568,6 @@ const ChoreEdit = () => {
             color='danger'
             variant='solid'
             onClick={() => {
-              // confirm before deleting:
               handleDelete()
             }}
           >

@@ -1,4 +1,3 @@
-// create boilerplate for ResetPasswordView:
 import LogoSVG from '../../assets/logo.svg'
 import {
   Box,
@@ -45,7 +44,6 @@ const ForgotPasswordView = () => {
 
       if (response.ok) {
         setResetStatusOk(true)
-        //  wait 3 seconds and then redirect to login:
       } else {
         setResetStatusOk(false)
       }
@@ -67,8 +65,6 @@ const ForgotPasswordView = () => {
     <Container
       component='main'
       maxWidth='xs'
-
-      // make content center in the middle of the page:
     >
       <Box
         sx={{
@@ -98,7 +94,6 @@ const ForgotPasswordView = () => {
         >
           <Box>
             <img src={LogoSVG} alt='logo' width='128px' height='128px' />
-            {/* <Logo /> */}
             <Typography level='h2'>
               Done
               <span
@@ -110,7 +105,7 @@ const ForgotPasswordView = () => {
               </span>
             </Typography>
           </Box>
-          {/* HERE */}
+
           <Box sx={{ textAlign: 'center' }}></Box>
           {resetStatusOk === null && (
             <form onSubmit={handleSubmit}>

@@ -1,4 +1,3 @@
-// create boilerplate for ResetPasswordView:
 import {
   Box,
   Button,
@@ -57,10 +56,7 @@ const UpdatePasswordView = () => {
 
       if (response.ok) {
         setUpdateStatusOk(true)
-        //  wait 3 seconds and then redirect to login:
-        setTimeout(() => {
-          navigate('/login')
-        }, 3000)
+        navigate('/login')
       } else {
         setUpdateStatusOk(false)
       }
@@ -85,7 +81,6 @@ const UpdatePasswordView = () => {
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            // alignItems: 'center',
             padding: 2,
             borderRadius: '8px',
             boxShadow: 'md',
@@ -135,7 +130,6 @@ const UpdatePasswordView = () => {
             />
             <FormHelperText>{passworConfirmationError}</FormHelperText>
           </FormControl>
-          {/* helper to show password not matching : */}
 
           <Button
             fullWidth

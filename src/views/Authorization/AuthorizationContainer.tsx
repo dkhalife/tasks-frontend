@@ -8,13 +8,11 @@ const Container = styled('div')(({ theme }) => ({
   display: 'grid',
   placeItems: 'start center',
   [theme.breakpoints.up('sm')]: {
-    // center children
     placeItems: 'center',
   },
 }))
 
 const AuthCard = styled(Paper)(({ theme }) => ({
-  //   border: "1px solid #c4c4c4",
   padding: 24,
   paddingTop: 32,
   borderRadius: 24,
@@ -36,7 +34,6 @@ export default function AuthCardContainer({ children }) {
             paddingBottom: 4,
           }}
         >
-          {/* <Logo size='96px' /> */}
         </Box>
         {children}
       </AuthCard>

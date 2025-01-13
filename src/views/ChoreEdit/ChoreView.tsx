@@ -5,8 +5,6 @@ import {
   Checklist,
   Edit,
   History,
-  PeopleAlt,
-  Person,
   SwitchAccessShortcut,
   Timelapse,
 } from '@mui/icons-material'
@@ -29,7 +27,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { notInCompletionWindow } from '../../utils/Chores'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
-  GetAllUsers,
   GetChoreDetailById,
   MarkChoreComplete,
   SkipChore,
@@ -54,7 +51,7 @@ const ChoreView = () => {
 
   const handleTaskCompletion = () => {
     setIsPendingCompletion(true)
-    let seconds = 3 // Starting countdown from 3 seconds
+    let seconds = 3
     setSecondsLeftToCancel(seconds)
 
     const countdownInterval = setInterval(() => {
@@ -62,7 +59,7 @@ const ChoreView = () => {
       setSecondsLeftToCancel(seconds)
 
       if (seconds <= 0) {
-        clearInterval(countdownInterval) // Stop the countdown when it reaches 0
+        clearInterval(countdownInterval)
       }
     }, 1000)
 
@@ -79,12 +76,11 @@ const ChoreView = () => {
         .then(() => {
           setIsPendingCompletion(false)
           clearTimeout(id)
-          clearInterval(countdownInterval) // Ensure to clear this interval as well
+          clearInterval(countdownInterval)
           setTimeoutId(null)
           setSecondsLeftToCancel(null)
         })
         .then(() => {
-          // refetch the chore details
           GetChoreDetailById(choreId).then(resp => {
             if (resp.ok) {
               return resp.json().then(data => {
@@ -160,9 +156,7 @@ const ChoreView = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        // space between :
         justifyContent: 'space-between',
-        // max height of the container:
         maxHeight: 'calc(100vh - 500px)',
       }}
     >
@@ -177,7 +171,6 @@ const ChoreView = () => {
       >
         <Typography
           level='h3'
-          // textAlign={'center'}
           sx={{
             mt: 1,
             mb: 0.5,
@@ -218,8 +211,6 @@ const ChoreView = () => {
           <Grid container spacing={1}>
             {infoCards.map((detail, index) => (
               <Grid item xs={4} key={index}>
-                {/* divider between the list items: */}
-
                 <ListItem key={index}>
                   <ListItemContent>
                     <Typography level='body-xs' sx={{ fontWeight: 'md' }}>
@@ -272,7 +263,6 @@ const ChoreView = () => {
             variant='outlined'
             fullWidth
             sx={{
-              // top right of the card:
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
@@ -370,7 +360,7 @@ const ChoreView = () => {
                   clearTimeout(timeoutId)
                   setIsPendingCompletion(false)
                   setTimeoutId(null)
-                  setSecondsLeftToCancel(null) // Reset or adjust as needed
+                  setSecondsLeftToCancel(null)
                 }
               }}
               size='lg'

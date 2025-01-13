@@ -30,11 +30,11 @@ const links = [
   },
 
   // TODO: alternate between home desktep view based on device
-  // {
-  //   to: '/chores',
-  //   label: 'Desktop View',
-  //   icon: <ListAltRounded />,
-  // },
+  {
+    to: '/chores',
+    label: 'Desktop View',
+    icon: <ListAlt />,
+  },
   {
     to: 'labels',
     label: 'Labels',
@@ -102,11 +102,7 @@ const NavBar = () => {
         onClick={closeDrawer}
       >
         <div>
-          {/* <div className='align-center flex px-5 pt-4'>
-            <ModalClose size='sm' sx={{ top: 'unset', right: 20 }} />
-          </div> */}
           <List
-            // sx={{ p: 2, height: 'min-content' }}
             size='md'
             onClick={openDrawer}
             sx={{ borderRadius: 4, width: '100%', padding: 1 }}
@@ -134,7 +130,6 @@ const NavBar = () => {
               onClick={() => {
                 localStorage.removeItem('ca_token')
                 localStorage.removeItem('ca_expiration')
-                // go to login page:
                 window.location.href = '/login'
               }}
               sx={{
@@ -148,7 +143,6 @@ const NavBar = () => {
             </ListItemButton>
             <Typography
               onClick={
-                // force service worker to update:
                 () => window.location.reload()
               }
               level='body-xs'
@@ -158,7 +152,6 @@ const NavBar = () => {
                 color: 'text.tertiary',
                 textAlign: 'center',
                 bottom: 0,
-                // mb: -2,
               }}
             >
               V{version}

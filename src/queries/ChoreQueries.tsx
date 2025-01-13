@@ -20,15 +20,11 @@ export const useCreateChore = () => {
 }
 
 export const useChoresHistory = (initialLimit, includeMembers) => {
-  const [limit, setLimit] = useState(initialLimit) // Initially, no limit is selected
+  const [limit, setLimit] = useState(initialLimit)
 
   const { data, error, isLoading } = useQuery(['choresHistory', limit], () =>
     GetChoresHistory(limit, includeMembers),
   )
 
-  const handleLimitChange = newLimit => {
-    setLimit(newLimit)
-  }
-
-  return { data, error, isLoading, handleLimitChange }
+  return { data, error, isLoading, setLimit }
 }

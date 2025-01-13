@@ -7,11 +7,9 @@ import {
   FormHelperText,
   FormLabel,
   IconButton,
-  Input,
   Option,
   Select,
   Snackbar,
-  Switch,
   Typography,
 } from '@mui/joy'
 import React, { useContext, useEffect, useState } from 'react'
@@ -19,7 +17,6 @@ import { UserContext } from '../../contexts/UserContext'
 import {
   GetUserProfile,
   UpdateNotificationTarget,
-  UpdateUserDetails,
 } from '../../utils/Fetcher'
 
 const NotificationSetting = () => {

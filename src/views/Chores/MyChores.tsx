@@ -213,9 +213,7 @@ const MyChores = () => {
   }
 
   const searchOptions = {
-    // keys to search in
     keys: ['name', 'raw_label'],
-    includeScore: true, // Optional: if you want to see how well each result matched the search term
     isCaseSensitive: false,
     findAllMatches: true,
   }
@@ -422,7 +420,6 @@ const MyChores = () => {
           <EditCalendar
             sx={{
               fontSize: '4rem',
-              // color: 'text.disabled',
               mb: 1,
             }}
           />
@@ -529,7 +526,6 @@ const MyChores = () => {
       )}
       <Box
         sx={{
-          // center the button
           justifyContent: 'center',
           mt: 2,
         }}
@@ -585,12 +581,11 @@ const MyChores = () => {
         )}
       </Box>
       <Box
-        // variant='outlined'
         sx={{
           position: 'fixed',
           bottom: 0,
           left: 10,
-          p: 2, // padding
+          padding: 2,
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 2,

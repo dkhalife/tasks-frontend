@@ -2,12 +2,12 @@ import { Box, CircularProgress, Container } from '@mui/joy'
 import { Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import Logo from '../../Logo'
+import React from 'react'
 
 const LoadingComponent = () => {
   const [message, setMessage] = useState('Loading...')
   const [subMessage, setSubMessage] = useState('')
   useEffect(() => {
-    // if loading took more than 5 seconds update submessage to mention there might be an error:
     const timeout = setTimeout(() => {
       setSubMessage(
         'This is taking longer than usual. There might be an issue.',

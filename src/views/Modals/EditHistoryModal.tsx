@@ -71,7 +71,6 @@ function EditHistoryModal({ config, historyRecord }) {
           }}
         />
 
-        {/* 3 button save , cancel and delete */}
         <Box display={'flex'} justifyContent={'space-around'} mt={1}>
           <Button
             onClick={() =>
