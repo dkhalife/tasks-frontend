@@ -134,13 +134,6 @@ const MyChores = () => {
     }
   }, [choresData, choresLoading])
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleMenuOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleMenuOutsideClick)
-    }
-  }, [anchorEl, handleMenuOutsideClick])
-
   const handleMenuOutsideClick = event => {
     if (
       anchorEl &&
@@ -150,6 +143,14 @@ const MyChores = () => {
       handleFilterMenuClose()
     }
   }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleMenuOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleMenuOutsideClick)
+    }
+  }, [anchorEl, handleMenuOutsideClick])
+
   const handleFilterMenuOpen = event => {
     event.preventDefault()
     setAnchorEl(event.currentTarget)
