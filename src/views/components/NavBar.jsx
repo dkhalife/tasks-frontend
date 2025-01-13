@@ -66,17 +66,10 @@ const NavBar = () => {
     () => setDrawerOpen(false),
   ]
   const location = useLocation()
-  // if url has /landing then remove the navbar:
   if (
-    ['/signup', '/login', '/landing', '/forgot-password'].includes(
+    ['/signup', '/login', '/forgot-password'].includes(
       location.pathname,
     )
-  ) {
-    return null
-  }
-  if (
-    location.pathname === '/' &&
-    import.meta.env.VITE_IS_LANDING_DEFAULT === 'true'
   ) {
     return null
   }

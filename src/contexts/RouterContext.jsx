@@ -13,14 +13,10 @@ import ChoreView from '../views/ChoreEdit/ChoreView'
 import MyChores from '../views/Chores/MyChores'
 import ChoreHistory from '../views/History/ChoreHistory'
 import LabelView from '../views/Labels/LabelView'
-import Landing from '../views/Landing/Landing'
 import PrivacyPolicyView from '../views/PrivacyPolicy/PrivacyPolicyView'
 import TermsView from '../views/Terms/TermsView'
 
 const getMainRoute = () => {
-  if (import.meta.env.VITE_IS_LANDING_DEFAULT === 'true') {
-    return <Landing />
-  }
   return <MyChores />
 }
 const Router = createBrowserRouter([
@@ -72,10 +68,6 @@ const Router = createBrowserRouter([
       {
         path: '/signup',
         element: <SignupView />,
-      },
-      {
-        path: '/landing',
-        element: <Landing />,
       },
       {
         path: '/forgot-password',
