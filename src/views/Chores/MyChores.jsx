@@ -715,17 +715,7 @@ const FILTERS = {
       )
     })
   },
-  'Created By Me': function (chores, userID) {
-    return chores.filter(chore => {
-      return chore.createdBy === userID
-    })
-  },
-  'Assigned To Me': function (chores, userID) {
-    return chores.filter(chore => {
-      return chore.assignedTo === userID
-    })
-  },
-  'No Due Date': function (chores, userID) {
+  'No Due Date': function (chores) {
     return chores.filter(chore => {
       return chore.nextDueDate === null
     })
