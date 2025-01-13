@@ -31,7 +31,6 @@ import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
 import { useChores } from '../../queries/ChoreQueries'
 import {
-  GetAllUsers,
   GetArchivedChores,
   GetChores,
   GetUserProfile,
@@ -89,24 +88,20 @@ export const MyChores = () => {
   }
 
   useEffect(() => {
-    Promise.all([GetChores(), GetAllUsers(), GetUserProfile()]).then(
+    Promise.all([GetChores(), GetUserProfile()]).then(
       responses => {
-        const [choresResponse, usersResponse, userProfileResponse] = responses
+        const [choresResponse, userProfileResponse] = responses
         if (!choresResponse.ok) {
           throw new Error(choresResponse.statusText)
-        }
-        if (!usersResponse.ok) {
-          throw new Error(usersResponse.statusText)
         }
         if (!userProfileResponse.ok) {
           throw new Error(userProfileResponse.statusText)
         }
         Promise.all([
           choresResponse.json(),
-          usersResponse.json(),
           userProfileResponse.json(),
         ]).then(data => {
-          const [choresData, usersData, userProfileData] = data
+          const [choresData, userProfileData] = data
           setUserProfile(userProfileData.res)
           choresData.res.sort(choreSorter)
           setChores(choresData.res)

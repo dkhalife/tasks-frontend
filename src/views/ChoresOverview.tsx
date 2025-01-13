@@ -26,7 +26,7 @@ import {
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GetAllUsers, GetChores, MarkChoreComplete } from '../utils/Fetcher'
+import { GetChores, MarkChoreComplete } from '../utils/Fetcher'
 import { DateModal } from './Modals/Inputs/DateModal'
 import React from 'react'
 
