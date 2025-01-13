@@ -24,48 +24,25 @@ import {
 
 const NotificationSetting = () => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
-  const { userProfile, setUserProfile } = useContext(UserContext)
+  const { userProfile, setUserProfile } = useContext<any>(UserContext)
   useEffect(() => {
     if (!userProfile) {
       GetUserProfile().then(resp => {
         resp.json().then(data => {
           setUserProfile(data.res)
-          setChatID(data.res.chatID)
         })
       })
     }
-  }, [userProfile, setUserProfile, setChatID])
+  }, [userProfile, setUserProfile])
 
-  const [notificationTarget, setNotificationTarget] = useState(
+  const [notificationTarget, setNotificationTarget] = useState<string|null>(
     userProfile?.notification_target
       ? String(userProfile.notification_target.type)
       : '0',
   )
 
-  const [chatID, setChatID] = useState(
-    userProfile?.notification_target?.target_id,
-  )
   const [error, setError] = useState('')
   const SaveValidation = () => {
-    switch (notificationTarget) {
-      case '1':
-        if (chatID === '') {
-          setError('Chat ID is required')
-          return false
-        } else if (isNaN(chatID) || chatID === '0') {
-          setError('Invalid Chat ID')
-          return false
-        }
-        break
-      case '2':
-        if (chatID === '') {
-          setError('User key is required')
-          return false
-        }
-        break
-      default:
-        break
-    }
     setError('')
     return true
   }
@@ -73,7 +50,6 @@ const NotificationSetting = () => {
     if (!SaveValidation()) return
 
     UpdateNotificationTarget({
-      target: chatID,
       type: Number(notificationTarget),
     }).then(resp => {
       if (resp.status != 200) {
@@ -84,7 +60,6 @@ const NotificationSetting = () => {
       setUserProfile({
         ...userProfile,
         notification_target: {
-          target: chatID,
           type: Number(notificationTarget),
         },
       })
@@ -109,128 +84,38 @@ const NotificationSetting = () => {
             Receive notification on other platform
           </FormHelperText>
         </div>
-        <Switch
-          checked={chatID !== 0}
-          onClick={event => {
-            event.preventDefault()
-            if (chatID !== 0) {
-              setChatID(0)
-            } else {
-              setChatID('')
-              UpdateUserDetails({
-                chatID: Number(0),
-              }).then(resp => {
-                resp.json().then(data => {
-                  setUserProfile(data)
-                })
-              })
-            }
-            setNotificationTarget('0')
-            handleSave()
-          }}
-          color={chatID !== 0 ? 'success' : 'neutral'}
-          variant={chatID !== 0 ? 'solid' : 'outlined'}
-          endDecorator={chatID !== 0 ? 'On' : 'Off'}
-          slotProps={{
-            endDecorator: {
-              sx: {
-                minWidth: 24,
-              },
-            },
-          }}
-        />
       </FormControl>
-      {chatID !== 0 && (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Select
+          value={notificationTarget}
+          sx={{ maxWidth: '200px' }}
+          onChange={(e, selected) => setNotificationTarget(selected)}
         >
-          <Select
-            value={notificationTarget}
-            sx={{ maxWidth: '200px' }}
-            onChange={(e, selected) => setNotificationTarget(selected)}
-          >
-            <Option value='0'>None</Option>
-            <Option value='1'>Telegram</Option>
-            <Option value='2'>Pushover</Option>
-            <Option value='2'>Mqtt</Option>
-          </Select>
-          {notificationTarget === '1' && (
-            <>
-              <Typography level='body-xs'>
-                You need to initiate a message to the bot in order for the
-                Telegram notification to work{' '}
-                <a
-                  style={{
-                    textDecoration: 'underline',
-                    color: '#0891b2',
-                  }}
-                  href='https://t.me/DonetickBot'
-                >
-                  Click here
-                </a>{' '}
-                to start a chat
-              </Typography>
+          <Option value='0'>None</Option>
+          <Option value='3'>Mqtt</Option>
+        </Select>
+        {error && (
+          <Typography color='warning' level='body-sm'>
+            {error}
+          </Typography>
+        )}
 
-              <Typography level='body-sm'>Chat ID</Typography>
-
-              <Input
-                value={chatID}
-                onChange={e => setChatID(e.target.value)}
-                placeholder='User ID / Chat ID'
-                sx={{
-                  width: '200px',
-                }}
-              />
-              <Typography mt={0} level='body-xs'>
-                If you don't know your Chat ID, start chat with userinfobot and
-                it will send you your Chat ID.{' '}
-                <a
-                  style={{
-                    textDecoration: 'underline',
-                    color: '#0891b2',
-                  }}
-                  href='https://t.me/userinfobot'
-                >
-                  Click here
-                </a>{' '}
-                to start chat with userinfobot{' '}
-              </Typography>
-            </>
-          )}
-          {notificationTarget === '2' && (
-            <>
-              <Typography level='body-sm'>User key</Typography>
-              <Input
-                value={chatID}
-                onChange={e => setChatID(e.target.value)}
-                placeholder='User ID'
-                sx={{
-                  width: '200px',
-                }}
-              />
-            </>
-          )}
-          {error && (
-            <Typography color='warning' level='body-sm'>
-              {error}
-            </Typography>
-          )}
-
-          <Button
-            sx={{
-              width: '110px',
-              mb: 1,
-            }}
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-        </Box>
-      )}
+        <Button
+          sx={{
+            width: '110px',
+            mb: 1,
+          }}
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </Box>
       <Snackbar
         open={isSnackbarOpen}
         autoHideDuration={8000}

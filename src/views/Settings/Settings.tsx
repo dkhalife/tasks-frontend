@@ -48,7 +48,7 @@ const Settings = () => {
         <Typography level='body-md'>Update your password</Typography>
           <Box>
             <Typography level='title-md' mb={1}>
-              Password :
+              Password
             </Typography>
             <Typography mb={1} level='body-sm'></Typography>
             <Button
