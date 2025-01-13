@@ -109,10 +109,13 @@ function LabelModal({ isOpen, onClose, label }) {
             renderValue={selected => (
               <Typography
                 startDecorator={
-                  <Box
+                  <span
                     className='size-4'
-                    borderRadius={10}
-                    sx={{ background: selected.value }}
+                    style={{
+                      borderRadius: 10,
+                      display: 'inline-block',
+                      background: selected.value
+                    }}
                   />
                 }
               >
