@@ -1,5 +1,4 @@
 import {
-  CancelScheduleSend,
   Check,
   Delete,
   Edit,
@@ -14,22 +13,18 @@ import {
 import {
   Avatar,
   Box,
-  Button,
   Card,
   Chip,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
   Menu,
   MenuItem,
-  Snackbar,
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { UserContext } from '../../contexts/UserContext'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   DeleteChore,
@@ -325,7 +320,7 @@ export const ChoreCard = ({
               <Box display='flex' flexDirection='column'>
                 <Typography level='title-md'>{getName(chore.name)}</Typography>
                 <Box key={`${chore.id}-labels`}>
-                  {chore.labelsV2?.map((l, index) => {
+                  {chore.labels?.map((l, index) => {
                     return (
                       <Chip
                         variant='solid'

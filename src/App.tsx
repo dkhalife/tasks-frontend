@@ -19,7 +19,8 @@ const remove = className => {
 }
 
 export function App() {
-  startApiManager()
+  apiManager.init()
+
   const queryClient = new QueryClient()
   const { mode, systemMode } = useColorScheme()
   const [userProfile, setUserProfile] = useState<any>(null)
@@ -66,8 +67,4 @@ export function App() {
       </QueryClientProvider>
     </div>
   )
-}
-
-const startApiManager = () => {
-  apiManager.init()
 }

@@ -31,7 +31,6 @@ import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
 import { useChores } from '../../queries/ChoreQueries'
 import {
-  GetAllUsers,
   GetArchivedChores,
   GetChores,
   GetUserProfile,
@@ -89,24 +88,20 @@ export const MyChores = () => {
   }
 
   useEffect(() => {
-    Promise.all([GetChores(), GetAllUsers(), GetUserProfile()]).then(
+    Promise.all([GetChores(), GetUserProfile()]).then(
       responses => {
-        const [choresResponse, usersResponse, userProfileResponse] = responses
+        const [choresResponse, userProfileResponse] = responses
         if (!choresResponse.ok) {
           throw new Error(choresResponse.statusText)
-        }
-        if (!usersResponse.ok) {
-          throw new Error(usersResponse.statusText)
         }
         if (!userProfileResponse.ok) {
           throw new Error(userProfileResponse.statusText)
         }
         Promise.all([
           choresResponse.json(),
-          usersResponse.json(),
           userProfileResponse.json(),
         ]).then(data => {
-          const [choresData, usersData, userProfileData] = data
+          const [choresData, userProfileData] = data
           setUserProfile(userProfileData.res)
           choresData.res.sort(choreSorter)
           setChores(choresData.res)
@@ -137,7 +132,7 @@ export const MyChores = () => {
     if (chipClicked.label) {
       const label = chipClicked.label
       const labelFiltered = [...chores].filter(chore =>
-        chore.labelsV2.some(
+        chore.labels.some(
           l => l.id === label.id && l.created_by === label.created_by,
         ),
       )
@@ -221,7 +216,7 @@ export const MyChores = () => {
   const fuse = new Fuse(
     chores.map(c => ({
       ...c,
-      raw_label: c.labelsV2.map(c => c.name).join(' '),
+      raw_label: c.labels.map(c => c.name).join(' '),
     })),
     searchOptions,
   )
@@ -291,7 +286,7 @@ export const MyChores = () => {
           options={[
             ...userLabels,
             ...chores
-              .map(c => c.labelsV2)
+              .map(c => c.labels)
               .flat()
               .filter(l => l.created_by !== userProfile.id)
               .map(l => {

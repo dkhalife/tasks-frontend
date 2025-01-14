@@ -41,12 +41,6 @@ export const login = (username, password) => {
   })
 }
 
-export const GetAllUsers = () => {
-  return Fetch(`/users/`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
-}
 export const GetChoresNew = async includeArchived => {
   let url = `/chores/`
   if (includeArchived) {

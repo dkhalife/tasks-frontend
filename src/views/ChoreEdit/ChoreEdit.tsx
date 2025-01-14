@@ -53,7 +53,6 @@ export const ChoreEdit = () => {
   const [frequency, setFrequency] = useState(1)
   const [frequencyMetadata, setFrequencyMetadata] = useState<any>({})
   const [labels, setLabels] = useState([])
-  const [labelsV2, setLabelsV2] = useState([])
 
   const [notificationMetadata, setNotificationMetadata] = useState({})
 
@@ -155,8 +154,7 @@ export const ChoreEdit = () => {
       isRolling: isRolling,
       isActive: isActive,
       notification: isNotificable,
-      labels: labels.map(l => l.name),
-      labelsV2: labelsV2,
+      labels: labels,
       notificationMetadata: notificationMetadata,
     }
     let SaveFunction = CreateChore
@@ -196,7 +194,7 @@ export const ChoreEdit = () => {
 
           setNotificationMetadata(JSON.parse(data.res.notificationMetadata))
 
-          setLabelsV2(data.res.labelsV2)
+          setLabels(data.res.labels)
           setIsRolling(data.res.isRolling)
           setIsActive(data.res.isActive)
           // parse the due date to a string from this format "2021-10-10T00:00:00.000Z"
@@ -453,12 +451,12 @@ export const ChoreEdit = () => {
         <Select
           multiple
           onChange={(event, newValue) => {
-            setLabelsV2(userLabels.filter(l => newValue.indexOf(l.name) > -1))
+            setLabels(userLabels.filter(l => newValue.indexOf(l.name) > -1))
           }}
-          value={labelsV2.map(l => l.name)}
+          value={labels.map(l => l.name)}
           renderValue={selected => (
             <Box sx={{ display: 'flex', gap: '0.25rem' }}>
-              {labelsV2.map(selectedOption => {
+              {labels.map(selectedOption => {
                 return (
                   <Chip
                     variant='soft'
@@ -584,11 +582,11 @@ export const ChoreEdit = () => {
         <LabelModal
           isOpen={addLabelModalOpen}
           onSave={label => {
-            const newLabels = [...labelsV2]
+            const newLabels = [...labels]
             newLabels.push(label)
             setUserLabels([...userLabels, label])
 
-            setLabelsV2([...labelsV2, label])
+            setLabels([...labels, label])
             setAddLabelModalOpen(false)
           }}
           onClose={() => setAddLabelModalOpen(false)}
