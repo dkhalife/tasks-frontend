@@ -14,12 +14,9 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
-  DeleteChoreHistory,
   GetChoreHistory,
-  UpdateChoreHistory,
 } from '../../utils/Fetcher'
 import { LoadingComponent } from '../components/Loading'
-import { EditHistoryModal } from '../Modals/EditHistoryModal'
 import { HistoryCard } from './HistoryCard'
 
 export const ChoreHistory = () => {
@@ -183,46 +180,6 @@ export const ChoreHistory = () => {
           ))}
         </List>
       </Sheet>
-      <EditHistoryModal
-        config={{
-          isOpen: isEditModalOpen,
-          onClose: () => {
-            setIsEditModalOpen(false)
-          },
-          onSave: updated => {
-            UpdateChoreHistory(choreId, editHistory.id, {
-              completedAt: updated.completedAt,
-              dueDate: updated.dueDate,
-              notes: updated.notes,
-            }).then(res => {
-              if (!res.ok) {
-                console.error('Failed to update chore history:', res)
-                return
-              }
-
-              res.json().then(data => {
-                const newRecord = data.res
-                const newHistory = choreHistory.map(record =>
-                  record.id === newRecord.id ? newRecord : record,
-                )
-                setChoresHistory(newHistory)
-                setEditHistory(newRecord)
-                setIsEditModalOpen(false)
-              })
-            })
-          },
-          onDelete: () => {
-            DeleteChoreHistory(choreId, editHistory.id).then(() => {
-              const newHistory = choreHistory.filter(
-                record => record.id !== editHistory.id,
-              )
-              setChoresHistory(newHistory)
-              setIsEditModalOpen(false)
-            })
-          },
-        }}
-        historyRecord={editHistory}
-      />
     </Container>
   )
 }
