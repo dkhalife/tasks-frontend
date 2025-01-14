@@ -137,7 +137,7 @@ export const MyChores = () => {
     if (chipClicked.label) {
       const label = chipClicked.label
       const labelFiltered = [...chores].filter(chore =>
-        chore.labelsV2.some(
+        chore.labels.some(
           l => l.id === label.id && l.created_by === label.created_by,
         ),
       )
@@ -221,7 +221,7 @@ export const MyChores = () => {
   const fuse = new Fuse(
     chores.map(c => ({
       ...c,
-      raw_label: c.labelsV2.map(c => c.name).join(' '),
+      raw_label: c.labels.map(c => c.name).join(' '),
     })),
     searchOptions,
   )
@@ -291,7 +291,7 @@ export const MyChores = () => {
           options={[
             ...userLabels,
             ...chores
-              .map(c => c.labelsV2)
+              .map(c => c.labels)
               .flat()
               .filter(l => l.created_by !== userProfile.id)
               .map(l => {

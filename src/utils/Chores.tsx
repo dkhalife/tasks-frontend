@@ -79,7 +79,7 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
     case 'labels':
       groupRaw = {}
       chores.forEach(chore => {
-        chore.labelsV2.forEach(label => {
+        chore.labels.forEach(label => {
           labels[label.id] = label
           if (groupRaw[label.id] === undefined) {
             groupRaw[label.id] = []

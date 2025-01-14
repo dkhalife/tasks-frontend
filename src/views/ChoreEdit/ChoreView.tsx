@@ -34,7 +34,7 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
 
 export const ChoreView = () => {
-  const [chore, setChore] = useState({})
+  const [chore, setChore] = useState<any>({})
   const navigate = useNavigate()
   const [infoCards, setInfoCards] = useState([])
   const { choreId } = useParams()
@@ -157,7 +157,7 @@ export const ChoreView = () => {
             ? `Due at ${moment(chore.nextDueDate).format('MM/DD/YYYY hh:mm A')}`
             : 'N/A'}
         </Chip>
-        {chore?.labelsV2?.map((label, index) => (
+        {chore?.labels?.map((label, index) => (
           <Chip
             key={index}
             sx={{

@@ -320,7 +320,7 @@ export const ChoreCard = ({
               <Box display='flex' flexDirection='column'>
                 <Typography level='title-md'>{getName(chore.name)}</Typography>
                 <Box key={`${chore.id}-labels`}>
-                  {chore.labelsV2?.map((l, index) => {
+                  {chore.labels?.map((l, index) => {
                     return (
                       <Chip
                         variant='solid'
