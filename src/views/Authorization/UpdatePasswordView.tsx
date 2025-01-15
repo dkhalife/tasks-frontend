@@ -60,7 +60,7 @@ export const UpdatePasswordView = () => {
       } else {
         setUpdateStatusOk(false)
       }
-    } catch (error) {
+    } catch {
       setUpdateStatusOk(false)
     }
   }

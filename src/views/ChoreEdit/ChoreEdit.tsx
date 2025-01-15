@@ -30,7 +30,6 @@ import {
   CreateChore,
   DeleteChore,
   GetChoreByID,
-  GetChoreHistory,
   SaveChore,
 } from '../../utils/Fetcher'
 import { useLabels } from '../Labels/LabelQueries'
@@ -60,14 +59,13 @@ export const ChoreEdit = () => {
   const [isNotificable, setIsNotificable] = useState(false)
   const [isActive, setIsActive] = useState(true)
   const [updatedBy, setUpdatedBy] = useState(0)
-  const [createdBy, setCreatedBy] = useState(0)
   const [errors, setErrors] = useState({})
   const [attemptToSave, setAttemptToSave] = useState(false)
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState<any>(null)
   const [snackbarColor, setSnackbarColor] = useState('warning')
   const [addLabelModalOpen, setAddLabelModalOpen] = useState(false)
-  const { data: userLabelsRaw, isLoading: isUserLabelsLoading } = useLabels()
+  const { data: userLabelsRaw } = useLabels()
 
   const [userLabels, setUserLabels] = useState([])
 
@@ -205,11 +203,7 @@ export const ChoreEdit = () => {
               : null,
           )
           setUpdatedBy(data.res.updatedBy)
-          setCreatedBy(data.res.createdBy)
           setIsNotificable(data.res.notification)
-          // setDueDate(data.res.dueDate)
-          // setCompleted(data.res.completed)
-          // setCompletedDate(data.res.completedDate)
         })
     }
     // set focus on the first input field:
@@ -454,7 +448,7 @@ export const ChoreEdit = () => {
             setLabels(userLabels.filter(l => newValue.indexOf(l.name) > -1))
           }}
           value={labels.map(l => l.name)}
-          renderValue={selected => (
+          renderValue={() => (
             <Box sx={{ display: 'flex', gap: '0.25rem' }}>
               {labels.map(selectedOption => {
                 return (

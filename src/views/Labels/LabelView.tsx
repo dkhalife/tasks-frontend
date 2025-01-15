@@ -17,7 +17,6 @@ import { Add } from '@mui/icons-material'
 import { useQueryClient } from 'react-query'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import { DeleteLabel } from '../../utils/Fetcher'
-import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal.tsx'
 import React from 'react'
 
 export const LabelView = () => {
@@ -28,7 +27,6 @@ export const LabelView = () => {
 
   const [currentLabel, setCurrentLabel] = useState(null)
   const queryClient = useQueryClient()
-  const [confirmationModel, setConfirmationModel] = useState({})
 
   const handleAddLabel = () => {
     setCurrentLabel(null)
@@ -169,7 +167,6 @@ export const LabelView = () => {
           <Add />
         </IconButton>
       </Box>
-      <ConfirmationModal config={confirmationModel} />
     </Container>
   )
 }

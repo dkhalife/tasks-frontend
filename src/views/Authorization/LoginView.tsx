@@ -43,7 +43,7 @@ export const LoginView = () => {
           setError('An error occurred, please try again')
         }
       })
-      .catch(err => {
+      .catch(() => {
         setError('Unable to communicate with server, please try again')
       })
   }

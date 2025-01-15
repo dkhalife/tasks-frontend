@@ -21,28 +21,19 @@ import { HistoryCard } from './HistoryCard'
 
 export const ChoreHistory = () => {
   const [choreHistory, setChoresHistory] = useState([])
-  const [historyInfo, setHistoryInfo] = useState([])
+  let historyInfo: any[] = [];
 
   const [isLoading, setIsLoading] = useState(true)
   const { choreId } = useParams()
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [editHistory, setEditHistory] = useState({})
 
   useEffect(() => {
     setIsLoading(true)
 
     GetChoreHistory(choreId)
       .then(res => res.json())
-      .then(([historyData, usersData]) => {
+      .then(([historyData]) => {
         setChoresHistory(historyData.res)
-
-        const newUserChoreHistory = {}
-        historyData.res.forEach(choreHistory => {
-          const userId = choreHistory.completedBy
-          newUserChoreHistory[userId] = (newUserChoreHistory[userId] || 0) + 1
-        })
-
-        updateHistoryInfo(historyData.res, newUserChoreHistory, usersData.res)
+        updateHistoryInfo(historyData.res)
       })
       .catch(error => {
         console.error('Error fetching data:', error)
@@ -52,7 +43,7 @@ export const ChoreHistory = () => {
       })
   }, [choreId])
 
-  const updateHistoryInfo = (histories, userHistories) => {
+  const updateHistoryInfo = (histories) => {
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, chore) => {
@@ -74,12 +65,7 @@ export const ChoreHistory = () => {
 
     const maxDelayMoment = moment.duration(maximumDelay, 'hours')
 
-    // find max value in userHistories:
-    const userCompletedByMost = Object.keys(userHistories).reduce((a, b) =>
-      userHistories[a] > userHistories[b] ? a : b,
-    )
-
-    const historyInfo = [
+    historyInfo = [
       {
         icon: <Checklist />,
         text: 'Total Completed',
@@ -168,10 +154,7 @@ export const ChoreHistory = () => {
         <List sx={{ p: 0 }}>
           {choreHistory.map((historyEntry, index) => (
             <HistoryCard
-              onClick={() => {
-                setIsEditModalOpen(true)
-                setEditHistory(historyEntry)
-              }}
+              onClick={() => {}}
               historyEntry={historyEntry}
               allHistory={choreHistory}
               key={index}
