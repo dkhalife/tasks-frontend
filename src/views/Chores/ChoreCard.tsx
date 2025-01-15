@@ -42,7 +42,6 @@ export const ChoreCard = ({
   sx,
   viewOnly,
 }) => {
-  const [activeUserId, setActiveUserId] = React.useState(0)
   const [isChangeDueDateModalOpen, setIsChangeDueDateModalOpen] =
     React.useState(false)
   const [isCompleteWithPastDateModalOpen, setIsCompleteWithPastDateModalOpen] =
@@ -85,10 +84,6 @@ export const ChoreCard = ({
   }
 
   const handleChangeDueDate = newDate => {
-    if (activeUserId === null) {
-      alert('Please select a performer')
-      return
-    }
     UpdateDueDate(chore.id, newDate).then(response => {
       if (response.ok) {
         response.json().then(data => {
@@ -100,11 +95,6 @@ export const ChoreCard = ({
   }
 
   const handleCompleteWithPastDate = newDate => {
-    if (activeUserId === null) {
-      alert('Please select a performer')
-      return
-    }
-
     MarkChoreComplete(
       chore.id,
       null,

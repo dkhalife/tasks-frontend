@@ -16,8 +16,7 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useContext, useState } from 'react'
-import { UserContext } from '../../contexts/UserContext'
+import { useState } from 'react'
 import React from 'react'
 
 const FREQUANCY_TYPES_RADIOS = [

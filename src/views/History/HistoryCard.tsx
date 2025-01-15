@@ -1,12 +1,10 @@
 import { CalendarViewDay, Check, Timelapse } from '@mui/icons-material'
 import {
-  Avatar,
   Box,
   Chip,
   ListDivider,
   ListItem,
   ListItemContent,
-  ListItemDecorator,
   Typography,
 } from '@mui/joy'
 import moment from 'moment'

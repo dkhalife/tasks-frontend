@@ -47,7 +47,7 @@ export const ForgotPasswordView = () => {
       } else {
         setResetStatusOk(false)
       }
-    } catch (error) {
+    } catch {
       setResetStatusOk(false)
     }
   }

@@ -5,7 +5,6 @@ import { Logo } from '../../Logo'
 import React from 'react'
 
 export const LoadingComponent = () => {
-  const [message, setMessage] = useState('Loading...')
   const [subMessage, setSubMessage] = useState('')
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -38,7 +37,7 @@ export const LoadingComponent = () => {
             mt: 2,
           }}
         >
-          {message}
+          Loading...
         </Box>
         <Typography level='h2' fontWeight={500} textAlign={'center'}>
           {subMessage}

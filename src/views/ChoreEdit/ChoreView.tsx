@@ -1,6 +1,5 @@
 import {
   CalendarMonth,
-  CancelScheduleSend,
   Check,
   Checklist,
   Edit,
@@ -18,7 +17,6 @@ import {
   ListItem,
   ListItemContent,
   Sheet,
-  Snackbar,
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
@@ -42,12 +40,10 @@ export const ChoreView = () => {
 
   const [searchParams] = useSearchParams()
 
-  const [secondsLeftToCancel, setSecondsLeftToCancel] = useState<number | null>(null)
-  const [completedDate, setCompletedDate] = useState(null)
   const [confirmModelConfig, setConfirmModelConfig] = useState({})
 
   const handleTaskCompletion = useCallback(() => {
-    MarkChoreComplete(choreId, note, completedDate)
+    MarkChoreComplete(choreId, note, null)
       .then(resp => {
         if (resp.ok) {
           return resp.json().then(data => {
@@ -65,7 +61,7 @@ export const ChoreView = () => {
           }
         })
       })
-  }, [MarkChoreComplete, GetChoreDetailById, setNote, setChore, choreId, note, completedDate])
+  }, [MarkChoreComplete, GetChoreDetailById, setNote, setChore, choreId, note])
 
   useEffect(() => {
     GetChoreDetailById(choreId).then(resp => {
