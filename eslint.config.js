@@ -7,6 +7,7 @@ import pluginReact from "eslint-plugin-react";
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {files: ["**/*.{ts,tsx}"]},
+  {ignores: ["node_modules", "dist"]},
   {languageOptions: { globals: globals.browser }},
   {settings: { react: { version: "detect" }}},
   pluginJs.configs.recommended,
@@ -14,8 +15,7 @@ export default [
   pluginReact.configs.flat.recommended,
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-      "react/prop-types": "off"
+      "@typescript-eslint/no-explicit-any": "off"
     }
 },
 ];

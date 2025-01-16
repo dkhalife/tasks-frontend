@@ -1,7 +1,7 @@
 import { Box, Button, ColorPaletteProp, Modal, ModalDialog, Typography } from '@mui/joy'
 import React from 'react'
 
-interface ConfirmationModalProps {
+export interface ConfirmationModalProps {
   isOpen: boolean
   onClose: (isConfirmed: boolean) => void
   title: string
