@@ -68,8 +68,8 @@ const RepeatOnSections = ({
 }) => {
   const [intervalUnit, setIntervalUnit] = useState('days')
   const timePickerComponent = (
-    <Grid item sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
-      <Typography level='h5'>At: </Typography>
+    <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
+      <Typography>At: </Typography>
       <Input
         type='time'
         defaultValue={
@@ -92,8 +92,8 @@ const RepeatOnSections = ({
     case 'interval':
       return (
         <>
-          <Grid item sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography level='h5'>Every: </Typography>
+          <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography>Every: </Typography>
             <Input
               slotProps={{
                 input: {
@@ -131,7 +131,7 @@ const RepeatOnSections = ({
     case 'days_of_the_week':
       return (
         <>
-          <Grid item sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
+          <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
             <Card>
               <List
                 orientation='horizontal'
@@ -203,7 +203,6 @@ const RepeatOnSections = ({
       return (
         <>
           <Grid
-            item
             sm={12}
             sx={{
               display: 'flex',
@@ -338,7 +337,7 @@ export const RepeatSection = ({
       {!['once', 'trigger'].includes(frequencyType) && (
         <>
           <Card sx={{ mt: 1 }}>
-            <Typography level='h5'>How often should it be repeated?</Typography>
+            <Typography>How often should it be repeated?</Typography>
 
             <List
               orientation='horizontal'
@@ -391,7 +390,7 @@ export const RepeatSection = ({
               (REPEAT_ON_TYPE.includes(frequencyType) && (
                 <>
                   <Grid container spacing={1} mt={2}>
-                    <Grid item>
+                    <Grid>
                       <Typography>Repeat on:</Typography>
                       <Box
                         sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
