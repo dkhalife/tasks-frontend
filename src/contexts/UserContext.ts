@@ -1,11 +1,11 @@
 import { createContext } from 'react'
 
-export interface UserProfile {
+interface UserProfileState {
   userProfile: any,
   setUserProfile: (userProfile: any) => void,
 };
 
-export const UserContext = createContext({
+export const UserContext = createContext<UserProfileState>({
   userProfile: null,
   setUserProfile: () => {},
 })

@@ -7,11 +7,7 @@ interface AuthenticationContext {
   setUserProfile: (userProfile: any) => void
 }
 
-interface AuthenticationProviderProps {
-  children: React.ReactNode;
-}
-
-export class AuthenticationProvider extends React.Component<AuthenticationProviderProps> {
+export class AuthenticationProvider extends React.Component {
   private authContext = createContext<AuthenticationContext>({
     isLoggedIn: false,
     setIsLoggedIn: () => {},
@@ -31,9 +27,7 @@ export class AuthenticationProvider extends React.Component<AuthenticationProvid
           userProfile,
           setUserProfile
         }}
-      >
-        {this.props.children}
-      </this.authContext.Provider>
+      />
     )
   }
 }
