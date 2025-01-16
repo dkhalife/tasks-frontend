@@ -16,7 +16,7 @@ import { Link, useParams } from 'react-router-dom'
 import {
   GetChoreHistory,
 } from '../../utils/Fetcher'
-import { LoadingComponent } from '../components/Loading'
+import { Loading } from '../../Loading'
 import { HistoryCard } from './HistoryCard'
 
 export const ChoreHistory = () => {
@@ -85,7 +85,7 @@ export const ChoreHistory = () => {
   }
 
   if (isLoading) {
-    return <LoadingComponent />
+    return <Loading />
   }
   if (!choreHistory.length) {
     return (

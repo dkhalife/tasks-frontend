@@ -106,7 +106,7 @@ export const NavBar = () => {
             sx={{ borderRadius: 4, width: '100%', padding: 1 }}
           >
             {links.map((link, index) => (
-              <NavBarLink key={index} link={link} />
+              <NavBarLink key={index} to={link.to} icon={link.icon} label={link.label} />
             ))}
           </List>
         </div>

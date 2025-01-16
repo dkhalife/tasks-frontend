@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import { API_URL } from '../Config'
+import { API_URL } from '../constants/config'
 import { RefreshToken } from './Fetcher'
 
 class ApiManager {

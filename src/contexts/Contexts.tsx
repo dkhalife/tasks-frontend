@@ -3,10 +3,14 @@ import { QueryContext } from './QueryContext'
 import { RouterContext } from './RouterContext'
 import { ThemeContext } from './ThemeContext'
 
-export const Contexts = () => {
-  const contexts = [ThemeContext, QueryContext, RouterContext]
-
-  return contexts.reduceRight((acc, Context) => {
-    return <Context>{acc}</Context>
-  }, {})
+export class Contexts extends React.Component {
+  public render(): JSX.Element {
+    return (
+      <ThemeContext>
+        <QueryContext>
+          <RouterContext />
+        </QueryContext>
+      </ThemeContext>
+    )
+  }
 }
