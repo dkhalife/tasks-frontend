@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "main", "develop", "workflows/*" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   build:
@@ -22,8 +22,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Install dependencies
-      run: npm i
-    - run: npm run build
+      run: yarn install --frozen-lockfile
+    - run: yarn build
 
   lint:
     runs-on: ubuntu-latest
@@ -35,5 +35,5 @@ jobs:
         node-version: 22
         cache: 'npm'
     - name: Install dependencies
-      run: npm i
-    - run: npm run lint
+      run: yarn install --frozen-lockfile
+    - run: yarn lint
