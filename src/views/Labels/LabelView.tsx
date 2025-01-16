@@ -19,154 +19,146 @@ import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import { DeleteLabel } from '../../utils/Fetcher'
 import React from 'react'
 
-export const LabelView = () => {
-  const { data: labels, isLabelsLoading, isError } = useLabels()
+export class LabelView extends React.Component {
+  render(): React.ReactNode {
+    const { data: labels, isLabelsLoading, isError } = useLabels()
 
-  const [userLabels, setUserLabels] = useState<any[]>(labels)
-  const [modalOpen, setModalOpen] = useState(false)
+    const [userLabels, setUserLabels] = useState<any[]>(labels)
+    const [modalOpen, setModalOpen] = useState(false)
 
-  const [currentLabel, setCurrentLabel] = useState(null)
-  const queryClient = useQueryClient()
+    const [currentLabel, setCurrentLabel] = useState(null)
+    const queryClient = useQueryClient()
 
-  const handleAddLabel = () => {
-    setCurrentLabel(null)
-    setModalOpen(true)
-  }
-
-  const handleEditLabel = label => {
-    setCurrentLabel(label)
-    setModalOpen(true)
-  }
-
-  const handleDeleteLabel = id => {
-    DeleteLabel(id).then(() => {
-      const updatedLabels = userLabels.filter(label => label.id !== id)
-      setUserLabels(updatedLabels)
-
-      queryClient.invalidateQueries('labels')
-    })
-  }
-
-  const handleSaveLabel = newOrUpdatedLabel => {
-    queryClient.invalidateQueries('labels')
-    setModalOpen(false)
-    const updatedLabels = userLabels.map(label =>
-      label.id === newOrUpdatedLabel.id ? newOrUpdatedLabel : label,
-    )
-    setUserLabels(updatedLabels)
-  }
-
-  useEffect(() => {
-    if (labels) {
-      setUserLabels(labels)
+    const handleAddLabel = () => {
+      setCurrentLabel(null)
+      setModalOpen(true)
     }
-  }, [labels])
 
-  if (isLabelsLoading) {
-    return (
-      <Box
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        height='100vh'
-      >
-        <CircularProgress />
-      </Box>
-    )
-  }
+    const handleEditLabel = label => {
+      setCurrentLabel(label)
+      setModalOpen(true)
+    }
 
-  if (isError) {
-    return (
-      <Typography color='danger' textAlign='center'>
-        Failed to load labels. Please try again.
-      </Typography>
-    )
-  }
+    const handleDeleteLabel = id => {
+      DeleteLabel(id).then(() => {
+        const updatedLabels = userLabels.filter(label => label.id !== id)
+        setUserLabels(updatedLabels)
 
-  return (
-    <Container maxWidth='md'>
-      <div className='flex flex-col gap-2'>
-        {userLabels.map(label => (
-          <div
-            key={label.name}
-            className='grid w-full grid-cols-[1fr,auto,auto] rounded-lg border border-zinc-200/80 p-4 shadow-sm dark:bg-zinc-900'
-          >
-            <Chip
-              variant='outlined'
-              color='primary'
-              size='lg'
-              sx={{
-                background: label.color,
-                borderColor: label.color,
-                color: getTextColorFromBackgroundColor(label.color),
-              }}
-            >
-              {label.name}
-            </Chip>
+        queryClient.invalidateQueries('labels')
+      })
+    }
 
-            <div className='flex gap-2'>
-              <Button
-                size='sm'
-                variant='soft'
-                color='neutral'
-                onClick={() => handleEditLabel(label)}
-                startDecorator={<EditIcon />}
-              >
-                Edit
-              </Button>
-              <IconButton
-                size='sm'
-                variant='soft'
-                onClick={() => handleDeleteLabel(label.id)}
-                color='danger'
-              >
-                <DeleteIcon />
-              </IconButton>
-            </div>
-          </div>
-        ))}
-      </div>
+    useEffect(() => {
+      if (labels) {
+        setUserLabels(labels)
+      }
+    }, [labels])
 
-      {userLabels.length === 0 && (
-        <Typography textAlign='center' mt={2}>
-          No labels available. Add a new label to get started.
-        </Typography>
-      )}
-
-      {modalOpen && (
-        <LabelModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onSave={handleSaveLabel}
-          label={currentLabel}
-        />
-      )}
-
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 10,
-          p: 2,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: 2,
-          'z-index': 1000,
-        }}
-      >
-        <IconButton
-          color='primary'
-          variant='solid'
-          sx={{
-            borderRadius: '50%',
-            width: 50,
-            height: 50,
-          }}
-          onClick={handleAddLabel}
+    if (isLabelsLoading) {
+      return (
+        <Box
+          display='flex'
+          justifyContent='center'
+          alignItems='center'
+          height='100vh'
         >
-          <Add />
-        </IconButton>
-      </Box>
-    </Container>
-  )
+          <CircularProgress />
+        </Box>
+      )
+    }
+
+    if (isError) {
+      return (
+        <Typography color='danger' textAlign='center'>
+          Failed to load labels. Please try again.
+        </Typography>
+      )
+    }
+
+    return (
+      <Container maxWidth='md'>
+        <div className='flex flex-col gap-2'>
+          {userLabels.map(label => (
+            <div
+              key={label.name}
+              className='grid w-full grid-cols-[1fr,auto,auto] rounded-lg border border-zinc-200/80 p-4 shadow-sm dark:bg-zinc-900'
+            >
+              <Chip
+                variant='outlined'
+                color='primary'
+                size='lg'
+                sx={{
+                  background: label.color,
+                  borderColor: label.color,
+                  color: getTextColorFromBackgroundColor(label.color),
+                }}
+              >
+                {label.name}
+              </Chip>
+
+              <div className='flex gap-2'>
+                <Button
+                  size='sm'
+                  variant='soft'
+                  color='neutral'
+                  onClick={() => handleEditLabel(label)}
+                  startDecorator={<EditIcon />}
+                >
+                  Edit
+                </Button>
+                <IconButton
+                  size='sm'
+                  variant='soft'
+                  onClick={() => handleDeleteLabel(label.id)}
+                  color='danger'
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {userLabels.length === 0 && (
+          <Typography textAlign='center' mt={2}>
+            No labels available. Add a new label to get started.
+          </Typography>
+        )}
+
+        {modalOpen && (
+          <LabelModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            label={currentLabel}
+          />
+        )}
+
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 10,
+            p: 2,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 2,
+            'z-index': 1000,
+          }}
+        >
+          <IconButton
+            color='primary'
+            variant='solid'
+            sx={{
+              borderRadius: '50%',
+              width: 50,
+              height: 50,
+            }}
+            onClick={handleAddLabel}
+          >
+            <Add />
+          </IconButton>
+        </Box>
+      </Container>
+    )
+  }
 }
