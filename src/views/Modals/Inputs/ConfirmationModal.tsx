@@ -1,43 +1,57 @@
-import { Box, Button, Modal, ModalDialog, Typography } from '@mui/joy'
+import { Box, Button, ColorPaletteProp, Modal, ModalDialog, Typography } from '@mui/joy'
 import React from 'react'
 
-export function ConfirmationModal({ config }) {
-  const handleAction = isConfirmed => {
-    config.onClose(isConfirmed)
+export interface ConfirmationModalProps {
+  isOpen: boolean
+  onClose: (isConfirmed: boolean) => void
+  title: string
+  message: string
+  confirmText: string
+  cancelText: string
+  color?: ColorPaletteProp
+}
+
+export class ConfirmationModal extends React.Component<ConfirmationModalProps> {
+  public render(): React.ReactNode {
+    const { isOpen, onClose, title, message, confirmText, cancelText, color } = this.props
+
+    const handleAction = isConfirmed => {
+      onClose(isConfirmed)
+    }
+
+    return (
+      <Modal open={isOpen} onClose={onClose}>
+        <ModalDialog>
+          <Typography level='h4' mb={1}>
+            {title}
+          </Typography>
+
+          <Typography level='body-md' gutterBottom>
+            {message}
+          </Typography>
+
+          <Box display={'flex'} justifyContent={'space-around'} mt={1}>
+            <Button
+              onClick={() => {
+                handleAction(true)
+              }}
+              fullWidth
+              sx={{ mr: 1 }}
+              color={color ?? 'primary'}
+            >
+              {confirmText}
+            </Button>
+            <Button
+              onClick={() => {
+                handleAction(false)
+              }}
+              variant='outlined'
+            >
+              {cancelText}
+            </Button>
+          </Box>
+        </ModalDialog>
+      </Modal>
+    )
   }
-
-  return (
-    <Modal open={config?.isOpen ?? false} onClose={config?.onClose}>
-      <ModalDialog>
-        <Typography level='h4' mb={1}>
-          {config?.title}
-        </Typography>
-
-        <Typography level='body-md' gutterBottom>
-          {config?.message}
-        </Typography>
-
-        <Box display={'flex'} justifyContent={'space-around'} mt={1}>
-          <Button
-            onClick={() => {
-              handleAction(true)
-            }}
-            fullWidth
-            sx={{ mr: 1 }}
-            color={config.color ? config.color : 'primary'}
-          >
-            {config?.confirmText}
-          </Button>
-          <Button
-            onClick={() => {
-              handleAction(false)
-            }}
-            variant='outlined'
-          >
-            {config?.cancelText}
-          </Button>
-        </Box>
-      </ModalDialog>
-    </Modal>
-  )
 }
