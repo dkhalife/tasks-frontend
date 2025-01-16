@@ -29,11 +29,11 @@ import Fuse from 'fuse.js'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
-import { useChores } from '../../queries/ChoreQueries'
 import {
   GetArchivedChores,
   GetChores,
   GetUserProfile,
+  useChores,
 } from '../../utils/Fetcher'
 import { LoadingComponent } from '../components/Loading'
 import { useLabels } from '../Labels/LabelQueries'
@@ -58,7 +58,7 @@ export const MyChores = () => {
     const menuRef = useRef(null)
   const navigate = useNavigate()
   const { data: userLabels, isLoading: userLabelsLoading } = useLabels()
-  const { data: choresData, isLoading: choresLoading } = useChores()
+  const { data: choresData, isLoading: choresLoading } = useChores(false)
   const choreSorter = (a, b) => {
     // 1. Handle null due dates (always last):
     if (!a.nextDueDate && !b.nextDueDate) return 0 // Both null, no order

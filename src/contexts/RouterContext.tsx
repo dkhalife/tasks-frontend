@@ -3,7 +3,7 @@ import { ChoreEdit } from '../views/ChoreEdit/ChoreEdit'
 import { ChoresOverview } from '../views/ChoresOverview'
 import { Error } from '../views/Error'
 import { Settings } from '../views/Settings/Settings'
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ForgotPasswordView } from '../views/Authorization/ForgotPasswordView'
 import { LoginView } from '../views/Authorization/LoginView'
 import { SignupView } from '../views/Authorization/Signup'
@@ -14,71 +14,28 @@ import { ChoreHistory } from '../views/History/ChoreHistory'
 import { LabelView } from '../views/Labels/LabelView'
 import React from 'react'
 
-const getMainRoute = () => {
-  return <MyChores />
-}
-const Router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <Error />,
-    children: [
-      {
-        path: '/',
-        element: getMainRoute(),
-      },
-      {
-        path: '/settings',
-        element: <Settings />,
-      },
-      {
-        path: '/chores',
-        element: <ChoresOverview />,
-      },
-      {
-        path: '/chores/:choreId/edit',
-        element: <ChoreEdit />,
-      },
-      {
-        path: '/chores/:choreId',
-        element: <ChoreView />,
-      },
-      {
-        path: '/chores/create',
-        element: <ChoreEdit />,
-      },
-      {
-        path: '/chores/:choreId/history',
-        element: <ChoreHistory />,
-      },
-      {
-        path: '/my/chores',
-        element: <MyChores />,
-      },
-      {
-        path: '/login',
-        element: <LoginView />,
-      },
-      {
-        path: '/signup',
-        element: <SignupView />,
-      },
-      {
-        path: '/forgot-password',
-        element: <ForgotPasswordView />,
-      },
-      {
-        path: '/password/update',
-        element: <UpdatePasswordView />,
-      },
-      {
-        path: 'labels/',
-        element: <LabelView />,
-      },
-    ],
-  },
-])
-
-export const RouterContext = () => {
-  return <RouterProvider router={Router} />
+export class RouterContext extends React.Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<App />} errorElement={<Error />}>
+            <Route path='/' element={<MyChores />} />
+            <Route path='/settings' element={<Settings />} />
+            <Route path='/chores' element={<ChoresOverview />} />
+            <Route path='/chores/:choreId/edit' element={<ChoreEdit />} />
+            <Route path='/chores/:choreId' element={<ChoreView />} />
+            <Route path='/chores/create' element={<ChoreEdit />} />
+            <Route path='/chores/:choreId/history' element={<ChoreHistory />} />
+            <Route path='/my/chores' element={<MyChores />} />
+            <Route path='/login' element={<LoginView />} />
+            <Route path='/signup' element={<SignupView />} />
+            <Route path='/forgot-password' element={<ForgotPasswordView />} />
+            <Route path='/password/update' element={<UpdatePasswordView />} />
+            <Route path='/labels/' element={<LabelView />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    )
+  }
 }

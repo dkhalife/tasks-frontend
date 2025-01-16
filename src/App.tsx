@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Outlet } from 'react-router-dom'
 import { UserContext } from './contexts/UserContext'
-import { AuthenticationProvider } from './service/AuthenticationService'
 import { GetUserProfile } from './utils/Fetcher'
 import { isTokenValid } from './utils/TokenManager'
 import { apiManager } from './utils/TokenManager'
 import React from 'react'
+import { AuthenticationProvider } from './service/AuthenticationService'
 
 const add = className => {
   document.getElementById('root')?.classList.add(className)

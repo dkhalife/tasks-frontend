@@ -1,10 +1,18 @@
 import { QueryClient, QueryClientProvider } from 'react-query'
 import React from 'react'
 
-export const QueryContext = ({ children }) => {
-  const queryClient = new QueryClient()
+interface QueryContextProps {
+  children: React.ReactNode;
+}
 
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  )
+export class QueryContext extends React.Component<QueryContextProps> {
+  private queryClient: QueryClient = new QueryClient();
+
+  public render(): JSX.Element {
+    return (
+      <QueryClientProvider client={this.queryClient}>
+        {this.props.children}
+      </QueryClientProvider>
+    );
+  }
 }

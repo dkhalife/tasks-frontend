@@ -1,7 +1,6 @@
 import { COLORS } from '../constants/theme'
 import { CssBaseline } from '@mui/joy'
 import { CssVarsProvider, extendTheme } from '@mui/joy/styles'
-import PropType from 'prop-types'
 import React from 'react'
 
 const primaryColor = 'cyan'
@@ -71,15 +70,17 @@ const theme = extendTheme({
   },
 })
 
-export const ThemeContext = ({ children }) => {
-  return (
-    <CssVarsProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </CssVarsProvider>
-  )
+interface ThemeContextProps {
+  children: React.ReactNode;
 }
 
-ThemeContext.propTypes = {
-  children: PropType.node,
+export class ThemeContext extends React.Component<ThemeContextProps> {
+  render() {
+    return (
+      <CssVarsProvider theme={theme}>
+        <CssBaseline />
+        {this.props.children}
+      </CssVarsProvider>
+    )
+  }
 }

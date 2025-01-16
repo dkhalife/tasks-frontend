@@ -1,4 +1,5 @@
 import { Fetch, HEADERS, apiManager } from './TokenManager'
+import { useQuery } from 'react-query'
 
 export const createChore = userID => {
   return Fetch(`/chores/`, {
@@ -41,7 +42,7 @@ export const login = (username, password) => {
   })
 }
 
-export const GetChoresNew = async includeArchived => {
+const GetChoresNew = async includeArchived => {
   let url = `/chores/`
   if (includeArchived) {
     url += `?includeArchived=true`
@@ -52,6 +53,12 @@ export const GetChoresNew = async includeArchived => {
     headers: HEADERS(),
   })
   return resp.json()
+}
+
+export const useChores = includeArchive => {
+  return useQuery(['chores', includeArchive], () =>
+    GetChoresNew(includeArchive),
+  )
 }
 
 export const GetChores = () => {
