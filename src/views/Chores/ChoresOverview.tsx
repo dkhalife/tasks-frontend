@@ -21,8 +21,8 @@ import {
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GetChores, MarkChoreComplete } from '../utils/Fetcher'
-import { DateModal } from './Modals/Inputs/DateModal'
+import { GetChores, MarkChoreComplete } from '../../utils/Fetcher'
+import { DateModal } from '../Modals/Inputs/DateModal'
 import React from 'react'
 
 const CHORE_STATUS = {
