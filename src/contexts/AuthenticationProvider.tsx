@@ -16,8 +16,8 @@ export class AuthenticationProvider extends React.Component {
   })
 
   render() {
-    const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false)
-    const [userProfile, setUserProfile] = React.useState<any>(null)
+    this.state = { isLoggedIn: false, userProfile: null };
+    this.state = { isLoggedIn: false, userProfile: null };
 
     return (
       <this.authContext.Provider
