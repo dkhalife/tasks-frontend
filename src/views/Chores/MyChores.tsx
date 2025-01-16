@@ -35,7 +35,7 @@ import {
   GetUserProfile,
   useChores,
 } from '../../utils/Fetcher'
-import { LoadingComponent } from '../components/Loading'
+import { Loading } from '../../Loading'
 import { useLabels } from '../Labels/LabelQueries'
 import { ChoreCard } from './ChoreCard'
 import { IconButtonWithMenu } from './IconButtonWithMenu'
@@ -242,7 +242,7 @@ export const MyChores = () => {
     userLabelsLoading ||
     choresLoading
   ) {
-    return <LoadingComponent />
+    return <Loading />
   }
 
   return (
