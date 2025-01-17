@@ -1,47 +1,33 @@
-import { useStickyState } from '../../hooks/useStickyState'
 import {
   BrightnessAuto,
   DarkModeOutlined,
   LightModeOutlined,
 } from '@mui/icons-material'
-import { FormControl, IconButton, useColorScheme } from '@mui/joy'
+import { FormControl, IconButton } from '@mui/joy'
 import { SxProps } from '@mui/joy/styles/types'
 import React from 'react'
+import { ThemeMode } from '../../constants/theme'
 
 interface ThemeToggleButtonProps {
   sx: SxProps
+  themeMode: ThemeMode
+  onThemeModeToggle: () => void
 }
 
 export class ThemeToggleButton extends React.Component<ThemeToggleButtonProps> {
-  render(): React.ReactNode {
-    const { mode, setMode } = useColorScheme()
-    const [themeMode, setThemeMode] = useStickyState(mode ?? 'system', 'themeMode')
+  private onClick = e => {
+    e.preventDefault()
+    e.stopPropagation()
 
-    const handleThemeModeChange = e => {
-      e.preventDefault()
-      e.stopPropagation()
+    this.props.onThemeModeToggle()
+  }
 
-      let newThemeMode
-      switch (themeMode) {
-        case 'light':
-          newThemeMode = 'dark'
-          break
-        case 'dark':
-          newThemeMode = 'system'
-          break
-        case 'system':
-        default:
-          newThemeMode = 'light'
-          break
-      }
-
-      setThemeMode(newThemeMode)
-      setMode(newThemeMode)
-    }
+  render(): React.ReactNode {  
+    const { themeMode } = this.props
 
     return (
       <FormControl sx={this.props.sx}>
-        <IconButton onClick={handleThemeModeChange}>
+        <IconButton onClick={this.onClick}>
           {themeMode === 'light' ? (
             <DarkModeOutlined />
           ) : themeMode === 'dark' ? (

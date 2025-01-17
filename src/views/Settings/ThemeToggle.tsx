@@ -1,4 +1,3 @@
-import { useStickyState } from '../../hooks/useStickyState'
 import {
   DarkModeOutlined,
   LaptopOutlined,
@@ -9,41 +8,39 @@ import {
   FormControl,
   FormLabel,
   ToggleButtonGroup,
-  useColorScheme,
 } from '@mui/joy'
 import React from 'react'
+import { ThemeMode } from '../../constants/theme'
 
-export class ThemeToggle extends React.Component {
-  render(): React.ReactNode {
-    const ELEMENTID = 'select-theme-mode'
+interface ThemeToggleProps {
+  themeMode: ThemeMode
+  onThemeModeToggle: (newTheme: ThemeMode) => void
+}
 
-    const { mode, setMode } = useColorScheme()
-    const [themeMode, setThemeMode] = useStickyState(mode ?? 'system', 'themeMode')
-
-    const handleThemeModeChange = (_, newThemeMode) => {
-      if (!newThemeMode) return
-      setThemeMode(newThemeMode)
-      setMode(newThemeMode)
+export class ThemeToggle extends React.Component<ThemeToggleProps> {
+  private onChange = (e, newThemeMode) => {
+    if (!newThemeMode) {
+      return
     }
 
-    const FormThemeModeToggleLabel = () => (
-      <FormLabel
-        id={`${ELEMENTID}-label`}
-        htmlFor='select-theme-mode'
-      >
-        Theme mode
-      </FormLabel>
-    )
+    this.props.onThemeModeToggle(newThemeMode)
+  }
+
+  render(): React.ReactNode {
+    const ELEMENTID = 'select-theme-mode'
+    const { themeMode } = this.props
 
     return (
       <FormControl>
-        <FormThemeModeToggleLabel />
+        <FormLabel id={`${ELEMENTID}-label`} htmlFor='select-theme-mode'>
+          Theme mode
+        </FormLabel>
         <div className='flex items-center gap-4'>
           <ToggleButtonGroup
             id={ELEMENTID}
             variant='outlined'
             value={themeMode}
-            onChange={handleThemeModeChange}
+            onChange={this.onChange}
           >
             <Button startDecorator={<LightModeOutlined />} value='light'>
               Light

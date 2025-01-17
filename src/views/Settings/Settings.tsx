@@ -15,11 +15,13 @@ import { APITokenSettings } from './APITokenSettings'
 import { NotificationSetting } from './NotificationSetting'
 import { ThemeToggle } from './ThemeToggle'
 import React from 'react'
+import { StorageContext, StorageContextState } from '../../contexts/StorageContext'
 
 export class Settings extends React.Component {
   render(): React.ReactNode {
     const { userProfile, setUserProfile } = useContext<any>(UserContext)
     const [changePasswordModal, setChangePasswordModal] = useState(false)
+    const storedState = useContext<StorageContextState>(StorageContext)
     useEffect(() => {
       GetUserProfile().then(resp => {
         resp.json().then((data: any) => {
@@ -89,7 +91,7 @@ export class Settings extends React.Component {
             Choose how the site looks to you. Select a single theme, or sync with
             your system and automatically switch between day and night themes.
           </Typography>
-          <ThemeToggle />
+          <ThemeToggle themeMode={storedState.themeMode} onThemeModeToggle={storedState.setThemeMode} />
         </div>
       </Container>
     )
