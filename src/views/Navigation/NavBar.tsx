@@ -16,7 +16,6 @@ import {
   ListItemDecorator,
   Typography,
 } from '@mui/joy'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { version } from '../../../package.json'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
