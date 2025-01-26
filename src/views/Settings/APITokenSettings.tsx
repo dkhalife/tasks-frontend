@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useEffect, useState } from 'react'
+
 import {
   CreateLongLiveToken,
   DeleteLongLiveToken,
@@ -18,30 +18,51 @@ import {
 import { TextModal } from '../Modals/Inputs/TextModal'
 import React from 'react'
 
-export class APITokenSettings extends React.Component {
-  render(): React.ReactNode {
-    const [tokens, setTokens] = useState([])
-    const [isGetTokenNameModalOpen, setIsGetTokenNameModalOpen] = useState(false)
-    const [showTokenId, setShowTokenId] = useState(null)
-    useEffect(() => {
-      GetLongLiveTokens().then(resp => {
-        resp.json().then(data => {
-          setTokens(data.res)
-        })
-      })
-    }, [])
+interface APITokenSettingsProps {
+}
 
-    const handleSaveToken = name => {
-      CreateLongLiveToken(name).then(resp => {
-        if (resp.ok) {
-          resp.json().then(data => {
-            const newTokens = [...tokens]
-            newTokens.push(data.res)
-            setTokens(newTokens)
-          })
-        }
-      })
+interface APITokenSettingsState {
+  tokens: any[],
+  isGetTokenNameModalOpen: boolean,
+  showTokenId: string | null,
+}
+
+export class APITokenSettings extends React.Component<APITokenSettingsProps, APITokenSettingsState> {
+  constructor(props: APITokenSettingsProps) {
+    super(props)
+
+    this.state = {
+      tokens: [],
+      isGetTokenNameModalOpen: false,
+      showTokenId: null,
     }
+  }
+
+  componentDidMount(): void {
+    GetLongLiveTokens().then(resp => {
+      resp.json().then(data => {
+        this.setState({ tokens: data.res })
+      })
+    })
+  }
+
+  private handleSaveToken = name => {
+    CreateLongLiveToken(name).then(resp => {
+      if (resp.ok) {
+        resp.json().then(data => {
+          const newTokens = [...this.state.tokens]
+          newTokens.push(data.res)
+
+          this.setState({
+            tokens: newTokens,
+          })
+        })
+      }
+    })
+  }
+
+  render(): React.ReactNode {
+    const { tokens, isGetTokenNameModalOpen, showTokenId } = this.state
 
     return (
       <div className='grid gap-4 py-4' id='apitokens'>
@@ -68,11 +89,11 @@ export class APITokenSettings extends React.Component {
                   sx={{ mr: 1 }}
                   onClick={() => {
                     if (showTokenId === token.id) {
-                      setShowTokenId(null)
+                      this.setState({ showTokenId: null })
                       return
                     }
 
-                    setShowTokenId(token.id)
+                    this.setState({ showTokenId: token.id })
                   }}
                 >
                   {showTokenId === token?.id ? 'Hide' : 'Show'} Token
@@ -89,7 +110,7 @@ export class APITokenSettings extends React.Component {
                       DeleteLongLiveToken(token.id).then(resp => {
                         if (resp.ok) {
                           const newTokens = tokens.filter((t: any) => t.id !== token.id)
-                          setTokens(newTokens)
+                          this.setState({ tokens: newTokens })
                         }
                       })
                     }
@@ -112,7 +133,7 @@ export class APITokenSettings extends React.Component {
                       onClick={() => {
                         navigator.clipboard.writeText(token.token)
                         alert('Token copied to clipboard')
-                        setShowTokenId(null)
+                        this.setState({ showTokenId: null })
                       }}
                     >
                       <CopyAll />
@@ -132,7 +153,7 @@ export class APITokenSettings extends React.Component {
             mb: 1,
           }}
           onClick={() => {
-            setIsGetTokenNameModalOpen(true)
+            this.setState({ isGetTokenNameModalOpen: true })
           }}
         >
           Generate New Token
@@ -141,10 +162,10 @@ export class APITokenSettings extends React.Component {
           isOpen={isGetTokenNameModalOpen}
           title='Give a name for your new token, something to remember it by.'
           onClose={() => {
-            setIsGetTokenNameModalOpen(false)
+            this.setState({ isGetTokenNameModalOpen: false })
           }}
           okText={'Generate Token'}
-          onSave={handleSaveToken}
+          onSave={this.handleSaveToken}
         />
       </div>
     )
