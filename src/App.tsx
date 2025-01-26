@@ -1,6 +1,5 @@
 import { NavBar } from './views/Navigation/NavBar'
 import { useColorScheme } from '@mui/joy'
-import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { UserContext, UserProfile } from './contexts/UserContext'
 import { GetUserProfile } from './utils/Fetcher'
@@ -9,11 +8,14 @@ import { apiManager } from './utils/TokenManager'
 import React from 'react'
 import { ThemeMode } from './constants/theme'
 
+interface AppProps {
+}
+
 interface AppState {
   userProfile: UserProfile | null
 }
 
-export class App extends React.Component<{}, AppState> {
+export class App extends React.Component<AppProps, AppState> {
   constructor(props) {
     super(props)
     apiManager.init()
@@ -52,12 +54,15 @@ export class App extends React.Component<{}, AppState> {
         if (systemMode === 'dark') {
           this.applyTheme('dark')
         }
+      break
 
       case 'light':
         this.applyTheme('light')
+      break
 
       case 'dark':
         this.applyTheme('dark')
+      break
     }
   }
 
