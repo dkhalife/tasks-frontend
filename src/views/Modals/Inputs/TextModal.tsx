@@ -1,6 +1,5 @@
 import { Box, Button, Modal, ModalDialog, Textarea, Typography } from '@mui/joy'
 import React from 'react'
-import { useState } from 'react'
 
 interface TextModalProps {
   isOpen: boolean,
@@ -12,10 +11,21 @@ interface TextModalProps {
   cancelText: string,
 }
 
-export class TextModal extends React.Component<TextModalProps> {
+interface TextModalState {
+  text: string
+}
+
+export class TextModal extends React.Component<TextModalProps, TextModalState> {
+  constructor(props: TextModalProps) {
+    super(props)
+    this.state = {
+      text: props.current
+    }
+  }
+
   render(): React.ReactNode {
-    const { isOpen, onClose, onSave, current, title, okText, cancelText } = this.props
-    const [text, setText] = useState(current)
+    const { isOpen, onClose, onSave, title, okText, cancelText } = this.props
+    const { text } = this.state
 
     const handleSave = () => {
       onSave(text)
@@ -29,7 +39,7 @@ export class TextModal extends React.Component<TextModalProps> {
           <Textarea
             placeholder='Type in here…'
             value={text}
-            onChange={e => setText(e.target.value)}
+            onChange={e => this.setState({ text: e.target.value })}
             minRows={2}
             maxRows={4}
             sx={{ minWidth: 300 }}
