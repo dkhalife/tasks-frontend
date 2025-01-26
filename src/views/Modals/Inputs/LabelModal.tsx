@@ -9,9 +9,8 @@ import {
   Select,
   Typography,
 } from '@mui/joy'
-import { useEffect, useState } from 'react'
 
-import { useMutation, useQueryClient } from 'react-query'
+import { useQueryClient } from 'react-query'
 import { LABEL_COLORS } from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import { useLabels } from '../../Labels/LabelQueries'
@@ -23,68 +22,77 @@ interface LabelModalProps {
   label: any
 }
 
-export class LabelModal extends React.Component<LabelModalProps> {
+interface LabelModalState {
+  labelName: string,
+  color: string,
+  error: string
+}
+
+export class LabelModal extends React.Component<LabelModalProps, LabelModalState> {
+  constructor(props: LabelModalProps) {
+    super(props)
+    this.state = {
+      labelName: '',
+      color: '',
+      error: ''
+    }
+  }
+
+  private validateLabel = () => {
+    const { labelName, color } = this.state
+
+    if (!labelName.trim()) {
+      this.setState({ error: 'Name cannot be empty' })
+      return false
+    }
+  
+    const { data: userLabels = [] } = useLabels()
+    if (
+      userLabels.some(
+        userLabel => userLabel.name === labelName && userLabel.id !== this.props.label?.id,
+      )
+    ) {
+      this.setState({ error: 'Label with this name already exists' })
+      return false
+    }
+
+    if (!color) {
+      this.setState({ error: 'Please select a color' })
+      return false
+    }
+
+    return true
+  }
+  
+  private handleSave = () => {
+    if (!this.validateLabel()) {
+      return
+    }
+
+    const { label } = this.props
+    const { labelName, color } = this.state
+
+    const onSuccess = () => {
+      const queryClient = useQueryClient()
+      queryClient.invalidateQueries('labels')
+      this.props.onClose()
+    }
+
+    try {
+      if (label) {
+        UpdateLabel({ id: label.id, name: labelName, color }).then(onSuccess)
+      }
+      else {
+        CreateLabel({ name: labelName, color }).then(onSuccess)
+      }
+    } catch {
+      this.setState({ error: 'Failed to save label. Please try again.' })
+    }
+  }
+
   public render(): React.ReactNode {
     const { isOpen, onClose, label } = this.props
-
-    const [labelName, setLabelName] = useState('')
-    const [color, setColor] = useState('')
-    const [error, setError] = useState('')
-    const { data: userLabels = [] } = useLabels()
-    const queryClient = useQueryClient()
-
-    useEffect(() => {
-      if (label) {
-        setLabelName(label.name)
-        setColor(label.color)
-      } else {
-        setLabelName('')
-        setColor('')
-      }
-      setError('')
-    }, [label])
-
-    const validateLabel = () => {
-      if (!labelName.trim()) {
-        setError('Name cannot be empty')
-        return false
-      }
-      if (
-        userLabels.some(
-          userLabel => userLabel.name === labelName && userLabel.id !== label?.id,
-        )
-      ) {
-        setError('Label with this name already exists')
-        return false
-      }
-      if (!color) {
-        setError('Please select a color')
-        return false
-      }
-      return true
-    }
-
-    const saveLabelMutation = useMutation(
-      newLabel =>
-        label
-          ? UpdateLabel({ id: label.id, ...newLabel })
-          : CreateLabel(newLabel),
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries('labels')
-          onClose()
-        },
-        onError: () => {
-          setError('Failed to save label. Please try again.')
-        },
-      },
-    )
-
-    const handleSave = () => {
-      if (!validateLabel()) return
-
-      saveLabelMutation.mutate({ name: labelName, color })
-    }
+  const { labelName, color, error } = this.state
 
     return (
       <Modal open={isOpen} onClose={onClose}>
@@ -101,7 +109,7 @@ export class LabelModal extends React.Component<LabelModalProps> {
               fullWidth
               id='labelName'
               value={labelName}
-              onChange={e => setLabelName(e.target.value)}
+              onChange={e => this.setState({ labelName: e.target.value })}
             />
           </FormControl>
 
@@ -111,7 +119,11 @@ export class LabelModal extends React.Component<LabelModalProps> {
             </Typography>
             <Select
               value={color}
-              onChange={(e, value) => value && setColor(value)}
+              onChange={(e, value) => {
+                 if (value){
+                  this.setState({ color: value })
+                }
+              }}
               required={true}
               defaultValue={color}
               renderValue={selected => (
@@ -156,7 +168,7 @@ export class LabelModal extends React.Component<LabelModalProps> {
           )}
 
           <Box display='flex' justifyContent='space-around' mt={1}>
-            <Button onClick={handleSave} fullWidth sx={{ mr: 1 }}>
+            <Button onClick={this.handleSave} fullWidth sx={{ mr: 1 }}>
               {label ? 'Save Changes' : 'Add Label'}
             </Button>
             <Button onClick={onClose} variant='outlined'>
