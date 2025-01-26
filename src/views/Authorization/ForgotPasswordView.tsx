@@ -10,57 +10,65 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { ResetPassword } from '../../utils/Fetcher'
 import React from 'react'
+import { withNavigation } from '../../contexts/hooks'
 
-export class ForgotPasswordView extends React.Component {
-  render(): React.ReactNode {
-    const navigate = useNavigate()
-    const [resetStatusOk, setResetStatusOk] = useState<boolean>(false)
-    const [email, setEmail] = useState('')
-    const [emailError, setEmailError] = useState<string | null>()
+interface ForgotPasswordViewProps {
+  navigate: (path: string) => void
+}
 
-    const validateEmail = email => {
-      return !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+interface ForgotPasswordViewState {
+  email: string
+  emailError: string | null
+  resetStatusOk: boolean | null
+}
+
+class ForgotPasswordViewInner extends React.Component<ForgotPasswordViewProps, ForgotPasswordViewState> {
+  constructor(props: ForgotPasswordViewProps) {
+    super(props)
+
+    this.state = {
+      email: '',
+      emailError: null,
+      resetStatusOk: null,
+    }
+  }
+
+  private validateEmail = () => {
+    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(this.state.email)
+  }
+
+  private handleSubmit = async () => {
+    if (!this.state.email) {
+      this.setState({ emailError: 'Email is required' })
+      return
     }
 
-    const handleSubmit = async () => {
-      if (!email) {
-        return setEmailError('Email is required')
-      }
-
-      if (validateEmail(email)) {
-        setEmailError('Please enter a valid email address')
-        return
-      }
-
-      if (emailError) {
-        return
-      }
-
-      try {
-        const response = await ResetPassword(email)
-
-        if (response.ok) {
-          setResetStatusOk(true)
-        } else {
-          setResetStatusOk(false)
-        }
-      } catch {
-        setResetStatusOk(false)
-      }
+    if (!this.validateEmail()) {
+      this.setState({ emailError: 'Please enter a valid email address' })
+      return
     }
 
-    const handleEmailChange = e => {
-      setEmail(e.target.value)
-      if (validateEmail(e.target.value)) {
-        setEmailError('Please enter a valid email address')
+    try {
+      const response = await ResetPassword(this.state.email)
+
+      if (response.ok) {
+        this.setState({ resetStatusOk: true })
       } else {
-        setEmailError(null)
+        this.setState({ resetStatusOk: false })
       }
+    } catch {
+      this.setState({ resetStatusOk: false })
     }
+  }
+
+  private handleEmailChange = e => {
+    this.setState({ email: e.target.value })
+  }
+
+  render(): React.ReactNode {
+    const { email, emailError, resetStatusOk } = this.state
 
     return (
       <Container
@@ -109,13 +117,12 @@ export class ForgotPasswordView extends React.Component {
 
             <Box sx={{ textAlign: 'center' }}></Box>
             {resetStatusOk === null && (
-              <form onSubmit={handleSubmit}>
+              <FormControl error={emailError !== null} onSubmit={this.handleSubmit}>
                 <div className='grid gap-6'>
                   <Typography gutterBottom>
                     Enter your email, and we&lsquo;ll send you a link to get into your
                     account.
                   </Typography>
-                  <FormControl error={emailError !== null}>
                     <Input
                       placeholder='Email'
                       type='email'
@@ -123,17 +130,16 @@ export class ForgotPasswordView extends React.Component {
                       fullWidth
                       size='lg'
                       value={email}
-                      onChange={handleEmailChange}
+                      onChange={this.handleEmailChange}
                       error={emailError !== null}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
                           e.preventDefault()
-                          handleSubmit()
+                          this.handleSubmit()
                         }
                       }}
                     />
                     <FormHelperText>{emailError}</FormHelperText>
-                  </FormControl>
                   <Box>
                     <Button
                       variant='solid'
@@ -142,7 +148,7 @@ export class ForgotPasswordView extends React.Component {
                       sx={{
                         mb: 1,
                       }}
-                      onClick={handleSubmit}
+                      onClick={this.handleSubmit}
                     >
                       Reset Password
                     </Button>
@@ -156,7 +162,7 @@ export class ForgotPasswordView extends React.Component {
                         borderRadius: '8px',
                       }}
                       onClick={() => {
-                        navigate('/login')
+                        this.props.navigate('/login')
                       }}
                       color='neutral'
                     >
@@ -164,7 +170,7 @@ export class ForgotPasswordView extends React.Component {
                     </Button>
                   </Box>
                 </div>
-              </form>
+                </FormControl>
             )}
             {resetStatusOk != null && (
               <>
@@ -180,7 +186,7 @@ export class ForgotPasswordView extends React.Component {
                   size='lg'
                   sx={{ position: 'relative', bottom: '0' }}
                   onClick={() => {
-                    navigate('/login')
+                    this.props.navigate('/login')
                   }}
                   fullWidth
                 >
@@ -193,7 +199,7 @@ export class ForgotPasswordView extends React.Component {
               autoHideDuration={5000}
               onClose={() => {
                 if (resetStatusOk) {
-                  navigate('/login')
+                  this.props.navigate('/login')
                 }
               }}
             >
@@ -207,3 +213,5 @@ export class ForgotPasswordView extends React.Component {
     )
   }
 }
+
+export const ForgotPasswordView = withNavigation(ForgotPasswordViewInner)
