@@ -16,82 +16,54 @@ import {
   ListItemDecorator,
   Typography,
 } from '@mui/joy'
-import { useContext, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { version } from '../../../package.json'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import React from 'react'
-import { ThemeMode } from '../../constants/theme'
 import { StorageContext, StorageContextState } from '../../contexts/StorageContext'
+import { toggleTheme } from '../../constants/theme'
+import { withLocation, withNavigation } from '../../contexts/hooks'
 
-const links = [
-  {
-    to: '/my/chores',
-    label: 'Home',
-    icon: <HomeOutlined />,
-  },
-  {
-    to: '/chores',
-    label: 'Desktop View',
-    icon: <ListAlt />,
-  },
-  {
-    to: 'labels',
-    label: 'Labels',
-    icon: <ListAlt />,
-  },
-  {
-    to: '/settings',
-    label: 'Settings',
-    icon: <SettingsOutlined />,
-  },
-]
+type NavBarProps = {
+  location: Location
+  navigate: (path: string) => void
+}
 
-export class NavBar extends React.Component {
-  private onThemeModeToggle = () => {
-    const storedState = useContext<StorageContextState>(StorageContext);
+interface NavBarState {
+  drawerOpen: boolean
+}
 
-    let newThemeMode: ThemeMode
-    switch (storedState.themeMode) {
-      case 'light':
-        newThemeMode = 'dark'
-        break
-      case 'dark':
-        newThemeMode = 'system'
-        break
-      case 'system':
-      default:
-        newThemeMode = 'light'
-        break
+export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
+  constructor(props: NavBarProps) {
+    super(props)
+    this.state = {
+      drawerOpen: false,
     }
+  }
 
-    storedState.setThemeMode(newThemeMode)
+  private openDrawer = () => {
+    this.setState({ drawerOpen: true })
+  }
+
+  private closeDrawer = () => {
+    this.setState({ drawerOpen: false })
   }
 
   render(): React.ReactNode {
-    const navigate = useNavigate()
-    const [drawerOpen, setDrawerOpen] = useState(false)
-    const [openDrawer, closeDrawer] = [
-      () => setDrawerOpen(true),
-      () => setDrawerOpen(false),
-    ]
-    const location = useLocation()
-    if (['/signup', '/login', '/forgot-password'].includes(location.pathname)) {
+    if (['/signup', '/login', '/forgot-password'].includes(this.props.location.pathname)) {
       return null
     }
 
-    const storedState = useContext<StorageContextState>(StorageContext);
-
     return (
       <nav className='flex gap-2 p-3'>
-        <IconButton size='sm' variant='plain' onClick={() => setDrawerOpen(true)}>
+        <IconButton size='sm' variant='plain' onClick={this.openDrawer}>
           <MenuRounded />
         </IconButton>
         <Box
           className='flex items-center gap-2'
           onClick={() => {
-            navigate('/my/chores')
+            this.props.navigate('/my/chores')
           }}
         >
           <img src={Logo} width='34' />
@@ -112,30 +84,35 @@ export class NavBar extends React.Component {
               tick✓
             </span>
           </Typography>
-            <ThemeToggleButton
-              themeMode={storedState.themeMode}
-              onThemeModeToggle={this.onThemeModeToggle}
-              sx={{
-                position: 'absolute',
-                right: 10,
-              }}
-            />
+          <StorageContext.Consumer>
+            {({ themeMode }: StorageContextState) => (
+              <ThemeToggleButton
+                themeMode={themeMode}
+                onThemeModeToggle={toggleTheme}
+                sx={{
+                  position: 'absolute',
+                  right: 10,
+                }}
+              />
+            )}
+          </StorageContext.Consumer>
         </Box>
         <Drawer
-          open={drawerOpen}
-          onClose={closeDrawer}
+          open={this.state.drawerOpen}
+          onClick={this.closeDrawer}
+          onClose={this.closeDrawer}
           size='sm'
-          onClick={closeDrawer}
         >
           <div>
             <List
               size='md'
-              onClick={openDrawer}
+              onClick={this.openDrawer}
               sx={{ borderRadius: 4, width: '100%', padding: 1 }}
             >
-              {links.map((link, index) => (
-                <NavBarLink key={index} to={link.to} icon={link.icon} label={link.label} />
-              ))}
+              <NavBarLink to='/my/chores' icon={<HomeOutlined />} label='Home' />
+              <NavBarLink to='/chores' icon={<ListAlt />} label='Desktop View' />
+              <NavBarLink to='/labels' icon={<ListAlt />} label='Labels' />
+              <NavBarLink to='/settings' icon={<SettingsOutlined />} label='Settings' />
             </List>
           </div>
           <div>
@@ -150,7 +127,7 @@ export class NavBar extends React.Component {
                 padding: 2,
               }}
               size='md'
-              onClick={openDrawer}
+              onClick={this.openDrawer}
             >
               <ListItemButton
                 onClick={() => {
@@ -173,7 +150,6 @@ export class NavBar extends React.Component {
                 }
                 level='body-xs'
                 sx={{
-                  // p: 2,
                   p: 1,
                   color: 'text.tertiary',
                   textAlign: 'center',
@@ -189,3 +165,5 @@ export class NavBar extends React.Component {
     )
   }
 }
+
+export const NavBar = withNavigation(withLocation(NavBarInner))
