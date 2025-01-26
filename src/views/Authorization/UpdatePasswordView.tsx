@@ -9,62 +9,90 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import { Logo } from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
 import React from 'react'
 
-export class UpdatePasswordView extends React.Component {
+interface UpdatePasswordViewProps {
+  navigate: (path: string) => void
+}
+
+interface UpdatePasswordViewState {
+  password: string
+  passwordConfirm: string
+  passwordError: string | null
+  passworConfirmationError: string | null
+  updateStatusOk: boolean | null
+}
+
+export class UpdatePasswordView extends React.Component<UpdatePasswordViewProps, UpdatePasswordViewState> {
+  private handlePasswordChange = e => {
+    const password = e.target.value
+
+    if (password.length < 8) {
+      this.setState({
+        password,
+        passwordError: 'Password must be at least 8 characters'
+      })
+    } else {
+      this.setState({
+        password,
+        passwordError: null
+      })
+    }
+  }
+
+  private handlePasswordConfirmChange = e => {
+    const { password } = this.state
+    if (e.target.value !== password) {
+      this.setState({
+        passwordConfirm: e.target.value,
+        passworConfirmationError: 'Passwords do not match'
+      })
+    } else {
+      this.setState({
+        passwordConfirm: e.target.value,
+        passworConfirmationError: null
+      })
+    }
+  }
+
+  private handleSubmit = async () => {
+    const { navigate } = this.props
+    const { password, passwordError, passworConfirmationError } = this.state
+
+    if (passwordError != null || passworConfirmationError != null) {
+      return
+    }
+
+    try {
+      const [searchParams] = useSearchParams()
+      const verifiticationCode = searchParams.get('c')
+
+      const response = await ChangePassword(verifiticationCode, password)
+
+      if (response.ok) {
+        this.setState({
+          updateStatusOk: true
+        })
+        navigate('/login')
+      } else {
+        this.setState({
+          updateStatusOk: false
+        })
+      }
+    } catch {
+      this.setState({
+        updateStatusOk: false
+      })
+    }
+  }
+
   render(): React.ReactNode {
-    const navigate = useNavigate()
-    const [password, setPassword] = useState('')
-    const [passwordConfirm, setPasswordConfirm] = useState('')
-    const [passwordError, setPasswordError] = useState<string | null>(null)
-    const [passworConfirmationError, setPasswordConfirmationError] =
-      useState<string | null>(null)
-    const [searchParams] = useSearchParams()
+    const { password, passwordConfirm, passwordError, passworConfirmationError, updateStatusOk } = this.state
 
-    const [updateStatusOk, setUpdateStatusOk] = useState<boolean | null>(null)
-
-    const verifiticationCode = searchParams.get('c')
-
-    const handlePasswordChange = e => {
-      const password = e.target.value
-      setPassword(password)
-      if (password.length < 8) {
-        setPasswordError('Password must be at least 8 characters')
-      } else {
-        setPasswordError(null)
-      }
-    }
-    const handlePasswordConfirmChange = e => {
-      setPasswordConfirm(e.target.value)
-      if (e.target.value !== password) {
-        setPasswordConfirmationError('Passwords do not match')
-      } else {
-        setPasswordConfirmationError(null)
-      }
-    }
-
-    const handleSubmit = async () => {
-      if (passwordError != null || passworConfirmationError != null) {
-        return
-      }
-      try {
-        const response = await ChangePassword(verifiticationCode, password)
-
-        if (response.ok) {
-          setUpdateStatusOk(true)
-          navigate('/login')
-        } else {
-          setUpdateStatusOk(false)
-        }
-      } catch {
-        setUpdateStatusOk(false)
-      }
-    }
     return (
       <Container component='main' maxWidth='xs'>
         <Box
@@ -115,7 +143,7 @@ export class UpdatePasswordView extends React.Component {
                 placeholder='Password'
                 type='password'
                 value={password}
-                onChange={handlePasswordChange}
+                onChange={this.handlePasswordChange}
                 error={passwordError !== null}
               />
               <FormHelperText>{passwordError}</FormHelperText>
@@ -126,7 +154,7 @@ export class UpdatePasswordView extends React.Component {
                 placeholder='Confirm Password'
                 type='password'
                 value={passwordConfirm}
-                onChange={handlePasswordConfirmChange}
+                onChange={this.handlePasswordConfirmChange}
                 error={passworConfirmationError !== null}
               />
               <FormHelperText>{passworConfirmationError}</FormHelperText>
@@ -139,7 +167,7 @@ export class UpdatePasswordView extends React.Component {
                 mt: 5,
                 mb: 1,
               }}
-              onClick={handleSubmit}
+              onClick={this.handleSubmit}
             >
               Save Password
             </Button>
@@ -148,7 +176,7 @@ export class UpdatePasswordView extends React.Component {
               size='lg'
               variant='soft'
               onClick={() => {
-                navigate('/login')
+                this.props.navigate('/login')
               }}
             >
               Cancel
@@ -159,7 +187,7 @@ export class UpdatePasswordView extends React.Component {
           open={updateStatusOk !== true}
           autoHideDuration={6000}
           onClose={() => {
-            setUpdateStatusOk(null)
+            this.setState({ updateStatusOk: null })
           }}
         >
           Password update failed, try again later
