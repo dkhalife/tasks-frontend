@@ -8,35 +8,54 @@ import {
   ModalDialog,
   Typography,
 } from '@mui/joy'
-import React, { useEffect } from 'react'
+import React from 'react'
 
-interface PassowrdChangeModalProps {
+interface PasswordChangeModalProps {
   isOpen: boolean,
   onClose: (password: string | null) => void,
 }
 
-export class PassowrdChangeModal extends React.Component<PassowrdChangeModalProps> {
+interface PasswordChangeModalState {
+  password: string,
+  confirmPassword: string,
+  passwordError: string | null,
+}
+
+export class PassowrdChangeModal extends React.Component<PasswordChangeModalProps, PasswordChangeModalState> {
+  constructor(props: PasswordChangeModalProps) {
+    super(props)
+    this.state = {
+      password: '',
+      confirmPassword: '',
+      passwordError: null,
+    }
+  }
+
+  componentDidUpdate(prevPros: PasswordChangeModalProps, prevState: PasswordChangeModalState): void {
+    const { password, confirmPassword } = this.state
+
+    if (password === prevState.password && confirmPassword === prevState.confirmPassword) {
+      return
+    }
+
+    if (password !== confirmPassword) {
+      this.setState({ passwordError: 'Passwords do not match' })
+    } else if (password.length < 8) {
+      this.setState({ passwordError: 'Password must be at least 8 characters' })
+    } else if (password.length > 50) {
+      this.setState({ passwordError: 'Password must be less than 50 characters' })
+    } else {
+      this.setState({ passwordError: null })
+    }
+  }
+
   public render(): React.ReactNode {
     const { isOpen, onClose } = this.props
-    const [password, setPassword] = React.useState('')
-    const [confirmPassword, setConfirmPassword] = React.useState('')
-    const [passwordError, setPasswordError] = React.useState<string | null>(null)
-    const [passwordTouched, setPasswordTouched] = React.useState(false)
-    const [confirmPasswordTouched, setConfirmPasswordTouched] =
-      React.useState(false)
-    useEffect(() => {
-      if (!passwordTouched || !confirmPasswordTouched) {
-        return
-      } else if (password !== confirmPassword) {
-        setPasswordError('Passwords do not match')
-      } else if (password.length < 8) {
-        setPasswordError('Password must be at least 8 characters')
-      } else if (password.length > 50) {
-        setPasswordError('Password must be less than 50 characters')
-      } else {
-        setPasswordError(null)
-      }
-    }, [password, confirmPassword, passwordTouched, confirmPasswordTouched, setPasswordError])
+    const {
+      password,
+      confirmPassword,
+      passwordError,
+    } = this.state
 
     return (
       <Modal open={isOpen}>
@@ -60,8 +79,7 @@ export class PassowrdChangeModal extends React.Component<PassowrdChangeModalProp
               id='password'
               value={password}
               onChange={e => {
-                setPasswordTouched(true)
-                setPassword(e.target.value)
+                this.setState({ password: e.target.value })
               }}
             />
           </FormControl>
@@ -78,8 +96,7 @@ export class PassowrdChangeModal extends React.Component<PassowrdChangeModalProp
               id='confirmPassword'
               value={confirmPassword}
               onChange={e => {
-                setConfirmPasswordTouched(true)
-                setConfirmPassword(e.target.value)
+                this.setState({ confirmPassword: e.target.value })
               }}
             />
 
