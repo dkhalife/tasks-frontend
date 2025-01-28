@@ -13,7 +13,6 @@ import {
 import { useQueryClient } from 'react-query'
 import { LABEL_COLORS } from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
-import { useLabels } from '../../Labels/LabelQueries'
 import React from 'react'
 
 interface LabelModalProps {
@@ -46,7 +45,8 @@ export class LabelModal extends React.Component<LabelModalProps, LabelModalState
       return false
     }
   
-    const { data: userLabels = [] } = useLabels()
+    // TODO: Use local cache instead of fetching from server
+    /*const { data: userLabels = [] } = useLabels()
     if (
       userLabels.some(
         userLabel => userLabel.name === labelName && userLabel.id !== this.props.label?.id,
@@ -54,7 +54,7 @@ export class LabelModal extends React.Component<LabelModalProps, LabelModalState
     ) {
       this.setState({ error: 'Label with this name already exists' })
       return false
-    }
+    }*/
 
     if (!color) {
       this.setState({ error: 'Please select a color' })
@@ -71,19 +71,13 @@ export class LabelModal extends React.Component<LabelModalProps, LabelModalState
 
     const { label } = this.props
     const { labelName, color } = this.state
-
-    const onSuccess = () => {
-      const queryClient = useQueryClient()
-      queryClient.invalidateQueries('labels')
-      this.props.onClose()
-    }
-
+    // TODO: With the cache, invalidate here
     try {
       if (label) {
-        UpdateLabel({ id: label.id, name: labelName, color }).then(onSuccess)
+        UpdateLabel({ id: label.id, name: labelName, color })
       }
       else {
-        CreateLabel({ name: labelName, color }).then(onSuccess)
+        CreateLabel({ name: labelName, color })
       }
     } catch {
       this.setState({ error: 'Failed to save label. Please try again.' })
