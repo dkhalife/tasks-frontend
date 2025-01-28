@@ -12,58 +12,70 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import React, { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../../contexts/UserContext'
+import React from 'react'
 import {
   GetUserProfile,
   UpdateNotificationTarget,
 } from '../../utils/Fetcher'
 
-export class NotificationSetting extends React.Component {
-  render(): React.ReactNode {
-    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
-    const { userProfile, setUserProfile } = useContext<any>(UserContext)
-    useEffect(() => {
-      if (!userProfile) {
-        GetUserProfile().then(resp => {
-          resp.json().then(data => {
-            setUserProfile(data.res)
-          })
-        })
-      }
-    }, [userProfile, setUserProfile])
+interface NotificationSettingProps {
+}
 
-    const [notificationTarget, setNotificationTarget] = useState<string|null>(
-      userProfile?.notification_target
-        ? String(userProfile.notification_target.type)
-        : '0',
-    )
+interface NotificationSettingState {
+  isSnackbarOpen: boolean,
+  notificationTarget: string | null,
+  error: string,
+  userProfile: any,
+}
 
-    const [error, setError] = useState('')
-    const SaveValidation = () => {
-      setError('')
-      return true
+export class NotificationSetting extends React.Component<NotificationSettingProps, NotificationSettingState> {
+  constructor(props: NotificationSettingProps) {
+    super(props)
+
+    this.state = {
+      isSnackbarOpen: false,
+      notificationTarget: null,
+      error: '',
+      userProfile: null,
     }
-    const handleSave = () => {
-      if (!SaveValidation()) return
+  }
 
-      UpdateNotificationTarget({
-        type: Number(notificationTarget),
-      }).then(resp => {
-        if (resp.status != 200) {
-          alert(`Error while updating notification target: ${resp.statusText}`)
-          return
-        }
+  componentDidMount(): void {
+    GetUserProfile().then(resp => {
+      resp.json().then(data => {
+        this.setState({
+          userProfile: data.res,
+        })
+      })
+    })    
+  }
 
-        setUserProfile({
+  private handleSave = () => {
+    this.setState({ error: '' })
+
+    const { userProfile, notificationTarget } = this.state
+    UpdateNotificationTarget({
+      type: Number(notificationTarget),
+    }).then(resp => {
+      if (resp.status != 200) {
+        this.setState({ error: `Error while updating notification target: ${resp.statusText}` })
+        return
+      }
+
+      this.setState({
+        userProfile: {
           ...userProfile,
           notification_target: {
             type: Number(notificationTarget),
           },
-        })
-        alert('Notification target updated')
+        },
       })
-    }
+    })
+  }
+
+  render(): React.ReactNode {
+    const { isSnackbarOpen, error, notificationTarget } = this.state
+
     return (
       <div className='grid gap-4 py-4' id='notifications'>
         <Typography level='h3'>Custom Notification</Typography>
@@ -93,7 +105,7 @@ export class NotificationSetting extends React.Component {
           <Select
             value={notificationTarget}
             sx={{ maxWidth: '200px' }}
-            onChange={(e, selected) => setNotificationTarget(selected)}
+            onChange={(e, selected) => this.setState({ notificationTarget: selected })}
           >
             <Option value='0'>None</Option>
             <Option value='3'>Mqtt</Option>
@@ -109,7 +121,7 @@ export class NotificationSetting extends React.Component {
               width: '110px',
               mb: 1,
             }}
-            onClick={handleSave}
+            onClick={this.handleSave}
           >
             Save
           </Button>
@@ -117,9 +129,9 @@ export class NotificationSetting extends React.Component {
         <Snackbar
           open={isSnackbarOpen}
           autoHideDuration={8000}
-          onClose={() => setIsSnackbarOpen(false)}
+          onClose={() => this.setState({ isSnackbarOpen: false })}
           endDecorator={
-            <IconButton size='md' onClick={() => setIsSnackbarOpen(false)}>
+            <IconButton size='md' onClick={() => this.setState({ isSnackbarOpen: false })}>
               <Close />
             </IconButton>
           }
