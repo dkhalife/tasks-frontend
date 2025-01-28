@@ -11,102 +11,132 @@ import {
   Typography,
 } from '@mui/joy'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Logo } from '../../Logo'
 import { login, signUp } from '../../utils/Fetcher'
+import { withNavigation } from '../../contexts/hooks'
 
-export class SignupView extends React.Component {
+interface SignupViewProps {
+  navigate: (path: string) => void
+}
+
+interface SignupViewState {
+  username: string
+  password: string
+  displayName: string
+  email: string
+  usernameError: string|null
+  passwordError: string|null
+  emailError: string|null
+  displayNameError: string|null
+  error: string|null
+}
+
+class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> {
+  constructor(props: SignupViewProps) {
+    super(props)
+
+    this.state = {
+      username: '',
+      password: '',
+      displayName: '',
+      email: '',
+      usernameError: null,
+      passwordError: null,
+      emailError: null,
+      displayNameError: null,
+      error: null,
+    }
+  }
+
+  private handleLogin = (username, password) => {
+    login(username, password).then(response => {
+      if (response.status === 200) {
+        response.json().then(res => {
+          localStorage.setItem('ca_token', res.token)
+          localStorage.setItem('ca_expiration', res.expire)
+          this.props.navigate('/my/chores')
+        })
+      } else {
+        alert('Login failed')
+      }
+    })
+  }
+
+  private handleSignUpValidation = () => {
+    // Reset errors before validation
+    const newState: any = {
+      usernameError: null,
+      passwordError: null,
+      displayNameError: null,
+      emailError: null,
+    }
+
+    const { username, password, displayName, email } = this.state
+
+    let isValid = true
+
+    if (!username.trim()) {
+      newState.usernameError = 'Username is required'
+      isValid = false
+    }
+    if (username.length < 4) {
+      newState.usernameError = 'Username must be at least 4 characters'
+      isValid = false
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newState.emailError = 'Invalid email address'
+      isValid = false
+    }
+
+    if (password.length < 8) {
+      newState.passwordError = 'Password must be at least 8 characters'
+      isValid = false
+    }
+
+    if (!displayName.trim()) {
+      newState.displayNameError = 'Display name is required'
+      isValid = false
+    }
+
+    // display name should only contain letters and spaces and numbers:
+    if (!/^[a-zA-Z0-9 ]+$/.test(displayName)) {
+      newState.displayNameError = 'Display name can only contain letters, numbers and spaces'
+      isValid = false
+    }
+
+    // username should only contain letters , numbers , dot and dash:
+    if (!/^[a-zA-Z0-9.-]+$/.test(username)) {
+      newState.usernameError = 'Username can only contain letters, numbers, dot and dash'
+      isValid = false
+    }
+
+    this.setState(newState)
+    return isValid
+  }
+
+  private handleSubmit = async e => {
+    e.preventDefault()
+
+    if (!this.handleSignUpValidation()) {
+      return
+    }
+
+    const { username, password, displayName, email } = this.state
+    signUp(username, password, displayName, email).then(response => {
+      if (response.status === 201) {
+        this.handleLogin(username, password)
+      } else if (response.status === 403) {
+        this.setState({ error: 'Signup disabled, please contact admin' })
+      } else {
+        response.json().then(res => {
+          this.setState({ error: res })
+        })
+      }
+    })
+  }
+
   render(): React.ReactNode {
-    const [username, setUsername] = React.useState<string>('')
-    const [password, setPassword] = React.useState<string>('')
-    const navigate = useNavigate()
-    const [displayName, setDisplayName] = React.useState<string>('')
-    const [email, setEmail] = React.useState<string>('')
-    const [usernameError, setUsernameError] = React.useState<string|null>(null)
-    const [passwordError, setPasswordError] = React.useState<string|null>(null)
-    const [emailError, setEmailError] = React.useState<string|null>(null)
-    const [displayNameError, setDisplayNameError] = React.useState<string|null>(null)
-    const [error, setError] = React.useState<string|null>(null)
-    const handleLogin = (username, password) => {
-      login(username, password).then(response => {
-        if (response.status === 200) {
-          response.json().then(res => {
-            localStorage.setItem('ca_token', res.token)
-            localStorage.setItem('ca_expiration', res.expire)
-            navigate('/my/chores')
-          })
-        } else {
-          alert('Login failed')
-        }
-      })
-    }
-    const handleSignUpValidation = () => {
-      // Reset errors before validation
-      setUsernameError(null)
-      setPasswordError(null)
-      setDisplayNameError(null)
-      setEmailError(null)
-
-      let isValid = true
-
-      if (!username.trim()) {
-        setUsernameError('Username is required')
-        isValid = false
-      }
-      if (username.length < 4) {
-        setUsernameError('Username must be at least 4 characters')
-        isValid = false
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setEmailError('Invalid email address')
-        isValid = false
-      }
-
-      if (password.length < 8) {
-        setPasswordError('Password must be at least 8 characters')
-        isValid = false
-      }
-
-      if (!displayName.trim()) {
-        setDisplayNameError('Display name is required')
-        isValid = false
-      }
-
-      // display name should only contain letters and spaces and numbers:
-      if (!/^[a-zA-Z0-9 ]+$/.test(displayName)) {
-        setDisplayNameError('Display name can only contain letters and numbers')
-        isValid = false
-      }
-
-      // username should only contain letters , numbers , dot and dash:
-      if (!/^[a-zA-Z0-9.-]+$/.test(username)) {
-        setUsernameError(
-          'Username can only contain letters, numbers, dot and dash',
-        )
-        isValid = false
-      }
-
-      return isValid
-    }
-    const handleSubmit = async e => {
-      e.preventDefault()
-      if (!handleSignUpValidation()) {
-        return
-      }
-      signUp(username, password, displayName, email).then(response => {
-        if (response.status === 201) {
-          handleLogin(username, password)
-        } else if (response.status === 403) {
-          setError('Signup disabled, please contact admin')
-        } else {
-          alert('Signup failed')
-          response.json().then(res => {
-            setError(res.error)
-          })
-        }
-      })
-    }
-
+    const { username, password, displayName, email, usernameError, passwordError, displayNameError, emailError, error } = this.state
     return (
       <Container component='main' maxWidth='xs'>
         <Box
@@ -163,8 +193,7 @@ export class SignupView extends React.Component {
               autoFocus
               value={username}
               onChange={e => {
-                setUsernameError(null)
-                setUsername(e.target.value.trim())
+                this.setState({ usernameError: null, username: e.target.value.trim() })
               }}
             />
             <FormControl>
@@ -181,8 +210,7 @@ export class SignupView extends React.Component {
               autoComplete='email'
               value={email}
               onChange={e => {
-                setEmailError(null)
-                setEmail(e.target.value.trim())
+                this.setState({ emailError: null, email: e.target.value.trim() })
               }}
             />
             <FormControl>
@@ -199,8 +227,7 @@ export class SignupView extends React.Component {
               id='password'
               value={password}
               onChange={e => {
-                setPasswordError(null)
-                setPassword(e.target.value)
+                this.setState({ passwordError: null, password: e.target.value })
               }}
             />
             <FormControl>
@@ -216,20 +243,18 @@ export class SignupView extends React.Component {
               id='displayName'
               value={displayName}
               onChange={e => {
-                setDisplayNameError(null)
-                setDisplayName(e.target.value)
+                this.setState({ displayNameError: null, displayName: e.target.value.trim() })
               }}
             />
             <FormControl>
               <FormHelperText>{displayNameError}</FormHelperText>
             </FormControl>
             <Button
-              // type='submit'
               size='lg'
               fullWidth
               variant='solid'
               sx={{ mt: 3, mb: 1 }}
-              onClick={handleSubmit}
+              onClick={this.handleSubmit}
             >
               Sign Up
             </Button>
@@ -237,11 +262,10 @@ export class SignupView extends React.Component {
             <Button
               size='lg'
               onClick={() => {
-                navigate('/login')
+                this.props.navigate('/login')
               }}
               fullWidth
               variant='soft'
-              // sx={{ mt: 3, mb: 2 }}
             >
               Login
             </Button>
@@ -249,7 +273,7 @@ export class SignupView extends React.Component {
         </Box>
         <Snackbar
           open={error !== null}
-          onClose={() => setError(null)}
+          onClose={() => this.setState({ error: null })}
           autoHideDuration={5000}
         >
           {error}
@@ -258,3 +282,5 @@ export class SignupView extends React.Component {
     )
   }
 }
+
+export const SignupView = withNavigation(SignupViewInner)
