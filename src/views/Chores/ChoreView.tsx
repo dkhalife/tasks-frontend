@@ -31,8 +31,11 @@ import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 
 interface ChoreViewProps {
+  choreId: string | undefined
+}
+
+type ChoreViewInnerProps = ChoreViewProps & {
   navigate: (path: string) => void
-  choreId: string
 }
 
 interface ChoreViewState {
@@ -42,7 +45,7 @@ interface ChoreViewState {
   confirmModelConfig: ConfirmationModalProps
 }
 
-class ChoreViewInner extends React.Component<ChoreViewProps, ChoreViewState> {
+class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState> {
   constructor(props) {
     super(props)
 
@@ -366,4 +369,4 @@ class ChoreViewInner extends React.Component<ChoreViewProps, ChoreViewState> {
   }
 }
 
-export const ChoreView = withNavigation(ChoreViewInner)
+export const ChoreView = withNavigation<ChoreViewProps>(ChoreViewInner)

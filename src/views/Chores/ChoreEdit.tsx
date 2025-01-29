@@ -41,7 +41,10 @@ const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
 const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
 interface ChoreEditProps {
-  choreId: number | undefined
+  choreId: string | undefined
+}
+
+type ChoreEditInnerProps = ChoreEditProps & {
   navigate: (path: string) => void
 }
 
@@ -67,8 +70,8 @@ interface ChoreEditState {
   confirmModelConfig: ConfirmationModalProps
 }
 
-class ChoreEditInner extends React.Component<ChoreEditProps, ChoreEditState> {
-  constructor(props: ChoreEditProps) {
+class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState> {
+  constructor(props: ChoreEditInnerProps) {
     super(props)
     this.state = {
       isRolling: false,
@@ -650,4 +653,4 @@ class ChoreEditInner extends React.Component<ChoreEditProps, ChoreEditState> {
   }
 }
 
-export const ChoreEdit = withNavigation(ChoreEditInner)
+export const ChoreEdit = withNavigation<ChoreEditProps>(ChoreEditInner)
