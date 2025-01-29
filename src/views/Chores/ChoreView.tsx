@@ -20,107 +20,137 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   GetChoreDetailById,
   MarkChoreComplete,
   SkipChore,
 } from '../../utils/Fetcher'
-import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
+import { withNavigation } from '../../contexts/hooks'
 
-export class ChoreView extends React.Component {
-  render(): React.ReactNode {
-    const [chore, setChore] = useState<any>({})
-    const navigate = useNavigate()
-    const [infoCards, setInfoCards] = useState([])
-    const { choreId } = useParams()
-    const [note, setNote] = useState(null)
+interface ChoreViewProps {
+  navigate: (path: string) => void
+  choreId: string
+}
 
-    const [searchParams] = useSearchParams()
+interface ChoreViewState {
+  chore: any
+  infoCards: any
+  note: string | null
+  confirmModelConfig: ConfirmationModalProps
+}
 
-    const [confirmModelConfig, setConfirmModelConfig] = useState<any>({})
+class ChoreViewInner extends React.Component<ChoreViewProps, ChoreViewState> {
+  constructor(props) {
+    super(props)
 
-    const handleTaskCompletion = useCallback(() => {
-      MarkChoreComplete(choreId, note, null)
-        .then(resp => {
+    this.state = {
+      chore: {},
+      infoCards: [],
+      note: null,
+      confirmModelConfig: {
+        isOpen: false,
+        title: '',
+        message: '',
+        confirmText: '',
+        cancelText: '',
+        onClose: () => {},
+      },
+    }
+  }
+
+  private handleTaskCompletion = () => {
+    const { note } = this.state
+    const { choreId } = this.props
+
+    MarkChoreComplete(choreId, note, null)
+      .then(resp => {
+        if (resp.ok) {
+          return resp.json().then(data => {
+            this.setState({
+              note: null,
+              chore: data.res,
+            })
+          })
+        }
+      })
+      .then(() => {
+        GetChoreDetailById(choreId).then(resp => {
           if (resp.ok) {
             return resp.json().then(data => {
-              setNote(null)
-              setChore(data.res)
+              this.setState({
+                chore: data.res,
+              })
             })
           }
         })
-        .then(() => {
-          GetChoreDetailById(choreId).then(resp => {
-            if (resp.ok) {
-              return resp.json().then(data => {
-                setChore(data.res)
-              })
-            }
+      })
+  }
+
+  componentDidMount(): void {
+    GetChoreDetailById(this.props.choreId).then(resp => {
+      if (resp.ok) {
+        return resp.json().then(data => {
+          const chore = data.res
+
+          this.setState({
+            chore,
+          })
+
+          this.generateInfoCards(chore)
+        })
+      }
+    })
+  }
+
+  private generateInfoCards = chore => {
+    const cards = [
+      {
+        size: 6,
+        icon: <CalendarMonth />,
+        text: 'Due Date',
+        subtext: chore.nextDueDate
+          ? moment(chore.nextDueDate).fromNow()
+          : 'N/A',
+      },
+      {
+        size: 6,
+        icon: <Checklist />,
+        text: 'Total Completed',
+        subtext: `${chore.totalCompletedCount} times`,
+      },
+      {
+        size: 6,
+        icon: <Timelapse />,
+        text: 'Last Completed',
+        subtext:
+          chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
+      }
+    ]
+
+    this.setState({
+      infoCards: cards,
+    })
+  }
+
+  private handleSkippingTask = () => {
+    SkipChore(this.props.choreId).then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          this.setState({
+            chore: data.res
           })
         })
-    }, [MarkChoreComplete, GetChoreDetailById, setNote, setChore, choreId, note])
-
-    useEffect(() => {
-      GetChoreDetailById(choreId).then(resp => {
-        if (resp.ok) {
-          return resp.json().then(data => {
-            setChore(data.res)
-            document.title = 'Donetick: ' + data.res.name
-          })
-        }
-      })
-      const auto_complete = searchParams.get('auto_complete')
-      if (auto_complete === 'true') {
-        handleTaskCompletion()
       }
-    }, [choreId, handleTaskCompletion, searchParams])
+    })
+  }
 
-    useEffect(() => {
+  render(): React.ReactNode {
+    const { choreId } = this.props
+    const { chore, infoCards, confirmModelConfig } = this.state
 
-      const generateInfoCards = chore => {
-        const cards = [
-          {
-            size: 6,
-            icon: <CalendarMonth />,
-            text: 'Due Date',
-            subtext: chore.nextDueDate
-              ? moment(chore.nextDueDate).fromNow()
-              : 'N/A',
-          },
-          {
-            size: 6,
-            icon: <Checklist />,
-            text: 'Total Completed',
-            subtext: `${chore.totalCompletedCount} times`,
-          },
-          {
-            size: 6,
-            icon: <Timelapse />,
-            text: 'Last Completed',
-            subtext:
-              chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
-          }
-        ]
-        setInfoCards(cards)
-      }
-
-      generateInfoCards(chore)
-    }, [chore])
-
-    const handleSkippingTask = () => {
-      SkipChore(choreId).then(response => {
-        if (response.ok) {
-          response.json().then(data => {
-            const newChore = data.res
-            setChore(newChore)
-          })
-        }
-      })
-    }
     return (
       <Container
         maxWidth='sm'
@@ -216,7 +246,7 @@ export class ChoreView extends React.Component {
               variant='outlined'
               fullWidth
               onClick={() => {
-                navigate(`/chores/${choreId}/history`)
+                this.props.navigate(`/chores/${choreId}/history`)
               }}
               sx={{
                 flexDirection: 'column',
@@ -240,7 +270,7 @@ export class ChoreView extends React.Component {
                 p: 1,
               }}
               onClick={() => {
-                navigate(`/chores/${choreId}/edit`)
+                this.props.navigate(`/chores/${choreId}/edit`)
               }}
             >
               <Edit />
@@ -282,7 +312,7 @@ export class ChoreView extends React.Component {
             <Button
               fullWidth
               size='lg'
-              onClick={handleTaskCompletion}
+              onClick={this.handleTaskCompletion}
               color={'success'}
               startDecorator={<Check />}
               sx={{
@@ -296,19 +326,27 @@ export class ChoreView extends React.Component {
               fullWidth
               size='lg'
               onClick={() => {
-                setConfirmModelConfig({
-                  isOpen: true,
-                  title: 'Skip Task',
+                this.setState({
+                  confirmModelConfig: {
+                    isOpen: true,
+                    title: 'Skip Task',
 
-                  message: 'Are you sure you want to skip this task?',
+                    message: 'Are you sure you want to skip this task?',
 
-                  confirmText: 'Skip',
-                  cancelText: 'Cancel',
-                  onClose: confirmed => {
-                    if (confirmed) {
-                      handleSkippingTask()
+                    confirmText: 'Skip',
+                    cancelText: 'Cancel',
+                    onClose: confirmed => {
+                      if (confirmed) {
+                        this.handleSkippingTask()
+                      }
+
+                      this.setState({
+                        confirmModelConfig: {
+                          ...this.state.confirmModelConfig,
+                          isOpen: false,
+                        }
+                      })
                     }
-                    setConfirmModelConfig({})
                   },
                 })
               }}
@@ -327,3 +365,5 @@ export class ChoreView extends React.Component {
     )
   }
 }
+
+export const ChoreView = withNavigation(ChoreViewInner)
