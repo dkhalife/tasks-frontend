@@ -33,7 +33,7 @@ import {
 import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
 import React from 'react'
-import { RepeatOption } from './RepeatSection'
+import { RepeatOption } from './RepeatOption'
 import { withNavigation } from '../../contexts/hooks'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
