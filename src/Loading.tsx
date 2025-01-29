@@ -1,20 +1,39 @@
 import { Box, CircularProgress, Container } from '@mui/joy'
 import { Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
 import { Logo } from './Logo'
 import React from 'react'
 
-export class Loading extends React.Component {
+type LoadingProps = object
+
+interface LoadingState {
+  subMessage: string
+}
+
+export class Loading extends React.Component<LoadingProps, LoadingState> {
+  private timeout: number
+
+  constructor(props){
+    super(props)
+
+    this.state = {
+      subMessage: ''
+    }
+  }
+
+  componentDidMount() {
+    this.timeout = setTimeout(() => {
+      this.setState({
+        subMessage: 'This is taking longer than usual. There might be an issue.',
+      })
+    }, 5000)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeout)
+  }
+
   render() {
-    const [subMessage, setSubMessage] = useState('')
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        setSubMessage(
-          'This is taking longer than usual. There might be an issue.',
-        )
-      }, 5000)
-      return () => clearTimeout(timeout)
-    }, [])
+    const { subMessage } = this.state
 
     return (
       <Container className='flex h-full items-center justify-center'>

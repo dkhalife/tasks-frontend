@@ -1,47 +1,35 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Container,
   Divider,
   Typography,
 } from '@mui/joy'
-import { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../../contexts/UserContext'
-import { Logo } from '../../Logo'
-import { GetUserProfile, UpdatePassword } from '../../utils/Fetcher'
+import { UpdatePassword } from '../../utils/Fetcher'
 import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
 import { NotificationSetting } from './NotificationSetting'
 import { ThemeToggle } from './ThemeToggle'
 import React from 'react'
+import { StorageContext } from '../../contexts/StorageContext'
 
-export class Settings extends React.Component {
-  render(): React.ReactNode {
-    const { userProfile, setUserProfile } = useContext<any>(UserContext)
-    const [changePasswordModal, setChangePasswordModal] = useState(false)
-    useEffect(() => {
-      GetUserProfile().then(resp => {
-        resp.json().then((data: any) => {
-          setUserProfile(data.res)
-        })
-      })
-    }, [setUserProfile])
+type SettingsProps = object
 
-    if (userProfile === null) {
-      return (
-        <Container className='flex h-full items-center justify-center'>
-          <Box className='flex flex-col items-center justify-center'>
-            <CircularProgress
-              color='success'
-              sx={{ '--CircularProgress-size': '200px' }}
-            >
-              <Logo />
-            </CircularProgress>
-          </Box>
-        </Container>
-      )
+interface SettingsState {
+  changePasswordModal: boolean
+}
+
+export class Settings extends React.Component<SettingsProps, SettingsState> {
+  constructor(props: SettingsProps) {
+    super(props)
+    this.state = {
+      changePasswordModal: false,
     }
+  }
+
+  render(): React.ReactNode {
+    const { changePasswordModal } = this.state
+
     return (
       <Container>
         <div className='grid gap-4 py-4' id='account'>
@@ -56,7 +44,7 @@ export class Settings extends React.Component {
               <Button
                 variant='soft'
                 onClick={() => {
-                  setChangePasswordModal(true)
+                  this.setState({ changePasswordModal: true })
                 }}
               >
                 Change Password
@@ -74,7 +62,8 @@ export class Settings extends React.Component {
                         }
                       })
                     }
-                    setChangePasswordModal(false)
+                    
+                    this.setState({ changePasswordModal: false })
                   }}
                 />
               ) : null}
@@ -89,7 +78,11 @@ export class Settings extends React.Component {
             Choose how the site looks to you. Select a single theme, or sync with
             your system and automatically switch between day and night themes.
           </Typography>
-          <ThemeToggle />
+          <StorageContext.Consumer>
+            {storedState => (
+              <ThemeToggle themeMode={storedState.themeMode} onThemeModeToggle={storedState.setThemeMode} />
+            )}
+          </StorageContext.Consumer>
         </div>
       </Container>
     )

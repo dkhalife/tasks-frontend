@@ -9,50 +9,79 @@ import {
   IconButton,
   Typography,
 } from '@mui/joy'
-import { useEffect, useState } from 'react'
+
 import { LabelModal } from '../Modals/Inputs/LabelModal.tsx'
-import { useLabels } from './LabelQueries'
 
 import { Add } from '@mui/icons-material'
-import { useQueryClient } from 'react-query'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import { DeleteLabel } from '../../utils/Fetcher'
+import { DeleteLabel, GetLabels } from '../../utils/Fetcher'
 import React from 'react'
+import { useQueryClient } from 'react-query'
 
-export class LabelView extends React.Component {
-  render(): React.ReactNode {
-    const { data: labels, isLabelsLoading, isError } = useLabels()
+type LabelViewProps = object
 
-    const [userLabels, setUserLabels] = useState<any[]>(labels)
-    const [modalOpen, setModalOpen] = useState(false)
+interface LabelViewState {
+  isLabelsLoading: boolean,
+  userLabels: any[],
+  modalOpen: boolean,
+  currentLabel: any,
+  isError: boolean,
+}
 
-    const [currentLabel, setCurrentLabel] = useState(null)
-    const queryClient = useQueryClient()
+export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
+  constructor(props: LabelViewProps) {
+    super(props)
 
-    const handleAddLabel = () => {
-      setCurrentLabel(null)
-      setModalOpen(true)
+    this.state = {
+      isLabelsLoading: true,
+      userLabels: [],
+      modalOpen: false,
+      currentLabel: null,
+      isError: false,
     }
+  }
 
-    const handleEditLabel = label => {
-      setCurrentLabel(label)
-      setModalOpen(true)
-    }
+  private handleAddLabel = () => {
+    this.setState({
+      currentLabel: null,
+      modalOpen: true,
+    })
+  }
 
-    const handleDeleteLabel = id => {
-      DeleteLabel(id).then(() => {
-        const updatedLabels = userLabels.filter(label => label.id !== id)
-        setUserLabels(updatedLabels)
+  private handleEditLabel = label => {
+    this.setState({
+      currentLabel: label,
+      modalOpen: true,
+    })
+  }
 
-        queryClient.invalidateQueries('labels')
+  private handleDeleteLabel = id => {
+    DeleteLabel(id).then(() => {
+      const { userLabels } = this.state
+      const updatedLabels = userLabels.filter(label => label.id !== id)
+
+      this.setState({ userLabels: updatedLabels })
+
+      useQueryClient().invalidateQueries('labels')
+    })
+  }
+
+  componentDidMount(): void {
+    GetLabels().then((res) => {
+      this.setState({
+        userLabels: res,
+        isLabelsLoading: false,
       })
-    }
+    }, () => {
+      this.setState({
+        isLabelsLoading: false,
+        isError: true,
+      })
+    })
+  }
 
-    useEffect(() => {
-      if (labels) {
-        setUserLabels(labels)
-      }
-    }, [labels])
+  render(): React.ReactNode {
+    const { isLabelsLoading, userLabels, modalOpen, currentLabel, isError } = this.state
 
     if (isLabelsLoading) {
       return (
@@ -101,7 +130,7 @@ export class LabelView extends React.Component {
                   size='sm'
                   variant='soft'
                   color='neutral'
-                  onClick={() => handleEditLabel(label)}
+                  onClick={() => this.handleEditLabel(label)}
                   startDecorator={<EditIcon />}
                 >
                   Edit
@@ -109,7 +138,7 @@ export class LabelView extends React.Component {
                 <IconButton
                   size='sm'
                   variant='soft'
-                  onClick={() => handleDeleteLabel(label.id)}
+                  onClick={() => this.handleDeleteLabel(label.id)}
                   color='danger'
                 >
                   <DeleteIcon />
@@ -128,7 +157,7 @@ export class LabelView extends React.Component {
         {modalOpen && (
           <LabelModal
             isOpen={modalOpen}
-            onClose={() => setModalOpen(false)}
+            onClose={() => this.setState({ modalOpen: false })}
             label={currentLabel}
           />
         )}
@@ -153,7 +182,7 @@ export class LabelView extends React.Component {
               width: 50,
               height: 50,
             }}
-            onClick={handleAddLabel}
+            onClick={this.handleAddLabel}
           >
             <Add />
           </IconButton>

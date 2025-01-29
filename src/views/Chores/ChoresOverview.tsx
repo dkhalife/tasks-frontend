@@ -19,11 +19,10 @@ import {
 } from '@mui/joy'
 
 import moment from 'moment'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { GetChores, MarkChoreComplete } from '../../utils/Fetcher'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import React from 'react'
+import { withNavigation } from '../../contexts/hooks'
 
 const CHORE_STATUS = {
   NO_DUE_DATE: 'No due date',
@@ -32,61 +31,81 @@ const CHORE_STATUS = {
   OVER_DUE: 'Overdue',
 }
 
-export class ChoresOverview extends React.Component {
-  render(): React.ReactNode {
-    const [chores, setChores] = useState([])
-    const [filteredChores, setFilteredChores] = useState([])
-    const [activeUserId, setActiveUserId] = useState(null)
-    const [isDateModalOpen, setIsDateModalOpen] = useState(false)
-    const [choreId, setChoreId] = useState(null)
-    const [search, setSearch] = useState('')
-    const navigate = useNavigate()
+interface ChoresOverviewProps {
+  navigate: (path: string) => void
+}
 
-    const getChoreStatus = chore => {
-      if (chore.nextDueDate === null) {
-        return CHORE_STATUS.NO_DUE_DATE
-      }
-      const dueDate = new Date(chore.nextDueDate)
-      const now = new Date()
-      const diff = dueDate.getTime() - now.getTime()
-      if (diff < 0) {
-        return CHORE_STATUS.OVER_DUE
-      }
-      if (diff > 1000 * 60 * 60 * 24) {
-        return CHORE_STATUS.DUE_NOW
-      }
-      if (diff > 0) {
-        return CHORE_STATUS.DUE_SOON
-      }
+interface ChoresOverviewState {
+  chores: any[]
+  filteredChores: any[]
+  search: string
+  choreId: number|null
+  isDateModalOpen: boolean
+  activeUserId: number|null
+}
+
+class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOverviewState> {
+  constructor(props: ChoresOverviewProps) {
+    super(props)
+    this.state = {
+      chores: [],
+      filteredChores: [],
+      search: '',
+      choreId: null,
+      isDateModalOpen: false,
+      activeUserId: null,
+    }
+  }
+
+  private getChoreStatus = chore => {
+    if (chore.nextDueDate === null) {
       return CHORE_STATUS.NO_DUE_DATE
     }
-    const getChoreStatusColor = chore => {
-      switch (getChoreStatus(chore)) {
-        case CHORE_STATUS.NO_DUE_DATE:
-          return 'neutral'
-        case CHORE_STATUS.DUE_SOON:
-          return 'success'
-        case CHORE_STATUS.DUE_NOW:
-          return 'primary'
-        case CHORE_STATUS.OVER_DUE:
-          return 'warning'
-        default:
-          return 'neutral'
-      }
+    const dueDate = new Date(chore.nextDueDate)
+    const now = new Date()
+    const diff = dueDate.getTime() - now.getTime()
+    if (diff < 0) {
+      return CHORE_STATUS.OVER_DUE
     }
+    if (diff > 1000 * 60 * 60 * 24) {
+      return CHORE_STATUS.DUE_NOW
+    }
+    if (diff > 0) {
+      return CHORE_STATUS.DUE_SOON
+    }
+    return CHORE_STATUS.NO_DUE_DATE
+  }
 
-    useEffect(() => {
-      GetChores()
-        .then(response => response.json())
-        .then(data => {
-          setChores(data.res)
-          setFilteredChores(data.res)
-        })
-      const user = JSON.parse(localStorage.getItem('user'))
-      if (user != null && user.id > 0) {
-        setActiveUserId(user.id)
-      }
-    }, [activeUserId, setActiveUserId])
+  private getChoreStatusColor = chore => {
+    switch (this.getChoreStatus(chore)) {
+      case CHORE_STATUS.NO_DUE_DATE:
+        return 'neutral'
+      case CHORE_STATUS.DUE_SOON:
+        return 'success'
+      case CHORE_STATUS.DUE_NOW:
+        return 'primary'
+      case CHORE_STATUS.OVER_DUE:
+        return 'warning'
+      default:
+        return 'neutral'
+    }
+  }
+
+  componentDidMount(): void {
+    GetChores()
+    .then(response => response.json())
+    .then(data => {
+      this.setState({ chores: data.res, filteredChores: data.res })
+    })
+
+    const user = JSON.parse(localStorage.getItem('user') as any)
+    if (user != null && user.id > 0) {
+      this.setState({ activeUserId: user.id })
+    }
+  }
+
+  render(): React.ReactNode {
+    const { chores, filteredChores, search, choreId, isDateModalOpen } = this.state
 
     return (
       <Container>
@@ -96,7 +115,6 @@ export class ChoresOverview extends React.Component {
 
         <Grid container>
           <Grid
-            item
             sm={6}
             alignSelf={'flex-start'}
             minWidth={100}
@@ -107,21 +125,21 @@ export class ChoresOverview extends React.Component {
               placeholder='Search'
               value={search}
               onChange={e => {
-                if (e.target.value === '') {
-                  setFilteredChores(chores)
-                }
-                setSearch(e.target.value)
                 const newChores = chores.filter(chore => {
                   return chore.name.includes(e.target.value)
                 })
-                setFilteredChores(newChores)
+
+                const newState: any = {
+                  search: e.target.value,
+                  filteredChores: e.target.value === '' ? chores : newChores,
+                }
+                this.setState(newState)
               }}
               endDecorator={
                 search !== '' ? (
                   <Button
                     onClick={() => {
-                      setSearch('')
-                      setFilteredChores(chores)
+                      this.setState({ search: '', filteredChores: chores })
                     }}
                   >
                     <CancelRounded />
@@ -137,7 +155,7 @@ export class ChoresOverview extends React.Component {
           <Grid sm={6} justifyContent={'flex-end'} display={'flex'} gap={2}>
             <Button
               onClick={() => {
-                navigate(`/chores/create`)
+                this.props.navigate(`/chores/create`)
               }}
             >
               New Chore
@@ -158,13 +176,13 @@ export class ChoresOverview extends React.Component {
             {filteredChores.map((chore: any) => (
               <tr key={chore.id}>
                 <td>
-                  <Chip color={getChoreStatusColor(chore)}>
-                    {getChoreStatus(chore)}
+                  <Chip color={this.getChoreStatusColor(chore)}>
+                    {this.getChoreStatus(chore)}
                   </Chip>
                 </td>
                 <td
                   onClick={() => {
-                    navigate(`/chores/${chore.id}/edit`)
+                    this.props.navigate(`/chores/${chore.id}/edit`)
                   }}
                 >
                   {chore.name || '--'}
@@ -202,8 +220,11 @@ export class ChoresOverview extends React.Component {
                                   c => c.id === chore.id,
                                 )
                                 newChores[index] = newChore
-                                setChores(newChores)
-                                setFilteredChores(newChores)
+
+                                this.setState({
+                                  chores: newChores,
+                                  filteredChores: newChores,
+                                })
                               })
                             }
                           },
@@ -217,8 +238,7 @@ export class ChoresOverview extends React.Component {
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        setChoreId(chore.id)
-                        setIsDateModalOpen(true)
+                        this.setState({ choreId: chore.id, isDateModalOpen: true })
                       }}
                       aria-setsize={2}
                     >
@@ -228,7 +248,7 @@ export class ChoresOverview extends React.Component {
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        navigate(`/chores/${chore.id}/edit`)
+                        this.props.navigate(`/chores/${chore.id}/edit`)
                       }}
                     >
                       <Edit />
@@ -242,9 +262,10 @@ export class ChoresOverview extends React.Component {
         <DateModal
           isOpen={isDateModalOpen}
           key={choreId}
+          current=''
           title={`Change due date`}
           onClose={() => {
-            setIsDateModalOpen(false)
+            this.setState({ isDateModalOpen: false })
           }}
           onSave={date => {
             MarkChoreComplete(choreId, null, date).then(
@@ -253,10 +274,13 @@ export class ChoresOverview extends React.Component {
                   response.json().then(data => {
                     const newChore = data.res
                     const newChores = [...chores]
-                    const index = newChores.findIndex(c => c.id === chore.id)
+                    const index = newChores.findIndex(c => c.id === newChore.id)
                     newChores[index] = newChore
-                    setChores(newChores)
-                    setFilteredChores(newChores)
+
+                    this.setState({
+                      chores: newChores,
+                      filteredChores: newChores,
+                    })
                   })
                 }
               },
@@ -267,3 +291,5 @@ export class ChoresOverview extends React.Component {
     )
   }
 }
+
+export const ChoresOverview = withNavigation(ChoresOverviewInner)

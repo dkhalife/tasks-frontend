@@ -3,14 +3,14 @@ import { Chip, ColorPaletteProp } from '@mui/joy'
 import React, { ReactElement } from 'react'
 
 interface CompletedChipProps {
-  dueDate: Date
-  completedAt: Date
+  dueDate: string
+  completedAt: string
 }
 
 export class CompletedChip extends React.Component<CompletedChipProps> {
   render(): React.ReactNode {
-    const dueDate = this.props.dueDate.getTime()
-    const completedAt = this.props.completedAt.getTime()
+    const dueDate = new Date(this.props.dueDate).getTime()
+    const completedAt = new Date(this.props.completedAt).getTime()
 
     let text = 'No Due Date'
     let color: ColorPaletteProp = 'neutral'

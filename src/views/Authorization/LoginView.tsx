@@ -1,8 +1,8 @@
 import {
-  Avatar,
   Box,
   Button,
   Container,
+  Divider,
   Input,
   Sheet,
   Snackbar,
@@ -10,62 +10,85 @@ import {
 } from '@mui/joy'
 import Cookies from 'js-cookie'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { UserContext } from '../../contexts/UserContext'
 import { Logo } from '../../Logo'
 import { GetUserProfile, login } from '../../utils/Fetcher'
+import { withNavigation } from '../../contexts/hooks'
 
-export class LoginView extends React.Component {
-  render(): React.ReactNode {
-    const { userProfile, setUserProfile } = React.useContext<any>(UserContext)
-    const [username, setUsername] = React.useState('')
-    const [password, setPassword] = React.useState('')
-    const [error, setError] = React.useState<string | null>(null)
-    const navigate = useNavigate()
-    const handleSubmit = async e => {
-      e.preventDefault()
-      login(username, password)
-        .then(response => {
-          if (response.status === 200) {
-            return response.json().then(data => {
-              localStorage.setItem('ca_token', data.token)
-              localStorage.setItem('ca_expiration', data.expire)
-              const redirectUrl = Cookies.get('ca_redirect')
-              if (redirectUrl) {
-                Cookies.remove('ca_redirect')
-                navigate(redirectUrl)
-              } else {
-                navigate('/my/chores')
-              }
-            })
-          } else if (response.status === 401) {
-            setError('Wrong username or password')
-          } else {
-            setError('An error occurred, please try again')
-          }
-        })
-        .catch(() => {
-          setError('Unable to communicate with server, please try again')
-        })
+interface LoginViewProps {
+  navigate: (path: string) => void
+}
+
+interface LoginViewState {
+  username: string
+  password: string
+  error: string | null
+}
+
+class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
+  constructor(props: LoginViewProps) {
+    super(props)
+
+    this.state = {
+      username: '',
+      password: '',
+      error: null,
     }
+  }
 
-    const getUserProfileAndNavigateToHome = () => {
-      GetUserProfile().then(data => {
-        data.json().then(data => {
-          setUserProfile(data.res)
-          const redirectUrl = Cookies.get('ca_redirect')
-          if (redirectUrl) {
-            Cookies.remove('ca_redirect')
-            navigate(redirectUrl)
-          } else {
-            navigate('/my/chores')
-          }
-        })
+  private getUserProfileAndNavigateToHome = () => {
+    GetUserProfile().then(data => {
+      data.json().then(() => {
+        // TODO: Set the user profile
+        // setUserProfile(data.res)
+
+        const redirectUrl = Cookies.get('ca_redirect')
+        if (redirectUrl) {
+          Cookies.remove('ca_redirect')
+          this.props.navigate(redirectUrl)
+        } else {
+          this.props.navigate('/my/chores')
+        }
       })
-    }
-    const handleForgotPassword = () => {
-      navigate('/forgot-password')
-    }
+    })
+  }
+
+  private handleForgotPassword = () => {
+    this.props.navigate('/forgot-password')
+  }
+
+  private handleSubmit = async e => {
+    e.preventDefault()
+
+    const { username, password } = this.state
+
+    login(username, password)
+      .then(response => {
+        if (response.status === 200) {
+          return response.json().then(data => {
+            localStorage.setItem('ca_token', data.token)
+            localStorage.setItem('ca_expiration', data.expire)
+            const redirectUrl = Cookies.get('ca_redirect')
+            if (redirectUrl) {
+              Cookies.remove('ca_redirect')
+              this.props.navigate(redirectUrl)
+            } else {
+              this.props.navigate('/my/chores')
+            }
+          })
+        } else if (response.status === 401) {
+          this.setState({ error: 'Wrong username or password' })
+        } else {
+          this.setState({ error: 'An error occurred, please try again' })
+        }
+      })
+      .catch(() => {
+        this.setState({ error: 'Unable to communicate with server, please try again' })
+      })
+  }
+
+  render(): React.ReactNode {
+    const { error } = this.state
+
     return (
       <Container
         component='main'
@@ -105,133 +128,78 @@ export class LoginView extends React.Component {
               </span>
             </Typography>
 
-            {userProfile && (
-              <>
-                <Avatar
-                  src={userProfile?.image}
-                  alt={userProfile?.username}
-                  size='lg'
-                  sx={{
-                    mt: 2,
-                    width: '96px',
-                    height: '96px',
-                    mb: 1,
-                  }}
-                />
-                <Typography level='body-md' alignSelf={'center'}>
-                  Welcome back,&nbsp;
-                  {userProfile?.displayName || userProfile?.username}
-                </Typography>
+              <Typography>
+                Sign in to your account to continue
+              </Typography>
+              <Typography alignSelf={'start'} mt={4}>
+                Username
+              </Typography>
+              <Input
+                required
+                fullWidth
+                id='email'
+                name='email'
+                autoComplete='email'
+                autoFocus
+                onChange={e => {
+                  this.setState({ username: e.target.value })
+                }}
+              />
+              <Typography alignSelf={'start'}>
+                Password:
+              </Typography>
+              <Input
+                required
+                fullWidth
+                name='password'
+                type='password'
+                id='password'
+                onChange={e => {
+                  this.setState({ password: e.target.value })
+                }}
+              />
 
-                <Button
-                  fullWidth
-                  size='lg'
-                  sx={{ mt: 3, mb: 2 }}
-                  onClick={() => {
-                    getUserProfileAndNavigateToHome()
-                  }}
-                >
-                  Continue as {userProfile.displayName || userProfile.username}
-                </Button>
-                <Button
-                  type='submit'
-                  fullWidth
-                  size='lg'
-                  variant='plain'
-                  sx={{
-                    width: '100%',
-                    mb: 2,
-                    border: 'moccasin',
-                    borderRadius: '8px',
-                  }}
-                  onClick={() => {
-                    setUserProfile(null)
-                    localStorage.removeItem('ca_token')
-                    localStorage.removeItem('ca_expiration')
-                    // go to login page:
-                    window.location.href = '/login'
-                  }}
-                >
-                  Logout
-                </Button>
-              </>
-            )}
-            {!userProfile && (
-              <>
-                <Typography>
-                  Sign in to your account to continue
-                </Typography>
-                <Typography alignSelf={'start'} mt={4}>
-                  Username
-                </Typography>
-                <Input
-                  required
-                  fullWidth
-                  id='email'
-                  name='email'
-                  autoComplete='email'
-                  autoFocus
-                  value={username}
-                  onChange={e => {
-                    setUsername(e.target.value)
-                  }}
-                />
-                <Typography alignSelf={'start'}>
-                  Password:
-                </Typography>
-                <Input
-                  required
-                  fullWidth
-                  name='password'
-                  type='password'
-                  id='password'
-                  value={password}
-                  onChange={e => {
-                    setPassword(e.target.value)
-                  }}
-                />
+              <Button
+                type='submit'
+                fullWidth
+                size='lg'
+                variant='solid'
+                sx={{
+                  width: '100%',
+                  mt: 3,
+                  border: 'moccasin',
+                  borderRadius: '8px',
+                }}
+                onClick={this.handleSubmit}
+              >
+                Sign In
+              </Button>
+              <Button
+                type='submit'
+                fullWidth
+                size='lg'
+                variant='plain'
+                sx={{
+                  width: '100%',
+                  border: 'moccasin',
+                  borderRadius: '8px',
+                }}
+                onClick={this.handleForgotPassword}
+              >
+                Forgot password?
+              </Button>
 
-                <Button
-                  type='submit'
-                  fullWidth
-                  size='lg'
-                  variant='solid'
-                  sx={{
-                    width: '100%',
-                    mt: 3,
-                    mb: 2,
-                    border: 'moccasin',
-                    borderRadius: '8px',
-                  }}
-                  onClick={handleSubmit}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  type='submit'
-                  fullWidth
-                  size='lg'
-                  variant='plain'
-                  sx={{
-                    width: '100%',
-                    mb: 2,
-                    border: 'moccasin',
-                    borderRadius: '8px',
-                  }}
-                  onClick={handleForgotPassword}
-                >
-                  Forgot password?
-                </Button>
-              </>
-            )}
-
+            <Divider> or </Divider>
             <Button
               onClick={() => {
-                navigate('/signup')
+                this.props.navigate('/signup')
               }}
               fullWidth
               variant='soft'
               size='lg'
+              sx={{
+                mt: 2
+              }}
             >
               Create new account
             </Button>
@@ -239,7 +207,7 @@ export class LoginView extends React.Component {
         </Box>
         <Snackbar
           open={error !== null}
-          onClose={() => setError(null)}
+          onClose={() => { this.setState({ error: null }) }}
           autoHideDuration={3000}>
           {error}
         </Snackbar>
@@ -247,3 +215,5 @@ export class LoginView extends React.Component {
     )
   }
 }
+
+export const LoginView = withNavigation(LoginViewInner)

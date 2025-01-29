@@ -16,7 +16,6 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useState } from 'react'
 import React from 'react'
 
 const FREQUANCY_TYPES_RADIOS = [
@@ -68,11 +67,22 @@ interface RepeatOnProps {
   onFrequencyTimeUpdate: (time: string) => void,
 }
 
-export class RepeatOn extends React.Component<RepeatOnProps> {
+interface RepeatOnState {
+  intervalUnit: string,
+}
+
+export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
+  constructor(props: RepeatOnProps) {
+    super(props)
+    this.state = {
+      intervalUnit: 'days',
+    }
+  }
+
   render(): React.ReactNode {
     const { frequencyType, frequency, onFrequencyUpdate, frequencyMetadata, onFrequencyMetadataUpdate, onFrequencyTimeUpdate } = this.props
+    const { intervalUnit } = this.state
 
-    const [intervalUnit, setIntervalUnit] = useState('days')
     const timePickerComponent = (
       <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography>At: </Typography>
@@ -119,7 +129,7 @@ export class RepeatOn extends React.Component<RepeatOnProps> {
                     key={item}
                     value={item}
                     onClick={() => {
-                      setIntervalUnit(item)
+                      this.setState({ intervalUnit: item })
                       onFrequencyMetadataUpdate({
                         ...frequencyMetadata,
                         unit: item,

@@ -13,8 +13,18 @@ import { MyChores } from '../views/Chores/MyChores'
 import { ChoreHistory } from '../views/History/ChoreHistory'
 import { LabelView } from '../views/Labels/LabelView'
 import React from 'react'
+import { matchPath } from 'react-router-dom'
 
 export class RouterContext extends React.Component {
+  private getChoreId = (): string | undefined => {
+    const match = matchPath<'choreId', string>({
+      path: '/chores/:choreId',
+      caseSensitive: true,
+      end: false,
+    }, document.location.pathname)
+    return match?.params.choreId
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -23,10 +33,10 @@ export class RouterContext extends React.Component {
             <Route path='/' element={<MyChores />} />
             <Route path='/settings' element={<Settings />} />
             <Route path='/chores' element={<ChoresOverview />} />
-            <Route path='/chores/:choreId/edit' element={<ChoreEdit />} />
-            <Route path='/chores/:choreId' element={<ChoreView />} />
-            <Route path='/chores/create' element={<ChoreEdit />} />
-            <Route path='/chores/:choreId/history' element={<ChoreHistory />} />
+            <Route path='/chores/:choreId/edit' element={<ChoreEdit choreId={this.getChoreId()} />} />
+            <Route path='/chores/:choreId' element={<ChoreView choreId={this.getChoreId()} />} />
+            <Route path='/chores/create' element={<ChoreEdit choreId={this.getChoreId()} />} />
+            <Route path='/chores/:choreId/history' element={<ChoreHistory choreId={this.getChoreId()} />} />
             <Route path='/my/chores' element={<MyChores />} />
             <Route path='/login' element={<LoginView />} />
             <Route path='/signup' element={<SignupView />} />

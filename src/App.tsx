@@ -1,75 +1,86 @@
 import { NavBar } from './views/Navigation/NavBar'
 import { useColorScheme } from '@mui/joy'
-import { useEffect, useState } from 'react'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { Outlet } from 'react-router-dom'
-import { UserContext } from './contexts/UserContext'
+import { UserContext, UserProfile } from './contexts/UserContext'
 import { GetUserProfile } from './utils/Fetcher'
 import { isTokenValid } from './utils/TokenManager'
 import { apiManager } from './utils/TokenManager'
 import React from 'react'
-import { AuthenticationProvider } from './contexts/AuthenticationProvider'
+import { ThemeMode } from './constants/theme'
 
-const add = className => {
-  document.getElementById('root')?.classList.add(className)
+type AppProps = object
+
+interface AppState {
+  userProfile: UserProfile | null
 }
 
-const remove = className => {
-  document.getElementById('root')?.classList.remove(className)
-}
-
-export class App extends React.Component {
+export class App extends React.Component<AppProps, AppState> {
   constructor(props) {
     super(props)
     apiManager.init()
+
+    this.state = {
+      userProfile: null
+    }
+  }
+
+  private loadUserProfile = () => {
+    GetUserProfile()
+    .then(res => {
+      res.json().then(data => {
+        this.setState({
+          userProfile: data.res
+        })
+      })
+    })
+  }
+
+  private applyTheme = (className: string) => {
+    document.getElementById('root')?.classList.add(className)
+  }
+
+  private setUserProfile = (userProfile: UserProfile | null) => {
+    this.setState({ userProfile })
+  }
+
+  private loadTheme = () => {
+    const { mode, systemMode } = useColorScheme()
+    const value: ThemeMode = JSON.parse(localStorage.getItem('themeMode') ?? "") || mode
+
+    switch (value) {
+      default:
+      case 'system':
+        if (systemMode === 'dark') {
+          this.applyTheme('dark')
+        }
+      break
+
+      case 'light':
+        this.applyTheme('light')
+      break
+
+      case 'dark':
+        this.applyTheme('dark')
+      break
+    }
+  }
+
+  componentDidMount(): void {
+    if (isTokenValid()) {
+      this.loadUserProfile()
+    }
   }
 
   render() {
-    const queryClient = new QueryClient()
-    const { mode, systemMode } = useColorScheme()
-    const [userProfile, setUserProfile] = useState<any>(null)
-
-    const getUserProfile = () => {
-      GetUserProfile()
-        .then(res => {
-          res.json().then(data => {
-            setUserProfile(data.res)
-          })
-        })
-    }
-
-    useEffect(() => {
-      const value = JSON.parse(localStorage.getItem('themeMode') ?? "") || mode
-
-      if (value === 'system') {
-        if (systemMode === 'dark') {
-          return add('dark')
-        }
-        return remove('dark')
-      }
-
-      if (value === 'dark') {
-        return add('dark')
-      }
-
-      return remove('dark')
-    }, [mode, systemMode])
-
-    useEffect(() => {
-      if (isTokenValid() && !userProfile) {
-        getUserProfile()
-      }
-    }, [userProfile, getUserProfile, isTokenValid])
+    const { userProfile } = this.state
+    const { setUserProfile } = this
 
     return (
       <div className='min-h-screen'>
-        <QueryClientProvider client={queryClient}>
-          <AuthenticationProvider />
-          <UserContext.Provider value={{ userProfile, setUserProfile }}>
-            <NavBar />
-            <Outlet />
-          </UserContext.Provider>
-        </QueryClientProvider>
+        <UserContext.Provider value={{ userProfile, setUserProfile }}>
+          <NavBar />
+          <Outlet />
+        </UserContext.Provider>
       </div>
     )
   }

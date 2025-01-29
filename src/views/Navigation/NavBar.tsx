@@ -16,147 +16,153 @@ import {
   ListItemDecorator,
   Typography,
 } from '@mui/joy'
-import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { version } from '../../../package.json'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import React from 'react'
-const links = [
-  {
-    to: '/my/chores',
-    label: 'Home',
-    icon: <HomeOutlined />,
-  },
-  {
-    to: '/chores',
-    label: 'Desktop View',
-    icon: <ListAlt />,
-  },
-  {
-    to: 'labels',
-    label: 'Labels',
-    icon: <ListAlt />,
-  },
-  {
-    to: '/settings',
-    label: 'Settings',
-    icon: <SettingsOutlined />,
-  },
-]
+import { StorageContext, StorageContextState } from '../../contexts/StorageContext'
+import { toggleTheme } from '../../constants/theme'
+import { withLocation, withNavigation } from '../../contexts/hooks'
 
-export const NavBar = () => {
-  const navigate = useNavigate()
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [openDrawer, closeDrawer] = [
-    () => setDrawerOpen(true),
-    () => setDrawerOpen(false),
-  ]
-  const location = useLocation()
-  if (['/signup', '/login', '/forgot-password'].includes(location.pathname)) {
-    return null
+type NavBarProps = {
+  location: Location
+  navigate: (path: string) => void
+}
+
+interface NavBarState {
+  drawerOpen: boolean
+}
+
+export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
+  constructor(props: NavBarProps) {
+    super(props)
+    this.state = {
+      drawerOpen: false,
+    }
   }
 
-  return (
-    <nav className='flex gap-2 p-3'>
-      <IconButton size='sm' variant='plain' onClick={() => setDrawerOpen(true)}>
-        <MenuRounded />
-      </IconButton>
-      <Box
-        className='flex items-center gap-2'
-        onClick={() => {
-          navigate('/my/chores')
-        }}
-      >
-        <img src={Logo} width='34' />
-        <Typography
-          level='title-lg'
-          sx={{
-            fontWeight: 700,
-            fontSize: 24,
+  private openDrawer = () => {
+    this.setState({ drawerOpen: true })
+  }
+
+  private closeDrawer = () => {
+    this.setState({ drawerOpen: false })
+  }
+
+  render(): React.ReactNode {
+    if (['/signup', '/login', '/forgot-password'].includes(this.props.location.pathname)) {
+      return null
+    }
+
+    return (
+      <nav className='flex gap-2 p-3'>
+        <IconButton size='sm' variant='plain' onClick={this.openDrawer}>
+          <MenuRounded />
+        </IconButton>
+        <Box
+          className='flex items-center gap-2'
+          onClick={() => {
+            this.props.navigate('/my/chores')
           }}
         >
-          Done
-          <span
-            style={{
-              color: '#06b6d4',
-              fontWeight: 600,
-            }}
-          >
-            tick✓
-          </span>
-        </Typography>
-        <ThemeToggleButton
-          sx={{
-            position: 'absolute',
-            right: 10,
-          }}
-        />
-      </Box>
-      <Drawer
-        open={drawerOpen}
-        onClose={closeDrawer}
-        size='sm'
-        onClick={closeDrawer}
-      >
-        <div>
-          <List
-            size='md'
-            onClick={openDrawer}
-            sx={{ borderRadius: 4, width: '100%', padding: 1 }}
-          >
-            {links.map((link, index) => (
-              <NavBarLink key={index} to={link.to} icon={link.icon} label={link.label} />
-            ))}
-          </List>
-        </div>
-        <div>
-          <List
+          <img src={Logo} width='34' />
+          <Typography
+            level='title-lg'
             sx={{
-              p: 2,
-              height: 'min-content',
-              position: 'absolute',
-              bottom: 0,
-              borderRadius: 4,
-              width: '100%',
-              padding: 2,
+              fontWeight: 700,
+              fontSize: 24,
             }}
-            size='md'
-            onClick={openDrawer}
           >
-            <ListItemButton
-              onClick={() => {
-                localStorage.removeItem('ca_token')
-                localStorage.removeItem('ca_expiration')
-                window.location.href = '/login'
-              }}
-              sx={{
-                py: 1.2,
+            Done
+            <span
+              style={{
+                color: '#06b6d4',
+                fontWeight: 600,
               }}
             >
-              <ListItemDecorator>
-                <Logout />
-              </ListItemDecorator>
-              <ListItemContent>Logout</ListItemContent>
-            </ListItemButton>
-            <Typography
-              onClick={
-                () => window.location.reload()
-              }
-              level='body-xs'
+              tick✓
+            </span>
+          </Typography>
+          <StorageContext.Consumer>
+            {({ themeMode }: StorageContextState) => (
+              <ThemeToggleButton
+                themeMode={themeMode}
+                onThemeModeToggle={toggleTheme}
+                sx={{
+                  position: 'absolute',
+                  right: 10,
+                }}
+              />
+            )}
+          </StorageContext.Consumer>
+        </Box>
+        <Drawer
+          open={this.state.drawerOpen}
+          onClick={this.closeDrawer}
+          onClose={this.closeDrawer}
+          size='sm'
+        >
+          <div>
+            <List
+              size='md'
+              onClick={this.openDrawer}
+              sx={{ borderRadius: 4, width: '100%', padding: 1 }}
+            >
+              <NavBarLink to='/my/chores' icon={<HomeOutlined />} label='Home' />
+              <NavBarLink to='/chores' icon={<ListAlt />} label='Desktop View' />
+              <NavBarLink to='/labels' icon={<ListAlt />} label='Labels' />
+              <NavBarLink to='/settings' icon={<SettingsOutlined />} label='Settings' />
+            </List>
+          </div>
+          <div>
+            <List
               sx={{
-                // p: 2,
-                p: 1,
-                color: 'text.tertiary',
-                textAlign: 'center',
+                p: 2,
+                height: 'min-content',
+                position: 'absolute',
                 bottom: 0,
+                borderRadius: 4,
+                width: '100%',
+                padding: 2,
               }}
+              size='md'
+              onClick={this.openDrawer}
             >
-              V{version}
-            </Typography>
-          </List>
-        </div>
-      </Drawer>
-    </nav>
-  )
+              <ListItemButton
+                onClick={() => {
+                  localStorage.removeItem('ca_token')
+                  localStorage.removeItem('ca_expiration')
+                  window.location.href = '/login'
+                }}
+                sx={{
+                  py: 1.2,
+                }}
+              >
+                <ListItemDecorator>
+                  <Logout />
+                </ListItemDecorator>
+                <ListItemContent>Logout</ListItemContent>
+              </ListItemButton>
+              <Typography
+                onClick={
+                  () => window.location.reload()
+                }
+                level='body-xs'
+                sx={{
+                  p: 1,
+                  color: 'text.tertiary',
+                  textAlign: 'center',
+                  bottom: 0,
+                }}
+              >
+                V{version}
+              </Typography>
+            </List>
+          </div>
+        </Drawer>
+      </nav>
+    )
+  }
 }
+
+export const NavBar = withNavigation(withLocation(NavBarInner))
