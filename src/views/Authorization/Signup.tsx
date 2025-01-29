@@ -129,7 +129,7 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
         this.setState({ error: 'Signup disabled, please contact admin' })
       } else {
         response.json().then(res => {
-          this.setState({ error: res })
+          this.setState({ error: res.error })
         })
       }
     })
