@@ -1,11 +1,11 @@
 import { Chip, Menu, MenuItem, Typography } from '@mui/joy'
 import IconButton from '@mui/joy/IconButton'
-import React, { useRef } from 'react'
+import React from 'react'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 
 interface IconButtonWithMenuProps
 {
-  key: string,
+  keyName: string,
   icon: string,
   options: any[],
   onItemSelect: (item: any) => void,
@@ -16,9 +16,10 @@ interface IconButtonWithMenuProps
 }
 
 export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps> {
+  private menuRef = React.createRef<HTMLDivElement>()
+
   render(): React.ReactNode {
-    const menuRef = useRef(null)
-    const { key, icon, options, onItemSelect, setSelectedItem, isActive, useChips, title } = this.props
+    const { keyName, icon, options, onItemSelect, setSelectedItem, isActive, useChips, title } = this.props
 
     return (
       <>
@@ -35,11 +36,11 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
         </IconButton>
 
         <Menu
-          key={key}
-          ref={menuRef}
+          key={keyName}
+          ref={this.menuRef}
         >
           {title && (
-            <MenuItem key={`${key}-title`} disabled>
+            <MenuItem key={`${keyName}-title`} disabled>
               <Typography level='body-sm' sx={{ fontWeight: 'bold' }}>
                 {title}
               </Typography>
@@ -47,7 +48,7 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
           )}
           {options?.map(item => (
             <MenuItem
-              key={`${key}-${item?.id}`}
+              key={`${keyName}-${item?.id}`}
               onClick={() => {
                 onItemSelect(item)
                 setSelectedItem?.selectedItem(item.name)
