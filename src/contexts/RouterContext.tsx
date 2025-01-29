@@ -17,7 +17,11 @@ import { matchPath } from 'react-router-dom'
 
 export class RouterContext extends React.Component {
   private getChoreId = (): string | undefined => {
-    const match = matchPath<'choreId', string>('/chores/:choreId', document.location.pathname)
+    const match = matchPath<'choreId', string>({
+      path: '/chores/:choreId',
+      caseSensitive: true,
+      end: false,
+    }, document.location.pathname)
     return match?.params.choreId
   }
 
@@ -32,7 +36,7 @@ export class RouterContext extends React.Component {
             <Route path='/chores/:choreId/edit' element={<ChoreEdit choreId={this.getChoreId()} />} />
             <Route path='/chores/:choreId' element={<ChoreView choreId={this.getChoreId()} />} />
             <Route path='/chores/create' element={<ChoreEdit choreId={this.getChoreId()} />} />
-            <Route path='/chores/:choreId/history' element={<ChoreHistory />} />
+            <Route path='/chores/:choreId/history' element={<ChoreHistory choreId={this.getChoreId()} />} />
             <Route path='/my/chores' element={<MyChores />} />
             <Route path='/login' element={<LoginView />} />
             <Route path='/signup' element={<SignupView />} />
