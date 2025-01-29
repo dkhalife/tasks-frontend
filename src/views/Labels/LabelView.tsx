@@ -16,7 +16,6 @@ import { Add } from '@mui/icons-material'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import { DeleteLabel, GetLabels } from '../../utils/Fetcher'
 import React from 'react'
-import { useQueryClient } from 'react-query'
 
 type LabelViewProps = object
 
@@ -61,8 +60,6 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
       const updatedLabels = userLabels.filter(label => label.id !== id)
 
       this.setState({ userLabels: updatedLabels })
-
-      useQueryClient().invalidateQueries('labels')
     })
   }
 
