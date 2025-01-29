@@ -55,10 +55,8 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                   onClose={password => {
                     if (password) {
                       UpdatePassword(password).then(resp => {
-                        if (resp.ok) {
-                          alert('Password changed successfully')
-                        } else {
-                          alert('Password change failed')
+                        if (!resp.ok) {
+                          console.error('Password change failed')
                         }
                       })
                     }

@@ -131,7 +131,6 @@ export class APITokenSettings extends React.Component<APITokenSettingsProps, API
                       color='primary'
                       onClick={() => {
                         navigator.clipboard.writeText(token.token)
-                        alert('Token copied to clipboard')
                         this.setState({ showTokenId: null })
                       }}
                     >
