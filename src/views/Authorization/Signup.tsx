@@ -57,7 +57,7 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
           this.props.navigate('/my/chores')
         })
       } else {
-        alert('Login failed')
+        this.setState({ error: 'Login failed' })
       }
     })
   }
