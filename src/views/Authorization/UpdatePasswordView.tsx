@@ -14,6 +14,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Logo } from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
 import React from 'react'
+import { withNavigation } from '../../contexts/hooks'
 
 interface UpdatePasswordViewProps {
   navigate: (path: string) => void
@@ -27,7 +28,7 @@ interface UpdatePasswordViewState {
   updateStatusOk: boolean | null
 }
 
-export class UpdatePasswordView extends React.Component<UpdatePasswordViewProps, UpdatePasswordViewState> {
+class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, UpdatePasswordViewState> {
   private handlePasswordChange = e => {
     const password = e.target.value
 
@@ -196,3 +197,5 @@ export class UpdatePasswordView extends React.Component<UpdatePasswordViewProps,
     )
   }
 }
+
+export const UpdatePasswordView = withNavigation(UpdatePasswordViewInner)
