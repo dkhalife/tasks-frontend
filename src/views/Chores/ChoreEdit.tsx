@@ -200,7 +200,11 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
       if (response.status === 200) {
         this.props.navigate(`/my/chores`)
       } else {
-        alert('Failed to save chore')
+        this.setState({
+          isSnackbarOpen: true,
+          snackbarMessage: 'Failed to save chore',
+          snackbarColor: 'danger',
+        })
       }
     })
   }
@@ -220,7 +224,11 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
               if (response.status === 200) {
                 this.props.navigate('/my/chores')
               } else {
-                alert('Failed to delete chore')
+                this.setState({
+                  isSnackbarOpen: true,
+                  snackbarMessage: 'Failed to delete chore',
+                  snackbarColor: 'danger',
+                })
               }
             })
           }
@@ -249,8 +257,15 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
       GetChoreByID(choreId)
         .then(response => {
           if (response.status !== 200) {
-            alert('You are not authorized to view this chore.')
-            this.props.navigate('/my/chores')
+            this.setState({
+              isSnackbarOpen: true,
+              snackbarMessage: 'You are not authorized to view this chore.',
+              snackbarColor: 'danger',
+            })
+
+            setTimeout(() => {
+              this.props.navigate('/my/chores')
+            }, 3000);
             return null
           } else {
             return response.json()
