@@ -9,7 +9,6 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import { useSearchParams } from 'react-router-dom'
 
 import { Logo } from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
@@ -69,9 +68,7 @@ class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, U
     }
 
     try {
-      const [searchParams] = useSearchParams()
-      const verifiticationCode = searchParams.get('c')
-
+      const verifiticationCode = new URLSearchParams(document.location.search).get('c')
       const response = await ChangePassword(verifiticationCode, password)
 
       if (response.ok) {
