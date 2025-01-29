@@ -3,11 +3,13 @@ import { Typography } from '@mui/material'
 import { Logo } from './Logo'
 import React from 'react'
 
+type LoadingProps = object
+
 interface LoadingState {
   subMessage: string
 }
 
-export class Loading extends React.Component<{}, LoadingState> {
+export class Loading extends React.Component<LoadingProps, LoadingState> {
   private timeout: number
 
   constructor(props){

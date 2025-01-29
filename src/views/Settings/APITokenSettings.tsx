@@ -18,8 +18,7 @@ import {
 import { TextModal } from '../Modals/Inputs/TextModal'
 import React from 'react'
 
-interface APITokenSettingsProps {
-}
+type APITokenSettingsProps = object
 
 interface APITokenSettingsState {
   tokens: any[],

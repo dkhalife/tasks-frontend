@@ -1,7 +1,6 @@
 import { createContext } from 'react'
 
-export interface UserProfile {
-}
+export type UserProfile = unknown
 
 interface UserProfileState {
   userProfile: UserProfile | null,

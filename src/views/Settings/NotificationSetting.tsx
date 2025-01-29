@@ -18,8 +18,7 @@ import {
   UpdateNotificationTarget,
 } from '../../utils/Fetcher'
 
-interface NotificationSettingProps {
-}
+type NotificationSettingProps = object
 
 interface NotificationSettingState {
   isSnackbarOpen: boolean,

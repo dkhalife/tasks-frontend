@@ -13,8 +13,7 @@ import { ThemeToggle } from './ThemeToggle'
 import React from 'react'
 import { StorageContext } from '../../contexts/StorageContext'
 
-interface SettingsProps {
-}
+type SettingsProps = object
 
 interface SettingsState {
   changePasswordModal: boolean

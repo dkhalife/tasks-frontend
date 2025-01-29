@@ -10,7 +10,6 @@ import {
   Typography,
 } from '@mui/joy'
 
-import { useQueryClient } from 'react-query'
 import { LABEL_COLORS } from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import React from 'react'

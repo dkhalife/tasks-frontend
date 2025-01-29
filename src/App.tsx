@@ -8,8 +8,7 @@ import { apiManager } from './utils/TokenManager'
 import React from 'react'
 import { ThemeMode } from './constants/theme'
 
-interface AppProps {
-}
+type AppProps = object
 
 interface AppState {
   userProfile: UserProfile | null

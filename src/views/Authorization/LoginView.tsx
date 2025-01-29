@@ -37,7 +37,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
 
   private getUserProfileAndNavigateToHome = () => {
     GetUserProfile().then(data => {
-      data.json().then(data => {
+      data.json().then(() => {
         // TODO: Set the user profile
         // setUserProfile(data.res)
 

@@ -18,8 +18,7 @@ import { DeleteLabel, GetLabels } from '../../utils/Fetcher'
 import React from 'react'
 import { useQueryClient } from 'react-query'
 
-interface LabelViewProps {
-}
+type LabelViewProps = object
 
 interface LabelViewState {
   isLabelsLoading: boolean,
