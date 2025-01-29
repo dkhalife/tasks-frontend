@@ -23,8 +23,6 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
   CreateChore,
@@ -32,214 +30,182 @@ import {
   GetChoreByID,
   SaveChore,
 } from '../../utils/Fetcher'
-import { useLabels } from '../Labels/LabelQueries'
 import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
 import React from 'react'
 import { RepeatOption } from './RepeatSection'
-const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
+import { withNavigation } from '../../contexts/hooks'
 
+const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
 const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
-export class ChoreEdit extends React.Component {
-  render(): React.ReactNode {
-    const [chore, setChore] = useState<any>({})
-    const { choreId } = useParams()
-    const [name, setName] = useState('')
-    const [confirmModelConfig, setConfirmModelConfig] = useState<ConfirmationModalProps>({
-      cancelText: '',
-      confirmText: '',
-      isOpen: false,
-      message: '',
-      onClose: () => {},
-      title: '',
+interface ChoreEditProps {
+  choreId: number | undefined
+  navigate: (path: string) => void
+}
+
+// TODO: Some of these should be props
+interface ChoreEditState {
+  isRolling: boolean
+  isNotificable: boolean
+  updatedBy: number
+  errors: any
+  isSnackbarOpen: boolean
+  snackbarMessage: any
+  snackbarColor: string
+  addLabelModalOpen: boolean
+  dueDate: any
+  frequencyType: string
+  frequency: number
+  frequencyMetadata: any
+  labels: any[]
+  notificationMetadata: any
+  userLabels: any[]
+  chore: any
+  name: string
+  confirmModelConfig: ConfirmationModalProps
+}
+
+class ChoreEditInner extends React.Component<ChoreEditProps, ChoreEditState> {
+  constructor(props: ChoreEditProps) {
+    super(props)
+    this.state = {
+      isRolling: false,
+      isNotificable: false,
+      updatedBy: 0,
+      errors: {},
+      isSnackbarOpen: false,
+      snackbarMessage: null,
+      snackbarColor: 'warning',
+      addLabelModalOpen: false,
+      dueDate: null,
+      frequencyType: 'once',
+      frequency: 1,
+      frequencyMetadata: {},
+      labels: [],
+      notificationMetadata: {},
+      userLabels: [],
+      chore: {},
+      name: '',
+      confirmModelConfig: {
+        cancelText: '',
+        confirmText: '',
+        isOpen: false,
+        message: '',
+        onClose: () => {},
+        title: '',
+      }
+    }
+  }
+
+  private HandleValidateChore = () => {
+    const { name, frequencyType, frequency, frequencyMetadata, dueDate } = this.state
+    const errors: { [key: string]: string } = {}
+
+    if (name.trim() === '') {
+      errors.name = 'Name is required'
+    }
+    if (frequencyType === 'interval' && frequency <= 0) {
+      errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
+    }
+    if (
+      frequencyType === 'days_of_the_week' &&
+      frequencyMetadata['days']?.length === 0
+    ) {
+      errors.frequency = 'At least 1 day is required'
+    }
+    if (
+      frequencyType === 'day_of_the_month' &&
+      frequencyMetadata['months']?.length === 0
+    ) {
+      errors.frequency = 'At least 1 month is required'
+    }
+    if (
+      dueDate === null &&
+      !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
+      !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
+    ) {
+      if (REPEAT_ON_TYPE.includes(frequencyType)) {
+        errors.dueDate = 'Start date is required'
+      } else {
+        errors.dueDate = 'Due date is required'
+      }
+    }
+
+    // if there is any error then return false:
+    const newState: any = {
+      errors,
+    }
+
+    let isSuccessful = true
+    if (Object.keys(errors).length > 0) {
+      // generate a list with error and set it in snackbar:
+      const errorList = Object.keys(errors).map(key => (
+        <ListItem key={key}>{errors[key]}</ListItem>
+      ))
+
+      newState.snackbarMessage = (
+        <Stack spacing={0.5}>
+          <Typography level='title-md'>
+            Please resolve the following errors:
+          </Typography>
+          <List>{errorList}</List>
+        </Stack>
+      )
+
+      newState.snackbarColor = 'danger'
+      newState.isSnackbarOpen = true
+      
+      isSuccessful = false
+    }
+
+    this.setState(newState)
+    return isSuccessful
+  }
+
+  private handleDueDateChange = e => {
+    this.setState({ dueDate: e.target.value })
+  }
+
+  private HandleSaveChore = () => {
+    if (!this.HandleValidateChore()) {
+      return
+    }
+
+    const { choreId } = this.props
+    const { name, frequencyType, frequency, frequencyMetadata, dueDate, isRolling, isNotificable, labels, notificationMetadata } = this.state
+    const chore = {
+      id: Number(choreId),
+      name: name,
+      dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+      frequencyType: frequencyType,
+      frequency: Number(frequency),
+      frequencyMetadata: frequencyMetadata,
+      isRolling: isRolling,
+      notification: isNotificable,
+      labels: labels,
+      notificationMetadata: notificationMetadata,
+    }
+
+    let SaveFunction = CreateChore
+    if (choreId !== undefined) {
+      SaveFunction = SaveChore
+    }
+
+    SaveFunction(chore).then(response => {
+      if (response.status === 200) {
+        this.props.navigate(`/my/chores`)
+      } else {
+        alert('Failed to save chore')
+      }
     })
-    const [dueDate, setDueDate] = useState<any>(null)
-    const [frequencyType, setFrequencyType] = useState('once')
-    const [frequency, setFrequency] = useState(1)
-    const [frequencyMetadata, setFrequencyMetadata] = useState<any>({})
-    const [labels, setLabels] = useState([])
+  }
 
-    const [notificationMetadata, setNotificationMetadata] = useState({})
-
-    const [isRolling, setIsRolling] = useState(false)
-    const [isNotificable, setIsNotificable] = useState(false)
-    const [isActive, setIsActive] = useState(true)
-    const [updatedBy, setUpdatedBy] = useState(0)
-    const [errors, setErrors] = useState<any>({})
-    const [attemptToSave, setAttemptToSave] = useState(false)
-    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
-    const [snackbarMessage, setSnackbarMessage] = useState<any>(null)
-    const [snackbarColor, setSnackbarColor] = useState('warning')
-    const [addLabelModalOpen, setAddLabelModalOpen] = useState(false)
-    const { data: userLabelsRaw } = useLabels()
-
-    const [userLabels, setUserLabels] = useState<any[]>([])
-
-    useEffect(() => {
-      if (userLabelsRaw) {
-        setUserLabels(userLabelsRaw)
-      }
-    }, [userLabelsRaw])
-
-    const navigate = useNavigate()
-
-    const HandleValidateChore = () => {
-      const errors: { [key: string]: string } = {}
-
-      if (name.trim() === '') {
-        errors.name = 'Name is required'
-      }
-      if (frequencyType === 'interval' && frequency <= 0) {
-        errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
-      }
-      if (
-        frequencyType === 'days_of_the_week' &&
-        frequencyMetadata['days']?.length === 0
-      ) {
-        errors.frequency = 'At least 1 day is required'
-      }
-      if (
-        frequencyType === 'day_of_the_month' &&
-        frequencyMetadata['months']?.length === 0
-      ) {
-        errors.frequency = 'At least 1 month is required'
-      }
-      if (
-        dueDate === null &&
-        !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
-        !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
-      ) {
-        if (REPEAT_ON_TYPE.includes(frequencyType)) {
-          errors.dueDate = 'Start date is required'
-        } else {
-          errors.dueDate = 'Due date is required'
-        }
-      }
-
-      // if there is any error then return false:
-      setErrors(errors)
-      if (Object.keys(errors).length > 0) {
-        // generate a list with error and set it in snackbar:
-
-        const errorList = Object.keys(errors).map(key => (
-          <ListItem key={key}>{errors[key]}</ListItem>
-        ))
-        setSnackbarMessage(
-          <Stack spacing={0.5}>
-            <Typography level='title-md'>
-              Please resolve the following errors:
-            </Typography>
-            <List>{errorList}</List>
-          </Stack>,
-        )
-        setSnackbarColor('danger')
-        setIsSnackbarOpen(true)
-        return false
-      }
-
-      return true
-    }
-
-    const handleDueDateChange = e => {
-      setDueDate(e.target.value)
-    }
-    const HandleSaveChore = () => {
-      setAttemptToSave(true)
-      if (!HandleValidateChore()) {
-        return
-      }
-      const chore = {
-        id: Number(choreId),
-        name: name,
-        dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-        frequencyType: frequencyType,
-        frequency: Number(frequency),
-        frequencyMetadata: frequencyMetadata,
-        isRolling: isRolling,
-        isActive: isActive,
-        notification: isNotificable,
-        labels: labels,
-        notificationMetadata: notificationMetadata,
-      }
-      let SaveFunction = CreateChore
-      if (choreId !== undefined) {
-        SaveFunction = SaveChore
-      }
-
-      SaveFunction(chore).then(response => {
-        if (response.status === 200) {
-          navigate(`/my/chores`)
-        } else {
-          alert('Failed to save chore')
-        }
-      })
-    }
-    useEffect(() => {
-      if (choreId != undefined) {
-        GetChoreByID(choreId)
-          .then(response => {
-            if (response.status !== 200) {
-              alert('You are not authorized to view this chore.')
-              navigate('/my/chores')
-              return null
-            } else {
-              return response.json()
-            }
-          })
-          .then(data => {
-            setChore(data.res)
-            setName(data.res.name ? data.res.name : '')
-            setFrequencyType(
-              data.res.frequencyType ? data.res.frequencyType : 'once',
-            )
-
-            setFrequencyMetadata(JSON.parse(data.res.frequencyMetadata))
-            setFrequency(data.res.frequency)
-
-            setNotificationMetadata(JSON.parse(data.res.notificationMetadata))
-
-            setLabels(data.res.labels)
-            setIsRolling(data.res.isRolling)
-            setIsActive(data.res.isActive)
-            // parse the due date to a string from this format "2021-10-10T00:00:00.000Z"
-            // use moment.js or date-fns to format the date for to be usable in the input field:
-            setDueDate(
-              data.res.nextDueDate
-                ? moment(data.res.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
-                : null,
-            )
-            setUpdatedBy(data.res.updatedBy)
-            setIsNotificable(data.res.notification)
-          })
-      }
-      // set focus on the first input field:
-      else {
-        // new task/ chore set focus on the first input field:
-        document.querySelector('input')?.focus()
-      }
-    }, [navigate, choreId])
-
-    useEffect(() => {
-      // if frequancy type change to somthing need a due date then set it to the current date:
-      if (!NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && !dueDate) {
-        setDueDate(moment(new Date()).format('YYYY-MM-DDTHH:mm:00'))
-      }
-      if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
-        setDueDate(null)
-      }
-    }, [frequencyType, dueDate])
-
-    // if user resolve the error trigger validation to remove the error message from the respective field
-    useEffect(() => {
-      if (attemptToSave) {
-        HandleValidateChore()
-      }
-    }, [name, frequencyMetadata, attemptToSave, dueDate])
-
-    const handleDelete = () => {
-      setConfirmModelConfig({
+  private handleDelete = () => {
+    const { choreId } = this.props
+    this.setState({
+      confirmModelConfig: {
         isOpen: true,
         title: 'Delete Chore',
         confirmText: 'Delete',
@@ -249,42 +215,111 @@ export class ChoreEdit extends React.Component {
           if (isConfirmed === true) {
             DeleteChore(choreId).then(response => {
               if (response.status === 200) {
-                navigate('/my/chores')
+                this.props.navigate('/my/chores')
               } else {
                 alert('Failed to delete chore')
               }
             })
           }
-          setConfirmModelConfig({})
+          
+          this.setState({
+            confirmModelConfig: {
+              isOpen: false,
+              title: '',
+              confirmText: '',
+              cancelText: '',
+              message: '',
+              onClose: () => {},
+            }
+          })
         },
-      })
-    }
+      }
+    })
+  }
 
+  componentDidMount(): void {
+    // TODO: Load and set labels and userLabels
+
+    // Load chore data
+    const { choreId } = this.props
+    if (choreId != undefined) {
+      GetChoreByID(choreId)
+        .then(response => {
+          if (response.status !== 200) {
+            alert('You are not authorized to view this chore.')
+            this.props.navigate('/my/chores')
+            return null
+          } else {
+            return response.json()
+          }
+        })
+        .then(data => {
+          // TODO: There is so much redundancy here
+          this.setState({
+            chore: data.res,
+            name: data.res.name ? data.res.name : '',
+            frequencyType: data.res.frequencyType ? data.res.frequencyType : 'once',
+            frequencyMetadata: JSON.parse(data.res.frequencyMetadata),
+            frequency: data.res.frequency,
+            notificationMetadata: JSON.parse(data.res.notificationMetadata),
+            labels: data.res.labels,
+            isRolling: data.res.isRolling,
+            dueDate: data.res.nextDueDate
+              ? moment(data.res.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
+              : null,
+            updatedBy: data.res.updatedBy,
+            isNotificable: data.res.notification,
+          })
+        })
+    }
+    else {
+      // TODO: Use a more specific ref
+      document.querySelector('input')?.focus()
+    }
+  }
+
+  componentDidUpdate(prevProps: Readonly<ChoreEditProps>, prevState: Readonly<ChoreEditState>): void {
+    const { frequencyType, dueDate } = this.state
+
+    if (frequencyType !== prevState.frequencyType) {
+      // if frequancy type change to somthing need a due date then set it to the current date:
+      if (!NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && !dueDate) {
+        this.setState({
+          dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
+        })
+      }
+      else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
+        this.setState({
+          dueDate: null,
+        })
+      }    
+    }
+  }
+
+  render(): React.ReactNode {
+    const { choreId } = this.props
+    const { name, frequency, frequencyType, frequencyMetadata, dueDate, isRolling, isNotificable, labels, notificationMetadata, userLabels, chore, updatedBy, errors, isSnackbarOpen, snackbarMessage, snackbarColor, addLabelModalOpen, confirmModelConfig } = this.state
     return (
       <Container maxWidth='md'>
         <Box>
           <FormControl error={errors.name}>
             <Typography level='h4'>Description :</Typography>
             <Typography>What is this chore about?</Typography>
-            <Input value={name} onChange={e => setName(e.target.value)} />
+            <Input value={name} onChange={e => this.setState({ name: e.target.value })} />
             <FormHelperText>{errors.name}</FormHelperText>
           </FormControl>
         </Box>
         <RepeatOption
           frequency={frequency}
-          onFrequencyUpdate={setFrequency}
+          onFrequencyUpdate={(newFrequency) => this.setState({ frequency: newFrequency })}
           frequencyType={frequencyType}
-          onFrequencyTypeUpdate={setFrequencyType}
+          onFrequencyTypeUpdate={(newFrequencyType) => this.setState({ frequencyType: newFrequencyType })}
           frequencyMetadata={frequencyMetadata}
-          onFrequencyMetadataUpdate={setFrequencyMetadata}
+          onFrequencyMetadataUpdate={(newFrequencyMetadata) => this.setState({ frequencyMetadata: newFrequencyMetadata })}
           onFrequencyTimeUpdate={t => {
-            setFrequencyMetadata({
-              ...frequencyMetadata,
-              time: t,
-            })
+            this.setState({ frequencyMetadata: { ...frequencyMetadata, time: t } })
           }}
           frequencyError={errors?.frequency}
-          isAttemptToSave={attemptToSave}
         />
 
         <Box mt={2}>
@@ -302,9 +337,11 @@ export class ChoreEdit extends React.Component {
               <Checkbox
                 onChange={e => {
                   if (e.target.checked) {
-                    setDueDate(moment(new Date()).format('YYYY-MM-DDTHH:mm:00'))
+                    this.setState({
+                      dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
+                    })
                   } else {
-                    setDueDate(null)
+                    this.setState({ dueDate: null })
                   }
                 }}
                 defaultChecked={dueDate !== null}
@@ -326,7 +363,7 @@ export class ChoreEdit extends React.Component {
               <Input
                 type='datetime-local'
                 value={dueDate}
-                onChange={handleDueDateChange}
+                onChange={this.handleDueDateChange}
               />
               <FormHelperText>{errors.dueDate}</FormHelperText>
             </FormControl>
@@ -344,7 +381,7 @@ export class ChoreEdit extends React.Component {
                 <Radio
                   overlay
                   checked={!isRolling}
-                  onClick={() => setIsRolling(false)}
+                  onClick={() => this.setState({ isRolling: false })}
                   label='Reschedule from due date'
                 />
                 <FormHelperText>
@@ -356,7 +393,7 @@ export class ChoreEdit extends React.Component {
                 <Radio
                   overlay
                   checked={isRolling}
-                  onClick={() => setIsRolling(true)}
+                  onClick={() => this.setState({ isRolling: true })}
                   label='Reschedule from completion date'
                 />
                 <FormHelperText>
@@ -376,7 +413,7 @@ export class ChoreEdit extends React.Component {
           <FormControl sx={{ mt: 1 }}>
             <Checkbox
               onChange={e => {
-                setIsNotificable(e.target.checked)
+                this.setState({ isNotificable: e.target.checked })
               }}
               defaultChecked={isNotificable}
               overlay
@@ -428,9 +465,11 @@ export class ChoreEdit extends React.Component {
                   <Checkbox
                     overlay
                     onClick={() => {
-                      setNotificationMetadata({
-                        ...notificationMetadata,
-                        [item.id]: !notificationMetadata[item.id],
+                      this.setState({
+                        notificationMetadata: {
+                          ...notificationMetadata,
+                          [item.id]: !notificationMetadata[item.id],
+                        },
                       })
                     }}
                     checked={
@@ -453,7 +492,9 @@ export class ChoreEdit extends React.Component {
           <Select
             multiple
             onChange={(event, newValue) => {
-              setLabels(userLabels.filter(l => newValue.indexOf(l.name) > -1))
+              this.setState({
+                labels: userLabels.filter(l => newValue.indexOf(l.name) > -1),
+              })
             }}
             value={labels.map(l => l.name)}
             renderValue={() => (
@@ -505,7 +546,9 @@ export class ChoreEdit extends React.Component {
             <MenuItem
               key={'addNewLabel'}
               onClick={() => {
-                setAddLabelModalOpen(true)
+                this.setState({
+                  addLabelModalOpen: true
+                })
               }}
             >
               <Add />
@@ -559,7 +602,7 @@ export class ChoreEdit extends React.Component {
               color='danger'
               variant='solid'
               onClick={() => {
-                handleDelete()
+                this.handleDelete()
               }}
             >
               Delete
@@ -574,7 +617,7 @@ export class ChoreEdit extends React.Component {
           >
             Cancel
           </Button>
-          <Button color='primary' variant='solid' onClick={HandleSaveChore}>
+          <Button color='primary' variant='solid' onClick={this.HandleSaveChore}>
             {choreId != undefined ? 'Save' : 'Create'}
           </Button>
         </Sheet>
@@ -582,22 +625,17 @@ export class ChoreEdit extends React.Component {
         {addLabelModalOpen && (
           <LabelModal
             isOpen={addLabelModalOpen}
-            onSave={label => {
-              const newLabels = [...labels]
-              newLabels.push(label)
-              setUserLabels([...userLabels, label])
-
-              setLabels([...labels, label])
-              setAddLabelModalOpen(false)
-            }}
-            onClose={() => setAddLabelModalOpen(false)}
+            label={null /* TODO: Verify */}
+            onClose={() => this.setState({ addLabelModalOpen: false })}
           />
         )}
         <Snackbar
           open={isSnackbarOpen}
           onClose={() => {
-            setIsSnackbarOpen(false)
-            setSnackbarMessage(null)
+            this.setState({
+              isSnackbarOpen: false,
+              snackbarMessage: null,
+            })
           }}
           color={snackbarColor}
           autoHideDuration={4000}
@@ -611,3 +649,5 @@ export class ChoreEdit extends React.Component {
     )
   }
 }
+
+export const ChoreEdit = withNavigation(ChoreEditInner)
