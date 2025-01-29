@@ -23,7 +23,7 @@ interface UpdatePasswordViewState {
   password: string
   passwordConfirm: string
   passwordError: string | null
-  passworConfirmationError: string | null
+  passwordConfirmationError: string | null
   updateStatusOk: boolean | null
 }
 
@@ -49,21 +49,21 @@ class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, U
     if (e.target.value !== password) {
       this.setState({
         passwordConfirm: e.target.value,
-        passworConfirmationError: 'Passwords do not match'
+        passwordConfirmationError: 'Passwords do not match'
       })
     } else {
       this.setState({
         passwordConfirm: e.target.value,
-        passworConfirmationError: null
+        passwordConfirmationError: null
       })
     }
   }
 
   private handleSubmit = async () => {
     const { navigate } = this.props
-    const { password, passwordError, passworConfirmationError } = this.state
+    const { password, passwordError, passwordConfirmationError } = this.state
 
-    if (passwordError != null || passworConfirmationError != null) {
+    if (passwordError != null || passwordConfirmationError != null) {
       return
     }
 
@@ -89,7 +89,7 @@ class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, U
   }
 
   render(): React.ReactNode {
-    const { password, passwordConfirm, passwordError, passworConfirmationError, updateStatusOk } = this.state
+    const { password, passwordConfirm, passwordError, passwordConfirmationError, updateStatusOk } = this.state
 
     return (
       <Container component='main' maxWidth='xs'>
@@ -153,9 +153,9 @@ class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, U
                 type='password'
                 value={passwordConfirm}
                 onChange={this.handlePasswordConfirmChange}
-                error={passworConfirmationError !== null}
+                error={passwordConfirmationError !== null}
               />
-              <FormHelperText>{passworConfirmationError}</FormHelperText>
+              <FormHelperText>{passwordConfirmationError}</FormHelperText>
             </FormControl>
 
             <Button
