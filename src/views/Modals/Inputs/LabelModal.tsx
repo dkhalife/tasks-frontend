@@ -13,11 +13,12 @@ import {
 import { LABEL_COLORS } from '../../../utils/Colors'
 import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import React from 'react'
+import { Label } from '../../../models/label'
 
 interface LabelModalProps {
   isOpen: boolean
   onClose: () => void
-  label: any
+  label: Label
 }
 
 interface LabelModalState {

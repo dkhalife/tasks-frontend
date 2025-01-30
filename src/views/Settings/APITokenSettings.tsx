@@ -17,11 +17,12 @@ import {
 } from '../../utils/Fetcher'
 import { TextModal } from '../Modals/Inputs/TextModal'
 import React from 'react'
+import { APIToken } from '../../models/token'
 
-type APITokenSettingsProps = object
+type APITokenSettingsProps = object 
 
 interface APITokenSettingsState {
-  tokens: any[]
+  tokens: APIToken[]
   isGetTokenNameModalOpen: boolean
   showTokenId: string | null
 }
@@ -77,7 +78,7 @@ export class APITokenSettings extends React.Component<
           Create token to use with the API to update chores
         </Typography>
 
-        {tokens.map((token: any) => (
+        {tokens.map((token: APIToken) => (
           <Card
             key={token.token}
             className='p-4'
@@ -118,7 +119,7 @@ export class APITokenSettings extends React.Component<
                       DeleteLongLiveToken(token.id).then(resp => {
                         if (resp.ok) {
                           const newTokens = tokens.filter(
-                            (t: any) => t.id !== token.id,
+                            (t: APIToken) => t.id !== token.id,
                           )
                           this.setState({ tokens: newTokens })
                         }

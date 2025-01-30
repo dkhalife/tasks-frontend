@@ -8,10 +8,11 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { CompletedChip } from './CompletedChip'
+import { HistoryEntry } from '../../models/history'
 
 interface HistoryCardProps {
-  allHistory: any[]
-  historyEntry: any
+  allHistory: HistoryEntry[]
+  historyEntry: HistoryEntry
   index: number
   onClick: () => void
 }

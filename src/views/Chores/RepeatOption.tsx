@@ -14,6 +14,7 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { RepeatOn } from './RepeatOn'
+import { FrequencyMetadata } from '../../models/chore'
 
 const FREQUANCY_TYPES_RADIOS = [
   'daily',
@@ -36,8 +37,8 @@ interface RepeatOptionProps {
   frequency: number
   onFrequencyUpdate: (frequency: number) => void
   onFrequencyTypeUpdate: (type: string) => void
-  frequencyMetadata: any
-  onFrequencyMetadataUpdate: (metadata: any) => void
+  frequencyMetadata: FrequencyMetadata
+  onFrequencyMetadataUpdate: (metadata: FrequencyMetadata) => void
   onFrequencyTimeUpdate: (time: string) => void
   frequencyError: string
 }

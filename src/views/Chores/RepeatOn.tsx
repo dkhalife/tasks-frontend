@@ -13,6 +13,7 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import React from 'react'
+import { FrequencyMetadata } from '../../models/chore'
 
 const MONTHS = [
   'january',
@@ -43,8 +44,8 @@ interface RepeatOnProps {
   frequencyType: string
   frequency: number
   onFrequencyUpdate: (frequency: number) => void
-  frequencyMetadata: any
-  onFrequencyMetadataUpdate: (metadata: any) => void
+  frequencyMetadata: FrequencyMetadata
+  onFrequencyMetadataUpdate: (metadata: FrequencyMetadata) => void
   onFrequencyTimeUpdate: (time: string) => void
 }
 
