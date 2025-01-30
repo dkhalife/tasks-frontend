@@ -24,14 +24,17 @@ interface SignupViewState {
   password: string
   displayName: string
   email: string
-  usernameError: string|null
-  passwordError: string|null
-  emailError: string|null
-  displayNameError: string|null
-  error: string|null
+  usernameError: string | null
+  passwordError: string | null
+  emailError: string | null
+  displayNameError: string | null
+  error: string | null
 }
 
-class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> {
+class SignupViewInner extends React.Component<
+  SignupViewProps,
+  SignupViewState
+> {
   constructor(props: SignupViewProps) {
     super(props)
 
@@ -100,13 +103,15 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
 
     // display name should only contain letters and spaces and numbers:
     if (!/^[a-zA-Z0-9 ]+$/.test(displayName)) {
-      newState.displayNameError = 'Display name can only contain letters, numbers and spaces'
+      newState.displayNameError =
+        'Display name can only contain letters, numbers and spaces'
       isValid = false
     }
 
     // username should only contain letters , numbers , dot and dash:
     if (!/^[a-zA-Z0-9.-]+$/.test(username)) {
-      newState.usernameError = 'Username can only contain letters, numbers, dot and dash'
+      newState.usernameError =
+        'Username can only contain letters, numbers, dot and dash'
       isValid = false
     }
 
@@ -136,9 +141,22 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
   }
 
   render(): React.ReactNode {
-    const { username, password, displayName, email, usernameError, passwordError, displayNameError, emailError, error } = this.state
+    const {
+      username,
+      password,
+      displayName,
+      email,
+      usernameError,
+      passwordError,
+      displayNameError,
+      emailError,
+      error,
+    } = this.state
     return (
-      <Container component='main' maxWidth='xs'>
+      <Container
+        component='main'
+        maxWidth='xs'
+      >
         <Box
           sx={{
             display: 'flex',
@@ -177,11 +195,12 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
                   tick
                 </span>
               </Typography>
-              <Typography>
-                Create an account to get started!
-              </Typography>
+              <Typography>Create an account to get started!</Typography>
             </Box>
-            <Typography alignSelf={'start'} mt={4}>
+            <Typography
+              alignSelf={'start'}
+              mt={4}
+            >
               Username
             </Typography>
             <Input
@@ -193,15 +212,16 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
               autoFocus
               value={username}
               onChange={e => {
-                this.setState({ usernameError: null, username: e.target.value.trim() })
+                this.setState({
+                  usernameError: null,
+                  username: e.target.value.trim(),
+                })
               }}
             />
             <FormControl>
               <FormHelperText>{usernameError}</FormHelperText>
             </FormControl>
-            <Typography alignSelf={'start'}>
-              Email
-            </Typography>
+            <Typography alignSelf={'start'}>Email</Typography>
             <Input
               required
               fullWidth
@@ -210,15 +230,16 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
               autoComplete='email'
               value={email}
               onChange={e => {
-                this.setState({ emailError: null, email: e.target.value.trim() })
+                this.setState({
+                  emailError: null,
+                  email: e.target.value.trim(),
+                })
               }}
             />
             <FormControl>
               <FormHelperText>{emailError}</FormHelperText>
             </FormControl>
-            <Typography alignSelf={'start'}>
-              Password:
-            </Typography>
+            <Typography alignSelf={'start'}>Password:</Typography>
             <Input
               required
               fullWidth
@@ -233,9 +254,7 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
             <FormControl>
               <FormHelperText>{passwordError}</FormHelperText>
             </FormControl>
-            <Typography alignSelf={'start'}>
-              Display Name:
-            </Typography>
+            <Typography alignSelf={'start'}>Display Name:</Typography>
             <Input
               required
               fullWidth
@@ -243,7 +262,10 @@ class SignupViewInner extends React.Component<SignupViewProps, SignupViewState> 
               id='displayName'
               value={displayName}
               onChange={e => {
-                this.setState({ displayNameError: null, displayName: e.target.value.trim() })
+                this.setState({
+                  displayNameError: null,
+                  displayName: e.target.value.trim(),
+                })
               }}
             />
             <FormControl>

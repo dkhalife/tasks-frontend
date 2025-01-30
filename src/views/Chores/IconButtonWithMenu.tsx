@@ -3,23 +3,31 @@ import IconButton from '@mui/joy/IconButton'
 import React from 'react'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 
-interface IconButtonWithMenuProps
-{
-  keyName: string,
-  icon: string,
-  options: any[],
-  onItemSelect: (item: any) => void,
-  setSelectedItem: any,
-  isActive: boolean,
-  useChips: boolean,
-  title: string,
+interface IconButtonWithMenuProps {
+  keyName: string
+  icon: string
+  options: any[]
+  onItemSelect: (item: any) => void
+  setSelectedItem: any
+  isActive: boolean
+  useChips: boolean
+  title: string
 }
 
 export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps> {
   private menuRef = React.createRef<HTMLDivElement>()
 
   render(): React.ReactNode {
-    const { keyName, icon, options, onItemSelect, setSelectedItem, isActive, useChips, title } = this.props
+    const {
+      keyName,
+      icon,
+      options,
+      onItemSelect,
+      setSelectedItem,
+      isActive,
+      useChips,
+      title,
+    } = this.props
 
     return (
       <>
@@ -40,8 +48,14 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
           ref={this.menuRef}
         >
           {title && (
-            <MenuItem key={`${keyName}-title`} disabled>
-              <Typography level='body-sm' sx={{ fontWeight: 'bold' }}>
+            <MenuItem
+              key={`${keyName}-title`}
+              disabled
+            >
+              <Typography
+                level='body-sm'
+                sx={{ fontWeight: 'bold' }}
+              >
                 {title}
               </Typography>
             </MenuItem>

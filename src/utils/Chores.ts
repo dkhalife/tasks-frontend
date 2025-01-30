@@ -53,9 +53,7 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
           content: groupRaw['Overdue'],
           color: TASK_COLOR.OVERDUE,
         },
-        { name: 'Today',
-          content: groupRaw['Today'],
-          color: TASK_COLOR.TODAY },
+        { name: 'Today', content: groupRaw['Today'], color: TASK_COLOR.TODAY },
         {
           name: 'In a week',
           content: groupRaw['In a week'],
@@ -66,9 +64,11 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
           content: groupRaw['This month'],
           color: TASK_COLOR.THIS_MONTH,
         },
-        { name: 'Later',
+        {
+          name: 'Later',
           content: groupRaw['Later'],
-          color: TASK_COLOR.LATER },
+          color: TASK_COLOR.LATER,
+        },
         {
           name: 'Anytime',
           content: groupRaw['Anytime'],

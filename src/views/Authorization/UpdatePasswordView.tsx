@@ -27,19 +27,22 @@ interface UpdatePasswordViewState {
   updateStatusOk: boolean | null
 }
 
-class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, UpdatePasswordViewState> {
+class UpdatePasswordViewInner extends React.Component<
+  UpdatePasswordViewProps,
+  UpdatePasswordViewState
+> {
   private handlePasswordChange = e => {
     const password = e.target.value
 
     if (password.length < 8) {
       this.setState({
         password,
-        passwordError: 'Password must be at least 8 characters'
+        passwordError: 'Password must be at least 8 characters',
       })
     } else {
       this.setState({
         password,
-        passwordError: null
+        passwordError: null,
       })
     }
   }
@@ -49,12 +52,12 @@ class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, U
     if (e.target.value !== password) {
       this.setState({
         passwordConfirm: e.target.value,
-        passwordConfirmationError: 'Passwords do not match'
+        passwordConfirmationError: 'Passwords do not match',
       })
     } else {
       this.setState({
         passwordConfirm: e.target.value,
-        passwordConfirmationError: null
+        passwordConfirmationError: null,
       })
     }
   }
@@ -68,31 +71,42 @@ class UpdatePasswordViewInner extends React.Component<UpdatePasswordViewProps, U
     }
 
     try {
-      const verifiticationCode = new URLSearchParams(document.location.search).get('c')
+      const verifiticationCode = new URLSearchParams(
+        document.location.search,
+      ).get('c')
       const response = await ChangePassword(verifiticationCode, password)
 
       if (response.ok) {
         this.setState({
-          updateStatusOk: true
+          updateStatusOk: true,
         })
         navigate('/login')
       } else {
         this.setState({
-          updateStatusOk: false
+          updateStatusOk: false,
         })
       }
     } catch {
       this.setState({
-        updateStatusOk: false
+        updateStatusOk: false,
       })
     }
   }
 
   render(): React.ReactNode {
-    const { password, passwordConfirm, passwordError, passwordConfirmationError, updateStatusOk } = this.state
+    const {
+      password,
+      passwordConfirm,
+      passwordError,
+      passwordConfirmationError,
+      updateStatusOk,
+    } = this.state
 
     return (
-      <Container component='main' maxWidth='xs'>
+      <Container
+        component='main'
+        maxWidth='xs'
+      >
         <Box
           sx={{
             display: 'flex',

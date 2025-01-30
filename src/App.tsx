@@ -20,16 +20,15 @@ export class App extends React.Component<AppProps, AppState> {
     apiManager.init()
 
     this.state = {
-      userProfile: null
+      userProfile: null,
     }
   }
 
   private loadUserProfile = () => {
-    GetUserProfile()
-    .then(res => {
+    GetUserProfile().then(res => {
       res.json().then(data => {
         this.setState({
-          userProfile: data.res
+          userProfile: data.res,
         })
       })
     })
@@ -45,7 +44,8 @@ export class App extends React.Component<AppProps, AppState> {
 
   private loadTheme = () => {
     const { mode, systemMode } = useColorScheme()
-    const value: ThemeMode = JSON.parse(localStorage.getItem('themeMode') ?? "") || mode
+    const value: ThemeMode =
+      JSON.parse(localStorage.getItem('themeMode') ?? '') || mode
 
     switch (value) {
       default:
@@ -53,15 +53,15 @@ export class App extends React.Component<AppProps, AppState> {
         if (systemMode === 'dark') {
           this.applyTheme('dark')
         }
-      break
+        break
 
       case 'light':
         this.applyTheme('light')
-      break
+        break
 
       case 'dark':
         this.applyTheme('dark')
-      break
+        break
     }
   }
 

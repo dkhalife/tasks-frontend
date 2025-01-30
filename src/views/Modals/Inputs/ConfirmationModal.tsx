@@ -1,4 +1,11 @@
-import { Box, Button, ColorPaletteProp, Modal, ModalDialog, Typography } from '@mui/joy'
+import {
+  Box,
+  Button,
+  ColorPaletteProp,
+  Modal,
+  ModalDialog,
+  Typography,
+} from '@mui/joy'
 import React from 'react'
 
 export interface ConfirmationModalProps {
@@ -13,24 +20,38 @@ export interface ConfirmationModalProps {
 
 export class ConfirmationModal extends React.Component<ConfirmationModalProps> {
   public render(): React.ReactNode {
-    const { isOpen, onClose, title, message, confirmText, cancelText, color } = this.props
+    const { isOpen, onClose, title, message, confirmText, cancelText, color } =
+      this.props
 
     const handleAction = isConfirmed => {
       onClose(isConfirmed)
     }
 
     return (
-      <Modal open={isOpen} onClose={onClose}>
+      <Modal
+        open={isOpen}
+        onClose={onClose}
+      >
         <ModalDialog>
-          <Typography level='h4' mb={1}>
+          <Typography
+            level='h4'
+            mb={1}
+          >
             {title}
           </Typography>
 
-          <Typography level='body-md' gutterBottom>
+          <Typography
+            level='body-md'
+            gutterBottom
+          >
             {message}
           </Typography>
 
-          <Box display={'flex'} justifyContent={'space-around'} mt={1}>
+          <Box
+            display={'flex'}
+            justifyContent={'space-around'}
+            mt={1}
+          >
             <Button
               onClick={() => {
                 handleAction(true)

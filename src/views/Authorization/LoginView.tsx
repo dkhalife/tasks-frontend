@@ -82,7 +82,9 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
         }
       })
       .catch(() => {
-        this.setState({ error: 'Unable to communicate with server, please try again' })
+        this.setState({
+          error: 'Unable to communicate with server, please try again',
+        })
       })
   }
 
@@ -128,66 +130,65 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
               </span>
             </Typography>
 
-              <Typography>
-                Sign in to your account to continue
-              </Typography>
-              <Typography alignSelf={'start'} mt={4}>
-                Username
-              </Typography>
-              <Input
-                required
-                fullWidth
-                id='email'
-                name='email'
-                autoComplete='email'
-                autoFocus
-                onChange={e => {
-                  this.setState({ username: e.target.value })
-                }}
-              />
-              <Typography alignSelf={'start'}>
-                Password:
-              </Typography>
-              <Input
-                required
-                fullWidth
-                name='password'
-                type='password'
-                id='password'
-                onChange={e => {
-                  this.setState({ password: e.target.value })
-                }}
-              />
+            <Typography>Sign in to your account to continue</Typography>
+            <Typography
+              alignSelf={'start'}
+              mt={4}
+            >
+              Username
+            </Typography>
+            <Input
+              required
+              fullWidth
+              id='email'
+              name='email'
+              autoComplete='email'
+              autoFocus
+              onChange={e => {
+                this.setState({ username: e.target.value })
+              }}
+            />
+            <Typography alignSelf={'start'}>Password:</Typography>
+            <Input
+              required
+              fullWidth
+              name='password'
+              type='password'
+              id='password'
+              onChange={e => {
+                this.setState({ password: e.target.value })
+              }}
+            />
 
-              <Button
-                type='submit'
-                fullWidth
-                size='lg'
-                variant='solid'
-                sx={{
-                  width: '100%',
-                  mt: 3,
-                  border: 'moccasin',
-                  borderRadius: '8px',
-                }}
-                onClick={this.handleSubmit}
-              >
-                Sign In
-              </Button>
-              <Button
-                type='submit'
-                fullWidth
-                size='lg'
-                variant='plain'
-                sx={{
-                  width: '100%',
-                  border: 'moccasin',
-                  borderRadius: '8px',
-                }}
-                onClick={this.handleForgotPassword}
-              >
-                Forgot password?
-              </Button>
+            <Button
+              type='submit'
+              fullWidth
+              size='lg'
+              variant='solid'
+              sx={{
+                width: '100%',
+                mt: 3,
+                border: 'moccasin',
+                borderRadius: '8px',
+              }}
+              onClick={this.handleSubmit}
+            >
+              Sign In
+            </Button>
+            <Button
+              type='submit'
+              fullWidth
+              size='lg'
+              variant='plain'
+              sx={{
+                width: '100%',
+                border: 'moccasin',
+                borderRadius: '8px',
+              }}
+              onClick={this.handleForgotPassword}
+            >
+              Forgot password?
+            </Button>
 
             <Divider> or </Divider>
             <Button
@@ -198,7 +199,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
               variant='soft'
               size='lg'
               sx={{
-                mt: 2
+                mt: 2,
               }}
             >
               Create new account
@@ -207,8 +208,11 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
         </Box>
         <Snackbar
           open={error !== null}
-          onClose={() => { this.setState({ error: null }) }}
-          autoHideDuration={3000}>
+          onClose={() => {
+            this.setState({ error: null })
+          }}
+          autoHideDuration={3000}
+        >
           {error}
         </Snackbar>
       </Container>

@@ -21,12 +21,15 @@ import React from 'react'
 type APITokenSettingsProps = object
 
 interface APITokenSettingsState {
-  tokens: any[],
-  isGetTokenNameModalOpen: boolean,
-  showTokenId: string | null,
+  tokens: any[]
+  isGetTokenNameModalOpen: boolean
+  showTokenId: string | null
 }
 
-export class APITokenSettings extends React.Component<APITokenSettingsProps, APITokenSettingsState> {
+export class APITokenSettings extends React.Component<
+  APITokenSettingsProps,
+  APITokenSettingsState
+> {
   constructor(props: APITokenSettingsProps) {
     super(props)
 
@@ -64,7 +67,10 @@ export class APITokenSettings extends React.Component<APITokenSettingsProps, API
     const { tokens, isGetTokenNameModalOpen, showTokenId } = this.state
 
     return (
-      <div className='grid gap-4 py-4' id='apitokens'>
+      <div
+        className='grid gap-4 py-4'
+        id='apitokens'
+      >
         <Typography level='h3'>Access Token</Typography>
         <Divider />
         <Typography level='body-sm'>
@@ -72,7 +78,10 @@ export class APITokenSettings extends React.Component<APITokenSettingsProps, API
         </Typography>
 
         {tokens.map((token: any) => (
-          <Card key={token.token} className='p-4'>
+          <Card
+            key={token.token}
+            className='p-4'
+          >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
@@ -108,7 +117,9 @@ export class APITokenSettings extends React.Component<APITokenSettingsProps, API
                     if (confirmed) {
                       DeleteLongLiveToken(token.id).then(resp => {
                         if (resp.ok) {
-                          const newTokens = tokens.filter((t: any) => t.id !== token.id)
+                          const newTokens = tokens.filter(
+                            (t: any) => t.id !== token.id,
+                          )
                           this.setState({ tokens: newTokens })
                         }
                       })

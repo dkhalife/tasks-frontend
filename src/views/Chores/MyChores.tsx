@@ -1,7 +1,4 @@
-import {
-  Add,
-  ExpandCircleDown,
-} from '@mui/icons-material'
+import { Add, ExpandCircleDown } from '@mui/icons-material'
 import {
   Accordion,
   AccordionDetails,
@@ -14,10 +11,7 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import {
-  GetChores,
-  GetUserProfile,
-} from '../../utils/Fetcher'
+import { GetChores, GetUserProfile } from '../../utils/Fetcher'
 import { Loading } from '../../Loading'
 import { ChoreCard } from './ChoreCard'
 import { IconButtonWithMenu } from './IconButtonWithMenu'
@@ -64,20 +58,17 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
   }
 
   componentDidMount(): void {
-    Promise.all([GetChores(), GetUserProfile()]).then(
-      responses => {
-        // TODO: Split this and move state ownership to the respective components
-        const [choresResponse, userProfileResponse] = responses
-        if (!choresResponse.ok) {
-          throw new Error(choresResponse.statusText)
-        }
-        if (!userProfileResponse.ok) {
-          throw new Error(userProfileResponse.statusText)
-        }
-        Promise.all([
-          choresResponse.json(),
-          userProfileResponse.json(),
-        ]).then(data => {
+    Promise.all([GetChores(), GetUserProfile()]).then(responses => {
+      // TODO: Split this and move state ownership to the respective components
+      const [choresResponse, userProfileResponse] = responses
+      if (!choresResponse.ok) {
+        throw new Error(choresResponse.statusText)
+      }
+      if (!userProfileResponse.ok) {
+        throw new Error(userProfileResponse.statusText)
+      }
+      Promise.all([choresResponse.json(), userProfileResponse.json()]).then(
+        data => {
           const [choresData, userProfileData] = data
           //TODO: Sorter
           //choresData.res.sort(choreSorter)
@@ -87,9 +78,9 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
             userProfile: userProfileData.res,
             isLoading: false,
           })
-        })
-      },
-    )
+        },
+      )
+    })
   }
 
   private FILTERS = {
@@ -105,7 +96,8 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
     'Due today': function (chores) {
       return chores.filter(chore => {
         return (
-          new Date(chore.nextDueDate).toDateString() === new Date().toDateString()
+          new Date(chore.nextDueDate).toDateString() ===
+          new Date().toDateString()
         )
       })
     },
@@ -121,7 +113,8 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
     'Due Later': function (chores) {
       return chores.filter(chore => {
         return (
-          new Date(chore.nextDueDate) > new Date(Date.now() + 24 * 60 * 60 * 1000)
+          new Date(chore.nextDueDate) >
+          new Date(Date.now() + 24 * 60 * 60 * 1000)
         )
       })
     },
@@ -131,7 +124,7 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
       })
     },
   }
-  
+
   render(): React.ReactNode {
     const { isSnackbarOpen, snackBarMessage, isLoading, chores } = this.state
 
@@ -172,7 +165,10 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
             }}
           />
         </Box>
-        <AccordionGroup transition='0.2s ease' disableDivider>
+        <AccordionGroup
+          transition='0.2s ease'
+          disableDivider
+        >
           <Accordion
             title='All'
             sx={{
@@ -195,7 +191,11 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
                   />
                 }
                 startDecorator={
-                  <Chip color='primary' size='sm' variant='soft'>
+                  <Chip
+                    color='primary'
+                    size='sm'
+                    variant='soft'
+                  >
                     42
                   </Chip>
                 }

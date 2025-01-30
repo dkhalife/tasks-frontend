@@ -22,7 +22,7 @@ export class ThemeToggleButton extends React.Component<ThemeToggleButtonProps> {
     this.props.onThemeModeToggle()
   }
 
-  render(): React.ReactNode {  
+  render(): React.ReactNode {
     const { themeMode } = this.props
 
     return (

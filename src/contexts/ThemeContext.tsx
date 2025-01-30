@@ -71,7 +71,7 @@ const theme = extendTheme({
 })
 
 interface ThemeContextProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export class ThemeContext extends React.Component<ThemeContextProps> {

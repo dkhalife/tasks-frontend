@@ -12,18 +12,19 @@ interface LoadingState {
 export class Loading extends React.Component<LoadingProps, LoadingState> {
   private timeout: number
 
-  constructor(props){
+  constructor(props) {
     super(props)
 
     this.state = {
-      subMessage: ''
+      subMessage: '',
     }
   }
 
   componentDidMount() {
     this.timeout = setTimeout(() => {
       this.setState({
-        subMessage: 'This is taking longer than usual. There might be an issue.',
+        subMessage:
+          'This is taking longer than usual. There might be an issue.',
       })
     }, 5000)
   }
@@ -59,7 +60,10 @@ export class Loading extends React.Component<LoadingProps, LoadingState> {
           >
             Loading...
           </Box>
-          <Typography fontWeight={500} textAlign={'center'}>
+          <Typography
+            fontWeight={500}
+            textAlign={'center'}
+          >
             {subMessage}
           </Typography>
         </Box>

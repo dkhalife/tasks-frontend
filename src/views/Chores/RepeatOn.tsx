@@ -40,16 +40,16 @@ const DAYS = [
 ]
 
 interface RepeatOnProps {
-  frequencyType: string,
-  frequency: number,
-  onFrequencyUpdate: (frequency: number) => void,
-  frequencyMetadata: any,
-  onFrequencyMetadataUpdate: (metadata: any) => void,
-  onFrequencyTimeUpdate: (time: string) => void,
+  frequencyType: string
+  frequency: number
+  onFrequencyUpdate: (frequency: number) => void
+  frequencyMetadata: any
+  onFrequencyMetadataUpdate: (metadata: any) => void
+  onFrequencyTimeUpdate: (time: string) => void
 }
 
 interface RepeatOnState {
-  intervalUnit: string,
+  intervalUnit: string
 }
 
 export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
@@ -61,11 +61,21 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
   }
 
   render(): React.ReactNode {
-    const { frequencyType, frequency, onFrequencyUpdate, frequencyMetadata, onFrequencyMetadataUpdate, onFrequencyTimeUpdate } = this.props
+    const {
+      frequencyType,
+      frequency,
+      onFrequencyUpdate,
+      frequencyMetadata,
+      onFrequencyMetadataUpdate,
+      onFrequencyTimeUpdate,
+    } = this.props
     const { intervalUnit } = this.state
 
     const timePickerComponent = (
-      <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
+      <Grid
+        sm={12}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
         <Typography>At: </Typography>
         <Input
           type='time'
@@ -89,7 +99,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
       case 'interval':
         return (
           <>
-            <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Grid
+              sm={12}
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
               <Typography>Every: </Typography>
               <Input
                 slotProps={{
@@ -104,7 +117,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                   onFrequencyUpdate(parseInt(e.target.value))
                 }}
               />
-              <Select placeholder='Unit' value={intervalUnit}>
+              <Select
+                placeholder='Unit'
+                value={intervalUnit}
+              >
                 {['hours', 'days', 'weeks', 'months', 'years'].map(item => (
                   <Option
                     key={item}
@@ -128,7 +144,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
       case 'days_of_the_week':
         return (
           <>
-            <Grid sm={12} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Grid
+              sm={12}
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
               <Card>
                 <List
                   orientation='horizontal'
@@ -141,9 +160,12 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                   {DAYS.map(item => (
                     <ListItem key={item}>
                       <Checkbox
-                        checked={frequencyMetadata?.days?.includes(item) || false}
+                        checked={
+                          frequencyMetadata?.days?.includes(item) || false
+                        }
                         onClick={() => {
-                          const newDaysOfTheWeek = frequencyMetadata['days'] || []
+                          const newDaysOfTheWeek =
+                            frequencyMetadata['days'] || []
                           if (newDaysOfTheWeek.includes(item)) {
                             newDaysOfTheWeek.splice(
                               newDaysOfTheWeek.indexOf(item),
@@ -280,7 +302,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 type='number'
                 value={frequency}
                 onChange={e => {
-                  const value = Math.min(31, Math.max(1, parseInt(e.target.value)))
+                  const value = Math.min(
+                    31,
+                    Math.max(1, parseInt(e.target.value)),
+                  )
                   onFrequencyUpdate(value)
                 }}
               />

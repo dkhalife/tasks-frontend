@@ -24,27 +24,24 @@ export class CompletedChip extends React.Component<CompletedChipProps> {
       text = 'On Time'
       color = 'success'
       icon = <Check />
-    } else if (
-      dueDate &&
-      completedAt < dueDate
-    ) {
+    } else if (dueDate && completedAt < dueDate) {
       text = 'On Time'
       color = 'success'
       icon = <Check />
     }
 
     // if completed after due date then it's late
-    else if (
-      dueDate &&
-      completedAt > dueDate
-    ) {
+    else if (dueDate && completedAt > dueDate) {
       text = 'Late'
       color = 'warning'
       icon = <Timelapse />
     }
 
     return (
-      <Chip startDecorator={icon} color={color}>
+      <Chip
+        startDecorator={icon}
+        color={color}
+      >
         {text}
       </Chip>
     )
