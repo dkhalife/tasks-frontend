@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Container } from '@mui/joy'
-import { Typography } from '@mui/material'
+import { Typography } from '@mui/joy'
 import { Logo } from './Logo'
 import React from 'react'
 
