@@ -24,7 +24,10 @@ interface ForgotPasswordViewState {
   resetStatusOk: boolean | null
 }
 
-class ForgotPasswordViewInner extends React.Component<ForgotPasswordViewProps, ForgotPasswordViewState> {
+class ForgotPasswordViewInner extends React.Component<
+  ForgotPasswordViewProps,
+  ForgotPasswordViewState
+> {
   constructor(props: ForgotPasswordViewProps) {
     super(props)
 
@@ -102,7 +105,12 @@ class ForgotPasswordViewInner extends React.Component<ForgotPasswordViewProps, F
             }}
           >
             <Box>
-              <img src={LogoSVG} alt='logo' width='128px' height='128px' />
+              <img
+                src={LogoSVG}
+                alt='logo'
+                width='128px'
+                height='128px'
+              />
               <Typography level='h2'>
                 Done
                 <span
@@ -117,29 +125,32 @@ class ForgotPasswordViewInner extends React.Component<ForgotPasswordViewProps, F
 
             <Box sx={{ textAlign: 'center' }}></Box>
             {resetStatusOk === null && (
-              <FormControl error={emailError !== null} onSubmit={this.handleSubmit}>
+              <FormControl
+                error={emailError !== null}
+                onSubmit={this.handleSubmit}
+              >
                 <div className='grid gap-6'>
                   <Typography gutterBottom>
-                    Enter your email, and we&lsquo;ll send you a link to get into your
-                    account.
+                    Enter your email, and we&lsquo;ll send you a link to get
+                    into your account.
                   </Typography>
-                    <Input
-                      placeholder='Email'
-                      type='email'
-                      variant='soft'
-                      fullWidth
-                      size='lg'
-                      value={email}
-                      onChange={this.handleEmailChange}
-                      error={emailError !== null}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault()
-                          this.handleSubmit()
-                        }
-                      }}
-                    />
-                    <FormHelperText>{emailError}</FormHelperText>
+                  <Input
+                    placeholder='Email'
+                    type='email'
+                    variant='soft'
+                    fullWidth
+                    size='lg'
+                    value={email}
+                    onChange={this.handleEmailChange}
+                    error={emailError !== null}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        this.handleSubmit()
+                      }
+                    }}
+                  />
+                  <FormHelperText>{emailError}</FormHelperText>
                   <Box>
                     <Button
                       variant='solid'
@@ -170,15 +181,15 @@ class ForgotPasswordViewInner extends React.Component<ForgotPasswordViewProps, F
                     </Button>
                   </Box>
                 </div>
-                </FormControl>
+              </FormControl>
             )}
             {resetStatusOk != null && (
               <>
                 <Box mt={-30}>
                   <Typography level='body-md'>
-                    if there is an account associated with the email you entered,
-                    you will receive an email with instructions on how to reset
-                    your
+                    if there is an account associated with the email you
+                    entered, you will receive an email with instructions on how
+                    to reset your
                   </Typography>
                 </Box>
                 <Button

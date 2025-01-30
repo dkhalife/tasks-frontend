@@ -20,11 +20,11 @@ import React from 'react'
 type LabelViewProps = object
 
 interface LabelViewState {
-  isLabelsLoading: boolean,
-  userLabels: any[],
-  modalOpen: boolean,
-  currentLabel: any,
-  isError: boolean,
+  isLabelsLoading: boolean
+  userLabels: any[]
+  modalOpen: boolean
+  currentLabel: any
+  isError: boolean
 }
 
 export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
@@ -64,21 +64,25 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
   }
 
   componentDidMount(): void {
-    GetLabels().then((res) => {
-      this.setState({
-        userLabels: res,
-        isLabelsLoading: false,
-      })
-    }, () => {
-      this.setState({
-        isLabelsLoading: false,
-        isError: true,
-      })
-    })
+    GetLabels().then(
+      res => {
+        this.setState({
+          userLabels: res,
+          isLabelsLoading: false,
+        })
+      },
+      () => {
+        this.setState({
+          isLabelsLoading: false,
+          isError: true,
+        })
+      },
+    )
   }
 
   render(): React.ReactNode {
-    const { isLabelsLoading, userLabels, modalOpen, currentLabel, isError } = this.state
+    const { isLabelsLoading, userLabels, modalOpen, currentLabel, isError } =
+      this.state
 
     if (isLabelsLoading) {
       return (
@@ -95,7 +99,10 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
     if (isError) {
       return (
-        <Typography color='danger' textAlign='center'>
+        <Typography
+          color='danger'
+          textAlign='center'
+        >
           Failed to load labels. Please try again.
         </Typography>
       )
@@ -146,7 +153,10 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
         </div>
 
         {userLabels.length === 0 && (
-          <Typography textAlign='center' mt={2}>
+          <Typography
+            textAlign='center'
+            mt={2}
+          >
             No labels available. Add a new label to get started.
           </Typography>
         )}

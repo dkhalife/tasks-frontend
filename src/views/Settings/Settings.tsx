@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Typography,
-} from '@mui/joy'
+import { Box, Button, Container, Divider, Typography } from '@mui/joy'
 import { UpdatePassword } from '../../utils/Fetcher'
 import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
@@ -32,39 +26,48 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
 
     return (
       <Container>
-        <div className='grid gap-4 py-4' id='account'>
+        <div
+          className='grid gap-4 py-4'
+          id='account'
+        >
           <Typography level='h3'>Account Settings</Typography>
           <Divider />
           <Typography level='body-md'>Update your password</Typography>
-            <Box>
-              <Typography level='title-md' mb={1}>
-                Password
-              </Typography>
-              <Typography mb={1} level='body-sm'></Typography>
-              <Button
-                variant='soft'
-                onClick={() => {
-                  this.setState({ changePasswordModal: true })
+          <Box>
+            <Typography
+              level='title-md'
+              mb={1}
+            >
+              Password
+            </Typography>
+            <Typography
+              mb={1}
+              level='body-sm'
+            ></Typography>
+            <Button
+              variant='soft'
+              onClick={() => {
+                this.setState({ changePasswordModal: true })
+              }}
+            >
+              Change Password
+            </Button>
+            {changePasswordModal ? (
+              <PassowrdChangeModal
+                isOpen={changePasswordModal}
+                onClose={password => {
+                  if (password) {
+                    UpdatePassword(password).then(resp => {
+                      if (!resp.ok) {
+                        console.error('Password change failed')
+                      }
+                    })
+                  }
+
+                  this.setState({ changePasswordModal: false })
                 }}
-              >
-                Change Password
-              </Button>
-              {changePasswordModal ? (
-                <PassowrdChangeModal
-                  isOpen={changePasswordModal}
-                  onClose={password => {
-                    if (password) {
-                      UpdatePassword(password).then(resp => {
-                        if (!resp.ok) {
-                          console.error('Password change failed')
-                        }
-                      })
-                    }
-                    
-                    this.setState({ changePasswordModal: false })
-                  }}
-                />
-              ) : null}
+              />
+            ) : null}
           </Box>
         </div>
         <NotificationSetting />
@@ -73,12 +76,16 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
           <Typography level='h3'>Theme preferences</Typography>
           <Divider />
           <Typography level='body-md'>
-            Choose how the site looks to you. Select a single theme, or sync with
-            your system and automatically switch between day and night themes.
+            Choose how the site looks to you. Select a single theme, or sync
+            with your system and automatically switch between day and night
+            themes.
           </Typography>
           <StorageContext.Consumer>
             {storedState => (
-              <ThemeToggle themeMode={storedState.themeMode} onThemeModeToggle={storedState.setThemeMode} />
+              <ThemeToggle
+                themeMode={storedState.themeMode}
+                onThemeModeToggle={storedState.setThemeMode}
+              />
             )}
           </StorageContext.Consumer>
         </div>

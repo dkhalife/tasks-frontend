@@ -13,9 +13,7 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import {
-  GetChoreHistory,
-} from '../../utils/Fetcher'
+import { GetChoreHistory } from '../../utils/Fetcher'
 import { Loading } from '../../Loading'
 import { HistoryCard } from './HistoryCard'
 
@@ -29,7 +27,10 @@ interface ChoreHistoryState {
   historyInfo: any[]
 }
 
-export class ChoreHistory extends React.Component<ChoreHistoryProps, ChoreHistoryState> {
+export class ChoreHistory extends React.Component<
+  ChoreHistoryProps,
+  ChoreHistoryState
+> {
   constructor(props) {
     super(props)
 
@@ -55,7 +56,7 @@ export class ChoreHistory extends React.Component<ChoreHistoryProps, ChoreHistor
       })
   }
 
-  private updateHistoryInfo = (histories) => {
+  private updateHistoryInfo = histories => {
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, chore) => {
@@ -94,7 +95,7 @@ export class ChoreHistory extends React.Component<ChoreHistoryProps, ChoreHistor
           text: 'Maximum Delay',
           subtext: moment.duration(maxDelayMoment).humanize(),
         },
-      ]
+      ],
     })
   }
 
@@ -125,13 +126,20 @@ export class ChoreHistory extends React.Component<ChoreHistoryProps, ChoreHistor
             }}
           />
 
-          <Typography level='h3' gutterBottom>
+          <Typography
+            level='h3'
+            gutterBottom
+          >
             No History Yet
           </Typography>
           <Typography>
-            You haven&lsquo;t completed any tasks. Once you start finishing tasks, they&lsquo;ll show up here.
+            You haven&lsquo;t completed any tasks. Once you start finishing
+            tasks, they&lsquo;ll show up here.
           </Typography>
-          <Button variant='soft' sx={{ mt: 2 }}>
+          <Button
+            variant='soft'
+            sx={{ mt: 2 }}
+          >
             <Link to='/my/chores'>Go back to chores</Link>
           </Button>
         </Container>
@@ -140,22 +148,38 @@ export class ChoreHistory extends React.Component<ChoreHistoryProps, ChoreHistor
 
     return (
       <Container maxWidth='md'>
-        <Typography level='title-md' mb={1.5}>
+        <Typography
+          level='title-md'
+          mb={1.5}
+        >
           Summary:
         </Typography>
         <Sheet
           sx={{ borderRadius: 'sm', p: 2 }}
           variant='outlined'
         >
-          <Grid container spacing={1}>
+          <Grid
+            container
+            spacing={1}
+          >
             {historyInfo.map((info, index) => (
-              <Grid xs={4} key={index}>
+              <Grid
+                xs={4}
+                key={index}
+              >
                 <ListItem key={index}>
                   <ListItemContent>
-                    <Typography level='body-xs' sx={{ fontWeight: 'md' }}>
+                    <Typography
+                      level='body-xs'
+                      sx={{ fontWeight: 'md' }}
+                    >
                       {info.text}
                     </Typography>
-                    <Chip color='primary' size='md' startDecorator={info.icon}>
+                    <Chip
+                      color='primary'
+                      size='md'
+                      startDecorator={info.icon}
+                    >
                       {info.subtext ? info.subtext : '--'}
                     </Chip>
                   </ListItemContent>
@@ -165,7 +189,10 @@ export class ChoreHistory extends React.Component<ChoreHistoryProps, ChoreHistor
           </Grid>
         </Sheet>
 
-        <Typography level='title-md' my={1.5}>
+        <Typography
+          level='title-md'
+          my={1.5}
+        >
           History:
         </Typography>
         <Sheet sx={{ borderRadius: 'sm', p: 2, boxShadow: 'md' }}>

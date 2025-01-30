@@ -3,12 +3,7 @@ import {
   LaptopOutlined,
   LightModeOutlined,
 } from '@mui/icons-material'
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  ToggleButtonGroup,
-} from '@mui/joy'
+import { Button, FormControl, FormLabel, ToggleButtonGroup } from '@mui/joy'
 import React from 'react'
 import { ThemeMode } from '../../constants/theme'
 
@@ -32,7 +27,10 @@ export class ThemeToggle extends React.Component<ThemeToggleProps> {
 
     return (
       <FormControl>
-        <FormLabel id={`${ELEMENTID}-label`} htmlFor='select-theme-mode'>
+        <FormLabel
+          id={`${ELEMENTID}-label`}
+          htmlFor='select-theme-mode'
+        >
           Theme mode
         </FormLabel>
         <div className='flex items-center gap-4'>
@@ -42,13 +40,22 @@ export class ThemeToggle extends React.Component<ThemeToggleProps> {
             value={themeMode}
             onChange={this.onChange}
           >
-            <Button startDecorator={<LightModeOutlined />} value='light'>
+            <Button
+              startDecorator={<LightModeOutlined />}
+              value='light'
+            >
               Light
             </Button>
-            <Button startDecorator={<DarkModeOutlined />} value='dark'>
+            <Button
+              startDecorator={<DarkModeOutlined />}
+              value='dark'
+            >
               Dark
             </Button>
-            <Button startDecorator={<LaptopOutlined />} value='system'>
+            <Button
+              startDecorator={<LaptopOutlined />}
+              value='system'
+            >
               System
             </Button>
           </ToggleButtonGroup>

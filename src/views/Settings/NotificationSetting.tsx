@@ -13,21 +13,21 @@ import {
   Typography,
 } from '@mui/joy'
 import React from 'react'
-import {
-  GetUserProfile,
-  UpdateNotificationTarget,
-} from '../../utils/Fetcher'
+import { GetUserProfile, UpdateNotificationTarget } from '../../utils/Fetcher'
 
 type NotificationSettingProps = object
 
 interface NotificationSettingState {
-  isSnackbarOpen: boolean,
-  notificationTarget: string | null,
-  error: string,
-  userProfile: any,
+  isSnackbarOpen: boolean
+  notificationTarget: string | null
+  error: string
+  userProfile: any
 }
 
-export class NotificationSetting extends React.Component<NotificationSettingProps, NotificationSettingState> {
+export class NotificationSetting extends React.Component<
+  NotificationSettingProps,
+  NotificationSettingState
+> {
   constructor(props: NotificationSettingProps) {
     super(props)
 
@@ -46,7 +46,7 @@ export class NotificationSetting extends React.Component<NotificationSettingProp
           userProfile: data.res,
         })
       })
-    })    
+    })
   }
 
   private handleSave = () => {
@@ -57,7 +57,9 @@ export class NotificationSetting extends React.Component<NotificationSettingProp
       type: Number(notificationTarget),
     }).then(resp => {
       if (resp.status != 200) {
-        this.setState({ error: `Error while updating notification target: ${resp.statusText}` })
+        this.setState({
+          error: `Error while updating notification target: ${resp.statusText}`,
+        })
         return
       }
 
@@ -76,7 +78,10 @@ export class NotificationSetting extends React.Component<NotificationSettingProp
     const { isSnackbarOpen, error, notificationTarget } = this.state
 
     return (
-      <div className='grid gap-4 py-4' id='notifications'>
+      <div
+        className='grid gap-4 py-4'
+        id='notifications'
+      >
         <Typography level='h3'>Custom Notification</Typography>
         <Divider />
         <Typography level='body-md'>
@@ -104,13 +109,18 @@ export class NotificationSetting extends React.Component<NotificationSettingProp
           <Select
             value={notificationTarget}
             sx={{ maxWidth: '200px' }}
-            onChange={(e, selected) => this.setState({ notificationTarget: selected })}
+            onChange={(e, selected) =>
+              this.setState({ notificationTarget: selected })
+            }
           >
             <Option value='0'>None</Option>
             <Option value='3'>Mqtt</Option>
           </Select>
           {error && (
-            <Typography color='warning' level='body-sm'>
+            <Typography
+              color='warning'
+              level='body-sm'
+            >
               {error}
             </Typography>
           )}
@@ -130,7 +140,10 @@ export class NotificationSetting extends React.Component<NotificationSettingProp
           autoHideDuration={8000}
           onClose={() => this.setState({ isSnackbarOpen: false })}
           endDecorator={
-            <IconButton size='md' onClick={() => this.setState({ isSnackbarOpen: false })}>
+            <IconButton
+              size='md'
+              onClick={() => this.setState({ isSnackbarOpen: false })}
+            >
               <Close />
             </IconButton>
           }

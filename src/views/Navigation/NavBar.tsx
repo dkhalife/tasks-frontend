@@ -20,7 +20,10 @@ import { version } from '../../../package.json'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import React from 'react'
-import { StorageContext, StorageContextState } from '../../contexts/StorageContext'
+import {
+  StorageContext,
+  StorageContextState,
+} from '../../contexts/StorageContext'
 import { toggleTheme } from '../../constants/theme'
 import { withLocation, withNavigation } from '../../contexts/hooks'
 
@@ -50,13 +53,21 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
   }
 
   render(): React.ReactNode {
-    if (['/signup', '/login', '/forgot-password'].includes(this.props.location.pathname)) {
+    if (
+      ['/signup', '/login', '/forgot-password'].includes(
+        this.props.location.pathname,
+      )
+    ) {
       return null
     }
 
     return (
       <nav className='flex gap-2 p-3'>
-        <IconButton size='sm' variant='plain' onClick={this.openDrawer}>
+        <IconButton
+          size='sm'
+          variant='plain'
+          onClick={this.openDrawer}
+        >
           <MenuRounded />
         </IconButton>
         <Box
@@ -65,7 +76,10 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             this.props.navigate('/my/chores')
           }}
         >
-          <img src={Logo} width='34' />
+          <img
+            src={Logo}
+            width='34'
+          />
           <Typography
             level='title-lg'
             sx={{
@@ -108,10 +122,26 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
               onClick={this.openDrawer}
               sx={{ borderRadius: 4, width: '100%', padding: 1 }}
             >
-              <NavBarLink to='/my/chores' icon={<HomeOutlined />} label='Home' />
-              <NavBarLink to='/chores' icon={<ListAlt />} label='Desktop View' />
-              <NavBarLink to='/labels' icon={<ListAlt />} label='Labels' />
-              <NavBarLink to='/settings' icon={<SettingsOutlined />} label='Settings' />
+              <NavBarLink
+                to='/my/chores'
+                icon={<HomeOutlined />}
+                label='Home'
+              />
+              <NavBarLink
+                to='/chores'
+                icon={<ListAlt />}
+                label='Desktop View'
+              />
+              <NavBarLink
+                to='/labels'
+                icon={<ListAlt />}
+                label='Labels'
+              />
+              <NavBarLink
+                to='/settings'
+                icon={<SettingsOutlined />}
+                label='Settings'
+              />
             </List>
           </div>
           <div>
@@ -144,9 +174,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
                 <ListItemContent>Logout</ListItemContent>
               </ListItemButton>
               <Typography
-                onClick={
-                  () => window.location.reload()
-                }
+                onClick={() => window.location.reload()}
                 level='body-xs'
                 sx={{
                   p: 1,

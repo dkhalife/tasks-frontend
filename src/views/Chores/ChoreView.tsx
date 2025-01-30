@@ -26,7 +26,10 @@ import {
   MarkChoreComplete,
   SkipChore,
 } from '../../utils/Fetcher'
-import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
+import {
+  ConfirmationModal,
+  ConfirmationModalProps,
+} from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 
@@ -45,7 +48,10 @@ interface ChoreViewState {
   confirmModelConfig: ConfirmationModalProps
 }
 
-class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState> {
+class ChoreViewInner extends React.Component<
+  ChoreViewInnerProps,
+  ChoreViewState
+> {
   constructor(props) {
     super(props)
 
@@ -130,7 +136,7 @@ class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState
         text: 'Last Completed',
         subtext:
           chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
-      }
+      },
     ]
 
     this.setState({
@@ -143,7 +149,7 @@ class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState
       if (response.ok) {
         response.json().then(data => {
           this.setState({
-            chore: data.res
+            chore: data.res,
           })
         })
       }
@@ -182,7 +188,11 @@ class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState
           >
             {chore.name}
           </Typography>
-          <Chip startDecorator={<CalendarMonth />} size='md' sx={{ mb: 1 }}>
+          <Chip
+            startDecorator={<CalendarMonth />}
+            size='md'
+            sx={{ mb: 1 }}
+          >
             {chore.nextDueDate
               ? `Due at ${moment(chore.nextDueDate).format('MM/DD/YYYY hh:mm A')}`
               : 'N/A'}
@@ -212,12 +222,21 @@ class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState
             }}
             variant='outlined'
           >
-            <Grid container spacing={1}>
+            <Grid
+              container
+              spacing={1}
+            >
               {infoCards.map((detail, index) => (
-                <Grid xs={4} key={index}>
+                <Grid
+                  xs={4}
+                  key={index}
+                >
                   <ListItem key={index}>
                     <ListItemContent>
-                      <Typography level='body-xs' sx={{ fontWeight: 'md' }}>
+                      <Typography
+                        level='body-xs'
+                        sx={{ fontWeight: 'md' }}
+                      >
                         {detail.text}
                       </Typography>
                       <Chip
@@ -283,11 +302,20 @@ class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState
 
           {chore.notes && (
             <>
-              <Typography level='title-md' sx={{ mb: 1 }}>
+              <Typography
+                level='title-md'
+                sx={{ mb: 1 }}
+              >
                 Previous note:
               </Typography>
-              <Sheet variant='outlined' sx={{ p: 2, borderRadius: 'lg' }}>
-                <Typography level='body-md' sx={{ mb: 1 }}>
+              <Sheet
+                variant='outlined'
+                sx={{ p: 2, borderRadius: 'lg' }}
+              >
+                <Typography
+                  level='body-md'
+                  sx={{ mb: 1 }}
+                >
                   {chore.notes || '--'}
                 </Typography>
               </Sheet>
@@ -347,9 +375,9 @@ class ChoreViewInner extends React.Component<ChoreViewInnerProps, ChoreViewState
                         confirmModelConfig: {
                           ...this.state.confirmModelConfig,
                           isOpen: false,
-                        }
+                        },
                       })
-                    }
+                    },
                   },
                 })
               }}

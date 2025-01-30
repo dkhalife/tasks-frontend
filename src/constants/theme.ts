@@ -10,7 +10,7 @@ export const COLORS = THEME.colors
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 export const toggleTheme = () => {
-  const storedState = useContext<StorageContextState>(StorageContext);
+  const storedState = useContext<StorageContextState>(StorageContext)
 
   let newThemeMode: ThemeMode
   switch (storedState.themeMode) {

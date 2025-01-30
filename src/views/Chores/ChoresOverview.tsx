@@ -39,12 +39,15 @@ interface ChoresOverviewState {
   chores: any[]
   filteredChores: any[]
   search: string
-  choreId: number|null
+  choreId: number | null
   isDateModalOpen: boolean
-  activeUserId: number|null
+  activeUserId: number | null
 }
 
-class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOverviewState> {
+class ChoresOverviewInner extends React.Component<
+  ChoresOverviewProps,
+  ChoresOverviewState
+> {
   constructor(props: ChoresOverviewProps) {
     super(props)
     this.state = {
@@ -93,10 +96,10 @@ class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOve
 
   componentDidMount(): void {
     GetChores()
-    .then(response => response.json())
-    .then(data => {
-      this.setState({ chores: data.res, filteredChores: data.res })
-    })
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ chores: data.res, filteredChores: data.res })
+      })
 
     const user = JSON.parse(localStorage.getItem('user') as any)
     if (user != null && user.id > 0) {
@@ -105,11 +108,15 @@ class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOve
   }
 
   render(): React.ReactNode {
-    const { chores, filteredChores, search, choreId, isDateModalOpen } = this.state
+    const { chores, filteredChores, search, choreId, isDateModalOpen } =
+      this.state
 
     return (
       <Container>
-        <Typography level='h4' mb={1.5}>
+        <Typography
+          level='h4'
+          mb={1.5}
+        >
           Chores Overviews
         </Typography>
 
@@ -152,7 +159,12 @@ class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOve
               }
             ></Input>
           </Grid>
-          <Grid sm={6} justifyContent={'flex-end'} display={'flex'} gap={2}>
+          <Grid
+            sm={6}
+            justifyContent={'flex-end'}
+            display={'flex'}
+            gap={2}
+          >
             <Button
               onClick={() => {
                 this.props.navigate(`/chores/create`)
@@ -238,7 +250,10 @@ class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOve
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        this.setState({ choreId: chore.id, isDateModalOpen: true })
+                        this.setState({
+                          choreId: chore.id,
+                          isDateModalOpen: true,
+                        })
                       }}
                       aria-setsize={2}
                     >
@@ -268,23 +283,21 @@ class ChoresOverviewInner extends React.Component<ChoresOverviewProps, ChoresOve
             this.setState({ isDateModalOpen: false })
           }}
           onSave={date => {
-            MarkChoreComplete(choreId, null, date).then(
-              response => {
-                if (response.ok) {
-                  response.json().then(data => {
-                    const newChore = data.res
-                    const newChores = [...chores]
-                    const index = newChores.findIndex(c => c.id === newChore.id)
-                    newChores[index] = newChore
+            MarkChoreComplete(choreId, null, date).then(response => {
+              if (response.ok) {
+                response.json().then(data => {
+                  const newChore = data.res
+                  const newChores = [...chores]
+                  const index = newChores.findIndex(c => c.id === newChore.id)
+                  newChores[index] = newChore
 
-                    this.setState({
-                      chores: newChores,
-                      filteredChores: newChores,
-                    })
+                  this.setState({
+                    chores: newChores,
+                    filteredChores: newChores,
                   })
-                }
-              },
-            )
+                })
+              }
+            })
           }}
         />
       </Container>

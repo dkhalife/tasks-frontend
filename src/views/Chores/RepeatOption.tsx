@@ -32,19 +32,28 @@ const FREQUENCY_TYPE_MESSAGE = {
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 
 interface RepeatOptionProps {
-  frequencyType: string,
-  frequency: number,
-  onFrequencyUpdate: (frequency: number) => void,
-  onFrequencyTypeUpdate: (type: string) => void,
-  frequencyMetadata: any,
-  onFrequencyMetadataUpdate: (metadata: any) => void,
-  onFrequencyTimeUpdate: (time: string) => void,
-  frequencyError: string,
+  frequencyType: string
+  frequency: number
+  onFrequencyUpdate: (frequency: number) => void
+  onFrequencyTypeUpdate: (type: string) => void
+  frequencyMetadata: any
+  onFrequencyMetadataUpdate: (metadata: any) => void
+  onFrequencyTimeUpdate: (time: string) => void
+  frequencyError: string
 }
 
 export class RepeatOption extends React.Component<RepeatOptionProps> {
   render(): React.ReactNode {
-    const { frequencyType, frequency, onFrequencyUpdate, onFrequencyTypeUpdate, frequencyMetadata, onFrequencyMetadataUpdate, onFrequencyTimeUpdate, frequencyError } = this.props
+    const {
+      frequencyType,
+      frequency,
+      onFrequencyUpdate,
+      onFrequencyTypeUpdate,
+      frequencyMetadata,
+      onFrequencyMetadataUpdate,
+      onFrequencyTimeUpdate,
+      frequencyError,
+    } = this.props
 
     return (
       <Box mt={2}>
@@ -117,7 +126,11 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
               {frequencyType === 'custom' ||
                 (REPEAT_ON_TYPE.includes(frequencyType) && (
                   <>
-                    <Grid container spacing={1} mt={2}>
+                    <Grid
+                      container
+                      spacing={1}
+                      mt={2}
+                    >
                       <Grid>
                         <Typography>Repeat on:</Typography>
                         <Box

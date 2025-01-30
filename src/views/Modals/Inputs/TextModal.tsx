@@ -2,13 +2,13 @@ import { Box, Button, Modal, ModalDialog, Textarea, Typography } from '@mui/joy'
 import React from 'react'
 
 interface TextModalProps {
-  isOpen: boolean,
-  onClose: () => void,
-  onSave: (text: string) => void,
-  current: string,
-  title: string,
-  okText: string,
-  cancelText: string,
+  isOpen: boolean
+  onClose: () => void
+  onSave: (text: string) => void
+  current: string
+  title: string
+  okText: string
+  cancelText: string
 }
 
 interface TextModalState {
@@ -19,7 +19,7 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
   constructor(props: TextModalProps) {
     super(props)
     this.state = {
-      text: props.current
+      text: props.current,
     }
   }
 
@@ -33,7 +33,10 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
     }
 
     return (
-      <Modal open={isOpen} onClose={onClose}>
+      <Modal
+        open={isOpen}
+        onClose={onClose}
+      >
         <ModalDialog>
           <Typography>{title}</Typography>
           <Textarea
@@ -45,11 +48,22 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
             sx={{ minWidth: 300 }}
           />
 
-          <Box display={'flex'} justifyContent={'space-around'} mt={1}>
-            <Button onClick={handleSave} fullWidth sx={{ mr: 1 }}>
+          <Box
+            display={'flex'}
+            justifyContent={'space-around'}
+            mt={1}
+          >
+            <Button
+              onClick={handleSave}
+              fullWidth
+              sx={{ mr: 1 }}
+            >
               {okText ? okText : 'Save'}
             </Button>
-            <Button onClick={onClose} variant='outlined'>
+            <Button
+              onClick={onClose}
+              variant='outlined'
+            >
               {cancelText ? cancelText : 'Cancel'}
             </Button>
           </Box>

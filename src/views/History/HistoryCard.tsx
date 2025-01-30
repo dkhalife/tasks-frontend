@@ -10,10 +10,10 @@ import React from 'react'
 import { CompletedChip } from './CompletedChip'
 
 interface HistoryCardProps {
-  allHistory: any[],
-  historyEntry: any,
-  index: number,
-  onClick: () => void,
+  allHistory: any[]
+  historyEntry: any
+  index: number
+  onClick: () => void
 }
 
 export class HistoryCard extends React.Component<HistoryCardProps> {
@@ -42,7 +42,10 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
 
     return (
       <>
-        <ListItem sx={{ gap: 1.5, alignItems: 'flex-start' }} onClick={onClick}>
+        <ListItem
+          sx={{ gap: 1.5, alignItems: 'flex-start' }}
+          onClick={onClick}
+        >
           <ListItemContent sx={{ my: 0 }}>
             <Box
               sx={{
@@ -58,7 +61,10 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
                     )
                   : 'Skipped'}
               </Typography>
-              <CompletedChip dueDate={historyEntry.dueDate} completedAt={historyEntry.completedAt} />
+              <CompletedChip
+                dueDate={historyEntry.dueDate}
+                completedAt={historyEntry.completedAt}
+              />
             </Box>
             {historyEntry.dueDate && (
               <Typography>
@@ -66,9 +72,7 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
               </Typography>
             )}
             {historyEntry.notes && (
-              <Typography>
-                Note: {historyEntry.notes}
-              </Typography>
+              <Typography>Note: {historyEntry.notes}</Typography>
             )}
           </ListItemContent>
         </ListItem>
@@ -81,7 +85,8 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
                     {formatTimeDifference(
                       historyEntry.completedAt,
                       allHistory[index + 1].completedAt,
-                    )}&nbsp;before
+                    )}
+                    &nbsp;before
                   </Typography>
                 )}
             </ListDivider>

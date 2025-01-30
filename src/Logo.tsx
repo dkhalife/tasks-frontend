@@ -5,7 +5,12 @@ export class Logo extends Component {
   render() {
     return (
       <div>
-        <img src={LogoSVG} alt='logo' width='128px' height='128px' />
+        <img
+          src={LogoSVG}
+          alt='logo'
+          width='128px'
+          height='128px'
+        />
       </div>
     )
   }

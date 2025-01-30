@@ -30,7 +30,10 @@ import {
   GetChoreByID,
   SaveChore,
 } from '../../utils/Fetcher'
-import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
+import {
+  ConfirmationModal,
+  ConfirmationModalProps,
+} from '../Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
 import React from 'react'
 import { RepeatOption } from './RepeatOption'
@@ -70,7 +73,10 @@ interface ChoreEditState {
   confirmModelConfig: ConfirmationModalProps
 }
 
-class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState> {
+class ChoreEditInner extends React.Component<
+  ChoreEditInnerProps,
+  ChoreEditState
+> {
   constructor(props: ChoreEditInnerProps) {
     super(props)
     this.state = {
@@ -98,12 +104,13 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
         message: '',
         onClose: () => {},
         title: '',
-      }
+      },
     }
   }
 
   private HandleValidateChore = () => {
-    const { name, frequencyType, frequency, frequencyMetadata, dueDate } = this.state
+    const { name, frequencyType, frequency, frequencyMetadata, dueDate } =
+      this.state
     const errors: { [key: string]: string } = {}
 
     if (name.trim() === '') {
@@ -159,7 +166,7 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
 
       newState.snackbarColor = 'danger'
       newState.isSnackbarOpen = true
-      
+
       isSuccessful = false
     }
 
@@ -177,7 +184,17 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
     }
 
     const { choreId } = this.props
-    const { name, frequencyType, frequency, frequencyMetadata, dueDate, isRolling, isNotificable, labels, notificationMetadata } = this.state
+    const {
+      name,
+      frequencyType,
+      frequency,
+      frequencyMetadata,
+      dueDate,
+      isRolling,
+      isNotificable,
+      labels,
+      notificationMetadata,
+    } = this.state
     const chore = {
       id: Number(choreId),
       name: name,
@@ -232,7 +249,7 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
               }
             })
           }
-          
+
           this.setState({
             confirmModelConfig: {
               isOpen: false,
@@ -241,10 +258,10 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
               cancelText: '',
               message: '',
               onClose: () => {},
-            }
+            },
           })
         },
-      }
+      },
     })
   }
 
@@ -265,7 +282,7 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
 
             setTimeout(() => {
               this.props.navigate('/my/chores')
-            }, 3000);
+            }, 3000)
             return null
           } else {
             return response.json()
@@ -276,7 +293,9 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
           this.setState({
             chore: data.res,
             name: data.res.name ? data.res.name : '',
-            frequencyType: data.res.frequencyType ? data.res.frequencyType : 'once',
+            frequencyType: data.res.frequencyType
+              ? data.res.frequencyType
+              : 'once',
             frequencyMetadata: JSON.parse(data.res.frequencyMetadata),
             frequency: data.res.frequency,
             notificationMetadata: JSON.parse(data.res.notificationMetadata),
@@ -289,14 +308,16 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
             isNotificable: data.res.notification,
           })
         })
-    }
-    else {
+    } else {
       // TODO: Use a more specific ref
       document.querySelector('input')?.focus()
     }
   }
 
-  componentDidUpdate(prevProps: Readonly<ChoreEditProps>, prevState: Readonly<ChoreEditState>): void {
+  componentDidUpdate(
+    prevProps: Readonly<ChoreEditProps>,
+    prevState: Readonly<ChoreEditState>,
+  ): void {
     const { frequencyType, dueDate } = this.state
 
     if (frequencyType !== prevState.frequencyType) {
@@ -305,44 +326,74 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
         this.setState({
           dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
         })
-      }
-      else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
+      } else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
         this.setState({
           dueDate: null,
         })
-      }    
+      }
     }
   }
 
   render(): React.ReactNode {
     const { choreId } = this.props
-    const { name, frequency, frequencyType, frequencyMetadata, dueDate, isRolling, isNotificable, labels, notificationMetadata, userLabels, chore, updatedBy, errors, isSnackbarOpen, snackbarMessage, snackbarColor, addLabelModalOpen, confirmModelConfig } = this.state
+    const {
+      name,
+      frequency,
+      frequencyType,
+      frequencyMetadata,
+      dueDate,
+      isRolling,
+      isNotificable,
+      labels,
+      notificationMetadata,
+      userLabels,
+      chore,
+      updatedBy,
+      errors,
+      isSnackbarOpen,
+      snackbarMessage,
+      snackbarColor,
+      addLabelModalOpen,
+      confirmModelConfig,
+    } = this.state
     return (
       <Container maxWidth='md'>
         <Box>
           <FormControl error={errors.name}>
             <Typography level='h4'>Description :</Typography>
             <Typography>What is this chore about?</Typography>
-            <Input value={name} onChange={e => this.setState({ name: e.target.value })} />
+            <Input
+              value={name}
+              onChange={e => this.setState({ name: e.target.value })}
+            />
             <FormHelperText>{errors.name}</FormHelperText>
           </FormControl>
         </Box>
         <RepeatOption
           frequency={frequency}
-          onFrequencyUpdate={(newFrequency) => this.setState({ frequency: newFrequency })}
+          onFrequencyUpdate={newFrequency =>
+            this.setState({ frequency: newFrequency })
+          }
           frequencyType={frequencyType}
-          onFrequencyTypeUpdate={(newFrequencyType) => this.setState({ frequencyType: newFrequencyType })}
+          onFrequencyTypeUpdate={newFrequencyType =>
+            this.setState({ frequencyType: newFrequencyType })
+          }
           frequencyMetadata={frequencyMetadata}
-          onFrequencyMetadataUpdate={(newFrequencyMetadata) => this.setState({ frequencyMetadata: newFrequencyMetadata })}
+          onFrequencyMetadataUpdate={newFrequencyMetadata =>
+            this.setState({ frequencyMetadata: newFrequencyMetadata })
+          }
           onFrequencyTimeUpdate={t => {
-            this.setState({ frequencyMetadata: { ...frequencyMetadata, time: t } })
+            this.setState({
+              frequencyMetadata: { ...frequencyMetadata, time: t },
+            })
           }}
           frequencyError={errors?.frequency}
         />
 
         <Box mt={2}>
           <Typography level='h4'>
-            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Start date' : 'Due date'} :
+            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Start date' : 'Due date'}{' '}
+            :
           </Typography>
           {frequencyType === 'trigger' && !dueDate && (
             <Typography level='body-sm'>
@@ -390,11 +441,12 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
         {!['once', 'no_repeat'].includes(frequencyType) && (
           <Box mt={2}>
             <Typography level='h4'>Scheduling Preferences: </Typography>
-            <Typography>
-              How to reschedule the next due date?
-            </Typography>
+            <Typography>How to reschedule the next due date?</Typography>
 
-            <RadioGroup name='tiers' sx={{ gap: 1, '& > div': { p: 1 } }}>
+            <RadioGroup
+              name='tiers'
+              sx={{ gap: 1, '& > div': { p: 1 } }}
+            >
               <FormControl>
                 <Radio
                   overlay
@@ -403,8 +455,8 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
                   label='Reschedule from due date'
                 />
                 <FormHelperText>
-                  the next task will be scheduled from the original due date, even
-                  if the previous task was completed late
+                  the next task will be scheduled from the original due date,
+                  even if the previous task was completed late
                 </FormHelperText>
               </FormControl>
               <FormControl>
@@ -415,8 +467,8 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
                   label='Reschedule from completion date'
                 />
                 <FormHelperText>
-                  the next task will be scheduled from the actual completion date
-                  of the previous task
+                  the next task will be scheduled from the actual completion
+                  date of the previous task
                 </FormHelperText>
               </FormControl>
             </RadioGroup>
@@ -454,9 +506,7 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
             }}
           >
             <Card variant='outlined'>
-              <Typography>
-                What should trigger the notification?
-              </Typography>
+              <Typography>What should trigger the notification?</Typography>
               {[
                 {
                   title: 'Due Date/Time',
@@ -479,7 +529,10 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
                   id: 'nagging',
                 },
               ].map(item => (
-                <FormControl sx={{ mb: 1 }} key={item.id}>
+                <FormControl
+                  sx={{ mb: 1 }}
+                  key={item.id}
+                >
                   <Checkbox
                     overlay
                     onClick={() => {
@@ -491,7 +544,9 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
                       })
                     }}
                     checked={
-                      notificationMetadata ? notificationMetadata[item.id] : false
+                      notificationMetadata
+                        ? notificationMetadata[item.id]
+                        : false
                     }
                     label={item.title}
                     key={item.title}
@@ -547,25 +602,27 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
             }}
           >
             {userLabels &&
-              userLabels
-                .map(label => (
-                  <Option key={label.id + label.name} value={label.name}>
-                    <div
-                      style={{
-                        width: '20 px',
-                        height: '20 px',
-                        borderRadius: '50%',
-                        background: label.color,
-                      }}
-                    />
-                    {label.name}
-                  </Option>
-                ))}
+              userLabels.map(label => (
+                <Option
+                  key={label.id + label.name}
+                  value={label.name}
+                >
+                  <div
+                    style={{
+                      width: '20 px',
+                      height: '20 px',
+                      borderRadius: '50%',
+                      background: label.color,
+                    }}
+                  />
+                  {label.name}
+                </Option>
+              ))}
             <MenuItem
               key={'addNewLabel'}
               onClick={() => {
                 this.setState({
-                  addLabelModalOpen: true
+                  addLabelModalOpen: true,
                 })
               }}
             >
@@ -576,7 +633,9 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
         </Box>
 
         {choreId !== undefined && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}>
+          <Box
+            sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
+          >
             <Sheet
               sx={{
                 p: 2,
@@ -635,7 +694,11 @@ class ChoreEditInner extends React.Component<ChoreEditInnerProps, ChoreEditState
           >
             Cancel
           </Button>
-          <Button color='primary' variant='solid' onClick={this.HandleSaveChore}>
+          <Button
+            color='primary'
+            variant='solid'
+            onClick={this.HandleSaveChore}
+          >
             {choreId != undefined ? 'Save' : 'Create'}
           </Button>
         </Sheet>

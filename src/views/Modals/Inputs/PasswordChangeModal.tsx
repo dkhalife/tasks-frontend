@@ -11,17 +11,20 @@ import {
 import React from 'react'
 
 interface PasswordChangeModalProps {
-  isOpen: boolean,
-  onClose: (password: string | null) => void,
+  isOpen: boolean
+  onClose: (password: string | null) => void
 }
 
 interface PasswordChangeModalState {
-  password: string,
-  confirmPassword: string,
-  passwordError: string | null,
+  password: string
+  confirmPassword: string
+  passwordError: string | null
 }
 
-export class PassowrdChangeModal extends React.Component<PasswordChangeModalProps, PasswordChangeModalState> {
+export class PassowrdChangeModal extends React.Component<
+  PasswordChangeModalProps,
+  PasswordChangeModalState
+> {
   constructor(props: PasswordChangeModalProps) {
     super(props)
     this.state = {
@@ -31,10 +34,16 @@ export class PassowrdChangeModal extends React.Component<PasswordChangeModalProp
     }
   }
 
-  componentDidUpdate(prevPros: PasswordChangeModalProps, prevState: PasswordChangeModalState): void {
+  componentDidUpdate(
+    prevPros: PasswordChangeModalProps,
+    prevState: PasswordChangeModalState,
+  ): void {
     const { password, confirmPassword } = this.state
 
-    if (password === prevState.password && confirmPassword === prevState.confirmPassword) {
+    if (
+      password === prevState.password &&
+      confirmPassword === prevState.confirmPassword
+    ) {
       return
     }
 
@@ -43,7 +52,9 @@ export class PassowrdChangeModal extends React.Component<PasswordChangeModalProp
     } else if (password.length < 8) {
       this.setState({ passwordError: 'Password must be at least 8 characters' })
     } else if (password.length > 50) {
-      this.setState({ passwordError: 'Password must be less than 50 characters' })
+      this.setState({
+        passwordError: 'Password must be less than 50 characters',
+      })
     } else {
       this.setState({ passwordError: null })
     }
@@ -51,26 +62,26 @@ export class PassowrdChangeModal extends React.Component<PasswordChangeModalProp
 
   public render(): React.ReactNode {
     const { isOpen, onClose } = this.props
-    const {
-      password,
-      confirmPassword,
-      passwordError,
-    } = this.state
+    const { password, confirmPassword, passwordError } = this.state
 
     return (
       <Modal open={isOpen}>
         <ModalDialog>
-          <Typography level='h4' mb={1}>
+          <Typography
+            level='h4'
+            mb={1}
+          >
             Change Password
           </Typography>
 
-          <Typography level='body-md' gutterBottom>
+          <Typography
+            level='body-md'
+            gutterBottom
+          >
             Please enter your new password.
           </Typography>
           <FormControl>
-            <Typography alignSelf={'start'}>
-              New Password
-            </Typography>
+            <Typography alignSelf={'start'}>New Password</Typography>
             <Input
               required
               fullWidth
@@ -85,9 +96,7 @@ export class PassowrdChangeModal extends React.Component<PasswordChangeModalProp
           </FormControl>
 
           <FormControl>
-            <Typography alignSelf={'start'}>
-              Confirm Password
-            </Typography>
+            <Typography alignSelf={'start'}>Confirm Password</Typography>
             <Input
               required
               fullWidth
@@ -102,7 +111,11 @@ export class PassowrdChangeModal extends React.Component<PasswordChangeModalProp
 
             <FormHelperText>{passwordError}</FormHelperText>
           </FormControl>
-          <Box display={'flex'} justifyContent={'space-around'} mt={1}>
+          <Box
+            display={'flex'}
+            justifyContent={'space-around'}
+            mt={1}
+          >
             <Button
               disabled={passwordError != null}
               onClick={() => {

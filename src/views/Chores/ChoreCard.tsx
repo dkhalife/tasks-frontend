@@ -36,19 +36,19 @@ import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/joy/styles/types'
 import { withNavigation } from '../../contexts/hooks'
 
-interface ChoreCardProps{
-  chore: any,
-  onChoreUpdate: (chore: any, event: string) => void,
-  onChoreRemove: (chore: any) => void,
-  sx: SxProps,
-  viewOnly: boolean,
-  navigate: (path: string) => void,
+interface ChoreCardProps {
+  chore: any
+  onChoreUpdate: (chore: any, event: string) => void
+  onChoreRemove: (chore: any) => void
+  sx: SxProps
+  viewOnly: boolean
+  navigate: (path: string) => void
 }
 
-interface ChoreCardState{
-  isChangeDueDateModalOpen: boolean,
-  isCompleteWithPastDateModalOpen: boolean,
-  confirmModelConfig: any,
+interface ChoreCardState {
+  isChangeDueDateModalOpen: boolean
+  isCompleteWithPastDateModalOpen: boolean
+  confirmModelConfig: any
 }
 
 class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
@@ -87,20 +87,19 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
           }
           this.setState({ confirmModelConfig: {} })
         },
-      }
+      },
     })
   }
 
   private handleTaskCompletion = () => {
     const { chore, onChoreUpdate } = this.props
-    MarkChoreComplete(chore.id, null, null)
-      .then(resp => {
-        if (resp.ok) {
-          return resp.json().then(data => {
-            onChoreUpdate(data.res, 'completed')
-          })
-        }
-      })
+    MarkChoreComplete(chore.id, null, null).then(resp => {
+      if (resp.ok) {
+        return resp.json().then(data => {
+          onChoreUpdate(data.res, 'completed')
+        })
+      }
+    })
   }
 
   private handleChangeDueDate = newDate => {
@@ -119,18 +118,16 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   private handleCompleteWithPastDate = newDate => {
     const { chore, onChoreUpdate } = this.props
 
-    MarkChoreComplete(
-      chore.id,
-      null,
-      new Date(newDate).toISOString(),
-    ).then(response => {
-      if (response.ok) {
-        response.json().then(data => {
-          const newChore = data.res
-          onChoreUpdate(newChore, 'completed')
-        })
-      }
-    })
+    MarkChoreComplete(chore.id, null, new Date(newDate).toISOString()).then(
+      response => {
+        if (response.ok) {
+          response.json().then(data => {
+            const newChore = data.res
+            onChoreUpdate(newChore, 'completed')
+          })
+        }
+      },
+    )
   }
 
   private getDueDateChipText = nextDueDate => {
@@ -274,7 +271,11 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
 
   render(): React.ReactNode {
     const { chore, onChoreUpdate, sx, viewOnly } = this.props
-    const { isChangeDueDateModalOpen, isCompleteWithPastDateModalOpen, confirmModelConfig } = this.state
+    const {
+      isChangeDueDateModalOpen,
+      isCompleteWithPastDateModalOpen,
+      confirmModelConfig,
+    } = this.state
 
     return (
       <Box key={chore.id + '-box'}>
@@ -334,12 +335,21 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                 this.props.navigate(`/chores/${chore.id}`)
               }}
             >
-              <Box display='flex' justifyContent='start' alignItems='center'>
+              <Box
+                display='flex'
+                justifyContent='start'
+                alignItems='center'
+              >
                 <Avatar sx={{ mr: 1, fontSize: 22 }}>
                   {Array.from<string>(chore.name)[0]}
                 </Avatar>
-                <Box display='flex' flexDirection='column'>
-                  <Typography level='title-md'>{this.getName(chore.name)}</Typography>
+                <Box
+                  display='flex'
+                  flexDirection='column'
+                >
+                  <Typography level='title-md'>
+                    {this.getName(chore.name)}
+                  </Typography>
                   <Box key={`${chore.id}-labels`}>
                     {chore.labels?.map((l, index) => {
                       return (
@@ -372,7 +382,11 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                 justifyContent: 'center',
               }}
             >
-              <Box display='flex' justifyContent='flex-end' alignItems='flex-end'>
+              <Box
+                display='flex'
+                justifyContent='flex-end'
+                alignItems='flex-end'
+              >
                 <IconButton
                   variant='solid'
                   color='success'
@@ -443,7 +457,10 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                     History
                   </MenuItem>
                   <Divider />
-                  <MenuItem onClick={this.handleDelete} color='danger'>
+                  <MenuItem
+                    onClick={this.handleDelete}
+                    color='danger'
+                  >
                     <Delete />
                     Delete
                   </MenuItem>
@@ -475,7 +492,6 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
           {confirmModelConfig?.isOpen && (
             <ConfirmationModal {...confirmModelConfig} />
           )}
-
         </Card>
       </Box>
     )
