@@ -2,7 +2,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export function withLocation<Props>(
-  Component: any,
+  Component: React.ComponentType<Props>,
 ): (props: Props) => JSX.Element {
   return function impl(props) {
     return (
@@ -15,7 +15,7 @@ export function withLocation<Props>(
 }
 
 export function withNavigation<Props>(
-  Component: any,
+  Component: React.ComponentType<Props>,
 ): (props: Props) => JSX.Element {
   return function impl(props) {
     return (

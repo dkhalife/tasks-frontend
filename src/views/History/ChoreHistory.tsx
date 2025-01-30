@@ -16,15 +16,22 @@ import { Link } from 'react-router-dom'
 import { GetChoreHistory } from '../../utils/Fetcher'
 import { Loading } from '../../Loading'
 import { HistoryCard } from './HistoryCard'
+import { HistoryEntry } from '../../models/history'
 
 interface ChoreHistoryProps {
   choreId: string | undefined
 }
 
+interface HistoryInfo {
+  icon: React.ReactNode
+  text: string
+  subtext: string
+}
+
 interface ChoreHistoryState {
-  choreHistory: any[]
+  choreHistory: HistoryEntry[]
   isLoading: boolean
-  historyInfo: any[]
+  historyInfo: HistoryInfo[]
 }
 
 export class ChoreHistory extends React.Component<
