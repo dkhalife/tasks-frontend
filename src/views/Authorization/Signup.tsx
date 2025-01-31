@@ -14,6 +14,7 @@ import React from 'react'
 import { Logo } from '../../Logo'
 import { login, signUp } from '../../utils/Fetcher'
 import { withNavigation } from '../../contexts/hooks'
+import { validateEmail, validatePassword } from '../../models/user'
 
 interface SignupViewProps {
   navigate: (path: string) => void
@@ -87,12 +88,12 @@ class SignupViewInner extends React.Component<
       newState.usernameError = 'Username must be at least 4 characters'
       isValid = false
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!validateEmail(email)) {
       newState.emailError = 'Invalid email address'
       isValid = false
     }
 
-    if (password.length < 8) {
+    if (!validatePassword(password)) {
       newState.passwordError = 'Password must be at least 8 characters'
       isValid = false
     }

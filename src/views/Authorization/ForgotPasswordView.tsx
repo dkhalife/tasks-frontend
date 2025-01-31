@@ -13,6 +13,7 @@ import {
 import { ResetPassword } from '../../utils/Fetcher'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
+import { validateEmail } from '../../models/user'
 
 interface ForgotPasswordViewProps {
   navigate: (path: string) => void
@@ -38,17 +39,13 @@ class ForgotPasswordViewInner extends React.Component<
     }
   }
 
-  private validateEmail = () => {
-    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(this.state.email)
-  }
-
   private handleSubmit = async () => {
     if (!this.state.email) {
       this.setState({ emailError: 'Email is required' })
       return
     }
 
-    if (!this.validateEmail()) {
+    if (!validateEmail(this.state.email)) {
       this.setState({ emailError: 'Please enter a valid email address' })
       return
     }

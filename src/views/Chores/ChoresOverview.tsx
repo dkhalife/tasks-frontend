@@ -23,15 +23,8 @@ import { GetChores, MarkChoreComplete } from '../../utils/Fetcher'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
-import { Chore } from '../../models/chore'
+import { Chore, getDueDateChipColor, getDueDateChipText } from '../../models/chore'
 import { User } from '../../models/user'
-
-const CHORE_STATUS = {
-  NO_DUE_DATE: 'No due date',
-  DUE_SOON: 'Soon',
-  DUE_NOW: 'Due',
-  OVER_DUE: 'Overdue',
-}
 
 interface ChoresOverviewProps {
   navigate: (path: string) => void
@@ -59,40 +52,6 @@ class ChoresOverviewInner extends React.Component<
       choreId: null,
       isDateModalOpen: false,
       activeUserId: null,
-    }
-  }
-
-  private getChoreStatus = chore => {
-    if (chore.nextDueDate === null) {
-      return CHORE_STATUS.NO_DUE_DATE
-    }
-    const dueDate = new Date(chore.nextDueDate)
-    const now = new Date()
-    const diff = dueDate.getTime() - now.getTime()
-    if (diff < 0) {
-      return CHORE_STATUS.OVER_DUE
-    }
-    if (diff > 1000 * 60 * 60 * 24) {
-      return CHORE_STATUS.DUE_NOW
-    }
-    if (diff > 0) {
-      return CHORE_STATUS.DUE_SOON
-    }
-    return CHORE_STATUS.NO_DUE_DATE
-  }
-
-  private getChoreStatusColor = chore => {
-    switch (this.getChoreStatus(chore)) {
-      case CHORE_STATUS.NO_DUE_DATE:
-        return 'neutral'
-      case CHORE_STATUS.DUE_SOON:
-        return 'success'
-      case CHORE_STATUS.DUE_NOW:
-        return 'primary'
-      case CHORE_STATUS.OVER_DUE:
-        return 'warning'
-      default:
-        return 'neutral'
     }
   }
 
@@ -190,8 +149,8 @@ class ChoresOverviewInner extends React.Component<
             {filteredChores.map((chore: Chore) => (
               <tr key={chore.id}>
                 <td>
-                  <Chip color={this.getChoreStatusColor(chore)}>
-                    {this.getChoreStatus(chore)}
+                  <Chip color={getDueDateChipColor(chore.nextDueDate)}>
+                    {getDueDateChipText(chore.nextDueDate)}
                   </Chip>
                 </td>
                 <td
