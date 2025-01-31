@@ -18,7 +18,7 @@ import { Label } from '../../../models/label'
 interface LabelModalProps {
   isOpen: boolean
   onClose: () => void
-  label: Label
+  label: Label | null
 }
 
 interface LabelModalState {
