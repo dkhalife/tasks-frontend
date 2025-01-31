@@ -2,15 +2,15 @@ import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
 import React from 'react'
 
 interface DateModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSave: (date: string) => void
   current: string
   title: string
+
+  onClose: (newDate: string | null) => void
 }
 
 interface DateModalState {
   date: string
+  isOpen: boolean
 }
 
 export class DateModal extends React.Component<DateModalProps, DateModalState> {
@@ -21,25 +21,33 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
       date: props.current
         ? new Date(props.current).toISOString().split('T')[0]
         : '',
+      isOpen: false,
     }
   }
 
-  private handleSave = () => {
-    const { onSave, onClose } = this.props
-    const { date } = this.state
+  public open(): void {
+    this.setState({ isOpen: true })
+  }
 
-    onSave(date)
-    onClose()
+  private onSave(): void {
+    this.setState({ isOpen: false })
+    this.props.onClose(this.state.date)
+  }
+
+  private onCancel(): void {
+    this.setState({ isOpen: false })
+    this.props.onClose(null)
   }
 
   public render(): React.ReactNode {
-    const { isOpen, onClose, title } = this.props
+    const { title } = this.props
+    const { isOpen } = this.state
     const { date } = this.state
 
     return (
       <Modal
         open={isOpen}
-        onClose={onClose}
+        onClose={this.onCancel}
       >
         <ModalDialog>
           <Typography>{title}</Typography>
@@ -55,14 +63,14 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
             mt={1}
           >
             <Button
-              onClick={this.handleSave}
+              onClick={this.onSave}
               fullWidth
               sx={{ mr: 1 }}
             >
               Save
             </Button>
             <Button
-              onClick={onClose}
+              onClick={this.onCancel}
               variant='outlined'
             >
               Cancel

@@ -9,28 +9,51 @@ import {
 import React from 'react'
 
 export interface ConfirmationModalProps {
-  isOpen: boolean
-  onClose: (isConfirmed: boolean) => void
   title: string
   message: string
   confirmText: string
   cancelText: string
   color?: ColorPaletteProp
+
+  onClose: (isConfirmed: boolean) => void
 }
 
-export class ConfirmationModal extends React.Component<ConfirmationModalProps> {
-  public render(): React.ReactNode {
-    const { isOpen, onClose, title, message, confirmText, cancelText, color } =
-      this.props
+interface ConfirmationModalState {
+  isOpen: boolean
+}
 
-    const handleAction = isConfirmed => {
-      onClose(isConfirmed)
+export class ConfirmationModal extends React.Component<ConfirmationModalProps, ConfirmationModalState> {
+  constructor(props: ConfirmationModalProps) {
+    super(props)
+
+    this.state = {
+      isOpen: false,
     }
+  }
+
+  public open(): void {
+    this.setState({ isOpen: true })
+  }
+
+  private onConfirm = () => {
+    this.setState({ isOpen: false })
+    this.props.onClose(true)
+  }
+
+  private onCancel = () => {
+    this.setState({ isOpen: false })
+    this.props.onClose(false)
+  }
+
+  public render(): React.ReactNode {
+    const { title, message, confirmText, cancelText, color } =
+      this.props
+    const { isOpen } = this.state
 
     return (
       <Modal
         open={isOpen}
-        onClose={onClose}
+        onClose={this.onCancel}
       >
         <ModalDialog>
           <Typography
@@ -53,9 +76,7 @@ export class ConfirmationModal extends React.Component<ConfirmationModalProps> {
             mt={1}
           >
             <Button
-              onClick={() => {
-                handleAction(true)
-              }}
+              onClick={this.onConfirm}
               fullWidth
               sx={{ mr: 1 }}
               color={color ?? 'primary'}
@@ -63,9 +84,7 @@ export class ConfirmationModal extends React.Component<ConfirmationModalProps> {
               {confirmText}
             </Button>
             <Button
-              onClick={() => {
-                handleAction(false)
-              }}
+              onClick={this.onCancel}
               variant='outlined'
             >
               {cancelText}

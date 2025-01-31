@@ -11,14 +11,14 @@ import {
 import React from 'react'
 
 interface PasswordChangeModalProps {
-  isOpen: boolean
-  onClose: (password: string | null) => void
+  onClose: (newPassword: string | null) => void
 }
 
 interface PasswordChangeModalState {
   password: string
   confirmPassword: string
   passwordError: string | null
+  isOpen: boolean
 }
 
 export class PassowrdChangeModal extends React.Component<
@@ -31,7 +31,22 @@ export class PassowrdChangeModal extends React.Component<
       password: '',
       confirmPassword: '',
       passwordError: null,
+      isOpen: false,
     }
+  }
+
+  public open(): void {
+    this.setState({ isOpen: true })
+  }
+
+  private onSave(): void {
+    this.setState({ isOpen: false })
+    this.props.onClose(this.state.password)
+  }
+
+  private onCancel(): void {
+    this.setState({ isOpen: false })
+    this.props.onClose(null)
   }
 
   componentDidUpdate(
@@ -61,11 +76,10 @@ export class PassowrdChangeModal extends React.Component<
   }
 
   public render(): React.ReactNode {
-    const { isOpen, onClose } = this.props
-    const { password, confirmPassword, passwordError } = this.state
+    const { password, confirmPassword, passwordError, isOpen } = this.state
 
     return (
-      <Modal open={isOpen}>
+      <Modal open={isOpen} onClose={this.onCancel}>
         <ModalDialog>
           <Typography
             level='h4'
@@ -118,18 +132,14 @@ export class PassowrdChangeModal extends React.Component<
           >
             <Button
               disabled={passwordError != null}
-              onClick={() => {
-                onClose(password)
-              }}
+              onClick={this.onSave}
               fullWidth
               sx={{ mr: 1 }}
             >
               Change Password
             </Button>
             <Button
-              onClick={() => {
-                onClose(null)
-              }}
+              onClick={this.onCancel}
               variant='outlined'
             >
               Cancel

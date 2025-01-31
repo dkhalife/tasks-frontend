@@ -16,15 +16,16 @@ import React from 'react'
 import { Label } from '../../../models/label'
 
 interface LabelModalProps {
-  isOpen: boolean
-  onClose: () => void
   label: Label | null
+
+  onClose: () => void
 }
 
 interface LabelModalState {
   labelName: string
   color: string
   error: string
+  isOpen: boolean
 }
 
 export class LabelModal extends React.Component<
@@ -37,7 +38,12 @@ export class LabelModal extends React.Component<
       labelName: '',
       color: '',
       error: '',
+      isOpen: false,
     }
+  }
+
+  public open(): void {
+    this.setState({ isOpen: true })
   }
 
   private validateLabel = () => {
@@ -67,33 +73,39 @@ export class LabelModal extends React.Component<
     return true
   }
 
-  private handleSave = () => {
+  private onSave = () => {
     if (!this.validateLabel()) {
       return
     }
 
     const { label } = this.props
     const { labelName, color } = this.state
-    // TODO: With the cache, invalidate here
+
     try {
       if (label) {
         UpdateLabel({ id: label.id, name: labelName, color })
       } else {
         CreateLabel({ name: labelName, color })
       }
+      this.setState({ isOpen: false })
     } catch {
       this.setState({ error: 'Failed to save label. Please try again.' })
     }
   }
 
+  private onCancel = () => {
+    this.setState({ isOpen: false })
+    this.props.onClose()
+  }
+
   public render(): React.ReactNode {
-    const { isOpen, onClose, label } = this.props
-    const { labelName, color, error } = this.state
+    const { label } = this.props
+    const { labelName, color, error, isOpen } = this.state
 
     return (
       <Modal
         open={isOpen}
-        onClose={onClose}
+        onClose={this.onCancel}
       >
         <ModalDialog>
           <Typography
@@ -187,14 +199,14 @@ export class LabelModal extends React.Component<
             mt={1}
           >
             <Button
-              onClick={this.handleSave}
+              onClick={this.onSave}
               fullWidth
               sx={{ mr: 1 }}
             >
               {label ? 'Save Changes' : 'Add Label'}
             </Button>
             <Button
-              onClick={onClose}
+              onClick={this.onCancel}
               variant='outlined'
             >
               Cancel
