@@ -31,15 +31,16 @@ import {
   SkipChore,
   UpdateDueDate,
 } from '../../utils/Fetcher'
-import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/joy/styles/types'
 import { withNavigation } from '../../contexts/hooks'
+import { Chore } from '../../models/chore'
 
 interface ChoreCardProps {
-  chore: any
-  onChoreUpdate: (chore: any, event: string) => void
-  onChoreRemove: (chore: any) => void
+  chore: Chore
+  onChoreUpdate: (chore: Chore, event: string) => void
+  onChoreRemove: (chore: Chore) => void
   sx: SxProps
   viewOnly: boolean
   navigate: (path: string) => void
@@ -48,7 +49,7 @@ interface ChoreCardProps {
 interface ChoreCardState {
   isChangeDueDateModalOpen: boolean
   isCompleteWithPastDateModalOpen: boolean
-  confirmModelConfig: any
+  confirmModelConfig: ConfirmationModalProps | null
 }
 
 class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
@@ -60,7 +61,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
     this.state = {
       isChangeDueDateModalOpen: false,
       isCompleteWithPastDateModalOpen: false,
-      confirmModelConfig: {},
+      confirmModelConfig: null,
     }
   }
 
@@ -85,7 +86,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
               }
             })
           }
-          this.setState({ confirmModelConfig: {} })
+          this.setState({ confirmModelConfig: null })
         },
       },
     })
@@ -261,7 +262,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   }
 
   private getName = name => {
-    const split = Array.from<string>(this.props.chore.name)
+    const split = Array.from<string>(this.props.chore.title)
     // if the first character is emoji then remove it from the name
     if (/\p{Emoji}/u.test(split[0])) {
       return split.slice(1).join('').trim()
@@ -341,14 +342,14 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                 alignItems='center'
               >
                 <Avatar sx={{ mr: 1, fontSize: 22 }}>
-                  {Array.from<string>(chore.name)[0]}
+                  {Array.from<string>(chore.title)[0]}
                 </Avatar>
                 <Box
                   display='flex'
                   flexDirection='column'
                 >
                   <Typography level='title-md'>
-                    {this.getName(chore.name)}
+                    {this.getName(chore.title)}
                   </Typography>
                   <Box key={`${chore.id}-labels`}>
                     {chore.labels?.map((l, index) => {
