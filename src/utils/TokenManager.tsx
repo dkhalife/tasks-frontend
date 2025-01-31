@@ -5,6 +5,7 @@ export function Fetch(url, options) {
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'
+    // TODO: Stop execution when better type safety is in place
   }
 
   options = options || {}
