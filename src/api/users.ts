@@ -1,10 +1,8 @@
-import { API_URL } from "../constants/config"
 import { Fetch, HEADERS } from "../utils/TokenManager"
 
 export const UpdatePassword = newPassword => {
-  return fetch(`${API_URL}/api/v1/users/change_password`, {
+  return Fetch(`/users/change_password`, {
     method: 'PUT',
-    headers: HEADERS(),
     body: JSON.stringify({ password: newPassword }),
   })
 }
