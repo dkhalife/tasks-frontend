@@ -26,6 +26,7 @@ import {
 } from '../../contexts/StorageContext'
 import { toggleTheme } from '../../constants/theme'
 import { withLocation, withNavigation } from '../../contexts/hooks'
+import { Location } from 'react-router-dom'
 
 type NavBarProps = {
   location: Location

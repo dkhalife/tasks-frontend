@@ -1,8 +1,8 @@
 import React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Location, useLocation, useNavigate } from 'react-router-dom'
 
 export function withLocation<Props>(
-  Component: React.ComponentType<Props>,
+  Component: React.ComponentType<Props & { location: Location }>,
 ): (props: Props) => JSX.Element {
   return function impl(props) {
     return (
@@ -15,12 +15,12 @@ export function withLocation<Props>(
 }
 
 export function withNavigation<Props>(
-  Component: React.ComponentType<Props>,
+  Component: React.ComponentType<Props & { navigate: (path: string) => void }>,
 ): (props: Props) => JSX.Element {
   return function impl(props) {
     return (
       <Component
-        {...props}
+        {...props as Props}
         navigate={useNavigate()}
       />
     )
