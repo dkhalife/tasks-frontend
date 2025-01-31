@@ -67,7 +67,8 @@ class SignupViewInner extends React.Component<
 
   private handleSignUpValidation = () => {
     // Reset errors before validation
-    const newState: any = {
+    const newState: SignupViewState = {
+      ...this.state,
       usernameError: null,
       passwordError: null,
       displayNameError: null,

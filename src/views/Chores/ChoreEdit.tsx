@@ -5,6 +5,7 @@ import {
   Card,
   Checkbox,
   Chip,
+  ColorPaletteProp,
   Container,
   Divider,
   FormControl,
@@ -53,22 +54,31 @@ type ChoreEditInnerProps = ChoreEditProps & {
   navigate: (path: string) => void
 }
 
+interface NotificationMetadata {
+  dueDate: boolean
+  predue: boolean
+  overdue: boolean
+  nagging: boolean
+}
+
+type Errors = { [key: string]: string }
+
 // TODO: Some of these should be props
 interface ChoreEditState {
   isRolling: boolean
   isNotificable: boolean
   updatedBy: number
-  errors: any
+  errors: Errors
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
-  snackbarColor: string
+  snackbarColor: ColorPaletteProp
   addLabelModalOpen: boolean
   dueDate: string | null
   frequencyType: string
   frequency: number
   frequencyMetadata: FrequencyMetadata | null
   labels: Label[]
-  notificationMetadata: any
+  notificationMetadata: NotificationMetadata
   userLabels: Label[]
   chore: Chore | null
   name: string
@@ -95,7 +105,12 @@ class ChoreEditInner extends React.Component<
       frequency: 1,
       frequencyMetadata: null,
       labels: [],
-      notificationMetadata: null,
+      notificationMetadata: {
+        dueDate: false,
+        predue: false,
+        overdue: false,
+        nagging: false,
+      },
       userLabels: [],
       chore: null,
       name: '',
@@ -119,7 +134,7 @@ class ChoreEditInner extends React.Component<
       return false
     }
 
-    const errors: { [key: string]: string } = {}
+    const errors: Errors = {}
 
     if (name.trim() === '') {
       errors.name = 'Name is required'
@@ -152,7 +167,8 @@ class ChoreEditInner extends React.Component<
     }
 
     // if there is any error then return false:
-    const newState: any = {
+    const newState: ChoreEditState = {
+      ...this.state,
       errors,
     }
 
@@ -367,7 +383,7 @@ class ChoreEditInner extends React.Component<
     return (
       <Container maxWidth='md'>
         <Box>
-          <FormControl error={errors.name}>
+          <FormControl error={Boolean(errors.name)}>
             <Typography level='h4'>Description :</Typography>
             <Typography>What is this chore about?</Typography>
             <Input
@@ -716,7 +732,7 @@ class ChoreEditInner extends React.Component<
         {addLabelModalOpen && (
           <LabelModal
             isOpen={addLabelModalOpen}
-            label={null /* TODO: Verify */}
+            label={null}
             onClose={() => this.setState({ addLabelModalOpen: false })}
           />
         )}
