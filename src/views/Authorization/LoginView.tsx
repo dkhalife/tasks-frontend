@@ -11,7 +11,6 @@ import {
 import Cookies from 'js-cookie'
 import React from 'react'
 import { Logo } from '../../Logo'
-import { login } from '../../utils/Fetcher'
 import { withNavigation } from '../../contexts/hooks'
 
 interface LoginViewProps {

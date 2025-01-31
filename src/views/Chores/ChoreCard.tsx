@@ -24,17 +24,12 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import {
-  DeleteChore,
-  MarkChoreComplete,
-  SkipChore,
-  UpdateDueDate,
-} from '../../utils/Fetcher'
 import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/joy/styles/types'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore, getDueDateChipColor, getDueDateChipText, getRecurrentChipText } from '../../models/chore'
+import { DeleteChore, MarkChoreComplete, UpdateDueDate, SkipChore } from '../../api/chores'
 
 interface ChoreCardProps {
   chore: Chore

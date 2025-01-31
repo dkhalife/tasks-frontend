@@ -13,8 +13,8 @@ import {
   Typography,
 } from '@mui/joy'
 import React from 'react'
-import { GetUserProfile, UpdateNotificationTarget } from '../../utils/Fetcher'
 import { User } from '../../models/user'
+import { GetUserProfile, UpdateNotificationTarget } from '../../api/users'
 
 type NotificationSettingProps = object
 

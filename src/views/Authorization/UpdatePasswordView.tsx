@@ -11,10 +11,10 @@ import {
 } from '@mui/joy'
 
 import { Logo } from '../../Logo'
-import { ChangePassword } from '../../utils/Fetcher'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { validatePassword } from '../../models/user'
+import { ChangePassword } from '../../api/auth'
 
 interface UpdatePasswordViewProps {
   navigate: (path: string) => void

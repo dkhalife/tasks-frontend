@@ -19,12 +19,12 @@ import {
 } from '@mui/joy'
 
 import moment from 'moment'
-import { GetChores, MarkChoreComplete } from '../../utils/Fetcher'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore, getDueDateChipColor, getDueDateChipText } from '../../models/chore'
 import { User } from '../../models/user'
+import { GetChores, MarkChoreComplete } from '../../api/chores'
 
 interface ChoresOverviewProps {
   navigate: (path: string) => void

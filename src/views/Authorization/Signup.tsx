@@ -12,7 +12,6 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { Logo } from '../../Logo'
-import { login, signUp } from '../../utils/Fetcher'
 import { withNavigation } from '../../contexts/hooks'
 import { validateEmail, validatePassword } from '../../models/user'
 

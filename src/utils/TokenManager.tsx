@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie'
 import { API_URL } from '../constants/config'
-import { RefreshToken } from './Fetcher'
 
 export function Fetch(url, options) {
   if (!isTokenValid()) {

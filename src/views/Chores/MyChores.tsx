@@ -11,7 +11,6 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import { GetChores, GetUserProfile } from '../../utils/Fetcher'
 import { Loading } from '../../Loading'
 import { ChoreCard } from './ChoreCard'
 import { IconButtonWithMenu } from './IconButtonWithMenu'
@@ -21,6 +20,8 @@ import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore, ChoreGroup } from '../../models/chore'
 import { User } from '../../models/user'
+import { GetChores } from '../../api/chores'
+import { GetUserProfile } from '../../api/users'
 
 interface MyChoresProps {
   navigate: (path: string) => void

@@ -13,10 +13,10 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { GetChoreHistory } from '../../utils/Fetcher'
 import { Loading } from '../../Loading'
 import { HistoryCard } from './HistoryCard'
 import { HistoryEntry } from '../../models/history'
+import { GetChoreHistory } from '../../api/chores'
 
 interface ChoreHistoryProps {
   choreId: string | undefined

@@ -14,9 +14,9 @@ import { LabelModal } from '../Modals/Inputs/LabelModal.tsx'
 
 import { Add } from '@mui/icons-material'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import { DeleteLabel, GetLabels } from '../../utils/Fetcher'
 import React from 'react'
 import { Label } from '../../models/label.ts'
+import { DeleteLabel, GetLabels } from '../../api/labels.ts'
 
 type LabelViewProps = object
 
