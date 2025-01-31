@@ -9,6 +9,7 @@ import moment from 'moment'
 import React from 'react'
 import { CompletedChip } from './CompletedChip'
 import { HistoryEntry } from '../../models/history'
+import { formatTimeDifference } from '../../utils/date'
 
 interface HistoryCardProps {
   allHistory: HistoryEntry[]
@@ -19,26 +20,6 @@ interface HistoryCardProps {
 
 export class HistoryCard extends React.Component<HistoryCardProps> {
   render(): React.ReactNode {
-    function formatTimeDifference(startDate, endDate) {
-      const diffInMinutes = moment(startDate).diff(endDate, 'minutes')
-      let timeValue = diffInMinutes
-      let unit = 'minute'
-
-      if (diffInMinutes >= 60) {
-        const diffInHours = moment(startDate).diff(endDate, 'hours')
-        timeValue = diffInHours
-        unit = 'hour'
-
-        if (diffInHours >= 24) {
-          const diffInDays = moment(startDate).diff(endDate, 'days')
-          timeValue = diffInDays
-          unit = 'day'
-        }
-      }
-
-      return `${timeValue} ${unit}${timeValue !== 1 ? 's' : ''}`
-    }
-
     const { allHistory, historyEntry, index, onClick } = this.props
 
     return (

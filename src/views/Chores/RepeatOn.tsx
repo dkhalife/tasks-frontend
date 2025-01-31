@@ -14,34 +14,11 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { FrequencyMetadata } from '../../models/chore'
-
-const MONTHS = [
-  'january',
-  'february',
-  'march',
-  'april',
-  'may',
-  'june',
-  'july',
-  'august',
-  'september',
-  'october',
-  'november',
-  'december',
-]
-
-const DAYS = [
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-  'sunday',
-]
+import { FrequencyType, INTERVAL_UNITS, IntervalUnit } from '../../utils/recurrance'
+import { DAYS, MONTHS } from '../../utils/date'
 
 interface RepeatOnProps {
-  frequencyType: string
+  frequencyType: FrequencyType
   frequency: number
   onFrequencyUpdate: (frequency: number) => void
   frequencyMetadata: FrequencyMetadata
@@ -50,7 +27,7 @@ interface RepeatOnProps {
 }
 
 interface RepeatOnState {
-  intervalUnit: string
+  intervalUnit: IntervalUnit
 }
 
 export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
@@ -122,7 +99,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 placeholder='Unit'
                 value={intervalUnit}
               >
-                {['hours', 'days', 'weeks', 'months', 'years'].map(item => (
+                {INTERVAL_UNITS.map(item => (
                   <Option
                     key={item}
                     value={item}

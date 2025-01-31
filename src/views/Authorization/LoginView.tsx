@@ -11,7 +11,7 @@ import {
 import Cookies from 'js-cookie'
 import React from 'react'
 import { Logo } from '../../Logo'
-import { GetUserProfile, login } from '../../utils/Fetcher'
+import { login } from '../../utils/Fetcher'
 import { withNavigation } from '../../contexts/hooks'
 
 interface LoginViewProps {
@@ -33,23 +33,6 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
       password: '',
       error: null,
     }
-  }
-
-  private getUserProfileAndNavigateToHome = () => {
-    GetUserProfile().then(data => {
-      data.json().then(() => {
-        // TODO: Set the user profile
-        // setUserProfile(data.res)
-
-        const redirectUrl = Cookies.get('ca_redirect')
-        if (redirectUrl) {
-          Cookies.remove('ca_redirect')
-          this.props.navigate(redirectUrl)
-        } else {
-          this.props.navigate('/my/chores')
-        }
-      })
-    })
   }
 
   private handleForgotPassword = () => {

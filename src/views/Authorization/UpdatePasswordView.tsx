@@ -14,6 +14,7 @@ import { Logo } from '../../Logo'
 import { ChangePassword } from '../../utils/Fetcher'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
+import { validatePassword } from '../../models/user'
 
 interface UpdatePasswordViewProps {
   navigate: (path: string) => void
@@ -34,7 +35,7 @@ class UpdatePasswordViewInner extends React.Component<
   private handlePasswordChange = e => {
     const password = e.target.value
 
-    if (password.length < 8) {
+    if (!validatePassword(password)) {
       this.setState({
         password,
         passwordError: 'Password must be at least 8 characters',

@@ -83,48 +83,6 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
     })
   }
 
-  private FILTERS = {
-    All: function (chores) {
-      return chores
-    },
-    Overdue: function (chores) {
-      return chores.filter(chore => {
-        if (chore.nextDueDate === null) return false
-        return new Date(chore.nextDueDate) < new Date()
-      })
-    },
-    'Due today': function (chores) {
-      return chores.filter(chore => {
-        return (
-          new Date(chore.nextDueDate).toDateString() ===
-          new Date().toDateString()
-        )
-      })
-    },
-    'Due in week': function (chores) {
-      return chores.filter(chore => {
-        return (
-          new Date(chore.nextDueDate) <
-            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) &&
-          new Date(chore.nextDueDate) > new Date()
-        )
-      })
-    },
-    'Due Later': function (chores) {
-      return chores.filter(chore => {
-        return (
-          new Date(chore.nextDueDate) >
-          new Date(Date.now() + 24 * 60 * 60 * 1000)
-        )
-      })
-    },
-    'No Due Date': function (chores) {
-      return chores.filter(chore => {
-        return chore.nextDueDate === null
-      })
-    },
-  }
-
   render(): React.ReactNode {
     const { isSnackbarOpen, snackBarMessage, isLoading, chores } = this.state
 

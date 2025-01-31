@@ -15,6 +15,7 @@ import moment from 'moment'
 import React from 'react'
 import { RepeatOn } from './RepeatOn'
 import { FrequencyMetadata } from '../../models/chore'
+import { FrequencyType } from '../../utils/recurrance'
 
 const FREQUANCY_TYPES_RADIOS = [
   'daily',
@@ -25,15 +26,10 @@ const FREQUANCY_TYPES_RADIOS = [
   'custom',
 ]
 
-const FREQUENCY_TYPE_MESSAGE = {
-  adaptive:
-    'This chore will be scheduled dynamically based on previous completion dates.',
-  custom: 'This chore will be scheduled based on a custom frequency.',
-}
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 
 interface RepeatOptionProps {
-  frequencyType: string
+  frequencyType: FrequencyType
   frequency: number
   onFrequencyUpdate: (frequency: number) => void
   onFrequencyTypeUpdate: (type: string) => void
@@ -123,7 +119,6 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                   </ListItem>
                 ))}
               </List>
-              <Typography>{FREQUENCY_TYPE_MESSAGE[frequencyType]}</Typography>
               {frequencyType === 'custom' ||
                 (REPEAT_ON_TYPE.includes(frequencyType) && (
                   <>

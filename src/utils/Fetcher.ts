@@ -1,4 +1,5 @@
-import { Fetch, HEADERS, apiManager } from './TokenManager'
+import { API_URL } from '../constants/config'
+import { Fetch, HEADERS } from './TokenManager'
 
 export const createChore = userID => {
   return Fetch(`/chores/`, {
@@ -11,8 +12,7 @@ export const createChore = userID => {
 }
 
 export const signUp = (username, password, displayName, email) => {
-  const baseURL = apiManager.getApiURL()
-  return fetch(`${baseURL}/auth/`, {
+  return fetch(`${API_URL}/api/v1/auth/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,8 +22,7 @@ export const signUp = (username, password, displayName, email) => {
 }
 
 export const UpdatePassword = newPassword => {
-  const baseURL = apiManager.getApiURL()
-  return fetch(`${baseURL}/users/change_password`, {
+  return fetch(`${API_URL}/api/v1/users/change_password`, {
     method: 'PUT',
     headers: HEADERS(),
     body: JSON.stringify({ password: newPassword }),
@@ -31,8 +30,7 @@ export const UpdatePassword = newPassword => {
 }
 
 export const login = (username, password) => {
-  const baseURL = apiManager.getApiURL()
-  return fetch(`${baseURL}/auth/login`, {
+  return fetch(`${API_URL}/api/v1/auth/login`, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -47,18 +45,21 @@ export const GetChores = () => {
     headers: HEADERS(),
   })
 }
+
 export const GetArchivedChores = () => {
   return Fetch(`/chores/archived`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
+
 export const ArchiveChore = id => {
   return Fetch(`/chores/${id}/archive`, {
     method: 'PUT',
     headers: HEADERS(),
   })
 }
+
 export const UnArchiveChore = id => {
   return Fetch(`/chores/${id}/unarchive`, {
     method: 'PUT',
@@ -72,12 +73,14 @@ export const GetChoreByID = id => {
     headers: HEADERS(),
   })
 }
+
 export const GetChoreDetailById = id => {
   return Fetch(`/chores/${id}/details`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
+
 export const MarkChoreComplete = (id, note, completedDate) => {
   let markChoreURL = `/chores/${id}/do`
 
@@ -146,6 +149,7 @@ export const GetChoreHistory = choreId => {
     headers: HEADERS(),
   })
 }
+
 export const DeleteChoreHistory = (choreId, id) => {
   return Fetch(`/chores/${choreId}/history/${id}`, {
     method: 'DELETE',
@@ -204,6 +208,7 @@ export const GetLongLiveTokens = () => {
     headers: HEADERS(),
   })
 }
+
 export const PutNotificationTarget = (platform, deviceToken) => {
   return Fetch(`/users/targets`, {
     method: 'PUT',
@@ -211,6 +216,7 @@ export const PutNotificationTarget = (platform, deviceToken) => {
     body: JSON.stringify({ platform, deviceToken }),
   })
 }
+
 export const CreateLabel = label => {
   return Fetch(`/labels`, {
     method: 'POST',
@@ -234,6 +240,7 @@ export const UpdateLabel = label => {
     body: JSON.stringify(label),
   })
 }
+
 export const DeleteLabel = id => {
   return Fetch(`/labels/${id}`, {
     method: 'DELETE',
@@ -242,8 +249,7 @@ export const DeleteLabel = id => {
 }
 
 export const ChangePassword = (verifiticationCode, password) => {
-  const baseURL = apiManager.getApiURL()
-  return fetch(`${baseURL}/auth/password?c=${verifiticationCode}`, {
+  return fetch(`${API_URL}/api/v1/auth/password?c=${verifiticationCode}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -253,8 +259,7 @@ export const ChangePassword = (verifiticationCode, password) => {
 }
 
 export const ResetPassword = email => {
-  const basedURL = apiManager.getApiURL()
-  return fetch(`${basedURL}/auth/reset`, {
+  return fetch(`${API_URL}/api/v1/auth/reset`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -276,12 +281,12 @@ export const UpdateDueDate = (id, dueDate) => {
 }
 
 export const RefreshToken = () => {
-  const basedURL = apiManager.getApiURL()
-  return fetch(`${basedURL}/auth/refresh`, {
+  return fetch(`${API_URL}/api/v1/auth/refresh`, {
     method: 'GET',
     headers: HEADERS(),
   })
 }
+
 export const GetChoresHistory = async (limit, includeMembers) => {
   let url = `/chores/history`
   if (!limit) limit = 7
