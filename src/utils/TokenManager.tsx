@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 import { API_URL } from '../constants/config'
 
-export function Fetch(url, options) {
+export function Fetch(url: string, options?: RequestInit): Promise<Response>{
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'

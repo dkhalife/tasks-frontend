@@ -43,7 +43,6 @@ export const ResetPassword = email => {
 
 export const RefreshToken = () => {
     return fetch(`${API_URL}/api/v1/auth/refresh`, {
-      method: 'GET',
       headers: HEADERS(),
     })
   }

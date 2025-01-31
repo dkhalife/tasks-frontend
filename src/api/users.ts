@@ -8,9 +8,7 @@ export const UpdatePassword = newPassword => {
 }
 
 export const GetUserProfile = () => {
-  return Fetch(`/users/profile`, {
-    method: 'GET',
-  })
+  return Fetch(`/users/profile`)
 }
 
 export const UpdateUserDetails = userDetails => {
@@ -40,9 +38,7 @@ export const DeleteLongLiveToken = id => {
 }
 
 export const GetLongLiveTokens = () => {
-  return Fetch(`/users/tokens`, {
-    method: 'GET',
-  })
+  return Fetch(`/users/tokens`)
 }
 
 export const PutNotificationTarget = (platform, deviceToken) => {

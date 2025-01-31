@@ -10,15 +10,11 @@ export const createChore = userID => {
 }
 
 export const GetChores = () => {
-  return Fetch(`/chores/`, {
-    method: 'GET'
-  })
+  return Fetch(`/chores/`)
 }
 
 export const GetArchivedChores = () => {
-  return Fetch(`/chores/archived`, {
-    method: 'GET'
-  })
+  return Fetch(`/chores/archived`)
 }
 
 export const ArchiveChore = id => {
@@ -34,15 +30,11 @@ export const UnArchiveChore = id => {
 }
 
 export const GetChoreByID = id => {
-  return Fetch(`/chores/${id}`, {
-    method: 'GET'
-  })
+  return Fetch(`/chores/${id}`)
 }
 
 export const GetChoreDetailById = id => {
-  return Fetch(`/chores/${id}/details`, {
-    method: 'GET',
-  })
+  return Fetch(`/chores/${id}/details`)
 }
 
 export const MarkChoreComplete = (id, note, completedDate) => {
@@ -101,9 +93,7 @@ export const SaveChore = chore => {
 }
 
 export const GetChoreHistory = choreId => {
-  return Fetch(`/chores/${choreId}/history`, {
-    method: 'GET',
-  })
+  return Fetch(`/chores/${choreId}/history`)
 }
 
 export const DeleteChoreHistory = (choreId, id) => {
@@ -138,9 +128,7 @@ export const UpdateDueDate = (id, dueDate) => {
     if (includeMembers) {
       url += `&members=true`
     }
-    const resp = await Fetch(url, {
-      method: 'GET',
-    })
+    const resp = await Fetch(url)
     return resp.json()
   }
   

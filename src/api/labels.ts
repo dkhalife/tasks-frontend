@@ -8,9 +8,7 @@ export const CreateLabel = label => {
 }
 
 export const GetLabels = async () => {
-  const resp = await Fetch(`/labels`, {
-    method: 'GET',
-  })
+  const resp = await Fetch(`/labels`)
   return resp.json()
 }
 
