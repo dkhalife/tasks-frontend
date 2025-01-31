@@ -28,6 +28,14 @@ export class RouterContext extends React.Component {
     return match?.params.choreId
   }
 
+  private getMainRoute = () => {
+    if (window.innerWidth <= 768) {
+      return <MyChores />
+    }
+
+    return <ChoresOverview />
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -39,7 +47,7 @@ export class RouterContext extends React.Component {
           >
             <Route
               path='/'
-              element={<MyChores />}
+              element={this.getMainRoute()}
             />
             <Route
               path='/settings'
