@@ -2,32 +2,6 @@ import Cookies from 'js-cookie'
 import { API_URL } from '../constants/config'
 import { RefreshToken } from './Fetcher'
 
-class ApiManager {
-  private customServerURL: string
-  private initialized: boolean
-
-  constructor() {
-    this.customServerURL = `${API_URL}/api/v1`
-    this.initialized = false
-  }
-  async init() {
-    if (this.initialized) {
-      return
-    }
-
-    this.customServerURL = `${API_URL}/api/v1`
-    this.initialized = true
-  }
-  getApiURL() {
-    return this.customServerURL
-  }
-  updateApiURL(url) {
-    this.customServerURL = url
-  }
-}
-
-export const apiManager = new ApiManager()
-
 export function Fetch(url, options) {
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
@@ -37,7 +11,7 @@ export function Fetch(url, options) {
   options = options || {}
   options.headers = { ...options.headers, ...HEADERS() }
 
-  const baseURL = apiManager.getApiURL()
+  const baseURL = `${API_URL}/api/v1`
 
   const fullURL = `${baseURL}${url}`
   return fetch(fullURL, options)
