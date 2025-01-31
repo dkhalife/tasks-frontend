@@ -72,10 +72,10 @@ class UpdatePasswordViewInner extends React.Component<
     }
 
     try {
-      const verifiticationCode = new URLSearchParams(
+      const verificationCode = new URLSearchParams(
         document.location.search,
       ).get('c')
-      const response = await ChangePassword(verifiticationCode, password)
+      const response = await ChangePassword(verificationCode, password)
 
       if (response.ok) {
         this.setState({

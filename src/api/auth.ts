@@ -21,8 +21,8 @@ export const login = (username, password) => {
   })
 }
 
-export const ChangePassword = (verifiticationCode, password) => {
-  return fetch(`${API_URL}/api/v1/auth/password?c=${verifiticationCode}`, {
+export const ChangePassword = (verificationCode, password) => {
+  return fetch(`${API_URL}/api/v1/auth/password?c=${verificationCode}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
