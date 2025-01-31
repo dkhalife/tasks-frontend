@@ -30,3 +30,9 @@ jobs:
       run: yarn build
     - name: Push changes
       run: git push origin develop --tags
+    - name: Trigger Go release
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: 'go-release.yml'
+        repo: 'dkhalife/donetick'
+        token: ${{ secrets.WORKFLOW_TOKEN }}
