@@ -1,6 +1,8 @@
+import { Chore, ChoreGroup } from '../models/chore'
+import { Label } from '../models/label'
 import { TASK_COLOR } from './Colors'
 
-export const ChoresGrouper = (groupBy, chores: any[]) => {
+export const ChoresGrouper = (groupBy, chores: Chore[]) => {
   chores.sort((a, b) => {
     if (a.nextDueDate === null) {
       return 1
@@ -11,9 +13,9 @@ export const ChoresGrouper = (groupBy, chores: any[]) => {
     return new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
   })
 
-  const labels: any = {}
-  let groups: any[] = []
-  let groupRaw: any = {
+  const labels: { [key: string]: Label } = {}
+  let groups: ChoreGroup[] = []
+  let groupRaw: { [key: string]: Chore[] } = {
     Today: [],
     'In a week': [],
     'This month': [],

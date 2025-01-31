@@ -19,6 +19,8 @@ import { IconButtonWithMenu } from './IconButtonWithMenu'
 import { ChoresGrouper } from '../../utils/Chores'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
+import { Chore, ChoreGroup } from '../../models/chore'
+import { User } from '../../models/user'
 
 interface MyChoresProps {
   navigate: (path: string) => void
@@ -27,14 +29,13 @@ interface MyChoresProps {
 interface MyChoresState {
   isSnackbarOpen: boolean
   snackBarMessage: string | null
-  chores: any[]
-  archivedChores: any[]
-  filteredChores: any[]
+  chores: Chore[]
+  archivedChores: Chore[]
+  filteredChores: Chore[]
   selectedFilter: string
-  choreSections: any[]
+  choreSections: ChoreGroup[]
   selectedChoreSection: string
-  openChoreSections: any
-  userProfile: any
+  userProfile: User | null
   isLoading: boolean
 }
 
@@ -51,7 +52,6 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
       selectedFilter: 'All',
       choreSections: [],
       selectedChoreSection: 'due_date',
-      openChoreSections: {},
       userProfile: null,
       isLoading: true,
     }
@@ -147,7 +147,6 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
             keyName='filter'
             isActive={false}
             useChips={true}
-            setSelectedItem={() => {}}
             title='Group by'
             icon='Sort'
             options={[

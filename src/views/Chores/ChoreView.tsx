@@ -32,6 +32,7 @@ import {
 } from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
+import { Chore } from '../../models/chore'
 
 interface ChoreViewProps {
   choreId: string | undefined
@@ -41,9 +42,16 @@ type ChoreViewInnerProps = ChoreViewProps & {
   navigate: (path: string) => void
 }
 
+interface InfoCard {
+  size: number
+  icon: React.ReactNode
+  text: string
+  subtext: string
+}
+
 interface ChoreViewState {
-  chore: any
-  infoCards: any
+  chore: Chore | null
+  infoCards: InfoCard[]
   note: string | null
   confirmModelConfig: ConfirmationModalProps
 }
@@ -56,7 +64,7 @@ class ChoreViewInner extends React.Component<
     super(props)
 
     this.state = {
-      chore: {},
+      chore: null,
       infoCards: [],
       note: null,
       confirmModelConfig: {
@@ -160,6 +168,11 @@ class ChoreViewInner extends React.Component<
     const { choreId } = this.props
     const { chore, infoCards, confirmModelConfig } = this.state
 
+    // TODO: Chore should just be a prop?
+    if (!chore) {
+      return null
+    }
+
     return (
       <Container
         maxWidth='sm'
@@ -186,7 +199,7 @@ class ChoreViewInner extends React.Component<
               mb: 0.5,
             }}
           >
-            {chore.name}
+            {chore.title}
           </Typography>
           <Chip
             startDecorator={<CalendarMonth />}
@@ -299,28 +312,6 @@ class ChoreViewInner extends React.Component<
               Edit
             </Button>
           </Box>
-
-          {chore.notes && (
-            <>
-              <Typography
-                level='title-md'
-                sx={{ mb: 1 }}
-              >
-                Previous note:
-              </Typography>
-              <Sheet
-                variant='outlined'
-                sx={{ p: 2, borderRadius: 'lg' }}
-              >
-                <Typography
-                  level='body-md'
-                  sx={{ mb: 1 }}
-                >
-                  {chore.notes || '--'}
-                </Typography>
-              </Sheet>
-            </>
-          )}
         </Box>
 
         <Card

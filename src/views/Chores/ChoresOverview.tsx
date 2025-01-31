@@ -23,6 +23,8 @@ import { GetChores, MarkChoreComplete } from '../../utils/Fetcher'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
+import { Chore } from '../../models/chore'
+import { User } from '../../models/user'
 
 const CHORE_STATUS = {
   NO_DUE_DATE: 'No due date',
@@ -36,10 +38,10 @@ interface ChoresOverviewProps {
 }
 
 interface ChoresOverviewState {
-  chores: any[]
-  filteredChores: any[]
+  chores: Chore[]
+  filteredChores: Chore[]
   search: string
-  choreId: number | null
+  choreId: string | null
   isDateModalOpen: boolean
   activeUserId: number | null
 }
@@ -101,7 +103,7 @@ class ChoresOverviewInner extends React.Component<
         this.setState({ chores: data.res, filteredChores: data.res })
       })
 
-    const user = JSON.parse(localStorage.getItem('user') as any)
+    const user = JSON.parse(localStorage.getItem('user') as string) as User
     if (user != null && user.id > 0) {
       this.setState({ activeUserId: user.id })
     }
@@ -133,10 +135,10 @@ class ChoresOverviewInner extends React.Component<
               value={search}
               onChange={e => {
                 const newChores = chores.filter(chore => {
-                  return chore.name.includes(e.target.value)
+                  return chore.title.includes(e.target.value)
                 })
 
-                const newState: any = {
+                const newState = {
                   search: e.target.value,
                   filteredChores: e.target.value === '' ? chores : newChores,
                 }
@@ -185,7 +187,7 @@ class ChoresOverviewInner extends React.Component<
             </tr>
           </thead>
           <tbody>
-            {filteredChores.map((chore: any) => (
+            {filteredChores.map((chore: Chore) => (
               <tr key={chore.id}>
                 <td>
                   <Chip color={this.getChoreStatusColor(chore)}>
@@ -197,7 +199,7 @@ class ChoresOverviewInner extends React.Component<
                     this.props.navigate(`/chores/${chore.id}/edit`)
                   }}
                 >
-                  {chore.name || '--'}
+                  {chore.title || '--'}
                 </td>
                 <td>
                   <Tooltip

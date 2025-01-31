@@ -38,6 +38,8 @@ import { LabelModal } from '../Modals/Inputs/LabelModal'
 import React from 'react'
 import { RepeatOption } from './RepeatOption'
 import { withNavigation } from '../../contexts/hooks'
+import { Chore, FrequencyMetadata } from '../../models/chore'
+import { Label } from '../../models/label'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -58,17 +60,17 @@ interface ChoreEditState {
   updatedBy: number
   errors: any
   isSnackbarOpen: boolean
-  snackbarMessage: any
+  snackbarMessage: React.ReactNode
   snackbarColor: string
   addLabelModalOpen: boolean
-  dueDate: any
+  dueDate: string | null
   frequencyType: string
   frequency: number
-  frequencyMetadata: any
-  labels: any[]
+  frequencyMetadata: FrequencyMetadata | null
+  labels: Label[]
   notificationMetadata: any
-  userLabels: any[]
-  chore: any
+  userLabels: Label[]
+  chore: Chore | null
   name: string
   confirmModelConfig: ConfirmationModalProps
 }
@@ -91,11 +93,11 @@ class ChoreEditInner extends React.Component<
       dueDate: null,
       frequencyType: 'once',
       frequency: 1,
-      frequencyMetadata: {},
+      frequencyMetadata: null,
       labels: [],
-      notificationMetadata: {},
+      notificationMetadata: null,
       userLabels: [],
-      chore: {},
+      chore: null,
       name: '',
       confirmModelConfig: {
         cancelText: '',
@@ -111,6 +113,12 @@ class ChoreEditInner extends React.Component<
   private HandleValidateChore = () => {
     const { name, frequencyType, frequency, frequencyMetadata, dueDate } =
       this.state
+
+    // TODO: This should no longer be required once the redundancy is removed
+    if (!frequencyMetadata) {
+      return false
+    }
+
     const errors: { [key: string]: string } = {}
 
     if (name.trim() === '') {
@@ -369,26 +377,28 @@ class ChoreEditInner extends React.Component<
             <FormHelperText>{errors.name}</FormHelperText>
           </FormControl>
         </Box>
-        <RepeatOption
-          frequency={frequency}
-          onFrequencyUpdate={newFrequency =>
-            this.setState({ frequency: newFrequency })
-          }
-          frequencyType={frequencyType}
-          onFrequencyTypeUpdate={newFrequencyType =>
-            this.setState({ frequencyType: newFrequencyType })
-          }
-          frequencyMetadata={frequencyMetadata}
-          onFrequencyMetadataUpdate={newFrequencyMetadata =>
-            this.setState({ frequencyMetadata: newFrequencyMetadata })
-          }
-          onFrequencyTimeUpdate={t => {
-            this.setState({
-              frequencyMetadata: { ...frequencyMetadata, time: t },
-            })
-          }}
-          frequencyError={errors?.frequency}
-        />
+        { frequencyMetadata && (
+          <RepeatOption
+            frequency={frequency}
+            onFrequencyUpdate={newFrequency =>
+              this.setState({ frequency: newFrequency })
+            }
+            frequencyType={frequencyType}
+            onFrequencyTypeUpdate={newFrequencyType =>
+              this.setState({ frequencyType: newFrequencyType })
+            }
+            frequencyMetadata={frequencyMetadata}
+            onFrequencyMetadataUpdate={newFrequencyMetadata =>
+              this.setState({ frequencyMetadata: newFrequencyMetadata })
+            }
+            onFrequencyTimeUpdate={t => {
+              this.setState({
+                frequencyMetadata: { ...frequencyMetadata, time: t },
+              })
+            }}
+            frequencyError={errors?.frequency}
+          />
+        )}
 
         <Box mt={2}>
           <Typography level='h4'>
@@ -632,7 +642,7 @@ class ChoreEditInner extends React.Component<
           </Select>
         </Box>
 
-        {choreId !== undefined && (
+        {choreId !== undefined && chore && (
           <Box
             sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
           >

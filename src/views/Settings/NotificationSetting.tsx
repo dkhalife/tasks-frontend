@@ -14,6 +14,7 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { GetUserProfile, UpdateNotificationTarget } from '../../utils/Fetcher'
+import { User } from '../../models/user'
 
 type NotificationSettingProps = object
 
@@ -21,7 +22,7 @@ interface NotificationSettingState {
   isSnackbarOpen: boolean
   notificationTarget: string | null
   error: string
-  userProfile: any
+  userProfile: User | null
 }
 
 export class NotificationSetting extends React.Component<

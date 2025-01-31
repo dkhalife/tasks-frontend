@@ -3,12 +3,18 @@ import IconButton from '@mui/joy/IconButton'
 import React from 'react'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 
+interface Option {
+  name: string
+  value: string
+  color?: string
+  icon?: React.ReactNode
+}
+
 interface IconButtonWithMenuProps {
   keyName: string
   icon: string
-  options: any[]
-  onItemSelect: (item: any) => void
-  setSelectedItem: any
+  options: Option[]
+  onItemSelect: (item: Option) => void
   isActive: boolean
   useChips: boolean
   title: string
@@ -23,7 +29,6 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
       icon,
       options,
       onItemSelect,
-      setSelectedItem,
       isActive,
       useChips,
       title,
@@ -62,10 +67,9 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
           )}
           {options?.map(item => (
             <MenuItem
-              key={`${keyName}-${item?.id}`}
+              key={`${keyName}-${item.value}`}
               onClick={() => {
                 onItemSelect(item)
-                setSelectedItem?.selectedItem(item.name)
               }}
             >
               {useChips ? (
