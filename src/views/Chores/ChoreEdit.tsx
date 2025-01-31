@@ -67,7 +67,6 @@ interface ChoreEditState {
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
   snackbarColor: ColorPaletteProp
-  addLabelModalOpen: boolean
   dueDate: string | null
   frequencyType: string
   frequency: number
@@ -84,6 +83,8 @@ class ChoreEditInner extends React.Component<
   ChoreEditInnerProps,
   ChoreEditState
 > {
+  private labelModalRef = React.createRef<LabelModal>()
+
   constructor(props: ChoreEditInnerProps) {
     super(props)
     this.state = {
@@ -94,7 +95,6 @@ class ChoreEditInner extends React.Component<
       isSnackbarOpen: false,
       snackbarMessage: null,
       snackbarColor: 'warning',
-      addLabelModalOpen: false,
       dueDate: null,
       frequencyType: 'once',
       frequency: 1,
@@ -112,7 +112,6 @@ class ChoreEditInner extends React.Component<
       confirmModelConfig: {
         cancelText: '',
         confirmText: '',
-        isOpen: false,
         message: '',
         onClose: () => {},
         title: '',
@@ -249,7 +248,6 @@ class ChoreEditInner extends React.Component<
     const { choreId } = this.props
     this.setState({
       confirmModelConfig: {
-        isOpen: true,
         title: 'Delete Chore',
         confirmText: 'Delete',
         cancelText: 'Cancel',
@@ -271,7 +269,6 @@ class ChoreEditInner extends React.Component<
 
           this.setState({
             confirmModelConfig: {
-              isOpen: false,
               title: '',
               confirmText: '',
               cancelText: '',
@@ -282,6 +279,7 @@ class ChoreEditInner extends React.Component<
         },
       },
     })
+    this.labelModalRef.current?.open()
   }
 
   componentDidMount(): void {
@@ -372,7 +370,6 @@ class ChoreEditInner extends React.Component<
       isSnackbarOpen,
       snackbarMessage,
       snackbarColor,
-      addLabelModalOpen,
       confirmModelConfig,
     } = this.state
     return (
@@ -642,9 +639,7 @@ class ChoreEditInner extends React.Component<
             <MenuItem
               key={'addNewLabel'}
               onClick={() => {
-                this.setState({
-                  addLabelModalOpen: true,
-                })
+                this.labelModalRef.current?.open()
               }}
             >
               <Add />
@@ -724,13 +719,11 @@ class ChoreEditInner extends React.Component<
           </Button>
         </Sheet>
         <ConfirmationModal {...confirmModelConfig} />
-        {addLabelModalOpen && (
-          <LabelModal
-            isOpen={addLabelModalOpen}
-            label={null}
-            onClose={() => this.setState({ addLabelModalOpen: false })}
-          />
-        )}
+        <LabelModal
+          label={null}
+          ref={this.labelModalRef}
+          onClose={() => console.error('missing impl')}
+        />
         <Snackbar
           open={isSnackbarOpen}
           onClose={() => {

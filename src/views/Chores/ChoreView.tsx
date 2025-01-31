@@ -56,6 +56,8 @@ class ChoreViewInner extends React.Component<
   ChoreViewInnerProps,
   ChoreViewState
 > {
+  private confirmationModalRef = React.createRef<ConfirmationModal>()
+
   constructor(props) {
     super(props)
 
@@ -64,7 +66,6 @@ class ChoreViewInner extends React.Component<
       infoCards: [],
       note: null,
       confirmModelConfig: {
-        isOpen: false,
         title: '',
         message: '',
         confirmText: '',
@@ -346,7 +347,6 @@ class ChoreViewInner extends React.Component<
               onClick={() => {
                 this.setState({
                   confirmModelConfig: {
-                    isOpen: true,
                     title: 'Skip Task',
 
                     message: 'Are you sure you want to skip this task?',
@@ -361,12 +361,13 @@ class ChoreViewInner extends React.Component<
                       this.setState({
                         confirmModelConfig: {
                           ...this.state.confirmModelConfig,
-                          isOpen: false,
                         },
                       })
                     },
                   },
                 })
+
+                this.confirmationModalRef.current?.open()
               }}
               startDecorator={<SwitchAccessShortcut />}
               sx={{
@@ -377,7 +378,9 @@ class ChoreViewInner extends React.Component<
             </Button>
           </Box>
 
-          <ConfirmationModal {...confirmModelConfig} />
+          <ConfirmationModal
+            ref={this.confirmationModalRef}
+            {...confirmModelConfig} />
         </Card>
       </Container>
     )

@@ -3,9 +3,9 @@ import React from 'react'
 
 interface TextModalProps {
   title: string
-  current: string
-  okText: string
-  cancelText: string
+  current?: string
+  okText?: string
+  cancelText?: string
 
   onClose: (newText: string | null) => void
 }
@@ -20,8 +20,12 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
     super(props)
     this.state = {
       isOpen: false,
-      text: props.current,
+      text: props.current ?? '',
     }
+  }
+
+  public open = () => {
+    this.setState({ isOpen: true })
   }
 
   private onSave = () => {

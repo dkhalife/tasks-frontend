@@ -23,19 +23,19 @@ type LabelViewProps = object
 interface LabelViewState {
   isLabelsLoading: boolean
   userLabels: Label[]
-  modalOpen: boolean
   currentLabel: Label | null
   isError: boolean
 }
 
 export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
+  private modalRef = React.createRef<LabelModal>()
+
   constructor(props: LabelViewProps) {
     super(props)
 
     this.state = {
       isLabelsLoading: true,
       userLabels: [],
-      modalOpen: false,
       currentLabel: null,
       isError: false,
     }
@@ -44,15 +44,17 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
   private handleAddLabel = () => {
     this.setState({
       currentLabel: null,
-      modalOpen: true,
     })
+
+    this.modalRef.current?.open()
   }
 
   private handleEditLabel = label => {
     this.setState({
       currentLabel: label,
-      modalOpen: true,
     })
+
+    this.modalRef.current?.open()
   }
 
   private handleDeleteLabel = id => {
@@ -82,7 +84,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
   }
 
   render(): React.ReactNode {
-    const { isLabelsLoading, userLabels, modalOpen, currentLabel, isError } =
+    const { isLabelsLoading, userLabels, currentLabel, isError } =
       this.state
 
     if (isLabelsLoading) {
@@ -162,13 +164,11 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
           </Typography>
         )}
 
-        {modalOpen && currentLabel && (
-          <LabelModal
-            isOpen={modalOpen}
-            onClose={() => this.setState({ modalOpen: false })}
-            label={currentLabel}
-          />
-        )}
+        <LabelModal
+          ref={this.modalRef}
+          onClose={() => console.error('missing impl')}
+          label={currentLabel}
+        />
 
         <Box
           sx={{
