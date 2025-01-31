@@ -1,9 +1,8 @@
-import { Fetch, HEADERS } from "../utils/TokenManager"
+import { Fetch } from "../utils/TokenManager"
 
 export const createChore = userID => {
   return Fetch(`/chores/`, {
     method: 'POST',
-    headers: HEADERS(),
     body: JSON.stringify({
       createdBy: Number(userID),
     }),
@@ -12,43 +11,37 @@ export const createChore = userID => {
 
 export const GetChores = () => {
   return Fetch(`/chores/`, {
-    method: 'GET',
-    headers: HEADERS(),
+    method: 'GET'
   })
 }
 
 export const GetArchivedChores = () => {
   return Fetch(`/chores/archived`, {
-    method: 'GET',
-    headers: HEADERS(),
+    method: 'GET'
   })
 }
 
 export const ArchiveChore = id => {
   return Fetch(`/chores/${id}/archive`, {
-    method: 'PUT',
-    headers: HEADERS(),
+    method: 'PUT'
   })
 }
 
 export const UnArchiveChore = id => {
   return Fetch(`/chores/${id}/unarchive`, {
-    method: 'PUT',
-    headers: HEADERS(),
+    method: 'PUT'
   })
 }
 
 export const GetChoreByID = id => {
   return Fetch(`/chores/${id}`, {
-    method: 'GET',
-    headers: HEADERS(),
+    method: 'GET'
   })
 }
 
 export const GetChoreDetailById = id => {
   return Fetch(`/chores/${id}/details`, {
     method: 'GET',
-    headers: HEADERS(),
   })
 }
 
@@ -68,7 +61,6 @@ export const MarkChoreComplete = (id, note, completedDate) => {
 
   return Fetch(markChoreURL, {
     method: 'POST',
-    headers: HEADERS(),
     body: JSON.stringify(body),
   })
 }
@@ -77,9 +69,6 @@ export const MarkChoreComplete = (id, note, completedDate) => {
 export const SkipChore = id => {
   return Fetch(`/chores/${id}/skip`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify({}),
   })
 }
@@ -87,7 +76,6 @@ export const SkipChore = id => {
 export const UpdateChoreAssignee = (id, assignee) => {
   return Fetch(`/chores/${id}/assignee`, {
     method: 'PUT',
-    headers: HEADERS(),
     body: JSON.stringify({ assignee: Number(assignee) }),
   })
 }
@@ -95,7 +83,6 @@ export const UpdateChoreAssignee = (id, assignee) => {
 export const CreateChore = chore => {
   return Fetch(`/chores/`, {
     method: 'POST',
-    headers: HEADERS(),
     body: JSON.stringify(chore),
   })
 }
@@ -103,14 +90,12 @@ export const CreateChore = chore => {
 export const DeleteChore = id => {
   return Fetch(`/chores/${id}`, {
     method: 'DELETE',
-    headers: HEADERS(),
   })
 }
 
 export const SaveChore = chore => {
   return Fetch(`/chores/`, {
     method: 'PUT',
-    headers: HEADERS(),
     body: JSON.stringify(chore),
   })
 }
@@ -118,21 +103,18 @@ export const SaveChore = chore => {
 export const GetChoreHistory = choreId => {
   return Fetch(`/chores/${choreId}/history`, {
     method: 'GET',
-    headers: HEADERS(),
   })
 }
 
 export const DeleteChoreHistory = (choreId, id) => {
   return Fetch(`/chores/${choreId}/history/${id}`, {
     method: 'DELETE',
-    headers: HEADERS(),
   })
 }
 
 export const UpdateChoreHistory = (choreId, id, choreHistory) => {
   return Fetch(`/chores/${choreId}/history/${id}`, {
     method: 'PUT',
-    headers: HEADERS(),
     body: JSON.stringify(choreHistory),
   })
 }
@@ -140,9 +122,6 @@ export const UpdateChoreHistory = (choreId, id, choreHistory) => {
 export const UpdateDueDate = (id, dueDate) => {
     return Fetch(`/chores/${id}/dueDate`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         dueDate: dueDate ? new Date(dueDate).toISOString() : null,
       }),
@@ -161,7 +140,6 @@ export const UpdateDueDate = (id, dueDate) => {
     }
     const resp = await Fetch(url, {
       method: 'GET',
-      headers: HEADERS(),
     })
     return resp.json()
   }
