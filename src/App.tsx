@@ -4,7 +4,6 @@ import { Outlet } from 'react-router-dom'
 import { UserContext, UserProfile } from './contexts/UserContext'
 import { GetUserProfile } from './utils/Fetcher'
 import { isTokenValid } from './utils/TokenManager'
-import { apiManager } from './utils/TokenManager'
 import React from 'react'
 import { ThemeMode } from './constants/theme'
 
@@ -17,7 +16,6 @@ interface AppState {
 export class App extends React.Component<AppProps, AppState> {
   constructor(props) {
     super(props)
-    apiManager.init()
 
     this.state = {
       userProfile: null,
