@@ -41,19 +41,19 @@ interface ChoreCardProps {
 }
 
 interface ChoreCardState {
-  isChangeDueDateModalOpen: boolean
   isCompleteWithPastDateModalOpen: boolean
   confirmModelConfig: ConfirmationModalProps | null
 }
 
 class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   private menuRef = React.createRef<HTMLDivElement>()
+  private confirmationModalRef = React.createRef<ConfirmationModal>()
+  private dateModalRef = React.createRef<DateModal>()
 
   constructor(props: ChoreCardProps) {
     super(props)
 
     this.state = {
-      isChangeDueDateModalOpen: false,
       isCompleteWithPastDateModalOpen: false,
       confirmModelConfig: null,
     }
@@ -66,7 +66,6 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   private handleDelete = () => {
     this.setState({
       confirmModelConfig: {
-        isOpen: true,
         title: 'Delete Chore',
         confirmText: 'Delete',
         cancelText: 'Cancel',
@@ -97,7 +96,11 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
     })
   }
 
-  private handleChangeDueDate = newDate => {
+  private handleChangeDueDate = (newDate) => {
+    if (newDate === null) {
+      return
+    }
+
     const { chore, onChoreUpdate } = this.props
 
     UpdateDueDate(chore.id, newDate).then(response => {
@@ -147,8 +150,6 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   render(): React.ReactNode {
     const { chore, onChoreUpdate, sx, viewOnly } = this.props
     const {
-      isChangeDueDateModalOpen,
-      isCompleteWithPastDateModalOpen,
       confirmModelConfig,
     } = this.state
 
@@ -312,7 +313,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                   <Divider />
                   <MenuItem
                     onClick={() => {
-                      this.setState({ isCompleteWithPastDateModalOpen: true })
+                      this.confirmationModalRef.current?.open()
                     }}
                   >
                     <MoreTime />
@@ -344,28 +345,24 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
             </Grid>
           </Grid>
           <DateModal
-            isOpen={isChangeDueDateModalOpen}
             key={'changeDueDate' + chore.id}
             current={chore.nextDueDate}
             title={`Change due date`}
-            onClose={() => {
-              this.setState({ isChangeDueDateModalOpen: false })
-            }}
-            onSave={this.handleChangeDueDate}
+            onClose={this.handleChangeDueDate}
           />
           <DateModal
-            isOpen={isCompleteWithPastDateModalOpen}
+            ref={this.dateModalRef}
             key={'completedInPast' + chore.id}
             current={chore.nextDueDate}
             title={`Save Chore that you completed in the past`}
-            onClose={() => {
-              this.setState({ isCompleteWithPastDateModalOpen: false })
-            }}
-            onSave={this.handleCompleteWithPastDate}
+            onClose={this.handleCompleteWithPastDate}
           />
 
-          {confirmModelConfig?.isOpen && (
-            <ConfirmationModal {...confirmModelConfig} />
+          { confirmModelConfig && (
+            <ConfirmationModal
+              ref={this.confirmationModalRef}
+              {...confirmModelConfig}
+              />
           )}
         </Card>
       </Box>

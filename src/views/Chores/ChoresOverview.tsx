@@ -35,7 +35,6 @@ interface ChoresOverviewState {
   filteredChores: Chore[]
   search: string
   choreId: string | null
-  isDateModalOpen: boolean
   activeUserId: number | null
 }
 
@@ -43,6 +42,8 @@ class ChoresOverviewInner extends React.Component<
   ChoresOverviewProps,
   ChoresOverviewState
 > {
+  private dateModalRef = React.createRef<DateModal>()
+
   constructor(props: ChoresOverviewProps) {
     super(props)
     this.state = {
@@ -50,7 +51,6 @@ class ChoresOverviewInner extends React.Component<
       filteredChores: [],
       search: '',
       choreId: null,
-      isDateModalOpen: false,
       activeUserId: null,
     }
   }
@@ -68,8 +68,31 @@ class ChoresOverviewInner extends React.Component<
     }
   }
 
+  private onCloseDateModal = (date) => {
+    if (!date) {
+      return
+    }
+
+    const { chores, choreId } = this.state
+    MarkChoreComplete(choreId, null, date).then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          const newChore = data.res
+          const newChores = [...chores]
+          const index = newChores.findIndex(c => c.id === newChore.id)
+          newChores[index] = newChore
+
+          this.setState({
+            chores: newChores,
+            filteredChores: newChores,
+          })
+        })
+      }
+    })
+  }
+
   render(): React.ReactNode {
-    const { chores, filteredChores, search, choreId, isDateModalOpen } =
+    const { chores, filteredChores, search, choreId } =
       this.state
 
     return (
@@ -213,8 +236,8 @@ class ChoresOverviewInner extends React.Component<
                       onClick={() => {
                         this.setState({
                           choreId: chore.id,
-                          isDateModalOpen: true,
                         })
+                        this.dateModalRef.current?.open()
                       }}
                       aria-setsize={2}
                     >
@@ -236,30 +259,11 @@ class ChoresOverviewInner extends React.Component<
           </tbody>
         </Table>
         <DateModal
-          isOpen={isDateModalOpen}
+          ref={this.dateModalRef}
           key={choreId}
           current=''
           title={`Change due date`}
-          onClose={() => {
-            this.setState({ isDateModalOpen: false })
-          }}
-          onSave={date => {
-            MarkChoreComplete(choreId, null, date).then(response => {
-              if (response.ok) {
-                response.json().then(data => {
-                  const newChore = data.res
-                  const newChores = [...chores]
-                  const index = newChores.findIndex(c => c.id === newChore.id)
-                  newChores[index] = newChore
-
-                  this.setState({
-                    chores: newChores,
-                    filteredChores: newChores,
-                  })
-                })
-              }
-            })
-          }}
+          onClose={this.onCloseDateModal}
         />
       </Container>
     )

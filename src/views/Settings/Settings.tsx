@@ -7,23 +7,10 @@ import React from 'react'
 import { StorageContext } from '../../contexts/StorageContext'
 import { UpdatePassword } from '../../api/users'
 
-type SettingsProps = object
-
-interface SettingsState {
-  changePasswordModal: boolean
-}
-
-export class Settings extends React.Component<SettingsProps, SettingsState> {
-  constructor(props: SettingsProps) {
-    super(props)
-    this.state = {
-      changePasswordModal: false,
-    }
-  }
+export class Settings extends React.Component {
+  private changePasswordModal = React.createRef<PassowrdChangeModal>()
 
   render(): React.ReactNode {
-    const { changePasswordModal } = this.state
-
     return (
       <Container>
         <div
@@ -47,27 +34,23 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
             <Button
               variant='soft'
               onClick={() => {
-                this.setState({ changePasswordModal: true })
+                this.changePasswordModal.current?.open()
               }}
             >
               Change Password
             </Button>
-            {changePasswordModal ? (
-              <PassowrdChangeModal
-                isOpen={changePasswordModal}
-                onClose={password => {
-                  if (password) {
-                    UpdatePassword(password).then(resp => {
-                      if (!resp.ok) {
-                        console.error('Password change failed')
-                      }
-                    })
-                  }
-
-                  this.setState({ changePasswordModal: false })
-                }}
-              />
-            ) : null}
+            <PassowrdChangeModal
+              ref={this.changePasswordModal}
+              onClose={password => {
+                if (password) {
+                  UpdatePassword(password).then(resp => {
+                    if (!resp.ok) {
+                      console.error('Password change failed')
+                    }
+                  })
+                }
+              }}
+            />
           </Box>
         </div>
         <NotificationSetting />

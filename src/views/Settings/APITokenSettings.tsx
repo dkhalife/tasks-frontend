@@ -19,7 +19,6 @@ type APITokenSettingsProps = object
 
 interface APITokenSettingsState {
   tokens: APIToken[]
-  isGetTokenNameModalOpen: boolean
   showTokenId: string | null
 }
 
@@ -27,12 +26,13 @@ export class APITokenSettings extends React.Component<
   APITokenSettingsProps,
   APITokenSettingsState
 > {
+  private modalRef = React.createRef<TextModal>()
+
   constructor(props: APITokenSettingsProps) {
     super(props)
 
     this.state = {
       tokens: [],
-      isGetTokenNameModalOpen: false,
       showTokenId: null,
     }
   }
@@ -61,7 +61,7 @@ export class APITokenSettings extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { tokens, isGetTokenNameModalOpen, showTokenId } = this.state
+    const { tokens, showTokenId } = this.state
 
     return (
       <div
@@ -159,19 +159,16 @@ export class APITokenSettings extends React.Component<
             mb: 1,
           }}
           onClick={() => {
-            this.setState({ isGetTokenNameModalOpen: true })
+            this.modalRef.current?.open()
           }}
         >
           Generate New Token
         </Button>
         <TextModal
-          isOpen={isGetTokenNameModalOpen}
+          ref={this.modalRef}
           title='Give a name for your new token, something to remember it by.'
-          onClose={() => {
-            this.setState({ isGetTokenNameModalOpen: false })
-          }}
+          onClose={this.handleSaveToken}
           okText={'Generate Token'}
-          onSave={this.handleSaveToken}
         />
       </div>
     )
