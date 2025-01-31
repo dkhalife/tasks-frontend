@@ -10,14 +10,10 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 
-import {
-  CreateLongLiveToken,
-  DeleteLongLiveToken,
-  GetLongLiveTokens,
-} from '../../utils/Fetcher'
 import { TextModal } from '../Modals/Inputs/TextModal'
 import React from 'react'
 import { APIToken } from '../../models/token'
+import { CreateLongLiveToken, DeleteLongLiveToken, GetLongLiveTokens } from '../../api/users'
 
 type APITokenSettingsProps = object 
 

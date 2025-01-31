@@ -11,9 +11,9 @@ import {
 } from '@mui/joy'
 
 import { LABEL_COLORS } from '../../../utils/Colors'
-import { CreateLabel, UpdateLabel } from '../../../utils/Fetcher'
 import React from 'react'
 import { Label } from '../../../models/label'
+import { UpdateLabel, CreateLabel } from '../../../api/labels'
 
 interface LabelModalProps {
   label: Label | null

@@ -26,12 +26,6 @@ import {
 import moment from 'moment'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
-  CreateChore,
-  DeleteChore,
-  GetChoreByID,
-  SaveChore,
-} from '../../utils/Fetcher'
-import {
   ConfirmationModal,
   ConfirmationModalProps,
 } from '../Modals/Inputs/ConfirmationModal'
@@ -41,6 +35,7 @@ import { RepeatOption } from './RepeatOption'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore, FrequencyMetadata } from '../../models/chore'
 import { Label } from '../../models/label'
+import { CreateChore, SaveChore, DeleteChore, GetChoreByID } from '../../api/chores'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']

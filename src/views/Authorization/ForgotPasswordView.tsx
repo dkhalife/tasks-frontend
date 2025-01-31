@@ -10,7 +10,6 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import { ResetPassword } from '../../utils/Fetcher'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { validateEmail } from '../../models/user'

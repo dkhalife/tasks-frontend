@@ -22,17 +22,13 @@ import {
 import moment from 'moment'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import {
-  GetChoreDetailById,
-  MarkChoreComplete,
-  SkipChore,
-} from '../../utils/Fetcher'
-import {
   ConfirmationModal,
   ConfirmationModalProps,
 } from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore } from '../../models/chore'
+import { MarkChoreComplete, GetChoreDetailById, SkipChore } from '../../api/chores'
 
 interface ChoreViewProps {
   choreId: string | undefined
