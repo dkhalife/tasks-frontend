@@ -33,6 +33,6 @@ jobs:
     - name: Trigger Go release
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: 'go-release.yml'
+        workflow: 'release.yml'
         repo: 'dkhalife/donetick'
         token: ${{ secrets.WORKFLOW_TOKEN }}
