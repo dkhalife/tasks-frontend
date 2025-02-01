@@ -1,48 +1,33 @@
-import { API_URL } from "../constants/config"
-import { HEADERS } from "../utils/TokenManager"
+import { Fetch } from "../utils/TokenManager"
 
 export const signUp = (username, password, displayName, email) => {
-  return fetch(`${API_URL}/api/v1/auth/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password, displayName, email }),
-  })
+  return Fetch('/auth/', 'POST', {
+    username,
+    password,
+    displayName,
+    email,
+  }, false)
 }
 
 export const login = (username, password) => {
-  return fetch(`${API_URL}/api/v1/auth/login`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify({ username, password }),
-  })
+  return Fetch('/auth/login', 'POST', {
+    username,
+    password,
+  }, false)
 }
 
 export const ChangePassword = (verificationCode, password) => {
-  return fetch(`${API_URL}/api/v1/auth/password?c=${verificationCode}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ password: password }),
-  })
+  return Fetch(`/auth/password?c=${verificationCode}`, 'POST', {
+    password
+  }, false)
 }
 
 export const ResetPassword = email => {
-  return fetch(`${API_URL}/api/v1/auth/reset`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email: email }),
-  })
+  return Fetch('/auth/reset', 'POST', {
+    email
+  }, false)
 }
 
 export const RefreshToken = () => {
-    return fetch(`${API_URL}/api/v1/auth/refresh`, {
-      headers: HEADERS(),
-    })
-  }
+  return Fetch('/auth/refresh')
+}

@@ -1,9 +1,13 @@
+/* eslint-env node */
+
 import Cookies from 'js-cookie'
-import { API_URL } from '../constants/config'
+import { RefreshToken } from '../api/auth'
+
+const API_URL = import.meta.env.VITE_APP_API_URL
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
-export function Fetch(url: string, method: RequestMethod = 'GET', body: unknown = {}): Promise<Response>{
+export function Fetch(url: string, method: RequestMethod = 'GET', body: unknown = {}, requiresAuth: boolean = true): Promise<Response>{
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'
@@ -11,18 +15,20 @@ export function Fetch(url: string, method: RequestMethod = 'GET', body: unknown 
   }
 
   const fullURL = `${API_URL}/api/v1${url}`
+
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+
+  if (requiresAuth) {
+    headers['Authorization'] = 'Bearer ' + localStorage.getItem('ca_token')
+  }
+
   return fetch(fullURL, {
     method,
-    headers: HEADERS(),
+    headers,
     body: JSON.stringify(body),
   })
-}
-
-export const HEADERS = () => {
-  return {
-    'Content-Type': 'application/json',
-    Authorization: 'Bearer ' + localStorage.getItem('ca_token'),
-  }
 }
 
 export const isTokenValid = () => {
