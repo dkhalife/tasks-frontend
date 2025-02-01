@@ -1,55 +1,33 @@
-import { Fetch, HEADERS } from "../utils/TokenManager"
+import { Request } from "../utils/TokenManager"
 
 export const createChore = userID => {
-  return Fetch(`/chores/`, {
-    method: 'POST',
-    headers: HEADERS(),
-    body: JSON.stringify({
-      createdBy: Number(userID),
-    }),
+  return Request(`/chores/`, 'POST', {
+    createdBy: Number(userID),
   }).then(response => response.json())
 }
 
 export const GetChores = () => {
-  return Fetch(`/chores/`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/`)
 }
 
 export const GetArchivedChores = () => {
-  return Fetch(`/chores/archived`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/archived`)
 }
 
 export const ArchiveChore = id => {
-  return Fetch(`/chores/${id}/archive`, {
-    method: 'PUT',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${id}/archive`, 'PUT')
 }
 
 export const UnArchiveChore = id => {
-  return Fetch(`/chores/${id}/unarchive`, {
-    method: 'PUT',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${id}/unarchive`, 'PUT')
 }
 
 export const GetChoreByID = id => {
-  return Fetch(`/chores/${id}`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${id}`)
 }
 
 export const GetChoreDetailById = id => {
-  return Fetch(`/chores/${id}/details`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${id}/details`)
 }
 
 export const MarkChoreComplete = (id, note, completedDate) => {
@@ -66,103 +44,60 @@ export const MarkChoreComplete = (id, note, completedDate) => {
     markChoreURL += completedDateFormated
   }
 
-  return Fetch(markChoreURL, {
-    method: 'POST',
-    headers: HEADERS(),
-    body: JSON.stringify(body),
-  })
+  return Request(markChoreURL, 'POST', body)
 }
 
 
 export const SkipChore = id => {
-  return Fetch(`/chores/${id}/skip`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({}),
-  })
+  return Request(`/chores/${id}/skip`, 'POST')
 }
 
 export const UpdateChoreAssignee = (id, assignee) => {
-  return Fetch(`/chores/${id}/assignee`, {
-    method: 'PUT',
-    headers: HEADERS(),
-    body: JSON.stringify({ assignee: Number(assignee) }),
+  return Request(`/chores/${id}/assignee`, 'PUT', {
+    assignee: Number(assignee)
   })
 }
 
 export const CreateChore = chore => {
-  return Fetch(`/chores/`, {
-    method: 'POST',
-    headers: HEADERS(),
-    body: JSON.stringify(chore),
-  })
+  return Request(`/chores/`, 'POST', chore)
 }
 
 export const DeleteChore = id => {
-  return Fetch(`/chores/${id}`, {
-    method: 'DELETE',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${id}`, 'DELETE')
 }
 
 export const SaveChore = chore => {
-  return Fetch(`/chores/`, {
-    method: 'PUT',
-    headers: HEADERS(),
-    body: JSON.stringify(chore),
-  })
+  return Request(`/chores/`, 'PUT', chore)
 }
 
 export const GetChoreHistory = choreId => {
-  return Fetch(`/chores/${choreId}/history`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${choreId}/history`)
 }
 
 export const DeleteChoreHistory = (choreId, id) => {
-  return Fetch(`/chores/${choreId}/history/${id}`, {
-    method: 'DELETE',
-    headers: HEADERS(),
-  })
+  return Request(`/chores/${choreId}/history/${id}`, 'DELETE')
 }
 
 export const UpdateChoreHistory = (choreId, id, choreHistory) => {
-  return Fetch(`/chores/${choreId}/history/${id}`, {
-    method: 'PUT',
-    headers: HEADERS(),
-    body: JSON.stringify(choreHistory),
-  })
+  return Request(`/chores/${choreId}/history/${id}`, 'PUT', choreHistory)
 }
 
 export const UpdateDueDate = (id, dueDate) => {
-    return Fetch(`/chores/${id}/dueDate`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      }),
-    })
+  return Request(`/chores/${id}/dueDate`, 'PUT', {
+    dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+  })
+}
+  
+export const GetChoresHistory = async (limit, includeMembers) => {
+  let url = `/chores/history`
+  if (!limit) limit = 7
+
+  if (limit) {
+    url += `?limit=${limit}`
   }
-  
-  export const GetChoresHistory = async (limit, includeMembers) => {
-    let url = `/chores/history`
-    if (!limit) limit = 7
-  
-    if (limit) {
-      url += `?limit=${limit}`
-    }
-    if (includeMembers) {
-      url += `&members=true`
-    }
-    const resp = await Fetch(url, {
-      method: 'GET',
-      headers: HEADERS(),
-    })
-    return resp.json()
+  if (includeMembers) {
+    url += `&members=true`
   }
-  
+  const resp = await Request(url)
+  return resp.json()
+}

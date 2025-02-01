@@ -1,32 +1,18 @@
-import { Fetch, HEADERS } from "../utils/TokenManager"
+import { Request } from "../utils/TokenManager"
 
 export const CreateLabel = label => {
-  return Fetch(`/labels`, {
-    method: 'POST',
-    headers: HEADERS(),
-    body: JSON.stringify(label),
-  })
+  return Request(`/labels`, 'POST', label)
 }
 
 export const GetLabels = async () => {
-  const resp = await Fetch(`/labels`, {
-    method: 'GET',
-    headers: HEADERS(),
-  })
+  const resp = await Request(`/labels`)
   return resp.json()
 }
 
 export const UpdateLabel = label => {
-  return Fetch(`/labels`, {
-    method: 'PUT',
-    headers: HEADERS(),
-    body: JSON.stringify(label),
-  })
+  return Request(`/labels`, 'PUT', label)
 }
 
 export const DeleteLabel = id => {
-  return Fetch(`/labels/${id}`, {
-    method: 'DELETE',
-    headers: HEADERS(),
-  })
+  return Request(`/labels/${id}`, 'DELETE')
 }
