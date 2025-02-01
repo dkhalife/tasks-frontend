@@ -7,7 +7,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
-export function Fetch(url: string, method: RequestMethod = 'GET', body: unknown = {}, requiresAuth: boolean = true): Promise<Response>{
+export function Request(url: string, method: RequestMethod = 'GET', body: unknown = {}, requiresAuth: boolean = true): Promise<Response>{
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'

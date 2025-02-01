@@ -1,7 +1,7 @@
-import { Fetch } from "../utils/TokenManager"
+import { Request } from "../utils/TokenManager"
 
 export const signUp = (username, password, displayName, email) => {
-  return Fetch('/auth/', 'POST', {
+  return Request('/auth/', 'POST', {
     username,
     password,
     displayName,
@@ -10,24 +10,24 @@ export const signUp = (username, password, displayName, email) => {
 }
 
 export const login = (username, password) => {
-  return Fetch('/auth/login', 'POST', {
+  return Request('/auth/login', 'POST', {
     username,
     password,
   }, false)
 }
 
 export const ChangePassword = (verificationCode, password) => {
-  return Fetch(`/auth/password?c=${verificationCode}`, 'POST', {
+  return Request(`/auth/password?c=${verificationCode}`, 'POST', {
     password
   }, false)
 }
 
 export const ResetPassword = email => {
-  return Fetch('/auth/reset', 'POST', {
+  return Request('/auth/reset', 'POST', {
     email
   }, false)
 }
 
 export const RefreshToken = () => {
-  return Fetch('/auth/refresh')
+  return Request('/auth/refresh')
 }

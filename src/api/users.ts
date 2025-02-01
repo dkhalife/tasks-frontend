@@ -1,38 +1,38 @@
-import { Fetch } from "../utils/TokenManager"
+import { Request } from "../utils/TokenManager"
 
 export const UpdatePassword = newPassword => {
-  return Fetch(`/users/change_password`, 'PUT', {
+  return Request(`/users/change_password`, 'PUT', {
     password: newPassword,
   })
 }
 
 export const GetUserProfile = () => {
-  return Fetch(`/users/profile`)
+  return Request(`/users/profile`)
 }
 
 export const UpdateUserDetails = userDetails => {
-  return Fetch(`/users`, 'PUT', userDetails)
+  return Request(`/users`, 'PUT', userDetails)
 }
 
 export const UpdateNotificationTarget = notificationTarget => {
-  return Fetch(`/users/targets`, 'PUT', notificationTarget)
+  return Request(`/users/targets`, 'PUT', notificationTarget)
 }
 
 export const CreateLongLiveToken = name => {
-  return Fetch(`/users/tokens`, 'POST', {
+  return Request(`/users/tokens`, 'POST', {
     name,
   })
 }
 export const DeleteLongLiveToken = id => {
-  return Fetch(`/users/tokens/${id}`, 'DELETE')
+  return Request(`/users/tokens/${id}`, 'DELETE')
 }
 
 export const GetLongLiveTokens = () => {
-  return Fetch(`/users/tokens`)
+  return Request(`/users/tokens`)
 }
 
 export const PutNotificationTarget = (platform, deviceToken) => {
-  return Fetch(`/users/targets`, 'PUT', {
+  return Request(`/users/targets`, 'PUT', {
     platform,
     deviceToken
   })

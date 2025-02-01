@@ -1,18 +1,18 @@
-import { Fetch } from "../utils/TokenManager"
+import { Request } from "../utils/TokenManager"
 
 export const CreateLabel = label => {
-  return Fetch(`/labels`, 'POST', label)
+  return Request(`/labels`, 'POST', label)
 }
 
 export const GetLabels = async () => {
-  const resp = await Fetch(`/labels`)
+  const resp = await Request(`/labels`)
   return resp.json()
 }
 
 export const UpdateLabel = label => {
-  return Fetch(`/labels`, 'PUT', label)
+  return Request(`/labels`, 'PUT', label)
 }
 
 export const DeleteLabel = id => {
-  return Fetch(`/labels/${id}`, 'DELETE')
+  return Request(`/labels/${id}`, 'DELETE')
 }
