@@ -1,11 +1,8 @@
 import { Fetch } from "../utils/TokenManager"
 
 export const createChore = userID => {
-  return Fetch(`/chores/`, {
-    method: 'POST',
-    body: JSON.stringify({
-      createdBy: Number(userID),
-    }),
+  return Fetch(`/chores/`, 'POST', {
+    createdBy: Number(userID),
   }).then(response => response.json())
 }
 
@@ -18,15 +15,11 @@ export const GetArchivedChores = () => {
 }
 
 export const ArchiveChore = id => {
-  return Fetch(`/chores/${id}/archive`, {
-    method: 'PUT'
-  })
+  return Fetch(`/chores/${id}/archive`, 'PUT')
 }
 
 export const UnArchiveChore = id => {
-  return Fetch(`/chores/${id}/unarchive`, {
-    method: 'PUT'
-  })
+  return Fetch(`/chores/${id}/unarchive`, 'PUT')
 }
 
 export const GetChoreByID = id => {
@@ -51,45 +44,30 @@ export const MarkChoreComplete = (id, note, completedDate) => {
     markChoreURL += completedDateFormated
   }
 
-  return Fetch(markChoreURL, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  })
+  return Fetch(markChoreURL, 'POST', body)
 }
 
 
 export const SkipChore = id => {
-  return Fetch(`/chores/${id}/skip`, {
-    method: 'POST',
-    body: JSON.stringify({}),
-  })
+  return Fetch(`/chores/${id}/skip`, 'POST')
 }
 
 export const UpdateChoreAssignee = (id, assignee) => {
-  return Fetch(`/chores/${id}/assignee`, {
-    method: 'PUT',
-    body: JSON.stringify({ assignee: Number(assignee) }),
+  return Fetch(`/chores/${id}/assignee`, 'PUT', {
+    assignee: Number(assignee)
   })
 }
 
 export const CreateChore = chore => {
-  return Fetch(`/chores/`, {
-    method: 'POST',
-    body: JSON.stringify(chore),
-  })
+  return Fetch(`/chores/`, 'POST', chore)
 }
 
 export const DeleteChore = id => {
-  return Fetch(`/chores/${id}`, {
-    method: 'DELETE',
-  })
+  return Fetch(`/chores/${id}`, 'DELETE')
 }
 
 export const SaveChore = chore => {
-  return Fetch(`/chores/`, {
-    method: 'PUT',
-    body: JSON.stringify(chore),
-  })
+  return Fetch(`/chores/`, 'PUT', chore)
 }
 
 export const GetChoreHistory = choreId => {
@@ -97,38 +75,29 @@ export const GetChoreHistory = choreId => {
 }
 
 export const DeleteChoreHistory = (choreId, id) => {
-  return Fetch(`/chores/${choreId}/history/${id}`, {
-    method: 'DELETE',
-  })
+  return Fetch(`/chores/${choreId}/history/${id}`, 'DELETE')
 }
 
 export const UpdateChoreHistory = (choreId, id, choreHistory) => {
-  return Fetch(`/chores/${choreId}/history/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(choreHistory),
-  })
+  return Fetch(`/chores/${choreId}/history/${id}`, 'PUT', choreHistory)
 }
 
 export const UpdateDueDate = (id, dueDate) => {
-    return Fetch(`/chores/${id}/dueDate`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      }),
-    })
+  return Fetch(`/chores/${id}/dueDate`, 'PUT', {
+    dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+  })
+}
+  
+export const GetChoresHistory = async (limit, includeMembers) => {
+  let url = `/chores/history`
+  if (!limit) limit = 7
+
+  if (limit) {
+    url += `?limit=${limit}`
   }
-  
-  export const GetChoresHistory = async (limit, includeMembers) => {
-    let url = `/chores/history`
-    if (!limit) limit = 7
-  
-    if (limit) {
-      url += `?limit=${limit}`
-    }
-    if (includeMembers) {
-      url += `&members=true`
-    }
-    const resp = await Fetch(url)
-    return resp.json()
+  if (includeMembers) {
+    url += `&members=true`
   }
-  
+  const resp = await Fetch(url)
+  return resp.json()
+}

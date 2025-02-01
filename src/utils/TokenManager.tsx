@@ -1,20 +1,21 @@
 import Cookies from 'js-cookie'
 import { API_URL } from '../constants/config'
 
-export function Fetch(url: string, options?: RequestInit): Promise<Response>{
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+export function Fetch(url: string, method: RequestMethod = 'GET', body: unknown = {}): Promise<Response>{
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'
     // TODO: Stop execution when better type safety is in place
   }
 
-  options = options || {}
-  options.headers = { ...options.headers, ...HEADERS() }
-
-  const baseURL = `${API_URL}/api/v1`
-
-  const fullURL = `${baseURL}${url}`
-  return fetch(fullURL, options)
+  const fullURL = `${API_URL}/api/v1${url}`
+  return fetch(fullURL, {
+    method,
+    headers: HEADERS(),
+    body: JSON.stringify(body),
+  })
 }
 
 export const HEADERS = () => {

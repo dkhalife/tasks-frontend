@@ -1,9 +1,8 @@
 import { Fetch } from "../utils/TokenManager"
 
 export const UpdatePassword = newPassword => {
-  return Fetch(`/users/change_password`, {
-    method: 'PUT',
-    body: JSON.stringify({ password: newPassword }),
+  return Fetch(`/users/change_password`, 'PUT', {
+    password: newPassword,
   })
 }
 
@@ -12,29 +11,20 @@ export const GetUserProfile = () => {
 }
 
 export const UpdateUserDetails = userDetails => {
-  return Fetch(`/users`, {
-    method: 'PUT',
-    body: JSON.stringify(userDetails),
-  })
+  return Fetch(`/users`, 'PUT', userDetails)
 }
 
 export const UpdateNotificationTarget = notificationTarget => {
-  return Fetch(`/users/targets`, {
-    method: 'PUT',
-    body: JSON.stringify(notificationTarget),
-  })
+  return Fetch(`/users/targets`, 'PUT', notificationTarget)
 }
 
 export const CreateLongLiveToken = name => {
-  return Fetch(`/users/tokens`, {
-    method: 'POST',
-    body: JSON.stringify({ name }),
+  return Fetch(`/users/tokens`, 'POST', {
+    name,
   })
 }
 export const DeleteLongLiveToken = id => {
-  return Fetch(`/users/tokens/${id}`, {
-    method: 'DELETE',
-  })
+  return Fetch(`/users/tokens/${id}`, 'DELETE')
 }
 
 export const GetLongLiveTokens = () => {
@@ -42,8 +32,8 @@ export const GetLongLiveTokens = () => {
 }
 
 export const PutNotificationTarget = (platform, deviceToken) => {
-  return Fetch(`/users/targets`, {
-    method: 'PUT',
-    body: JSON.stringify({ platform, deviceToken }),
+  return Fetch(`/users/targets`, 'PUT', {
+    platform,
+    deviceToken
   })
 }

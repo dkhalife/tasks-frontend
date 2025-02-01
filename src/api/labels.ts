@@ -1,10 +1,7 @@
 import { Fetch } from "../utils/TokenManager"
 
 export const CreateLabel = label => {
-  return Fetch(`/labels`, {
-    method: 'POST',
-    body: JSON.stringify(label),
-  })
+  return Fetch(`/labels`, 'POST', label)
 }
 
 export const GetLabels = async () => {
@@ -13,14 +10,9 @@ export const GetLabels = async () => {
 }
 
 export const UpdateLabel = label => {
-  return Fetch(`/labels`, {
-    method: 'PUT',
-    body: JSON.stringify(label),
-  })
+  return Fetch(`/labels`, 'PUT', label)
 }
 
 export const DeleteLabel = id => {
-  return Fetch(`/labels/${id}`, {
-    method: 'DELETE',
-  })
+  return Fetch(`/labels/${id}`, 'DELETE')
 }
