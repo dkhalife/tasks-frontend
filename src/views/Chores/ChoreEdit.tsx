@@ -289,22 +289,6 @@ class ChoreEditInner extends React.Component<
     const { choreId } = this.props
     if (choreId != undefined) {
       GetChoreByID(choreId)
-        .then(response => {
-          if (response.status !== 200) {
-            this.setState({
-              isSnackbarOpen: true,
-              snackbarMessage: 'You are not authorized to view this chore.',
-              snackbarColor: 'danger',
-            })
-
-            setTimeout(() => {
-              this.props.navigate('/my/chores')
-            }, 3000)
-            return null
-          } else {
-            return response.json()
-          }
-        })
         .then(data => {
           // TODO: There is so much redundancy here
           this.setState({
@@ -324,6 +308,17 @@ class ChoreEditInner extends React.Component<
             updatedBy: data.res.updatedBy,
             isNotificable: data.res.notification,
           })
+        })
+        .catch(err => {
+          this.setState({
+            isSnackbarOpen: true,
+            snackbarMessage: 'You are not authorized to view this chore.',
+            snackbarColor: 'danger',
+          })
+
+          setTimeout(() => {
+            this.props.navigate('/my/chores')
+          }, 3000)
         })
     } else {
       // TODO: Use a more specific ref

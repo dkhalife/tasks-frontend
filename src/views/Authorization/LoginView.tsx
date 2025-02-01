@@ -12,6 +12,7 @@ import Cookies from 'js-cookie'
 import React from 'react'
 import { Logo } from '../../Logo'
 import { withNavigation } from '../../contexts/hooks'
+import { login } from '../../api/auth'
 
 interface LoginViewProps {
   navigate: (path: string) => void
@@ -44,29 +45,19 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
     const { username, password } = this.state
 
     login(username, password)
-      .then(response => {
-        if (response.status === 200) {
-          return response.json().then(data => {
-            localStorage.setItem('ca_token', data.token)
-            localStorage.setItem('ca_expiration', data.expire)
-            const redirectUrl = Cookies.get('ca_redirect')
-            if (redirectUrl) {
-              Cookies.remove('ca_redirect')
-              this.props.navigate(redirectUrl)
-            } else {
-              this.props.navigate('/my/chores')
-            }
-          })
-        } else if (response.status === 401) {
-          this.setState({ error: 'Wrong username or password' })
+      .then(data => {
+        localStorage.setItem('ca_token', data.token)
+        localStorage.setItem('ca_expiration', data.expire)
+        const redirectUrl = Cookies.get('ca_redirect')
+        if (redirectUrl) {
+          Cookies.remove('ca_redirect')
+          this.props.navigate(redirectUrl)
         } else {
-          this.setState({ error: 'An error occurred, please try again' })
+          this.props.navigate('/my/chores')
         }
       })
-      .catch(() => {
-        this.setState({
-          error: 'Unable to communicate with server, please try again',
-        })
+      .catch((error: Error) => {
+        this.setState({ error: error.message })
       })
   }
 

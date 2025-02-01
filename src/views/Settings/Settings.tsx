@@ -10,6 +10,14 @@ import { UpdatePassword } from '../../api/users'
 export class Settings extends React.Component {
   private changePasswordModal = React.createRef<PassowrdChangeModal>()
 
+  private onPasswordChange = async (password: string | null) => {
+    if (!password) {
+      return
+    }
+
+    await UpdatePassword(password)
+  }
+
   render(): React.ReactNode {
     return (
       <Container>
@@ -41,15 +49,7 @@ export class Settings extends React.Component {
             </Button>
             <PassowrdChangeModal
               ref={this.changePasswordModal}
-              onClose={password => {
-                if (password) {
-                  UpdatePassword(password).then(resp => {
-                    if (!resp.ok) {
-                      console.error('Password change failed')
-                    }
-                  })
-                }
-              }}
+              onClose={(newPassword) => this.onPasswordChange(newPassword)}
             />
           </Box>
         </div>

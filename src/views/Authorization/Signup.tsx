@@ -14,6 +14,7 @@ import React from 'react'
 import { Logo } from '../../Logo'
 import { withNavigation } from '../../contexts/hooks'
 import { validateEmail, validatePassword } from '../../models/user'
+import { login, signUp } from '../../api/auth'
 
 interface SignupViewProps {
   navigate: (path: string) => void
@@ -52,16 +53,13 @@ class SignupViewInner extends React.Component<
   }
 
   private handleLogin = (username, password) => {
-    login(username, password).then(response => {
-      if (response.status === 200) {
-        response.json().then(res => {
-          localStorage.setItem('ca_token', res.token)
-          localStorage.setItem('ca_expiration', res.expire)
-          this.props.navigate('/my/chores')
-        })
-      } else {
-        this.setState({ error: 'Login failed' })
-      }
+    login(username, password).then(res => {
+      localStorage.setItem('ca_token', res.token)
+      localStorage.setItem('ca_expiration', res.expire)
+      this.props.navigate('/my/chores')
+    })
+    .catch(() => {
+      this.setState({ error: 'Login failed' })
     })
   }
 
@@ -129,15 +127,9 @@ class SignupViewInner extends React.Component<
 
     const { username, password, displayName, email } = this.state
     signUp(username, password, displayName, email).then(response => {
-      if (response.status === 201) {
-        this.handleLogin(username, password)
-      } else if (response.status === 403) {
-        this.setState({ error: 'Signup disabled, please contact admin' })
-      } else {
-        response.json().then(res => {
-          this.setState({ error: res.error })
-        })
-      }
+      this.handleLogin(username, password)
+    }).catch((error: Error) => {
+      this.setState({ error: error.message })
     })
   }
 

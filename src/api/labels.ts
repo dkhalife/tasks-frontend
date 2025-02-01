@@ -5,8 +5,8 @@ export const CreateLabel = label => {
 }
 
 export const GetLabels = async () => {
-  const resp = await Request(`/labels`)
-  return resp.json()
+  const response = await Request(`/labels`)
+  return response.json()
 }
 
 export const UpdateLabel = label => {

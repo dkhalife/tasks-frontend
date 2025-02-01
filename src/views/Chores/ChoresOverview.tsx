@@ -57,7 +57,6 @@ class ChoresOverviewInner extends React.Component<
 
   componentDidMount(): void {
     GetChores()
-      .then(response => response.json())
       .then(data => {
         this.setState({ chores: data.res, filteredChores: data.res })
       })
@@ -74,20 +73,16 @@ class ChoresOverviewInner extends React.Component<
     }
 
     const { chores, choreId } = this.state
-    MarkChoreComplete(choreId, null, date).then(response => {
-      if (response.ok) {
-        response.json().then(data => {
-          const newChore = data.res
-          const newChores = [...chores]
-          const index = newChores.findIndex(c => c.id === newChore.id)
-          newChores[index] = newChore
+    MarkChoreComplete(choreId, null, date).then(data => {
+      const newChore = data.res
+      const newChores = [...chores]
+      const index = newChores.findIndex(c => c.id === newChore.id)
+      newChores[index] = newChore
 
-          this.setState({
-            chores: newChores,
-            filteredChores: newChores,
-          })
-        })
-      }
+      this.setState({
+        chores: newChores,
+        filteredChores: newChores,
+      })
     })
   }
 
@@ -206,25 +201,19 @@ class ChoresOverviewInner extends React.Component<
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        MarkChoreComplete(chore.id, null, null).then(
-                          response => {
-                            if (response.ok) {
-                              response.json().then(data => {
-                                const newChore = data.res
-                                const newChores = [...chores]
-                                const index = newChores.findIndex(
-                                  c => c.id === chore.id,
-                                )
-                                newChores[index] = newChore
+                        MarkChoreComplete(chore.id, null, null).then(data => {
+                          const newChore = data.res
+                          const newChores = [...chores]
+                          const index = newChores.findIndex(
+                            c => c.id === chore.id,
+                          )
+                          newChores[index] = newChore
 
-                                this.setState({
-                                  chores: newChores,
-                                  filteredChores: newChores,
-                                })
-                              })
-                            }
-                          },
-                        )
+                          this.setState({
+                            chores: newChores,
+                            filteredChores: newChores,
+                          })
+                        })
                       }}
                       aria-setsize={2}
                     >

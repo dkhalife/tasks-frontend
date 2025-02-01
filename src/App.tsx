@@ -5,6 +5,7 @@ import { UserContext, UserProfile } from './contexts/UserContext'
 import { isTokenValid } from './utils/TokenManager'
 import React from 'react'
 import { ThemeMode } from './constants/theme'
+import { GetUserProfile } from './api/users'
 
 type AppProps = object
 
@@ -22,11 +23,9 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   private loadUserProfile = () => {
-    GetUserProfile().then(res => {
-      res.json().then(data => {
-        this.setState({
-          userProfile: data.res,
-        })
+    GetUserProfile().then(data => {
+      this.setState({
+        userProfile: data.res,
       })
     })
   }

@@ -13,6 +13,7 @@ import {
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { validateEmail } from '../../models/user'
+import { ResetPassword } from '../../api/auth'
 
 interface ForgotPasswordViewProps {
   navigate: (path: string) => void
@@ -50,13 +51,7 @@ class ForgotPasswordViewInner extends React.Component<
     }
 
     try {
-      const response = await ResetPassword(this.state.email)
-
-      if (response.ok) {
-        this.setState({ resetStatusOk: true })
-      } else {
-        this.setState({ resetStatusOk: false })
-      }
+      this.setState({ resetStatusOk: await ResetPassword(this.state.email) })
     } catch {
       this.setState({ resetStatusOk: false })
     }

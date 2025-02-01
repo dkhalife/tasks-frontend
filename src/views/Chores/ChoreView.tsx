@@ -75,47 +75,32 @@ class ChoreViewInner extends React.Component<
     }
   }
 
-  private handleTaskCompletion = () => {
+  private handleTaskCompletion = async () => {
     const { note } = this.state
     const { choreId } = this.props
 
-    MarkChoreComplete(choreId, note, null)
-      .then(resp => {
-        if (resp.ok) {
-          return resp.json().then(data => {
-            this.setState({
-              note: null,
-              chore: data.res,
-            })
-          })
-        }
-      })
-      .then(() => {
-        GetChoreDetailById(choreId).then(resp => {
-          if (resp.ok) {
-            return resp.json().then(data => {
-              this.setState({
-                chore: data.res,
-              })
-            })
-          }
-        })
-      })
+    const data = await MarkChoreComplete(choreId, note, null)
+    this.setState({
+      note: null,
+      chore: data.res,
+    })
+
+    // TODO: redundant
+    const data2 = await GetChoreDetailById(choreId)
+    this.setState({
+      chore: data2.res,
+    })
   }
 
   componentDidMount(): void {
-    GetChoreDetailById(this.props.choreId).then(resp => {
-      if (resp.ok) {
-        return resp.json().then(data => {
-          const chore = data.res
+    GetChoreDetailById(this.props.choreId).then(data => {
+      const chore = data.res
 
-          this.setState({
-            chore,
-          })
+      this.setState({
+        chore,
+      })
 
-          this.generateInfoCards(chore)
-        })
-      }
+      this.generateInfoCards(chore)
     })
   }
 
@@ -149,15 +134,10 @@ class ChoreViewInner extends React.Component<
     })
   }
 
-  private handleSkippingTask = () => {
-    SkipChore(this.props.choreId).then(response => {
-      if (response.ok) {
-        response.json().then(data => {
-          this.setState({
-            chore: data.res,
-          })
-        })
-      }
+  private handleSkippingTask = async () => {
+    const data = await SkipChore(this.props.choreId)
+    this.setState({
+      chore: data.res,
     })
   }
 

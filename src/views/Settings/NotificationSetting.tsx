@@ -41,11 +41,9 @@ export class NotificationSetting extends React.Component<
   }
 
   componentDidMount(): void {
-    GetUserProfile().then(resp => {
-      resp.json().then(data => {
-        this.setState({
-          userProfile: data.res,
-        })
+    GetUserProfile().then(data => {
+      this.setState({
+        userProfile: data.res,
       })
     })
   }

@@ -50,15 +50,8 @@ export const isTokenValid = () => {
   }
 }
 
-export const refreshAccessToken = () => {
-  RefreshToken().then(res => {
-    if (res.status === 200) {
-      res.json().then(data => {
-        localStorage.setItem('ca_token', data.token)
-        localStorage.setItem('ca_expiration', data.expire)
-      })
-    } else {
-      return res.json()
-    }
-  })
+export const refreshAccessToken = async () => {
+  const data = await RefreshToken()
+  localStorage.setItem('ca_token', data.token)
+  localStorage.setItem('ca_expiration', data.expire)
 }

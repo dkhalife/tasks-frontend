@@ -61,26 +61,15 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
   componentDidMount(): void {
     Promise.all([GetChores(), GetUserProfile()]).then(responses => {
       // TODO: Split this and move state ownership to the respective components
-      const [choresResponse, userProfileResponse] = responses
-      if (!choresResponse.ok) {
-        throw new Error(choresResponse.statusText)
-      }
-      if (!userProfileResponse.ok) {
-        throw new Error(userProfileResponse.statusText)
-      }
-      Promise.all([choresResponse.json(), userProfileResponse.json()]).then(
-        data => {
-          const [choresData, userProfileData] = data
-          //TODO: Sorter
-          //choresData.res.sort(choreSorter)
-          this.setState({
-            chores: choresData.res,
-            filteredChores: choresData.res,
-            userProfile: userProfileData.res,
-            isLoading: false,
-          })
-        },
-      )
+      const [choresData, userProfileData] = responses
+      //TODO: Sorter
+      //choresData.res.sort(choreSorter)
+      this.setState({
+        chores: choresData.res,
+        filteredChores: choresData.res,
+        userProfile: userProfileData.res,
+        isLoading: false,
+      })
     })
   }
 

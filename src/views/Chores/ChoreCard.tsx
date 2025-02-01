@@ -63,6 +63,16 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
     this.props.navigate(`/chores/${this.props.chore.id}/edit`)
   }
 
+  private handleDeleteConfirm = async (isConfirmed: boolean) => {
+    const { chore, onChoreRemove } = this.props
+    if (isConfirmed === true) {
+      await DeleteChore(chore.id)
+      onChoreRemove(chore)
+    }
+
+    this.setState({ confirmModelConfig: null })
+  }
+
   private handleDelete = () => {
     this.setState({
       confirmModelConfig: {
@@ -70,29 +80,15 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
         confirmText: 'Delete',
         cancelText: 'Cancel',
         message: 'Are you sure you want to delete this chore?',
-        onClose: isConfirmed => {
-          const { chore, onChoreRemove } = this.props
-          if (isConfirmed === true) {
-            DeleteChore(chore.id).then(response => {
-              if (response.ok) {
-                onChoreRemove(chore)
-              }
-            })
-          }
-          this.setState({ confirmModelConfig: null })
-        },
+        onClose: this.handleDeleteConfirm,
       },
     })
   }
 
   private handleTaskCompletion = () => {
     const { chore, onChoreUpdate } = this.props
-    MarkChoreComplete(chore.id, null, null).then(resp => {
-      if (resp.ok) {
-        return resp.json().then(data => {
-          onChoreUpdate(data.res, 'completed')
-        })
-      }
+    MarkChoreComplete(chore.id, null, null).then(data => {
+      onChoreUpdate(data.res, 'completed')
     })
   }
 
@@ -103,29 +99,18 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
 
     const { chore, onChoreUpdate } = this.props
 
-    UpdateDueDate(chore.id, newDate).then(response => {
-      if (response.ok) {
-        response.json().then(data => {
-          const newChore = data.res
-          onChoreUpdate(newChore, 'rescheduled')
-        })
-      }
+    UpdateDueDate(chore.id, newDate).then(data => {
+      const newChore = data.res
+      onChoreUpdate(newChore, 'rescheduled')
     })
   }
 
   private handleCompleteWithPastDate = newDate => {
     const { chore, onChoreUpdate } = this.props
 
-    MarkChoreComplete(chore.id, null, new Date(newDate).toISOString()).then(
-      response => {
-        if (response.ok) {
-          response.json().then(data => {
-            const newChore = data.res
-            onChoreUpdate(newChore, 'completed')
-          })
-        }
-      },
-    )
+    MarkChoreComplete(chore.id, null, new Date(newDate).toISOString()).then((data) => {
+      onChoreUpdate(data.res, 'completed')
+    })
   }
 
   private getFrequencyIcon = chore => {
@@ -145,6 +130,14 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
       return split.slice(1).join('').trim()
     }
     return name
+  }
+
+  private onSkipChore = async () => {
+    const { chore, onChoreUpdate } = this.props
+
+    const data = await SkipChore(chore.id)
+    const newChore = data.res
+    onChoreUpdate(newChore, 'skipped')
   }
 
   render(): React.ReactNode {
@@ -295,18 +288,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                   size='lg'
                   ref={this.menuRef}
                 >
-                  <MenuItem
-                    onClick={() => {
-                      SkipChore(chore.id).then(response => {
-                        if (response.ok) {
-                          response.json().then(data => {
-                            const newChore = data.res
-                            onChoreUpdate(newChore, 'skipped')
-                          })
-                        }
-                      })
-                    }}
-                  >
+                  <MenuItem onClick={this.onSkipChore}>
                     <SwitchAccessShortcut />
                     Skip to next due date
                   </MenuItem>

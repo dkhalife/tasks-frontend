@@ -50,7 +50,6 @@ export class ChoreHistory extends React.Component<
 
   componentDidMount(): void {
     GetChoreHistory(this.props.choreId)
-      .then(res => res.json())
       .then(historyData => {
         this.setState({ choreHistory: historyData.res })
         this.updateHistoryInfo(historyData.res)

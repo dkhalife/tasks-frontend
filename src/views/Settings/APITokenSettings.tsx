@@ -38,25 +38,34 @@ export class APITokenSettings extends React.Component<
   }
 
   componentDidMount(): void {
-    GetLongLiveTokens().then(resp => {
-      resp.json().then(data => {
-        this.setState({ tokens: data.res })
-      })
+    GetLongLiveTokens().then(data => {
+      this.setState({ tokens: data.res })
     })
   }
 
   private handleSaveToken = name => {
-    CreateLongLiveToken(name).then(resp => {
-      if (resp.ok) {
-        resp.json().then(data => {
-          const newTokens = [...this.state.tokens]
-          newTokens.push(data.res)
+    CreateLongLiveToken(name).then((data) => {
+      const newTokens = [...this.state.tokens]
+      newTokens.push(data.res)
 
-          this.setState({
-            tokens: newTokens,
-          })
-        })
-      }
+      this.setState({
+        tokens: newTokens,
+      })
+    })
+  }
+
+  private onDeleteToken = async (token: APIToken) => {
+    const { tokens } = this.state
+
+    // TODO: Replace with a modern modal
+    if (!confirm(`Are you sure you want to remove ${token.name} ?`)) {
+      return
+    }
+
+    await DeleteLongLiveToken(token.id)
+
+    this.setState({
+      tokens: tokens.filter((t: APIToken) => t.id !== token.id)
     })
   }
 
@@ -107,21 +116,7 @@ export class APITokenSettings extends React.Component<
                 <Button
                   variant='outlined'
                   color='danger'
-                  onClick={() => {
-                    const confirmed = confirm(
-                      `Are you sure you want to remove ${token.name} ?`,
-                    )
-                    if (confirmed) {
-                      DeleteLongLiveToken(token.id).then(resp => {
-                        if (resp.ok) {
-                          const newTokens = tokens.filter(
-                            (t: APIToken) => t.id !== token.id,
-                          )
-                          this.setState({ tokens: newTokens })
-                        }
-                      })
-                    }
-                  }}
+                  onClick={() => this.onDeleteToken(token)}
                 >
                   Remove
                 </Button>
