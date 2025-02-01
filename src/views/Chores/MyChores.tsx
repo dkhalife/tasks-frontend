@@ -41,7 +41,7 @@ interface MyChoresState {
 }
 
 class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
-  constructor(props) {
+  constructor(props: MyChoresProps) {
     super(props)
 
     this.state = {

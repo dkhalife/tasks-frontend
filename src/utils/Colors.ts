@@ -70,8 +70,11 @@ export const TASK_COLOR = {
   ANYTIME: '#90a4ae',
 }
 
-export const getTextColorFromBackgroundColor = bgColor => {
-  if (!bgColor) return ''
+export const getTextColorFromBackgroundColor = (bgColor: string | undefined) => {
+  if (!bgColor) {
+    return ''
+  }
+
   const hex = bgColor.replace('#', '')
   const r = parseInt(hex.substring(0, 2), 16)
   const g = parseInt(hex.substring(2, 4), 16)

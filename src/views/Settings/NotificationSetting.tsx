@@ -20,9 +20,9 @@ type NotificationSettingProps = object
 
 interface NotificationSettingState {
   isSnackbarOpen: boolean
-  notificationTarget: string | null
+  notificationTarget: number
   error: string
-  userProfile: User | null
+  userProfile: User | null // TODO: This should never be null
 }
 
 export class NotificationSetting extends React.Component<
@@ -34,7 +34,7 @@ export class NotificationSetting extends React.Component<
 
     this.state = {
       isSnackbarOpen: false,
-      notificationTarget: null,
+      notificationTarget: -1,
       error: '',
       userProfile: null,
     }
@@ -46,6 +46,8 @@ export class NotificationSetting extends React.Component<
         userProfile: data.res,
       })
     })
+
+    // TODO: notification settings are not loaded
   }
 
   private handleSave = () => {
@@ -108,7 +110,7 @@ export class NotificationSetting extends React.Component<
           <Select
             value={notificationTarget}
             sx={{ maxWidth: '200px' }}
-            onChange={(e, selected) =>
+            onChange={(e: any, selected: any) =>
               this.setState({ notificationTarget: selected })
             }
           >

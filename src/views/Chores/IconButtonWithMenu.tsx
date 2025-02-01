@@ -75,7 +75,7 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
               {useChips ? (
                 <Chip
                   sx={{
-                    backgroundColor: item.color ? item.color : null,
+                    backgroundColor: item.color ?? null,
                     color: getTextColorFromBackgroundColor(item.color),
                   }}
                 >

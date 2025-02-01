@@ -19,7 +19,7 @@ import { HistoryEntry } from '../../models/history'
 import { GetChoreHistory } from '../../api/chores'
 
 interface ChoreHistoryProps {
-  choreId: string | undefined
+  choreId: string
 }
 
 interface HistoryInfo {
@@ -38,7 +38,7 @@ export class ChoreHistory extends React.Component<
   ChoreHistoryProps,
   ChoreHistoryState
 > {
-  constructor(props) {
+  constructor(props: ChoreHistoryProps) {
     super(props)
 
     this.state = {
@@ -62,7 +62,7 @@ export class ChoreHistory extends React.Component<
       })
   }
 
-  private updateHistoryInfo = histories => {
+  private updateHistoryInfo = (histories: any[]) => {
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, chore) => {

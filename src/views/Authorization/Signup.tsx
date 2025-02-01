@@ -10,7 +10,7 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { Logo } from '../../Logo'
 import { withNavigation } from '../../contexts/hooks'
 import { validateEmail, validatePassword } from '../../models/user'
@@ -52,7 +52,7 @@ class SignupViewInner extends React.Component<
     }
   }
 
-  private handleLogin = (username, password) => {
+  private handleLogin = (username: string, password: string) => {
     login(username, password).then(res => {
       localStorage.setItem('ca_token', res.token)
       localStorage.setItem('ca_expiration', res.expire)
@@ -118,7 +118,7 @@ class SignupViewInner extends React.Component<
     return isValid
   }
 
-  private handleSubmit = async e => {
+  private handleSubmit = async (e: MouseEvent) => {
     e.preventDefault()
 
     if (!this.handleSignUpValidation()) {
@@ -204,7 +204,7 @@ class SignupViewInner extends React.Component<
               autoComplete='username'
               autoFocus
               value={username}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({
                   usernameError: null,
                   username: e.target.value.trim(),
@@ -222,7 +222,7 @@ class SignupViewInner extends React.Component<
               name='email'
               autoComplete='email'
               value={email}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({
                   emailError: null,
                   email: e.target.value.trim(),
@@ -240,7 +240,7 @@ class SignupViewInner extends React.Component<
               type='password'
               id='password'
               value={password}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ passwordError: null, password: e.target.value })
               }}
             />
@@ -254,7 +254,7 @@ class SignupViewInner extends React.Component<
               name='displayName'
               id='displayName'
               value={displayName}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({
                   displayNameError: null,
                   displayName: e.target.value.trim(),

@@ -16,7 +16,7 @@ export function Request(url: string, method: RequestMethod = 'GET', body: unknow
 
   const fullURL = `${API_URL}/api/v1${url}`
 
-  const headers = {
+  const headers: HeadersInit = {
     'Content-Type': 'application/json',
   }
 
@@ -24,11 +24,16 @@ export function Request(url: string, method: RequestMethod = 'GET', body: unknow
     headers['Authorization'] = 'Bearer ' + localStorage.getItem('ca_token')
   }
 
-  return fetch(fullURL, {
+  const options: RequestInit = {
     method,
     headers,
-    body: JSON.stringify(body),
-  })
+  }
+
+  if (method != 'GET') {
+    options.body = JSON.stringify(body)
+  }
+
+  return fetch(fullURL, options)
 }
 
 export const isTokenValid = () => {

@@ -10,13 +10,13 @@ import {
   Typography,
 } from '@mui/joy'
 
-import { LabelModal } from '../Modals/Inputs/LabelModal.tsx'
+import { LabelModal } from '../Modals/Inputs/LabelModal'
 
 import { Add } from '@mui/icons-material'
 import { getTextColorFromBackgroundColor } from '../../utils/Colors'
 import React from 'react'
-import { Label } from '../../models/label.ts'
-import { DeleteLabel, GetLabels } from '../../api/labels.ts'
+import { Label } from '../../models/label'
+import { DeleteLabel, GetLabels } from '../../api/labels'
 
 type LabelViewProps = object
 
@@ -49,7 +49,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     this.modalRef.current?.open()
   }
 
-  private handleEditLabel = label => {
+  private handleEditLabel = (label: Label) => {
     this.setState({
       currentLabel: label,
     })
@@ -57,7 +57,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     this.modalRef.current?.open()
   }
 
-  private handleDeleteLabel = id => {
+  private handleDeleteLabel = (id: string) => {
     DeleteLabel(id).then(() => {
       const { userLabels } = this.state
       const updatedLabels = userLabels.filter(label => label.id !== id)

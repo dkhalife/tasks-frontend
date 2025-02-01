@@ -4,35 +4,19 @@ import {
   Checkbox,
   FormControl,
   FormHelperText,
-  Grid,
   List,
   ListItem,
-  Radio,
-  RadioGroup,
   Typography,
 } from '@mui/joy'
-import moment from 'moment'
-import React from 'react'
-import { RepeatOn } from './RepeatOn'
+import React, { ChangeEvent } from 'react'
 import { FrequencyMetadata } from '../../models/chore'
-import { FrequencyType } from '../../utils/recurrance'
-
-const FREQUANCY_TYPES_RADIOS = [
-  'daily',
-  'weekly',
-  'monthly',
-  'yearly',
-  'adaptive',
-  'custom',
-]
-
-const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
+import { FREQUENCY_TYPES, FrequencyType } from '../../utils/recurrance'
 
 interface RepeatOptionProps {
   frequencyType: FrequencyType
   frequency: number
   onFrequencyUpdate: (frequency: number) => void
-  onFrequencyTypeUpdate: (type: string) => void
+  onFrequencyTypeUpdate: (type: FrequencyType) => void
   frequencyMetadata: FrequencyMetadata
   onFrequencyMetadataUpdate: (metadata: FrequencyMetadata) => void
   onFrequencyTimeUpdate: (time: string) => void
@@ -43,12 +27,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
   render(): React.ReactNode {
     const {
       frequencyType,
-      frequency,
-      onFrequencyUpdate,
       onFrequencyTypeUpdate,
-      frequencyMetadata,
-      onFrequencyMetadataUpdate,
-      onFrequencyTimeUpdate,
       frequencyError,
     } = this.props
 
@@ -57,8 +36,8 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
         <Typography level='h4'>Repeat :</Typography>
         <FormControl sx={{ mt: 1 }}>
           <Checkbox
-            onChange={e => {
-              onFrequencyTypeUpdate(e.target.checked ? 'daily' : 'once')
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onFrequencyTypeUpdate(e.target.checked ? 'interval' : 'once')
             }}
             defaultChecked={!['once', 'trigger'].includes(frequencyType)}
             overlay
@@ -81,17 +60,13 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                   '--ListItem-radius': '20px',
                 }}
               >
-                {FREQUANCY_TYPES_RADIOS.map(item => (
+                {FREQUENCY_TYPES.map((item: FrequencyType) => (
                   <ListItem key={item}>
                     <Checkbox
-                      checked={
-                        item === frequencyType ||
-                        (item === 'custom' &&
-                          REPEAT_ON_TYPE.includes(frequencyType))
-                      }
+                      checked={item === frequencyType}
                       onClick={() => {
                         if (item === 'custom') {
-                          onFrequencyTypeUpdate(REPEAT_ON_TYPE[0])
+                          /*onFrequencyTypeUpdate(INTERVAL_UNITS[0])
                           onFrequencyUpdate(1)
                           onFrequencyMetadataUpdate({
                             unit: 'days',
@@ -102,7 +77,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                                     'T' +
                                     '18:00',
                                 ).format(),
-                          })
+                          })*/
 
                           return
                         }
@@ -119,7 +94,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                   </ListItem>
                 ))}
               </List>
-              {frequencyType === 'custom' ||
+              {/*frequencyType === 'custom' ||
                 (REPEAT_ON_TYPE.includes(frequencyType) && (
                   <>
                     <Grid
@@ -198,7 +173,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                                   alignItems: 'center',
                                 }}
                                 slotProps={{
-                                  action: ({ checked }) => ({
+                                  action: ({ checked }: { checked: boolean}) => ({
                                     sx: {
                                       ...(checked && {
                                         bgcolor: 'background.surface',
@@ -226,7 +201,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                       />
                     </Grid>
                   </>
-                ))}
+                ))*/}
               <FormControl error={Boolean(frequencyError)}>
                 <FormHelperText>{frequencyError}</FormHelperText>
               </FormControl>

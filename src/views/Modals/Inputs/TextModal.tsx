@@ -1,5 +1,5 @@
 import { Box, Button, Modal, ModalDialog, Textarea, Typography } from '@mui/joy'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 
 interface TextModalProps {
   title: string
@@ -52,7 +52,7 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
           <Textarea
             placeholder='Type in here…'
             value={text}
-            onChange={e => this.setState({ text: e.target.value })}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ text: e.target.value })}
             minRows={2}
             maxRows={4}
             sx={{ minWidth: 300 }}

@@ -43,7 +43,11 @@ export class APITokenSettings extends React.Component<
     })
   }
 
-  private handleSaveToken = name => {
+  private handleSaveToken = (name: string | null) => {
+    if (!name) {
+      return
+    }
+
     CreateLongLiveToken(name).then((data) => {
       const newTokens = [...this.state.tokens]
       newTokens.push(data.res)

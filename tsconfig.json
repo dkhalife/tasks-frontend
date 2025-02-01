@@ -4,6 +4,7 @@
     "module": "ESNext",
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
+    "outDir": "dist",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,

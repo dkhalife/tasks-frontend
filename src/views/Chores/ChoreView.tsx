@@ -31,7 +31,7 @@ import { Chore } from '../../models/chore'
 import { MarkChoreComplete, GetChoreDetailById, SkipChore } from '../../api/chores'
 
 interface ChoreViewProps {
-  choreId: string | undefined
+  choreId: string
 }
 
 type ChoreViewInnerProps = ChoreViewProps & {
@@ -48,7 +48,6 @@ interface InfoCard {
 interface ChoreViewState {
   chore: Chore | null
   infoCards: InfoCard[]
-  note: string | null
   confirmModelConfig: ConfirmationModalProps
 }
 
@@ -58,13 +57,12 @@ class ChoreViewInner extends React.Component<
 > {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
 
-  constructor(props) {
+  constructor(props: ChoreViewInnerProps) {
     super(props)
 
     this.state = {
       chore: null,
       infoCards: [],
-      note: null,
       confirmModelConfig: {
         title: '',
         message: '',
@@ -76,12 +74,13 @@ class ChoreViewInner extends React.Component<
   }
 
   private handleTaskCompletion = async () => {
-    const { note } = this.state
     const { choreId } = this.props
+    if (!choreId) {
+      return
+    }
 
-    const data = await MarkChoreComplete(choreId, note, null)
+    const data = await MarkChoreComplete(choreId, null)
     this.setState({
-      note: null,
       chore: data.res,
     })
 
@@ -104,7 +103,7 @@ class ChoreViewInner extends React.Component<
     })
   }
 
-  private generateInfoCards = chore => {
+  private generateInfoCards = (chore: any) => {
     const cards = [
       {
         size: 6,
@@ -367,4 +366,4 @@ class ChoreViewInner extends React.Component<
   }
 }
 
-export const ChoreView = withNavigation<ChoreViewProps>(ChoreViewInner)
+export const ChoreView = withNavigation(ChoreViewInner)

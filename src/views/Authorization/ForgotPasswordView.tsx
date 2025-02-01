@@ -10,7 +10,7 @@ import {
   Snackbar,
   Typography,
 } from '@mui/joy'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { validateEmail } from '../../models/user'
 import { ResetPassword } from '../../api/auth'
@@ -57,7 +57,7 @@ class ForgotPasswordViewInner extends React.Component<
     }
   }
 
-  private handleEmailChange = e => {
+  private handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ email: e.target.value })
   }
 

@@ -87,7 +87,7 @@ export const getRecurrentChipText = (chore: Chore) => {
             'Friday',
             'Saturday',
         ]
-        const selectedDays = days.map(d => moment().day(d).format('dddd'))
+        const selectedDays = days.map((d: string) => moment().day(d).format('dddd'))
         const notSelectedDay = allDays.filter(
             day => !selectedDays.includes(day),
         )
@@ -96,7 +96,7 @@ export const getRecurrentChipText = (chore: Chore) => {
         )
         return `Daily except ${notSelectedShortdays.join(', ')}`
         } else {
-        days = days.map(d => moment().day(d).format('ddd'))
+        days = days.map((d: string) => moment().day(d).format('ddd'))
         return days.join(', ')
         }
     } else if (chore.frequencyType === 'day_of_the_month') {
@@ -116,7 +116,7 @@ export const getRecurrentChipText = (chore: Chore) => {
                 'November',
                 'December',
             ]
-            const selectedMonths = months.map(m => moment().month(m).format('MMMM'))
+            const selectedMonths = months.map((m: string) => moment().month(m).format('MMMM'))
             const notSelectedMonth = allMonths.filter(
                 month => !selectedMonths.includes(month),
             )
@@ -128,7 +128,7 @@ export const getRecurrentChipText = (chore: Chore) => {
             )} except ${notSelectedShortMonths.join(', ')}`
         } else {
             const freqData = JSON.parse(chore.frequencyMetadata)
-            const months = freqData.months.map(m => moment().month(m).format('MMM'))
+            const months = freqData.months.map((m: string) => moment().month(m).format('MMM'))
             return `${chore.frequency}${dayOfMonthSuffix(
                 chore.frequency,
             )} of ${months.join(', ')}`

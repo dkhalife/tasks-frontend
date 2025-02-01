@@ -8,7 +8,7 @@ import {
   ModalDialog,
   Typography,
 } from '@mui/joy'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 
 interface PasswordChangeModalProps {
   onClose: (newPassword: string | null) => void
@@ -39,12 +39,12 @@ export class PassowrdChangeModal extends React.Component<
     this.setState({ isOpen: true })
   }
 
-  private onSave(): void {
+  onSave = () => {
     this.setState({ isOpen: false })
     this.props.onClose(this.state.password)
   }
 
-  private onCancel(): void {
+  onCancel = () => {
     this.setState({ isOpen: false })
     this.props.onClose(null)
   }
@@ -103,7 +103,7 @@ export class PassowrdChangeModal extends React.Component<
               type='password'
               id='password'
               value={password}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ password: e.target.value })
               }}
             />
@@ -118,7 +118,7 @@ export class PassowrdChangeModal extends React.Component<
               type='password'
               id='confirmPassword'
               value={confirmPassword}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ confirmPassword: e.target.value })
               }}
             />

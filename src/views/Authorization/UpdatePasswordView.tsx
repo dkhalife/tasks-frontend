@@ -11,7 +11,7 @@ import {
 } from '@mui/joy'
 
 import { Logo } from '../../Logo'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { validatePassword } from '../../models/user'
 import { ChangePassword } from '../../api/auth'
@@ -32,7 +32,7 @@ class UpdatePasswordViewInner extends React.Component<
   UpdatePasswordViewProps,
   UpdatePasswordViewState
 > {
-  private handlePasswordChange = e => {
+  private handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     const password = e.target.value
 
     if (!validatePassword(password)) {
@@ -48,7 +48,7 @@ class UpdatePasswordViewInner extends React.Component<
     }
   }
 
-  private handlePasswordConfirmChange = e => {
+  private handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { password } = this.state
     if (e.target.value !== password) {
       this.setState({

@@ -1,13 +1,13 @@
 import React from 'react'
-import { Location, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export function withLocation<Props>(
-  Component: React.ComponentType<Props & { location: Location }>,
-): (props: Props) => JSX.Element {
-  return function impl(props) {
+  Component: React.ComponentType<Props>,
+): (props: Omit<Props, 'location'>) => JSX.Element {
+  return function impl(props: Omit<Props, 'location'>) {
     return (
       <Component
-        {...props}
+        {...props as Props}
         location={useLocation()}
       />
     )
@@ -15,9 +15,9 @@ export function withLocation<Props>(
 }
 
 export function withNavigation<Props>(
-  Component: React.ComponentType<Props & { navigate: (path: string) => void }>,
-): (props: Props) => JSX.Element {
-  return function impl(props) {
+  Component: React.ComponentType<Props>,
+): (props: Omit<Props, 'navigate'>) => JSX.Element {
+  return function impl(props: Omit<Props, 'navigate'>) {
     return (
       <Component
         {...props as Props}

@@ -11,7 +11,7 @@ import {
 } from '@mui/joy'
 
 import { LABEL_COLORS } from '../../../utils/Colors'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { Label } from '../../../models/label'
 import { UpdateLabel, CreateLabel } from '../../../api/labels'
 
@@ -127,7 +127,7 @@ export class LabelModal extends React.Component<
               fullWidth
               id='labelName'
               value={labelName}
-              onChange={e => this.setState({ labelName: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ labelName: e.target.value })}
             />
           </FormControl>
 
@@ -141,14 +141,14 @@ export class LabelModal extends React.Component<
             </Typography>
             <Select
               value={color}
-              onChange={(e, value) => {
+              onChange={(_: ChangeEvent<HTMLSelectElement>, value: string) => {
                 if (value) {
                   this.setState({ color: value })
                 }
               }}
               required={true}
               defaultValue={color}
-              renderValue={selected => (
+              renderValue={(selected: HTMLOptionElement | undefined) => (
                 <Typography
                   startDecorator={
                     <span

@@ -19,11 +19,7 @@ export const GetUserProfile = async () => {
   return response.json()
 }
 
-export const UpdateUserDetails = userDetails => {
-  return Request(`/users`, 'PUT', userDetails)
-}
-
-export const UpdateNotificationTarget = notificationTarget => {
+export const UpdateNotificationTarget = (notificationTarget: any) => {
   return Request(`/users/targets`, 'PUT', notificationTarget)
 }
 
@@ -50,11 +46,4 @@ export const DeleteLongLiveToken = async (id: string): Promise<void> => {
 export const GetLongLiveTokens = async () => {
   const response = await Request(`/users/tokens`)
   return response.json()
-}
-
-export const PutNotificationTarget = (platform, deviceToken) => {
-  return Request(`/users/targets`, 'PUT', {
-    platform,
-    deviceToken
-  })
 }
