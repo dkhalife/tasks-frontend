@@ -309,7 +309,7 @@ class ChoreEditInner extends React.Component<
             isNotificable: data.res.notification,
           })
         })
-        .catch(err => {
+        .catch(() => {
           this.setState({
             isSnackbarOpen: true,
             snackbarMessage: 'You are not authorized to view this chore.',

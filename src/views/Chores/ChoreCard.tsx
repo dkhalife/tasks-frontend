@@ -141,7 +141,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   }
 
   render(): React.ReactNode {
-    const { chore, onChoreUpdate, sx, viewOnly } = this.props
+    const { chore, sx, viewOnly } = this.props
     const {
       confirmModelConfig,
     } = this.state

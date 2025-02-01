@@ -126,7 +126,7 @@ class SignupViewInner extends React.Component<
     }
 
     const { username, password, displayName, email } = this.state
-    signUp(username, password, displayName, email).then(response => {
+    signUp(username, password, displayName, email).then(() => {
       this.handleLogin(username, password)
     }).catch((error: Error) => {
       this.setState({ error: error.message })
