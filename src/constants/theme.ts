@@ -1,7 +1,5 @@
 import resolveConfig from 'tailwindcss/resolveConfig'
 import tailwindConfig from '/tailwind.config'
-import { useContext } from 'react'
-import { StorageContext, StorageContextState } from '../contexts/StorageContext'
 
 const { theme: THEME } = resolveConfig(tailwindConfig)
 
@@ -9,22 +7,14 @@ export const COLORS = THEME.colors
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
-export const toggleTheme = () => {
-  const storedState = useContext<StorageContextState>(StorageContext)
-
-  let newThemeMode: ThemeMode
-  switch (storedState.themeMode) {
+export const getNextThemeMode = (currentThemeMode: ThemeMode): ThemeMode => {
+  switch (currentThemeMode) {
     case 'light':
-      newThemeMode = 'dark'
-      break
+      return 'dark'
     case 'dark':
-      newThemeMode = 'system'
-      break
+      return 'system'
     case 'system':
     default:
-      newThemeMode = 'light'
-      break
+      return 'light'
   }
-
-  storedState.setThemeMode(newThemeMode)
 }
