@@ -1,7 +1,7 @@
 import LogoSVG from './assets/logo.svg'
-import React, { Component } from 'react'
+import React from 'react'
 
-export class Logo extends Component {
+export class Logo extends React.Component {
   render() {
     return (
       <div>

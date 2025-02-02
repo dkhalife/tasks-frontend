@@ -1,6 +1,6 @@
 import { Request } from "../utils/TokenManager"
 
-export const signUp = async (username, password, displayName, email) => {
+export const signUp = async (username: string, password: string, displayName: string, email: string) => {
   const response = await Request('/auth/', 'POST', {
     username,
     password,
@@ -15,7 +15,7 @@ export const signUp = async (username, password, displayName, email) => {
   return response.json()
 }
 
-export const login = async (username, password) => {
+export const login = async (username: string, password: string) => {
   const response = await Request('/auth/login', 'POST', {
     username,
     password,

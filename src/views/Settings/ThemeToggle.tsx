@@ -13,7 +13,7 @@ interface ThemeToggleProps {
 }
 
 export class ThemeToggle extends React.Component<ThemeToggleProps> {
-  private onChange = (e, newThemeMode) => {
+  private onChange = (_: MouseEvent, newThemeMode: ThemeMode) => {
     if (!newThemeMode) {
       return
     }

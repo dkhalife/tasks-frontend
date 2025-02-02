@@ -10,9 +10,9 @@ interface LoadingState {
 }
 
 export class Loading extends React.Component<LoadingProps, LoadingState> {
-  private timeout: number
+  private timeout: number = -1
 
-  constructor(props) {
+  constructor(props: LoadingProps) {
     super(props)
 
     this.state = {

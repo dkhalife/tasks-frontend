@@ -87,33 +87,37 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
 
   private handleTaskCompletion = () => {
     const { chore, onChoreUpdate } = this.props
-    MarkChoreComplete(chore.id, null, null).then(data => {
+    MarkChoreComplete(chore.id, null).then(data => {
       onChoreUpdate(data.res, 'completed')
     })
   }
 
-  private handleChangeDueDate = (newDate) => {
+  private handleChangeDueDate = (newDate: string | null) => {
     if (newDate === null) {
       return
     }
 
     const { chore, onChoreUpdate } = this.props
 
-    UpdateDueDate(chore.id, newDate).then(data => {
+    UpdateDueDate(chore.id, new Date(newDate)).then(data => {
       const newChore = data.res
       onChoreUpdate(newChore, 'rescheduled')
     })
   }
 
-  private handleCompleteWithPastDate = newDate => {
+  private handleCompleteWithPastDate = (newDate: string | null) => {
+    if (newDate === null) {
+      return
+    }
+
     const { chore, onChoreUpdate } = this.props
 
-    MarkChoreComplete(chore.id, null, new Date(newDate).toISOString()).then((data) => {
+    MarkChoreComplete(chore.id, new Date(newDate)).then((data) => {
       onChoreUpdate(data.res, 'completed')
     })
   }
 
-  private getFrequencyIcon = chore => {
+  private getFrequencyIcon = (chore: Chore) => {
       if (['once', 'no_repeat'].includes(chore.frequencyType)) {
           return <TimesOneMobiledata />
       } else if (chore.frequencyType === 'trigger') {
@@ -123,7 +127,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
       }
   }
 
-  private getName = name => {
+  private getName = (name: string) => {
     const split = Array.from<string>(this.props.chore.title)
     // if the first character is emoji then remove it from the name
     if (/\p{Emoji}/u.test(split[0])) {

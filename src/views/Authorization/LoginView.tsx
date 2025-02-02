@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/joy'
 import Cookies from 'js-cookie'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { Logo } from '../../Logo'
 import { withNavigation } from '../../contexts/hooks'
 import { login } from '../../api/auth'
@@ -39,7 +39,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
     this.props.navigate('/forgot-password')
   }
 
-  private handleSubmit = async e => {
+  private handleSubmit = async (e: MouseEvent) => {
     e.preventDefault()
 
     const { username, password } = this.state
@@ -117,7 +117,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
               name='email'
               autoComplete='email'
               autoFocus
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ username: e.target.value })
               }}
             />
@@ -128,7 +128,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
               name='password'
               type='password'
               id='password'
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ password: e.target.value })
               }}
             />

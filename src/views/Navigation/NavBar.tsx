@@ -24,7 +24,7 @@ import {
   StorageContext,
   StorageContextState,
 } from '../../contexts/StorageContext'
-import { toggleTheme } from '../../constants/theme'
+import { getNextThemeMode } from '../../constants/theme'
 import { withLocation, withNavigation } from '../../contexts/hooks'
 import { Location } from 'react-router-dom'
 
@@ -78,6 +78,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
           }}
         >
           <img
+            alt='DoneTick'
             src={Logo}
             width='34'
           />
@@ -99,10 +100,10 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             </span>
           </Typography>
           <StorageContext.Consumer>
-            {({ themeMode }: StorageContextState) => (
+            {({ themeMode, setThemeMode }: StorageContextState) => (
               <ThemeToggleButton
                 themeMode={themeMode}
-                onThemeModeToggle={toggleTheme}
+                onThemeModeToggle={ () => setThemeMode(getNextThemeMode(themeMode)) }
                 sx={{
                   position: 'absolute',
                   right: 10,
@@ -194,4 +195,4 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
   }
 }
 
-export const NavBar = withNavigation(withLocation(NavBarInner))
+export const NavBar = withNavigation(withLocation<NavBarProps>(NavBarInner))

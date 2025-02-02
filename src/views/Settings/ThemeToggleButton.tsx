@@ -15,7 +15,7 @@ interface ThemeToggleButtonProps {
 }
 
 export class ThemeToggleButton extends React.Component<ThemeToggleButtonProps> {
-  private onClick = e => {
+  private onClick = (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 

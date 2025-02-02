@@ -42,7 +42,7 @@ export const dayOfMonthSuffix = (n: number): string => {
     }
 }
 
-export const formatTimeDifference = (startDate, endDate) => {
+export const formatTimeDifference = (startDate: string, endDate: string) => {
     const diffInMinutes = moment(startDate).diff(endDate, 'minutes')
     let timeValue = diffInMinutes
     let unit = 'minute'

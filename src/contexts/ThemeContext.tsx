@@ -11,7 +11,7 @@ const shades = [
 ]
 
 const getPallete = (key = primaryColor) => {
-  return shades.reduce((acc, shade) => {
+  return shades.reduce((acc: any, shade) => {
     acc[shade] = COLORS[key][shade]
     return acc
   }, {})

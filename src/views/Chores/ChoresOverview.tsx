@@ -20,7 +20,7 @@ import {
 
 import moment from 'moment'
 import { DateModal } from '../Modals/Inputs/DateModal'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore, getDueDateChipColor, getDueDateChipText } from '../../models/chore'
 import { User } from '../../models/user'
@@ -67,13 +67,17 @@ class ChoresOverviewInner extends React.Component<
     }
   }
 
-  private onCloseDateModal = (date) => {
+  private onCloseDateModal = (date: string | null) => {
     if (!date) {
       return
     }
 
     const { chores, choreId } = this.state
-    MarkChoreComplete(choreId, null, date).then(data => {
+    if (!choreId) {
+      return
+    }
+
+    MarkChoreComplete(choreId, new Date(date)).then(data => {
       const newChore = data.res
       const newChores = [...chores]
       const index = newChores.findIndex(c => c.id === newChore.id)
@@ -110,7 +114,7 @@ class ChoresOverviewInner extends React.Component<
             <Input
               placeholder='Search'
               value={search}
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newChores = chores.filter(chore => {
                   return chore.title.includes(e.target.value)
                 })
@@ -201,7 +205,7 @@ class ChoresOverviewInner extends React.Component<
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        MarkChoreComplete(chore.id, null, null).then(data => {
+                        MarkChoreComplete(chore.id, null).then(data => {
                           const newChore = data.res
                           const newChores = [...chores]
                           const index = newChores.findIndex(

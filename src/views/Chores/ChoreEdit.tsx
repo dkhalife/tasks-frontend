@@ -30,19 +30,20 @@ import {
   ConfirmationModalProps,
 } from '../Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { RepeatOption } from './RepeatOption'
 import { withNavigation } from '../../contexts/hooks'
 import { Chore, FrequencyMetadata } from '../../models/chore'
 import { Label } from '../../models/label'
 import { CreateChore, SaveChore, DeleteChore, GetChoreByID } from '../../api/chores'
+import { FrequencyType, NotificationTrigger } from '@/utils/recurrance'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
 const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
 interface ChoreEditProps {
-  choreId: string | undefined
+  choreId: string | null
 }
 
 type ChoreEditInnerProps = ChoreEditProps & {
@@ -68,7 +69,7 @@ interface ChoreEditState {
   snackbarMessage: React.ReactNode
   snackbarColor: ColorPaletteProp
   dueDate: string | null
-  frequencyType: string
+  frequencyType: FrequencyType
   frequency: number
   frequencyMetadata: FrequencyMetadata | null
   labels: Label[]
@@ -77,6 +78,12 @@ interface ChoreEditState {
   chore: Chore | null
   name: string
   confirmModelConfig: ConfirmationModalProps
+}
+
+type NotificationTriggerOption = {
+  type: NotificationTrigger
+  title: string
+  description: string
 }
 
 class ChoreEditInner extends React.Component<
@@ -192,7 +199,7 @@ class ChoreEditInner extends React.Component<
     return isSuccessful
   }
 
-  private handleDueDateChange = e => {
+  private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ dueDate: e.target.value })
   }
 
@@ -213,8 +220,8 @@ class ChoreEditInner extends React.Component<
       labels,
       notificationMetadata,
     } = this.state
-    const chore = {
-      id: Number(choreId),
+    const chore: any = {
+      id: choreId,
       name: name,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
       frequencyType: frequencyType,
@@ -227,7 +234,7 @@ class ChoreEditInner extends React.Component<
     }
 
     let SaveFunction = CreateChore
-    if (choreId !== undefined) {
+    if (choreId !== null) {
       SaveFunction = SaveChore
     }
 
@@ -244,8 +251,7 @@ class ChoreEditInner extends React.Component<
     })
   }
 
-  private handleDelete = () => {
-    const { choreId } = this.props
+  private handleDelete = (choreId: string) => {
     this.setState({
       confirmModelConfig: {
         title: 'Delete Chore',
@@ -254,16 +260,14 @@ class ChoreEditInner extends React.Component<
         message: 'Are you sure you want to delete this chore?',
         onClose: isConfirmed => {
           if (isConfirmed === true) {
-            DeleteChore(choreId).then(response => {
-              if (response.status === 200) {
-                this.props.navigate('/my/chores')
-              } else {
-                this.setState({
-                  isSnackbarOpen: true,
-                  snackbarMessage: 'Failed to delete chore',
-                  snackbarColor: 'danger',
-                })
-              }
+            DeleteChore(choreId).then(() => {
+              this.props.navigate('/my/chores')
+            }).catch(() => {
+              this.setState({
+                isSnackbarOpen: true,
+                snackbarMessage: 'Failed to delete chore',
+                snackbarColor: 'danger',
+              })
             })
           }
 
@@ -282,12 +286,35 @@ class ChoreEditInner extends React.Component<
     this.labelModalRef.current?.open()
   }
 
+  private NotificationTriggerOptions: NotificationTriggerOption[] = [
+    {
+      title: 'Due Date/Time',
+      description: 'A simple reminder that a task is due',
+      type: 'dueDate',
+    },
+    {
+      title: 'Predued',
+      description: 'before a task is due in few hours',
+      type: 'predue',
+    },
+    {
+      title: 'Overdue',
+      description: 'A notification when a task is overdue',
+      type: 'overdue',
+    },
+    {
+      title: 'Nagging',
+      description: 'Daily reminders until the task is completed',
+      type: 'nagging',
+    },
+  ]
+
   componentDidMount(): void {
     // TODO: Load and set labels and userLabels
 
     // Load chore data
     const { choreId } = this.props
-    if (choreId != undefined) {
+    if (choreId != null) {
       GetChoreByID(choreId)
         .then(data => {
           // TODO: There is so much redundancy here
@@ -375,7 +402,7 @@ class ChoreEditInner extends React.Component<
             <Typography>What is this chore about?</Typography>
             <Input
               value={name}
-              onChange={e => this.setState({ name: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ name: e.target.value })}
             />
             <FormHelperText>{errors.name}</FormHelperText>
           </FormControl>
@@ -408,16 +435,11 @@ class ChoreEditInner extends React.Component<
             {REPEAT_ON_TYPE.includes(frequencyType) ? 'Start date' : 'Due date'}{' '}
             :
           </Typography>
-          {frequencyType === 'trigger' && !dueDate && (
-            <Typography level='body-sm'>
-              Due Date will be set when the trigger of the thing is met
-            </Typography>
-          )}
 
           {NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && (
             <FormControl sx={{ mt: 1 }}>
               <Checkbox
-                onChange={e => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   if (e.target.checked) {
                     this.setState({
                       dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
@@ -495,7 +517,7 @@ class ChoreEditInner extends React.Component<
 
           <FormControl sx={{ mt: 1 }}>
             <Checkbox
-              onChange={e => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ isNotificable: e.target.checked })
               }}
               defaultChecked={isNotificable}
@@ -520,31 +542,10 @@ class ChoreEditInner extends React.Component<
           >
             <Card variant='outlined'>
               <Typography>What should trigger the notification?</Typography>
-              {[
-                {
-                  title: 'Due Date/Time',
-                  description: 'A simple reminder that a task is due',
-                  id: 'dueDate',
-                },
-                {
-                  title: 'Predued',
-                  description: 'before a task is due in few hours',
-                  id: 'predue',
-                },
-                {
-                  title: 'Overdue',
-                  description: 'A notification when a task is overdue',
-                  id: 'overdue',
-                },
-                {
-                  title: 'Nagging',
-                  description: 'Daily reminders until the task is completed',
-                  id: 'nagging',
-                },
-              ].map(item => (
+              {this.NotificationTriggerOptions.map(item => (
                 <FormControl
                   sx={{ mb: 1 }}
-                  key={item.id}
+                  key={item.type}
                 >
                   <Checkbox
                     overlay
@@ -552,13 +553,13 @@ class ChoreEditInner extends React.Component<
                       this.setState({
                         notificationMetadata: {
                           ...notificationMetadata,
-                          [item.id]: !notificationMetadata[item.id],
+                          [item.type]: !notificationMetadata[item.type],
                         },
                       })
                     }}
                     checked={
                       notificationMetadata
-                        ? notificationMetadata[item.id]
+                        ? notificationMetadata[item.type]
                         : false
                     }
                     label={item.title}
@@ -577,7 +578,7 @@ class ChoreEditInner extends React.Component<
           </Typography>
           <Select
             multiple
-            onChange={(event, newValue) => {
+            onChange={(_: any, newValue: any) => {
               this.setState({
                 labels: userLabels.filter(l => newValue.indexOf(l.name) > -1),
               })
@@ -643,7 +644,7 @@ class ChoreEditInner extends React.Component<
           </Select>
         </Box>
 
-        {choreId !== undefined && chore && (
+        {choreId !== null && chore && (
           <Box
             sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
           >
@@ -685,12 +686,12 @@ class ChoreEditInner extends React.Component<
             boxShadow: 'md',
           }}
         >
-          {choreId != undefined && (
+          {choreId != null && (
             <Button
               color='danger'
               variant='solid'
               onClick={() => {
-                this.handleDelete()
+                this.handleDelete(choreId)
               }}
             >
               Delete
@@ -710,7 +711,7 @@ class ChoreEditInner extends React.Component<
             variant='solid'
             onClick={this.HandleSaveChore}
           >
-            {choreId != undefined ? 'Save' : 'Create'}
+            {choreId != null ? 'Save' : 'Create'}
           </Button>
         </Sheet>
         <ConfirmationModal {...confirmModelConfig} />

@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/joy'
 import moment from 'moment'
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { FrequencyMetadata } from '../../models/chore'
 import { FrequencyType, INTERVAL_UNITS, IntervalUnit } from '../../utils/recurrance'
 import { DAYS, MONTHS } from '../../utils/date'
@@ -62,7 +62,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
               ? moment(frequencyMetadata?.time).format('HH:mm')
               : '18:00'
           }
-          onChange={e => {
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
             onFrequencyTimeUpdate(
               moment(
                 moment(new Date()).format('YYYY-MM-DD') + 'T' + e.target.value,
@@ -91,7 +91,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 }}
                 type='number'
                 value={frequency}
-                onChange={e => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   onFrequencyUpdate(parseInt(e.target.value))
                 }}
               />
@@ -279,7 +279,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 sx={{ width: '80px' }}
                 type='number'
                 value={frequency}
-                onChange={e => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const value = Math.min(
                     31,
                     Math.max(1, parseInt(e.target.value)),

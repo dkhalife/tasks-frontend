@@ -2,7 +2,7 @@ import { Chore, ChoreGroup } from '../models/chore'
 import { Label } from '../models/label'
 import { TASK_COLOR } from './Colors'
 
-export const ChoresGrouper = (groupBy, chores: Chore[]) => {
+export const ChoresGrouper = (groupBy: string, chores: Chore[]) => {
   chores.sort((a, b) => {
     if (a.nextDueDate === null) {
       return 1

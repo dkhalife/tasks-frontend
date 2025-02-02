@@ -1,12 +1,5 @@
+import { Chore } from "@/models/chore"
 import { Request } from "../utils/TokenManager"
-
-export const createChore = async (userID) => {
-  const response = await Request(`/chores/`, 'POST', {
-    createdBy: Number(userID),
-  })
-  
-  return response.json()
-}
 
 export const GetChores = async (): Promise<any> => {
   const response = await Request(`/chores/`)
@@ -17,19 +10,7 @@ export const GetChores = async (): Promise<any> => {
   return response.json()
 }
 
-export const GetArchivedChores = () => {
-  return Request(`/chores/archived`)
-}
-
-export const ArchiveChore = id => {
-  return Request(`/chores/${id}/archive`, 'PUT')
-}
-
-export const UnArchiveChore = id => {
-  return Request(`/chores/${id}/unarchive`, 'PUT')
-}
-
-export const GetChoreByID = async (id) => {
+export const GetChoreByID = async (id: string) => {
   const response = await Request(`/chores/${id}`)
   if (!response.ok) {
     throw new Error('Failed to get chore')
@@ -38,7 +19,7 @@ export const GetChoreByID = async (id) => {
   return response.json()
 }
 
-export const GetChoreDetailById = async (id): Promise<any> => {
+export const GetChoreDetailById = async (id: string): Promise<any> => {
   const response = await Request(`/chores/${id}/details`)
   if (!response.ok) {
     throw new Error('Failed to get chore details')
@@ -47,13 +28,11 @@ export const GetChoreDetailById = async (id): Promise<any> => {
   return response.json()
 }
 
-export const MarkChoreComplete = async (id, note, completedDate): Promise<any> => {
-  const body: any = {
-    note,
-  }
+export const MarkChoreComplete = async (id: string, completedDate: Date | null): Promise<any> => {
+  const body: any = {}
 
   if (completedDate) {
-    body.completedDate = new Date(completedDate).toISOString()
+    body.completedDate = completedDate.toISOString()
   }
 
   const response = await Request(`/chores/${id}/do`, 'POST', body)
@@ -64,8 +43,7 @@ export const MarkChoreComplete = async (id, note, completedDate): Promise<any> =
   return response.json()
 }
 
-
-export const SkipChore = async (id): Promise<any> => {
+export const SkipChore = async (id: string): Promise<any> => {
   const response = await Request(`/chores/${id}/skip`, 'POST')
   if (!response.ok) {
     throw new Error('Failed to skip chore')
@@ -74,66 +52,34 @@ export const SkipChore = async (id): Promise<any> => {
   return response.json()
 }
 
-export const UpdateChoreAssignee = (id, assignee) => {
-  return Request(`/chores/${id}/assignee`, 'PUT', {
-    assignee: Number(assignee)
-  })
-}
-
-export const CreateChore = chore => {
+export const CreateChore = (chore: Chore) => {
   return Request(`/chores/`, 'POST', chore)
 }
 
-export const DeleteChore = async (id) => {
+export const DeleteChore = async (id: string) => {
   const response = await Request(`/chores/${id}`, 'DELETE')
   if (!response.ok) {
     throw new Error('Failed to delete chore')
   }
 }
 
-export const SaveChore = chore => {
+export const SaveChore = (chore: Chore) => {
   return Request(`/chores/`, 'PUT', chore)
 }
 
-export const GetChoreHistory = async (choreId) => {
+export const GetChoreHistory = async (choreId: string) => {
   const response = await Request(`/chores/${choreId}/history`)
   return response.json()
 }
 
-export const DeleteChoreHistory = (choreId, id) => {
-  return Request(`/chores/${choreId}/history/${id}`, 'DELETE')
-}
-
-export const UpdateChoreHistory = (choreId, id, choreHistory) => {
-  return Request(`/chores/${choreId}/history/${id}`, 'PUT', choreHistory)
-}
-
-export const UpdateDueDate = async (id, dueDate) => {
+export const UpdateDueDate = async (id: string, dueDate: Date | null) => {
   const response = await Request(`/chores/${id}/dueDate`, 'PUT', {
-    dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+    dueDate: dueDate ? dueDate.toISOString() : null,
   })
 
   if (!response.ok) {
     throw new Error('Failed to update due date')
   }
 
-  return response.json()
-}
-  
-export const GetChoresHistory = async (limit, includeMembers) => {
-  let url = `/chores/history`
-  if (!limit) {
-    limit = 7
-  }
-
-  if (limit) {
-    url += `?limit=${limit}`
-  }
-
-  if (includeMembers) {
-    url += `&members=true`
-  }
-
-  const response = await Request(url)
   return response.json()
 }
