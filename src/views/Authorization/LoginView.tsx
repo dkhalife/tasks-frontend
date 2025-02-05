@@ -53,7 +53,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
           Cookies.remove('ca_redirect')
           this.props.navigate(redirectUrl)
         } else {
-          this.props.navigate('/my/chores')
+          this.props.navigate('/my/tasks')
         }
       })
       .catch((error: Error) => {

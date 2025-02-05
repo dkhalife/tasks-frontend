@@ -84,7 +84,7 @@ export class APITokenSettings extends React.Component<
         <Typography level='h3'>Access Token</Typography>
         <Divider />
         <Typography level='body-sm'>
-          Create token to use with the API to update chores
+          Create token to use with the API to update tasks
         </Typography>
 
         {tokens.map((token: APIToken) => (

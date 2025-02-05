@@ -16,10 +16,10 @@ import { Link } from 'react-router-dom'
 import { Loading } from '../../Loading'
 import { HistoryCard } from './HistoryCard'
 import { HistoryEntry } from '../../models/history'
-import { GetChoreHistory } from '../../api/chores'
+import { GetTaskHistory } from '../../api/tasks'
 
-interface ChoreHistoryProps {
-  choreId: string
+interface TaskHistoryProps {
+  taskId: string
 }
 
 interface HistoryInfo {
@@ -28,30 +28,30 @@ interface HistoryInfo {
   subtext: string
 }
 
-interface ChoreHistoryState {
-  choreHistory: HistoryEntry[]
+interface TaskHistoryState {
+  taskHistory: HistoryEntry[]
   isLoading: boolean
   historyInfo: HistoryInfo[]
 }
 
-export class ChoreHistory extends React.Component<
-  ChoreHistoryProps,
-  ChoreHistoryState
+export class TaskHistory extends React.Component<
+  TaskHistoryProps,
+  TaskHistoryState
 > {
-  constructor(props: ChoreHistoryProps) {
+  constructor(props: TaskHistoryProps) {
     super(props)
 
     this.state = {
-      choreHistory: [],
+      taskHistory: [],
       isLoading: true,
       historyInfo: [],
     }
   }
 
   componentDidMount(): void {
-    GetChoreHistory(this.props.choreId)
+    GetTaskHistory(this.props.taskId)
       .then(historyData => {
-        this.setState({ choreHistory: historyData.res })
+        this.setState({ taskHistory: historyData.res })
         this.updateHistoryInfo(historyData.res)
       })
       .catch(error => {
@@ -65,18 +65,18 @@ export class ChoreHistory extends React.Component<
   private updateHistoryInfo = (histories: any[]) => {
     // average delay for task completaion from due date:
     const averageDelay =
-      histories.reduce((acc, chore) => {
-        if (chore.dueDate && chore.completedAt) {
-          // Only consider chores with a due date
-          return acc + moment(chore.completedAt).diff(chore.dueDate, 'hours')
+      histories.reduce((acc, task) => {
+        if (task.dueDate && task.completedAt) {
+          // Only consider tasks with a due date
+          return acc + moment(task.completedAt).diff(task.dueDate, 'hours')
         }
         return acc
-      }, 0) / histories.filter(chore => chore.dueDate).length
+      }, 0) / histories.filter(task => task.dueDate).length
     const averageDelayMoment = moment.duration(averageDelay, 'hours')
-    const maximumDelay = histories.reduce((acc, chore) => {
-      if (chore.dueDate) {
-        // Only consider chores with a due date
-        const delay = moment(chore.completedAt).diff(chore.dueDate, 'hours')
+    const maximumDelay = histories.reduce((acc, task) => {
+      if (task.dueDate) {
+        // Only consider tasks with a due date
+        const delay = moment(task.completedAt).diff(task.dueDate, 'hours')
         return delay > acc ? delay : acc
       }
       return acc
@@ -106,13 +106,13 @@ export class ChoreHistory extends React.Component<
   }
 
   render() {
-    const { choreHistory, isLoading, historyInfo } = this.state
+    const { taskHistory, isLoading, historyInfo } = this.state
 
     if (isLoading) {
       return <Loading />
     }
 
-    if (!choreHistory.length) {
+    if (!taskHistory.length) {
       return (
         <Container
           maxWidth='md'
@@ -146,7 +146,7 @@ export class ChoreHistory extends React.Component<
             variant='soft'
             sx={{ mt: 2 }}
           >
-            <Link to='/my/chores'>Go back to chores</Link>
+            <Link to='/my/tasks'>Go back to tasks</Link>
           </Button>
         </Container>
       )
@@ -203,11 +203,11 @@ export class ChoreHistory extends React.Component<
         </Typography>
         <Sheet sx={{ borderRadius: 'sm', p: 2, boxShadow: 'md' }}>
           <List sx={{ p: 0 }}>
-            {choreHistory.map((historyEntry, index) => (
+            {taskHistory.map((historyEntry, index) => (
               <HistoryCard
                 onClick={() => {}}
                 historyEntry={historyEntry}
-                allHistory={choreHistory}
+                allHistory={taskHistory}
                 key={index}
                 index={index}
               />

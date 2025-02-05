@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
-import { FrequencyMetadata } from '../../models/chore'
+import { FrequencyMetadata } from '../../models/task'
 import { FREQUENCY_TYPES, FrequencyType } from '../../utils/recurrance'
 
 interface RepeatOptionProps {

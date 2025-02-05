@@ -1,6 +1,6 @@
 import { App } from '../App'
-import { ChoreEdit } from '../views/Chores/ChoreEdit'
-import { ChoresOverview } from '../views/Chores/ChoresOverview'
+import { TaskEdit } from '../views/Tasks/TaskEdit'
+import { TasksOverview } from '../views/Tasks/TasksOverview'
 import { Error } from '../views/Error'
 import { Settings } from '../views/Settings/Settings'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -8,18 +8,18 @@ import { ForgotPasswordView } from '../views/Authorization/ForgotPasswordView'
 import { LoginView } from '../views/Authorization/LoginView'
 import { SignupView } from '../views/Authorization/Signup'
 import { UpdatePasswordView } from '../views/Authorization/UpdatePasswordView'
-import { ChoreView } from '../views/Chores/ChoreView'
-import { MyChores } from '../views/Chores/MyChores'
-import { ChoreHistory } from '../views/History/ChoreHistory'
+import { TaskView } from '../views/Tasks/TaskView'
+import { MyTasks } from '../views/Tasks/MyTasks'
+import { TaskHistory } from '../views/History/TaskHistory'
 import { LabelView } from '../views/Labels/LabelView'
 import React from 'react'
 import { matchPath } from 'react-router-dom'
 
 export class RouterContext extends React.Component {
-  private getChoreId = (): string => {
-    const match = matchPath<'choreId', string>(
+  private getTaskId = (): string => {
+    const match = matchPath<'taskId', string>(
       {
-        path: '/chores/:choreId',
+        path: '/tasks/:taskId',
         caseSensitive: true,
         end: false,
       },
@@ -30,15 +30,15 @@ export class RouterContext extends React.Component {
       return ""
     }
 
-    return match.params.choreId as string
+    return match.params.taskId as string
   }
 
   private getMainRoute = () => {
     if (window.innerWidth <= 768) {
-      return <MyChores />
+      return <MyTasks />
     }
 
-    return <ChoresOverview />
+    return <TasksOverview />
   }
 
   render() {
@@ -59,28 +59,28 @@ export class RouterContext extends React.Component {
               element={<Settings />}
             />
             <Route
-              path='/chores'
-              element={<ChoresOverview />}
+              path='/tasks'
+              element={<TasksOverview />}
             />
             <Route
-              path='/chores/:choreId/edit'
-              element={<ChoreEdit choreId={this.getChoreId()} />}
+              path='/tasks/:taskId/edit'
+              element={<TaskEdit taskId={this.getTaskId()} />}
             />
             <Route
-              path='/chores/:choreId'
-              element={<ChoreView choreId={this.getChoreId()} />}
+              path='/tasks/:taskId'
+              element={<TaskView taskId={this.getTaskId()} />}
             />
             <Route
-              path='/chores/create'
-              element={<ChoreEdit choreId={null} />}
+              path='/tasks/create'
+              element={<TaskEdit taskId={null} />}
             />
             <Route
-              path='/chores/:choreId/history'
-              element={<ChoreHistory choreId={this.getChoreId()} />}
+              path='/tasks/:taskId/history'
+              element={<TaskHistory taskId={this.getTaskId()} />}
             />
             <Route
-              path='/my/chores'
-              element={<MyChores />}
+              path='/my/tasks'
+              element={<MyTasks />}
             />
             <Route
               path='/login'

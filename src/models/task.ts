@@ -10,7 +10,7 @@ export interface FrequencyMetadata {
     months?: string[]
 }
 
-export interface Chore {
+export interface Task {
     id: string
     title: string
     description: string
@@ -23,9 +23,9 @@ export interface Chore {
     updatedAt: string
 }
 
-export type ChoreGroup = {
+export type TaskGroup = {
     name: string
-    content: Chore[]
+    content: Task[]
     color?: string
 }
 
@@ -60,23 +60,23 @@ export const getDueDateChipColor = (nextDueDate: string): ColorPaletteProp => {
     return 'neutral'
 }
 
-export const getRecurrentChipText = (chore: Chore) => {
-    if (chore.frequencyType === 'once') {
+export const getRecurrentChipText = (task: Task) => {
+    if (task.frequencyType === 'once') {
         return 'Once'
-    } else if (chore.frequencyType === 'trigger') {
+    } else if (task.frequencyType === 'trigger') {
         return 'Trigger'
-    } else if (chore.frequencyType === 'daily') {
+    } else if (task.frequencyType === 'daily') {
         return 'Daily'
-    } else if (chore.frequencyType === 'adaptive') {
+    } else if (task.frequencyType === 'adaptive') {
         return 'Adaptive'
-    } else if (chore.frequencyType === 'weekly') {
+    } else if (task.frequencyType === 'weekly') {
         return 'Weekly'
-    } else if (chore.frequencyType === 'monthly') {
+    } else if (task.frequencyType === 'monthly') {
         return 'Monthly'
-    } else if (chore.frequencyType === 'yearly') {
+    } else if (task.frequencyType === 'yearly') {
         return 'Yearly'
-    } else if (chore.frequencyType === 'days_of_the_week') {
-        let days = JSON.parse(chore.frequencyMetadata).days
+    } else if (task.frequencyType === 'days_of_the_week') {
+        let days = JSON.parse(task.frequencyMetadata).days
         if (days.length > 4) {
         const allDays = [
             'Sunday',
@@ -99,8 +99,8 @@ export const getRecurrentChipText = (chore: Chore) => {
         days = days.map((d: string) => moment().day(d).format('ddd'))
         return days.join(', ')
         }
-    } else if (chore.frequencyType === 'day_of_the_month') {
-        const months = JSON.parse(chore.frequencyMetadata).months
+    } else if (task.frequencyType === 'day_of_the_month') {
+        const months = JSON.parse(task.frequencyMetadata).months
         if (months.length > 6) {
             const allMonths = [
                 'January',
@@ -123,21 +123,21 @@ export const getRecurrentChipText = (chore: Chore) => {
             const notSelectedShortMonths = notSelectedMonth.map(m =>
                 moment().month(m).format('MMM'),
             )
-            return `${chore.frequency}${dayOfMonthSuffix(
-                chore.frequency,
+            return `${task.frequency}${dayOfMonthSuffix(
+                task.frequency,
             )} except ${notSelectedShortMonths.join(', ')}`
         } else {
-            const freqData = JSON.parse(chore.frequencyMetadata)
+            const freqData = JSON.parse(task.frequencyMetadata)
             const months = freqData.months.map((m: string) => moment().month(m).format('MMM'))
-            return `${chore.frequency}${dayOfMonthSuffix(
-                chore.frequency,
+            return `${task.frequency}${dayOfMonthSuffix(
+                task.frequency,
             )} of ${months.join(', ')}`
         }
-    } else if (chore.frequencyType === 'interval') {
-        return `Every ${chore.frequency} ${
-        JSON.parse(chore.frequencyMetadata).unit
+    } else if (task.frequencyType === 'interval') {
+        return `Every ${task.frequency} ${
+        JSON.parse(task.frequencyMetadata).unit
         }`
     } else {
-        return chore.frequencyType
+        return task.frequencyType
     }
 }

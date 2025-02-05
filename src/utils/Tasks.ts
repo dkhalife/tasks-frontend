@@ -1,9 +1,9 @@
-import { Chore, ChoreGroup } from '../models/chore'
+import { Task, TaskGroup } from '../models/task'
 import { Label } from '../models/label'
 import { TASK_COLOR } from './Colors'
 
-export const ChoresGrouper = (groupBy: string, chores: Chore[]) => {
-  chores.sort((a, b) => {
+export const TasksGrouper = (groupBy: string, tasks: Task[]) => {
+  tasks.sort((a, b) => {
     if (a.nextDueDate === null) {
       return 1
     }
@@ -14,8 +14,8 @@ export const ChoresGrouper = (groupBy: string, chores: Chore[]) => {
   })
 
   const labels: { [key: string]: Label } = {}
-  let groups: ChoreGroup[] = []
-  let groupRaw: { [key: string]: Chore[] } = {
+  let groups: TaskGroup[] = []
+  let groupRaw: { [key: string]: Task[] } = {
     Today: [],
     'In a week': [],
     'This month': [],
@@ -25,28 +25,28 @@ export const ChoresGrouper = (groupBy: string, chores: Chore[]) => {
   }
   switch (groupBy) {
     case 'due_date':
-      chores.forEach(chore => {
-        if (chore.nextDueDate === null) {
-          groupRaw.Anytime.push(chore)
-        } else if (new Date(chore.nextDueDate) < new Date()) {
-          groupRaw['Overdue'].push(chore)
+      tasks.forEach(task => {
+        if (task.nextDueDate === null) {
+          groupRaw.Anytime.push(task)
+        } else if (new Date(task.nextDueDate) < new Date()) {
+          groupRaw['Overdue'].push(task)
         } else if (
-          new Date(chore.nextDueDate).toDateString() ===
+          new Date(task.nextDueDate).toDateString() ===
           new Date().toDateString()
         ) {
-          groupRaw['Today'].push(chore)
+          groupRaw['Today'].push(task)
         } else if (
-          new Date(chore.nextDueDate) <
+          new Date(task.nextDueDate) <
             new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) &&
-          new Date(chore.nextDueDate) > new Date()
+          new Date(task.nextDueDate) > new Date()
         ) {
-          groupRaw['In a week'].push(chore)
+          groupRaw['In a week'].push(task)
         } else if (
-          new Date(chore.nextDueDate).getMonth() === new Date().getMonth()
+          new Date(task.nextDueDate).getMonth() === new Date().getMonth()
         ) {
-          groupRaw['This month'].push(chore)
+          groupRaw['This month'].push(task)
         } else {
-          groupRaw['Later'].push(chore)
+          groupRaw['Later'].push(task)
         }
       })
       groups = [
@@ -80,13 +80,13 @@ export const ChoresGrouper = (groupBy: string, chores: Chore[]) => {
       break
     case 'labels':
       groupRaw = {}
-      chores.forEach(chore => {
-        chore.labels.forEach(label => {
+      tasks.forEach(task => {
+        task.labels.forEach(label => {
           labels[label.id] = label
           if (groupRaw[label.id] === undefined) {
             groupRaw[label.id] = []
           }
-          groupRaw[label.id].push(chore)
+          groupRaw[label.id].push(task)
         })
       })
       groups = Object.keys(groupRaw).map(key => {

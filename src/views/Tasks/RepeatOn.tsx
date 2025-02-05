@@ -13,7 +13,7 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
-import { FrequencyMetadata } from '../../models/chore'
+import { FrequencyMetadata } from '../../models/task'
 import { FrequencyType, INTERVAL_UNITS, IntervalUnit } from '../../utils/recurrance'
 import { DAYS, MONTHS } from '../../utils/date'
 
