@@ -1,16 +1,7 @@
-import {
-  Box,
-  Card,
-  Checkbox,
-  FormControl,
-  FormHelperText,
-  List,
-  ListItem,
-  Typography,
-} from '@mui/joy'
-import React, { ChangeEvent } from 'react'
-import { FrequencyMetadata } from '../../models/task'
-import { FREQUENCY_TYPES, FrequencyType } from '../../utils/recurrance'
+import { FrequencyMetadata } from "@/models/task"
+import { FrequencyType, FREQUENCY_TYPES } from "@/utils/recurrance"
+import { Box, Typography, FormControl, Checkbox, FormHelperText, Card, List, ListItem } from "@mui/joy"
+import React, { ChangeEvent } from "react"
 
 interface RepeatOptionProps {
   frequencyType: FrequencyType

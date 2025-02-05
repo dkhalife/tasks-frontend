@@ -1,7 +1,6 @@
-import { Chip, Menu, MenuItem, Typography } from '@mui/joy'
-import IconButton from '@mui/joy/IconButton'
-import React from 'react'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors'
+import { getTextColorFromBackgroundColor } from "@/utils/Colors"
+import { IconButton, Menu, MenuItem, Typography, Chip } from "@mui/joy"
+import React from "react"
 
 interface Option {
   name: string

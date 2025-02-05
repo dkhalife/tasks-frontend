@@ -1,22 +1,10 @@
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Container,
-  IconButton,
-  Typography,
-} from '@mui/joy'
-
-import { LabelModal } from '../Modals/Inputs/LabelModal'
-
-import { Add } from '@mui/icons-material'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import React from 'react'
-import { Label } from '../../models/label'
-import { DeleteLabel, GetLabels } from '../../api/labels'
+import { DeleteLabel, GetLabels } from "@/api/labels"
+import { Label } from "@/models/label"
+import { getTextColorFromBackgroundColor } from "@/utils/Colors"
+import { Add } from "@mui/icons-material"
+import { Box, CircularProgress, Typography, Container, Chip, Button, IconButton } from "@mui/joy"
+import React from "react"
+import { LabelModal } from "../Modals/Inputs/LabelModal"
 
 type LabelViewProps = object
 

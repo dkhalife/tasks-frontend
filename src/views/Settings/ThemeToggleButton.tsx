@@ -1,12 +1,8 @@
-import {
-  BrightnessAuto,
-  DarkModeOutlined,
-  LightModeOutlined,
-} from '@mui/icons-material'
-import { FormControl, IconButton } from '@mui/joy'
-import { SxProps } from '@mui/joy/styles/types'
-import React from 'react'
-import { ThemeMode } from '../../constants/theme'
+import { ThemeMode } from "@/constants/theme"
+import { DarkModeOutlined, BrightnessAuto, LightModeOutlined } from "@mui/icons-material"
+import { FormControl, IconButton } from "@mui/joy"
+import { SxProps } from "@mui/joy"
+import React from "react"
 
 interface ThemeToggleButtonProps {
   sx: SxProps

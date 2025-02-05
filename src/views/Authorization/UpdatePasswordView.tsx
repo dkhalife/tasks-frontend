@@ -1,20 +1,10 @@
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  FormHelperText,
-  Input,
-  Sheet,
-  Snackbar,
-  Typography,
-} from '@mui/joy'
-
-import { Logo } from '../../Logo'
-import React, { ChangeEvent } from 'react'
-import { withNavigation } from '../../contexts/hooks'
-import { validatePassword } from '../../models/user'
-import { ChangePassword } from '../../api/auth'
+import { ChangePassword } from "@/api/auth"
+import { withNavigation } from "@/contexts/hooks"
+import { Logo } from "@/Logo"
+import { validatePassword } from "@/models/user"
+import { Sheet } from "@mui/joy"
+import { Container, Box, Typography, FormControl, Input, FormHelperText, Button, Snackbar } from "@mui/joy"
+import React, { ChangeEvent } from "react"
 
 interface UpdatePasswordViewProps {
   navigate: (path: string) => void

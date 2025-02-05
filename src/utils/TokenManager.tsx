@@ -1,7 +1,7 @@
 /* eslint-env node */
 
+import { RefreshToken } from "@/api/auth"
 import Cookies from 'js-cookie'
-import { RefreshToken } from '../api/auth'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 

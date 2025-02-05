@@ -1,35 +1,13 @@
-import {
-  Check,
-  Delete,
-  Edit,
-  ManageSearch,
-  MoreTime,
-  MoreVert,
-  Repeat,
-  SwitchAccessShortcut,
-  TimesOneMobiledata,
-  Webhook,
-} from '@mui/icons-material'
-import {
-  Avatar,
-  Box,
-  Card,
-  Chip,
-  Divider,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-} from '@mui/joy'
-import React from 'react'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/ConfirmationModal'
-import { DateModal } from '../Modals/Inputs/DateModal'
-import { SxProps } from '@mui/joy/styles/types'
-import { withNavigation } from '../../contexts/hooks'
-import { Task, getDueDateChipColor, getDueDateChipText, getRecurrentChipText } from '../../models/task'
-import { DeleteTask, MarkTaskComplete, UpdateDueDate, SkipTask } from '../../api/tasks'
+import { DeleteTask, MarkTaskComplete, UpdateDueDate, SkipTask } from "@/api/tasks"
+import { withNavigation } from "@/contexts/hooks"
+import { Task, getDueDateChipColor, getDueDateChipText, getRecurrentChipText } from "@/models/task"
+import { getTextColorFromBackgroundColor } from "@/utils/Colors"
+import { TimesOneMobiledata, Webhook, Repeat, Check, MoreVert, SwitchAccessShortcut, MoreTime, Edit, ManageSearch, Delete } from "@mui/icons-material"
+import { Box, Chip, Card, Grid, Avatar, Typography, IconButton, Menu, MenuItem, Divider } from "@mui/joy"
+import { SxProps } from "@mui/joy"
+import React from "react"
+import { ConfirmationModalProps, ConfirmationModal } from "../Modals/Inputs/ConfirmationModal"
+import { DateModal } from "../Modals/Inputs/DateModal"
 
 interface TaskCardProps {
   task: Task
