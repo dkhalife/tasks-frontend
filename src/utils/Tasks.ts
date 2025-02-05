@@ -1,5 +1,5 @@
-import { Task, TaskGroup } from '../models/task'
-import { Label } from '../models/label'
+import { Label } from '@/models/label'
+import { Task, TaskGroup } from '@/models/task'
 import { TASK_COLOR } from './Colors'
 
 export const TasksGrouper = (groupBy: string, tasks: Task[]) => {

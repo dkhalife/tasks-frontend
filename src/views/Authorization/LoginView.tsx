@@ -1,18 +1,10 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Input,
-  Sheet,
-  Snackbar,
-  Typography,
-} from '@mui/joy'
+import { login } from "@/api/auth"
+import { withNavigation } from "@/contexts/hooks"
+import { Logo } from "@/Logo"
+import { Sheet } from "@mui/joy"
+import { Container, Box, Typography, Input, Button, Divider, Snackbar } from "@mui/joy"
+import React, { ChangeEvent } from "react"
 import Cookies from 'js-cookie'
-import React, { ChangeEvent } from 'react'
-import { Logo } from '../../Logo'
-import { withNavigation } from '../../contexts/hooks'
-import { login } from '../../api/auth'
 
 interface LoginViewProps {
   navigate: (path: string) => void

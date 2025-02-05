@@ -1,19 +1,4 @@
-import LogoSVG from '../../assets/logo.svg'
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  FormHelperText,
-  Input,
-  Sheet,
-  Snackbar,
-  Typography,
-} from '@mui/joy'
-import React, { ChangeEvent } from 'react'
-import { withNavigation } from '../../contexts/hooks'
-import { validateEmail } from '../../models/user'
-import { ResetPassword } from '../../api/auth'
+import React from "react"
 
 interface ForgotPasswordViewProps {
   navigate: (path: string) => void

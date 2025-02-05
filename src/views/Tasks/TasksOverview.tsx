@@ -1,30 +1,12 @@
-import {
-  CancelRounded,
-  CheckBox,
-  Edit,
-  History,
-  SearchRounded,
-} from '@mui/icons-material'
-import {
-  Button,
-  ButtonGroup,
-  Chip,
-  Container,
-  Grid,
-  IconButton,
-  Input,
-  Table,
-  Tooltip,
-  Typography,
-} from '@mui/joy'
-
-import moment from 'moment'
-import { DateModal } from '../Modals/Inputs/DateModal'
-import React, { ChangeEvent } from 'react'
-import { withNavigation } from '../../contexts/hooks'
-import { Task, getDueDateChipColor, getDueDateChipText } from '../../models/task'
-import { User } from '../../models/user'
-import { GetTasks, MarkTaskComplete } from '../../api/tasks'
+import { GetTasks, MarkTaskComplete } from "@/api/tasks"
+import { withNavigation } from "@/contexts/hooks"
+import { Task, getDueDateChipColor, getDueDateChipText } from "@/models/task"
+import { User } from "@/models/user"
+import { CancelRounded, SearchRounded, CheckBox, Edit } from "@mui/icons-material"
+import { Container, Typography, Grid, Input, Button, Table, Chip, Tooltip, ButtonGroup, IconButton } from "@mui/joy"
+import moment from "moment"
+import React, { ChangeEvent } from "react"
+import { DateModal } from "@/views/Modals/Inputs/DateModal"
 
 interface TasksOverviewProps {
   navigate: (path: string) => void

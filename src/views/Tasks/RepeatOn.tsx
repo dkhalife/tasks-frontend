@@ -1,21 +1,9 @@
-import {
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Grid,
-  Input,
-  List,
-  ListItem,
-  Option,
-  Select,
-  Typography,
-} from '@mui/joy'
-import moment from 'moment'
-import React, { ChangeEvent } from 'react'
-import { FrequencyMetadata } from '../../models/task'
-import { FrequencyType, INTERVAL_UNITS, IntervalUnit } from '../../utils/recurrance'
-import { DAYS, MONTHS } from '../../utils/date'
+import { FrequencyMetadata } from "@/models/task"
+import { DAYS, MONTHS } from "@/utils/date"
+import { FrequencyType, IntervalUnit, INTERVAL_UNITS } from "@/utils/recurrance"
+import { Grid, Typography, Input, Select, Card, List, ListItem, Checkbox, Button, Box } from "@mui/joy"
+import moment from "moment"
+import React, { ChangeEvent } from "react"
 
 interface RepeatOnProps {
   frequencyType: FrequencyType

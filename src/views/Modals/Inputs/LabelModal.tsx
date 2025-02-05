@@ -1,19 +1,9 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  Input,
-  Modal,
-  ModalDialog,
-  Option,
-  Select,
-  Typography,
-} from '@mui/joy'
-
-import { LABEL_COLORS } from '../../../utils/Colors'
-import React, { ChangeEvent } from 'react'
-import { Label } from '../../../models/label'
-import { UpdateLabel, CreateLabel } from '../../../api/labels'
+import { UpdateLabel, CreateLabel } from "@/api/labels"
+import { Label } from "@/models/label"
+import { LABEL_COLORS } from "@/utils/Colors"
+import { ModalDialog } from "@mui/joy"
+import { Modal, Typography, FormControl, Input, Select, Box, Button } from "@mui/joy"
+import React, { ChangeEvent } from "react"
 
 interface LabelModalProps {
   label: Label | null

@@ -1,27 +1,15 @@
-import { Add, ExpandCircleDown } from '@mui/icons-material'
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionGroup,
-  Box,
-  Chip,
-  Container,
-  Divider,
-  IconButton,
-  Snackbar,
-  Typography,
-} from '@mui/joy'
-import { Loading } from '../../Loading'
-import { TaskCard } from './TaskCard'
-import { IconButtonWithMenu } from './IconButtonWithMenu'
-
-import { TasksGrouper } from '../../utils/Tasks'
-import React from 'react'
-import { withNavigation } from '../../contexts/hooks'
-import { Task, TaskGroup } from '../../models/task'
-import { User } from '../../models/user'
-import { GetTasks } from '../../api/tasks'
-import { GetUserProfile } from '../../api/users'
+import { GetTasks } from "@/api/tasks"
+import { GetUserProfile } from "@/api/users"
+import { withNavigation } from "@/contexts/hooks"
+import { Loading } from "@/Loading"
+import { Task, TaskGroup } from "@/models/task"
+import { User } from "@/models/user"
+import { TasksGrouper } from "@/utils/Tasks"
+import { ExpandCircleDown, Add } from "@mui/icons-material"
+import { Container, Box, AccordionGroup, Accordion, Divider, Chip, AccordionDetails, IconButton, Snackbar, Typography } from "@mui/joy"
+import React from "react"
+import { IconButtonWithMenu } from "./IconButtonWithMenu"
+import { TaskCard } from "./TaskCard"
 
 interface MyTasksProps {
   navigate: (path: string) => void

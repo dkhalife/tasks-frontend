@@ -1,34 +1,12 @@
-import {
-  CalendarMonth,
-  Check,
-  Checklist,
-  Edit,
-  History,
-  SwitchAccessShortcut,
-  Timelapse,
-} from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  Card,
-  Chip,
-  Container,
-  Grid,
-  ListItem,
-  ListItemContent,
-  Sheet,
-  Typography,
-} from '@mui/joy'
-import moment from 'moment'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import {
-  ConfirmationModal,
-  ConfirmationModalProps,
-} from '../Modals/Inputs/ConfirmationModal'
-import React from 'react'
-import { withNavigation } from '../../contexts/hooks'
-import { Task } from '../../models/task'
-import { MarkTaskComplete, GetTaskDetailById, SkipTask } from '../../api/tasks'
+import { MarkTaskComplete, GetTaskDetailById, SkipTask } from "@/api/tasks"
+import { withNavigation } from "@/contexts/hooks"
+import { Task } from "@/models/task"
+import { getTextColorFromBackgroundColor } from "@/utils/Colors"
+import { CalendarMonth, Checklist, Timelapse, Edit, Check, SwitchAccessShortcut } from "@mui/icons-material"
+import { Container, Box, Typography, Chip, Sheet, Grid, ListItem, ListItemContent, Button, Card } from "@mui/joy"
+import moment from "moment"
+import React from "react"
+import { ConfirmationModalProps, ConfirmationModal } from "@/views/Modals/Inputs/ConfirmationModal"
 
 interface TaskViewProps {
   taskId: string

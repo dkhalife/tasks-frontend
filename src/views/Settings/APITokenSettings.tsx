@@ -1,19 +1,10 @@
-import { CopyAll } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  IconButton,
-  Input,
-  Typography,
-} from '@mui/joy'
-import moment from 'moment'
-
-import { TextModal } from '../Modals/Inputs/TextModal'
-import React from 'react'
-import { APIToken } from '../../models/token'
-import { CreateLongLiveToken, DeleteLongLiveToken, GetLongLiveTokens } from '../../api/users'
+import { GetLongLiveTokens, CreateLongLiveToken, DeleteLongLiveToken } from "@/api/users"
+import { APIToken } from "@/models/token"
+import { CopyAll } from "@mui/icons-material"
+import { Typography, Divider, Card, Box, Button, Input, IconButton } from "@mui/joy"
+import moment from "moment"
+import React from "react"
+import { TextModal } from "../Modals/Inputs/TextModal"
 
 type APITokenSettingsProps = object 
 

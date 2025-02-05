@@ -1,11 +1,11 @@
-import { Box, Button, Container, Divider, Typography } from '@mui/joy'
-import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
-import { APITokenSettings } from './APITokenSettings'
-import { NotificationSetting } from './NotificationSetting'
-import { ThemeToggle } from './ThemeToggle'
-import React from 'react'
-import { StorageContext } from '../../contexts/StorageContext'
-import { UpdatePassword } from '../../api/users'
+import { UpdatePassword } from "@/api/users"
+import { StorageContext } from "@/contexts/StorageContext"
+import { Container, Typography, Divider, Box, Button } from "@mui/joy"
+import React from "react"
+import { PassowrdChangeModal } from "../Modals/Inputs/PasswordChangeModal"
+import { APITokenSettings } from "./APITokenSettings"
+import { NotificationSetting } from "./NotificationSetting"
+import { ThemeToggle } from "./ThemeToggle"
 
 export class Settings extends React.Component {
   private changePasswordModal = React.createRef<PassowrdChangeModal>()

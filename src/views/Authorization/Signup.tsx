@@ -1,20 +1,10 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  FormControl,
-  FormHelperText,
-  Input,
-  Sheet,
-  Snackbar,
-  Typography,
-} from '@mui/joy'
-import React, { ChangeEvent } from 'react'
-import { Logo } from '../../Logo'
-import { withNavigation } from '../../contexts/hooks'
-import { validateEmail, validatePassword } from '../../models/user'
-import { login, signUp } from '../../api/auth'
+import { login, signUp } from "@/api/auth"
+import { withNavigation } from "@/contexts/hooks"
+import { Logo } from "@/Logo"
+import { validateEmail, validatePassword } from "@/models/user"
+import { Sheet } from "@mui/joy"
+import { Container, Box, Typography, Input, FormControl, FormHelperText, Button, Divider, Snackbar } from "@mui/joy"
+import React, { ChangeEvent } from "react"
 
 interface SignupViewProps {
   navigate: (path: string) => void

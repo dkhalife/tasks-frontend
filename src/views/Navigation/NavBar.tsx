@@ -1,32 +1,13 @@
-import Logo from '../../assets/logo.svg'
-import {
-  HomeOutlined,
-  ListAlt,
-  Logout,
-  MenuRounded,
-  SettingsOutlined,
-} from '@mui/icons-material'
-import {
-  Box,
-  Drawer,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemContent,
-  ListItemDecorator,
-  Typography,
-} from '@mui/joy'
-import { version } from '../../../package.json'
+import { getNextThemeMode } from '@/constants/theme'
+import { withNavigation, withLocation } from '@/contexts/hooks'
+import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
+import { Logo } from '@/Logo'
+import { MenuRounded, HomeOutlined, ListAlt, SettingsOutlined, Logout } from '@mui/icons-material'
+import { IconButton, Box, Typography, Drawer, List, ListItemButton, ListItemDecorator, ListItemContent } from '@mui/joy'
+import React, { version } from 'react'
+import { Location } from 'react-router-dom'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
-import React from 'react'
-import {
-  StorageContext,
-  StorageContextState,
-} from '../../contexts/StorageContext'
-import { getNextThemeMode } from '../../constants/theme'
-import { withLocation, withNavigation } from '../../contexts/hooks'
-import { Location } from 'react-router-dom'
 
 type NavBarProps = {
   location: Location

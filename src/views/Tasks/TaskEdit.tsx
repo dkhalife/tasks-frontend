@@ -1,42 +1,16 @@
-import { Add } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Chip,
-  ColorPaletteProp,
-  Container,
-  Divider,
-  FormControl,
-  FormHelperText,
-  Input,
-  List,
-  ListItem,
-  MenuItem,
-  Option,
-  Radio,
-  RadioGroup,
-  Select,
-  Sheet,
-  Snackbar,
-  Stack,
-  Typography,
-} from '@mui/joy'
-import moment from 'moment'
-import { getTextColorFromBackgroundColor } from '../../utils/Colors'
-import {
-  ConfirmationModal,
-  ConfirmationModalProps,
-} from '../Modals/Inputs/ConfirmationModal'
-import { LabelModal } from '../Modals/Inputs/LabelModal'
-import React, { ChangeEvent } from 'react'
-import { RepeatOption } from './RepeatOption'
-import { withNavigation } from '../../contexts/hooks'
-import { Task, FrequencyMetadata } from '../../models/task'
-import { Label } from '../../models/label'
-import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '../../api/tasks'
+import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
+import { withNavigation } from '@/contexts/hooks'
+import { Label } from '@/models/label'
+import { FrequencyMetadata, Task } from '@/models/task'
+import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import { FrequencyType, NotificationTrigger } from '@/utils/recurrance'
+import { Add } from '@mui/icons-material'
+import { ColorPaletteProp, ListItem, Stack, Typography, List, Container, Box, FormControl, Input, FormHelperText, Checkbox, RadioGroup, Radio, Card, Select, Chip, MenuItem, Sheet, Divider, Button, Snackbar } from '@mui/joy'
+import moment from 'moment'
+import React, { ChangeEvent } from 'react'
+import { ConfirmationModalProps, ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
+import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
+import { RepeatOption } from './RepeatOption'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
