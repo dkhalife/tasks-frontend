@@ -28,29 +28,29 @@ import { ConfirmationModal, ConfirmationModalProps } from '../Modals/Inputs/Conf
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/joy/styles/types'
 import { withNavigation } from '../../contexts/hooks'
-import { Chore, getDueDateChipColor, getDueDateChipText, getRecurrentChipText } from '../../models/chore'
-import { DeleteChore, MarkChoreComplete, UpdateDueDate, SkipChore } from '../../api/chores'
+import { Task, getDueDateChipColor, getDueDateChipText, getRecurrentChipText } from '../../models/task'
+import { DeleteTask, MarkTaskComplete, UpdateDueDate, SkipTask } from '../../api/tasks'
 
-interface ChoreCardProps {
-  chore: Chore
-  onChoreUpdate: (chore: Chore, event: string) => void
-  onChoreRemove: (chore: Chore) => void
+interface TaskCardProps {
+  task: Task
+  onTaskUpdate: (task: Task, event: string) => void
+  onTaskRemove: (task: Task) => void
   sx: SxProps
   viewOnly: boolean
   navigate: (path: string) => void
 }
 
-interface ChoreCardState {
+interface TaskCardState {
   isCompleteWithPastDateModalOpen: boolean
   confirmModelConfig: ConfirmationModalProps | null
 }
 
-class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
+class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
   private menuRef = React.createRef<HTMLDivElement>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
 
-  constructor(props: ChoreCardProps) {
+  constructor(props: TaskCardProps) {
     super(props)
 
     this.state = {
@@ -60,14 +60,14 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   }
 
   private handleEdit = () => {
-    this.props.navigate(`/chores/${this.props.chore.id}/edit`)
+    this.props.navigate(`/tasks/${this.props.task.id}/edit`)
   }
 
   private handleDeleteConfirm = async (isConfirmed: boolean) => {
-    const { chore, onChoreRemove } = this.props
+    const { task, onTaskRemove } = this.props
     if (isConfirmed === true) {
-      await DeleteChore(chore.id)
-      onChoreRemove(chore)
+      await DeleteTask(task.id)
+      onTaskRemove(task)
     }
 
     this.setState({ confirmModelConfig: null })
@@ -76,19 +76,19 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   private handleDelete = () => {
     this.setState({
       confirmModelConfig: {
-        title: 'Delete Chore',
+        title: 'Delete Task',
         confirmText: 'Delete',
         cancelText: 'Cancel',
-        message: 'Are you sure you want to delete this chore?',
+        message: 'Are you sure you want to delete this task?',
         onClose: this.handleDeleteConfirm,
       },
     })
   }
 
   private handleTaskCompletion = () => {
-    const { chore, onChoreUpdate } = this.props
-    MarkChoreComplete(chore.id, null).then(data => {
-      onChoreUpdate(data.res, 'completed')
+    const { task, onTaskUpdate } = this.props
+    MarkTaskComplete(task.id, null).then(data => {
+      onTaskUpdate(data.res, 'completed')
     })
   }
 
@@ -97,11 +97,11 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
       return
     }
 
-    const { chore, onChoreUpdate } = this.props
+    const { task, onTaskUpdate } = this.props
 
-    UpdateDueDate(chore.id, new Date(newDate)).then(data => {
-      const newChore = data.res
-      onChoreUpdate(newChore, 'rescheduled')
+    UpdateDueDate(task.id, new Date(newDate)).then(data => {
+      const newTask = data.res
+      onTaskUpdate(newTask, 'rescheduled')
     })
   }
 
@@ -110,17 +110,17 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
       return
     }
 
-    const { chore, onChoreUpdate } = this.props
+    const { task, onTaskUpdate } = this.props
 
-    MarkChoreComplete(chore.id, new Date(newDate)).then((data) => {
-      onChoreUpdate(data.res, 'completed')
+    MarkTaskComplete(task.id, new Date(newDate)).then((data) => {
+      onTaskUpdate(data.res, 'completed')
     })
   }
 
-  private getFrequencyIcon = (chore: Chore) => {
-      if (['once', 'no_repeat'].includes(chore.frequencyType)) {
+  private getFrequencyIcon = (task: Task) => {
+      if (['once', 'no_repeat'].includes(task.frequencyType)) {
           return <TimesOneMobiledata />
-      } else if (chore.frequencyType === 'trigger') {
+      } else if (task.frequencyType === 'trigger') {
           return <Webhook />
       } else {
           return <Repeat />
@@ -128,7 +128,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   }
 
   private getName = (name: string) => {
-    const split = Array.from<string>(this.props.chore.title)
+    const split = Array.from<string>(this.props.task.title)
     // if the first character is emoji then remove it from the name
     if (/\p{Emoji}/u.test(split[0])) {
       return split.slice(1).join('').trim()
@@ -136,22 +136,22 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
     return name
   }
 
-  private onSkipChore = async () => {
-    const { chore, onChoreUpdate } = this.props
+  private onSkipTask = async () => {
+    const { task, onTaskUpdate } = this.props
 
-    const data = await SkipChore(chore.id)
-    const newChore = data.res
-    onChoreUpdate(newChore, 'skipped')
+    const data = await SkipTask(task.id)
+    const newTask = data.res
+    onTaskUpdate(newTask, 'skipped')
   }
 
   render(): React.ReactNode {
-    const { chore, sx, viewOnly } = this.props
+    const { task, sx, viewOnly } = this.props
     const {
       confirmModelConfig,
     } = this.state
 
     return (
-      <Box key={chore.id + '-box'}>
+      <Box key={task.id + '-box'}>
         <Chip
           variant='soft'
           sx={{
@@ -160,9 +160,9 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
             zIndex: 1,
             left: 10,
           }}
-          color={getDueDateChipColor(chore.nextDueDate)}
+          color={getDueDateChipColor(task.nextDueDate)}
         >
-          {getDueDateChipText(chore.nextDueDate)}
+          {getDueDateChipText(task.nextDueDate)}
         </Chip>
 
         <Chip
@@ -182,8 +182,8 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
               justifyContent: 'center',
             }}
           >
-            {this.getFrequencyIcon(chore)}
-            {getRecurrentChipText(chore)}
+            {this.getFrequencyIcon(task)}
+            {getRecurrentChipText(task)}
           </div>
         </Chip>
 
@@ -198,14 +198,14 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
             p: 2,
             boxShadow: 'sm',
             borderRadius: 20,
-            key: `${chore.id}-card`,
+            key: `${task.id}-card`,
           }}
         >
           <Grid container>
             <Grid
               xs={9}
               onClick={() => {
-                this.props.navigate(`/chores/${chore.id}`)
+                this.props.navigate(`/tasks/${task.id}`)
               }}
             >
               <Box
@@ -214,21 +214,21 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                 alignItems='center'
               >
                 <Avatar sx={{ mr: 1, fontSize: 22 }}>
-                  {Array.from<string>(chore.title)[0]}
+                  {Array.from<string>(task.title)[0]}
                 </Avatar>
                 <Box
                   display='flex'
                   flexDirection='column'
                 >
                   <Typography level='title-md'>
-                    {this.getName(chore.title)}
+                    {this.getName(task.title)}
                   </Typography>
-                  <Box key={`${chore.id}-labels`}>
-                    {chore.labels?.map((l, index) => {
+                  <Box key={`${task.id}-labels`}>
+                    {task.labels?.map((l, index) => {
                       return (
                         <Chip
                           variant='solid'
-                          key={`chorecard-${chore.id}-label-${l.id}`}
+                          key={`taskcard-${task.id}-label-${l.id}`}
                           color='primary'
                           sx={{
                             position: 'relative',
@@ -292,7 +292,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                   size='lg'
                   ref={this.menuRef}
                 >
-                  <MenuItem onClick={this.onSkipChore}>
+                  <MenuItem onClick={this.onSkipTask}>
                     <SwitchAccessShortcut />
                     Skip to next due date
                   </MenuItem>
@@ -312,7 +312,7 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
                   <Divider />
                   <MenuItem
                     onClick={() => {
-                      this.props.navigate(`/chores/${chore.id}/history`)
+                      this.props.navigate(`/tasks/${task.id}/history`)
                     }}
                   >
                     <ManageSearch />
@@ -331,16 +331,16 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
             </Grid>
           </Grid>
           <DateModal
-            key={'changeDueDate' + chore.id}
-            current={chore.nextDueDate}
+            key={'changeDueDate' + task.id}
+            current={task.nextDueDate}
             title={`Change due date`}
             onClose={this.handleChangeDueDate}
           />
           <DateModal
             ref={this.dateModalRef}
-            key={'completedInPast' + chore.id}
-            current={chore.nextDueDate}
-            title={`Save Chore that you completed in the past`}
+            key={'completedInPast' + task.id}
+            current={task.nextDueDate}
+            title={`Save Task that you completed in the past`}
             onClose={this.handleCompleteWithPastDate}
           />
 
@@ -356,4 +356,4 @@ class ChoreCardInner extends React.Component<ChoreCardProps, ChoreCardState> {
   }
 }
 
-export const ChoreCard = withNavigation(ChoreCardInner)
+export const TaskCard = withNavigation(TaskCardInner)

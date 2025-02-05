@@ -33,20 +33,20 @@ import { LabelModal } from '../Modals/Inputs/LabelModal'
 import React, { ChangeEvent } from 'react'
 import { RepeatOption } from './RepeatOption'
 import { withNavigation } from '../../contexts/hooks'
-import { Chore, FrequencyMetadata } from '../../models/chore'
+import { Task, FrequencyMetadata } from '../../models/task'
 import { Label } from '../../models/label'
-import { CreateChore, SaveChore, DeleteChore, GetChoreByID } from '../../api/chores'
+import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '../../api/tasks'
 import { FrequencyType, NotificationTrigger } from '@/utils/recurrance'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
 const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
-interface ChoreEditProps {
-  choreId: string | null
+interface TaskEditProps {
+  taskId: string | null
 }
 
-type ChoreEditInnerProps = ChoreEditProps & {
+type TaskEditInnerProps = TaskEditProps & {
   navigate: (path: string) => void
 }
 
@@ -60,7 +60,7 @@ interface NotificationMetadata {
 type Errors = { [key: string]: string }
 
 // TODO: Some of these should be props
-interface ChoreEditState {
+interface TaskEditState {
   isRolling: boolean
   isNotificable: boolean
   updatedBy: number
@@ -75,7 +75,7 @@ interface ChoreEditState {
   labels: Label[]
   notificationMetadata: NotificationMetadata
   userLabels: Label[]
-  chore: Chore | null
+  task: Task | null
   name: string
   confirmModelConfig: ConfirmationModalProps
 }
@@ -86,13 +86,13 @@ type NotificationTriggerOption = {
   description: string
 }
 
-class ChoreEditInner extends React.Component<
-  ChoreEditInnerProps,
-  ChoreEditState
+class TaskEditInner extends React.Component<
+  TaskEditInnerProps,
+  TaskEditState
 > {
   private labelModalRef = React.createRef<LabelModal>()
 
-  constructor(props: ChoreEditInnerProps) {
+  constructor(props: TaskEditInnerProps) {
     super(props)
     this.state = {
       isRolling: false,
@@ -114,7 +114,7 @@ class ChoreEditInner extends React.Component<
         nagging: false,
       },
       userLabels: [],
-      chore: null,
+      task: null,
       name: '',
       confirmModelConfig: {
         cancelText: '',
@@ -126,7 +126,7 @@ class ChoreEditInner extends React.Component<
     }
   }
 
-  private HandleValidateChore = () => {
+  private HandleValidateTask = () => {
     const { name, frequencyType, frequency, frequencyMetadata, dueDate } =
       this.state
 
@@ -168,7 +168,7 @@ class ChoreEditInner extends React.Component<
     }
 
     // if there is any error then return false:
-    const newState: ChoreEditState = {
+    const newState: TaskEditState = {
       ...this.state,
       errors,
     }
@@ -203,12 +203,12 @@ class ChoreEditInner extends React.Component<
     this.setState({ dueDate: e.target.value })
   }
 
-  private HandleSaveChore = () => {
-    if (!this.HandleValidateChore()) {
+  private HandleSaveTask = () => {
+    if (!this.HandleValidateTask()) {
       return
     }
 
-    const { choreId } = this.props
+    const { taskId } = this.props
     const {
       name,
       frequencyType,
@@ -220,8 +220,8 @@ class ChoreEditInner extends React.Component<
       labels,
       notificationMetadata,
     } = this.state
-    const chore: any = {
-      id: choreId,
+    const task: any = {
+      id: taskId,
       name: name,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
       frequencyType: frequencyType,
@@ -233,39 +233,39 @@ class ChoreEditInner extends React.Component<
       notificationMetadata: notificationMetadata,
     }
 
-    let SaveFunction = CreateChore
-    if (choreId !== null) {
-      SaveFunction = SaveChore
+    let SaveFunction = CreateTask
+    if (taskId !== null) {
+      SaveFunction = SaveTask
     }
 
-    SaveFunction(chore).then(response => {
+    SaveFunction(task).then(response => {
       if (response.status === 200) {
-        this.props.navigate(`/my/chores`)
+        this.props.navigate(`/my/tasks`)
       } else {
         this.setState({
           isSnackbarOpen: true,
-          snackbarMessage: 'Failed to save chore',
+          snackbarMessage: 'Failed to save task',
           snackbarColor: 'danger',
         })
       }
     })
   }
 
-  private handleDelete = (choreId: string) => {
+  private handleDelete = (taskId: string) => {
     this.setState({
       confirmModelConfig: {
-        title: 'Delete Chore',
+        title: 'Delete Task',
         confirmText: 'Delete',
         cancelText: 'Cancel',
-        message: 'Are you sure you want to delete this chore?',
+        message: 'Are you sure you want to delete this task?',
         onClose: isConfirmed => {
           if (isConfirmed === true) {
-            DeleteChore(choreId).then(() => {
-              this.props.navigate('/my/chores')
+            DeleteTask(taskId).then(() => {
+              this.props.navigate('/my/tasks')
             }).catch(() => {
               this.setState({
                 isSnackbarOpen: true,
-                snackbarMessage: 'Failed to delete chore',
+                snackbarMessage: 'Failed to delete task',
                 snackbarColor: 'danger',
               })
             })
@@ -312,14 +312,14 @@ class ChoreEditInner extends React.Component<
   componentDidMount(): void {
     // TODO: Load and set labels and userLabels
 
-    // Load chore data
-    const { choreId } = this.props
-    if (choreId != null) {
-      GetChoreByID(choreId)
+    // Load task data
+    const { taskId } = this.props
+    if (taskId != null) {
+      GetTaskByID(taskId)
         .then(data => {
           // TODO: There is so much redundancy here
           this.setState({
-            chore: data.res,
+            task: data.res,
             name: data.res.name ? data.res.name : '',
             frequencyType: data.res.frequencyType
               ? data.res.frequencyType
@@ -339,12 +339,12 @@ class ChoreEditInner extends React.Component<
         .catch(() => {
           this.setState({
             isSnackbarOpen: true,
-            snackbarMessage: 'You are not authorized to view this chore.',
+            snackbarMessage: 'You are not authorized to view this task.',
             snackbarColor: 'danger',
           })
 
           setTimeout(() => {
-            this.props.navigate('/my/chores')
+            this.props.navigate('/my/tasks')
           }, 3000)
         })
     } else {
@@ -354,8 +354,8 @@ class ChoreEditInner extends React.Component<
   }
 
   componentDidUpdate(
-    prevProps: Readonly<ChoreEditProps>,
-    prevState: Readonly<ChoreEditState>,
+    prevProps: Readonly<TaskEditProps>,
+    prevState: Readonly<TaskEditState>,
   ): void {
     const { frequencyType, dueDate } = this.state
 
@@ -374,7 +374,7 @@ class ChoreEditInner extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { choreId } = this.props
+    const { taskId } = this.props
     const {
       name,
       frequency,
@@ -386,7 +386,7 @@ class ChoreEditInner extends React.Component<
       labels,
       notificationMetadata,
       userLabels,
-      chore,
+      task,
       updatedBy,
       errors,
       isSnackbarOpen,
@@ -399,7 +399,7 @@ class ChoreEditInner extends React.Component<
         <Box>
           <FormControl error={Boolean(errors.name)}>
             <Typography level='h4'>Description :</Typography>
-            <Typography>What is this chore about?</Typography>
+            <Typography>What is this task about?</Typography>
             <Input
               value={name}
               onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ name: e.target.value })}
@@ -461,8 +461,8 @@ class ChoreEditInner extends React.Component<
             <FormControl error={Boolean(errors.dueDate)}>
               <Typography>
                 {REPEAT_ON_TYPE.includes(frequencyType)
-                  ? 'When does this chore start?'
-                  : 'When is the next first time this chore is due?'}
+                  ? 'When does this task start?'
+                  : 'When is the next first time this task is due?'}
               </Typography>
               <Input
                 type='datetime-local'
@@ -574,7 +574,7 @@ class ChoreEditInner extends React.Component<
         <Box mt={2}>
           <Typography level='h4'>Labels :</Typography>
           <Typography>
-            Things to remember about this chore or to tag it
+            Things to remember about this task or to tag it
           </Typography>
           <Select
             multiple
@@ -644,7 +644,7 @@ class ChoreEditInner extends React.Component<
           </Select>
         </Box>
 
-        {choreId !== null && chore && (
+        {taskId !== null && task && (
           <Box
             sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
           >
@@ -655,12 +655,12 @@ class ChoreEditInner extends React.Component<
                 boxShadow: 'sm',
               }}
             >
-              {(chore.updatedAt && updatedBy > 0 && (
+              {(task.updatedAt && updatedBy > 0 && (
                 <>
                   <Divider sx={{ my: 1 }} />
 
                   <Typography>
-                    Updated at {moment(chore.updatedAt).fromNow()}
+                    Updated at {moment(task.updatedAt).fromNow()}
                   </Typography>
                 </>
               )) || <></>}
@@ -686,12 +686,12 @@ class ChoreEditInner extends React.Component<
             boxShadow: 'md',
           }}
         >
-          {choreId != null && (
+          {taskId != null && (
             <Button
               color='danger'
               variant='solid'
               onClick={() => {
-                this.handleDelete(choreId)
+                this.handleDelete(taskId)
               }}
             >
               Delete
@@ -709,9 +709,9 @@ class ChoreEditInner extends React.Component<
           <Button
             color='primary'
             variant='solid'
-            onClick={this.HandleSaveChore}
+            onClick={this.HandleSaveTask}
           >
-            {choreId != null ? 'Save' : 'Create'}
+            {taskId != null ? 'Save' : 'Create'}
           </Button>
         </Sheet>
         <ConfirmationModal {...confirmModelConfig} />
@@ -741,4 +741,4 @@ class ChoreEditInner extends React.Component<
   }
 }
 
-export const ChoreEdit = withNavigation<ChoreEditProps>(ChoreEditInner)
+export const TaskEdit = withNavigation<TaskEditProps>(TaskEditInner)

@@ -22,43 +22,43 @@ import moment from 'moment'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import React, { ChangeEvent } from 'react'
 import { withNavigation } from '../../contexts/hooks'
-import { Chore, getDueDateChipColor, getDueDateChipText } from '../../models/chore'
+import { Task, getDueDateChipColor, getDueDateChipText } from '../../models/task'
 import { User } from '../../models/user'
-import { GetChores, MarkChoreComplete } from '../../api/chores'
+import { GetTasks, MarkTaskComplete } from '../../api/tasks'
 
-interface ChoresOverviewProps {
+interface TasksOverviewProps {
   navigate: (path: string) => void
 }
 
-interface ChoresOverviewState {
-  chores: Chore[]
-  filteredChores: Chore[]
+interface TasksOverviewState {
+  tasks: Task[]
+  filteredTasks: Task[]
   search: string
-  choreId: string | null
+  taskId: string | null
   activeUserId: number | null
 }
 
-class ChoresOverviewInner extends React.Component<
-  ChoresOverviewProps,
-  ChoresOverviewState
+class TasksOverviewInner extends React.Component<
+  TasksOverviewProps,
+  TasksOverviewState
 > {
   private dateModalRef = React.createRef<DateModal>()
 
-  constructor(props: ChoresOverviewProps) {
+  constructor(props: TasksOverviewProps) {
     super(props)
     this.state = {
-      chores: [],
-      filteredChores: [],
+      tasks: [],
+      filteredTasks: [],
       search: '',
-      choreId: null,
+      taskId: null,
       activeUserId: null,
     }
   }
 
   componentDidMount(): void {
-    GetChores()
+    GetTasks()
       .then(data => {
-        this.setState({ chores: data.res, filteredChores: data.res })
+        this.setState({ tasks: data.res, filteredTasks: data.res })
       })
 
     const user = JSON.parse(localStorage.getItem('user') as string) as User
@@ -72,26 +72,26 @@ class ChoresOverviewInner extends React.Component<
       return
     }
 
-    const { chores, choreId } = this.state
-    if (!choreId) {
+    const { tasks, taskId } = this.state
+    if (!taskId) {
       return
     }
 
-    MarkChoreComplete(choreId, new Date(date)).then(data => {
-      const newChore = data.res
-      const newChores = [...chores]
-      const index = newChores.findIndex(c => c.id === newChore.id)
-      newChores[index] = newChore
+    MarkTaskComplete(taskId, new Date(date)).then(data => {
+      const newTask = data.res
+      const newTasks = [...tasks]
+      const index = newTasks.findIndex(c => c.id === newTask.id)
+      newTasks[index] = newTask
 
       this.setState({
-        chores: newChores,
-        filteredChores: newChores,
+        tasks: newTasks,
+        filteredTasks: newTasks,
       })
     })
   }
 
   render(): React.ReactNode {
-    const { chores, filteredChores, search, choreId } =
+    const { tasks, filteredTasks, search, taskId } =
       this.state
 
     return (
@@ -100,7 +100,7 @@ class ChoresOverviewInner extends React.Component<
           level='h4'
           mb={1.5}
         >
-          Chores Overviews
+          Tasks Overviews
         </Typography>
 
         <Grid container>
@@ -115,13 +115,13 @@ class ChoresOverviewInner extends React.Component<
               placeholder='Search'
               value={search}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const newChores = chores.filter(chore => {
-                  return chore.title.includes(e.target.value)
+                const newTasks = tasks.filter(task => {
+                  return task.title.includes(e.target.value)
                 })
 
                 const newState = {
                   search: e.target.value,
-                  filteredChores: e.target.value === '' ? chores : newChores,
+                  filteredTasks: e.target.value === '' ? tasks : newTasks,
                 }
                 this.setState(newState)
               }}
@@ -129,7 +129,7 @@ class ChoresOverviewInner extends React.Component<
                 search !== '' ? (
                   <Button
                     onClick={() => {
-                      this.setState({ search: '', filteredChores: chores })
+                      this.setState({ search: '', filteredTasks: tasks })
                     }}
                   >
                     <CancelRounded />
@@ -150,10 +150,10 @@ class ChoresOverviewInner extends React.Component<
           >
             <Button
               onClick={() => {
-                this.props.navigate(`/chores/create`)
+                this.props.navigate(`/tasks/create`)
               }}
             >
-              New Chore
+              New Task
             </Button>
           </Grid>
         </Grid>
@@ -162,39 +162,39 @@ class ChoresOverviewInner extends React.Component<
           <thead>
             <tr>
               <th style={{ width: 100 }}>Due</th>
-              <th>Chore</th>
+              <th>Task</th>
               <th>Due</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {filteredChores.map((chore: Chore) => (
-              <tr key={chore.id}>
+            {filteredTasks.map((task: Task) => (
+              <tr key={task.id}>
                 <td>
-                  <Chip color={getDueDateChipColor(chore.nextDueDate)}>
-                    {getDueDateChipText(chore.nextDueDate)}
+                  <Chip color={getDueDateChipColor(task.nextDueDate)}>
+                    {getDueDateChipText(task.nextDueDate)}
                   </Chip>
                 </td>
                 <td
                   onClick={() => {
-                    this.props.navigate(`/chores/${chore.id}/edit`)
+                    this.props.navigate(`/tasks/${task.id}/edit`)
                   }}
                 >
-                  {chore.title || '--'}
+                  {task.title || '--'}
                 </td>
                 <td>
                   <Tooltip
                     title={
-                      chore.nextDueDate === null
+                      task.nextDueDate === null
                         ? 'no due date'
-                        : moment(chore.nextDueDate).format('YYYY-MM-DD')
+                        : moment(task.nextDueDate).format('YYYY-MM-DD')
                     }
                     size='sm'
                   >
                     <Typography>
-                      {chore.nextDueDate === null
+                      {task.nextDueDate === null
                         ? '--'
-                        : moment(chore.nextDueDate).fromNow()}
+                        : moment(task.nextDueDate).fromNow()}
                     </Typography>
                   </Tooltip>
                 </td>
@@ -205,17 +205,17 @@ class ChoresOverviewInner extends React.Component<
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        MarkChoreComplete(chore.id, null).then(data => {
-                          const newChore = data.res
-                          const newChores = [...chores]
-                          const index = newChores.findIndex(
-                            c => c.id === chore.id,
+                        MarkTaskComplete(task.id, null).then(data => {
+                          const newTask = data.res
+                          const newTasks = [...tasks]
+                          const index = newTasks.findIndex(
+                            c => c.id === task.id,
                           )
-                          newChores[index] = newChore
+                          newTasks[index] = newTask
 
                           this.setState({
-                            chores: newChores,
-                            filteredChores: newChores,
+                            tasks: newTasks,
+                            filteredTasks: newTasks,
                           })
                         })
                       }}
@@ -228,7 +228,7 @@ class ChoresOverviewInner extends React.Component<
                       size='sm'
                       onClick={() => {
                         this.setState({
-                          choreId: chore.id,
+                          taskId: task.id,
                         })
                         this.dateModalRef.current?.open()
                       }}
@@ -240,7 +240,7 @@ class ChoresOverviewInner extends React.Component<
                       variant='outlined'
                       size='sm'
                       onClick={() => {
-                        this.props.navigate(`/chores/${chore.id}/edit`)
+                        this.props.navigate(`/tasks/${task.id}/edit`)
                       }}
                     >
                       <Edit />
@@ -253,7 +253,7 @@ class ChoresOverviewInner extends React.Component<
         </Table>
         <DateModal
           ref={this.dateModalRef}
-          key={choreId}
+          key={taskId}
           current=''
           title={`Change due date`}
           onClose={this.onCloseDateModal}
@@ -263,4 +263,4 @@ class ChoresOverviewInner extends React.Component<
   }
 }
 
-export const ChoresOverview = withNavigation(ChoresOverviewInner)
+export const TasksOverview = withNavigation(TasksOverviewInner)

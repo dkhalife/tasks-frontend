@@ -74,7 +74,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
         <Box
           className='flex items-center gap-2'
           onClick={() => {
-            this.props.navigate('/my/chores')
+            this.props.navigate('/my/tasks')
           }}
         >
           <img
@@ -125,12 +125,12 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
               sx={{ borderRadius: 4, width: '100%', padding: 1 }}
             >
               <NavBarLink
-                to='/my/chores'
+                to='/my/tasks'
                 icon={<HomeOutlined />}
                 label='Home'
               />
               <NavBarLink
-                to='/chores'
+                to='/tasks'
                 icon={<ListAlt />}
                 label='Desktop View'
               />

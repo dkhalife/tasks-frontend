@@ -12,61 +12,61 @@ import {
   Typography,
 } from '@mui/joy'
 import { Loading } from '../../Loading'
-import { ChoreCard } from './ChoreCard'
+import { TaskCard } from './TaskCard'
 import { IconButtonWithMenu } from './IconButtonWithMenu'
 
-import { ChoresGrouper } from '../../utils/Chores'
+import { TasksGrouper } from '../../utils/Tasks'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
-import { Chore, ChoreGroup } from '../../models/chore'
+import { Task, TaskGroup } from '../../models/task'
 import { User } from '../../models/user'
-import { GetChores } from '../../api/chores'
+import { GetTasks } from '../../api/tasks'
 import { GetUserProfile } from '../../api/users'
 
-interface MyChoresProps {
+interface MyTasksProps {
   navigate: (path: string) => void
 }
 
-interface MyChoresState {
+interface MyTasksState {
   isSnackbarOpen: boolean
   snackBarMessage: string | null
-  chores: Chore[]
-  archivedChores: Chore[]
-  filteredChores: Chore[]
+  tasks: Task[]
+  archivedTasks: Task[]
+  filteredTasks: Task[]
   selectedFilter: string
-  choreSections: ChoreGroup[]
-  selectedChoreSection: string
+  taskSections: TaskGroup[]
+  selectedTaskSection: string
   userProfile: User | null
   isLoading: boolean
 }
 
-class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
-  constructor(props: MyChoresProps) {
+class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
+  constructor(props: MyTasksProps) {
     super(props)
 
     this.state = {
       isSnackbarOpen: false,
       snackBarMessage: null,
-      chores: [],
-      archivedChores: [],
-      filteredChores: [],
+      tasks: [],
+      archivedTasks: [],
+      filteredTasks: [],
       selectedFilter: 'All',
-      choreSections: [],
-      selectedChoreSection: 'due_date',
+      taskSections: [],
+      selectedTaskSection: 'due_date',
       userProfile: null,
       isLoading: true,
     }
   }
 
   componentDidMount(): void {
-    Promise.all([GetChores(), GetUserProfile()]).then(responses => {
+    Promise.all([GetTasks(), GetUserProfile()]).then(responses => {
       // TODO: Split this and move state ownership to the respective components
-      const [choresData, userProfileData] = responses
+      const [tasksData, userProfileData] = responses
       //TODO: Sorter
-      //choresData.res.sort(choreSorter)
+      //tasksData.res.sort(taskSorter)
       this.setState({
-        chores: choresData.res,
-        filteredChores: choresData.res,
+        tasks: tasksData.res,
+        filteredTasks: tasksData.res,
         userProfile: userProfileData.res,
         isLoading: false,
       })
@@ -74,7 +74,7 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
   }
 
   render(): React.ReactNode {
-    const { isSnackbarOpen, snackBarMessage, isLoading, chores } = this.state
+    const { isSnackbarOpen, snackBarMessage, isLoading, tasks } = this.state
 
     if (isLoading) {
       return <Loading />
@@ -102,11 +102,11 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
               { name: 'Labels', value: 'labels' },
             ]}
             onItemSelect={selected => {
-              const section = ChoresGrouper(selected.value, chores)
+              const section = TasksGrouper(selected.value, tasks)
               this.setState({
-                choreSections: section,
-                selectedChoreSection: selected.value,
-                filteredChores: chores,
+                taskSections: section,
+                selectedTaskSection: selected.value,
+                filteredTasks: tasks,
                 selectedFilter: 'All',
               })
             }}
@@ -156,12 +156,12 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
                 my: 0,
               }}
             >
-              {chores.map(chore => (
-                <ChoreCard
-                  key={chore.id}
-                  chore={chore}
-                  onChoreUpdate={() => {}}
-                  onChoreRemove={() => {}}
+              {tasks.map(task => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onTaskUpdate={() => {}}
+                  onTaskRemove={() => {}}
                   sx={{}}
                   viewOnly={false}
                 />
@@ -190,7 +190,7 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
               height: 50,
             }}
             onClick={() => {
-              this.props.navigate(`/chores/create`)
+              this.props.navigate(`/tasks/create`)
             }}
           >
             <Add />
@@ -214,4 +214,4 @@ class MyChoresInner extends React.Component<MyChoresProps, MyChoresState> {
   }
 }
 
-export const MyChores = withNavigation(MyChoresInner)
+export const MyTasks = withNavigation(MyTasksInner)

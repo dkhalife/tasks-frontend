@@ -56,7 +56,7 @@ class SignupViewInner extends React.Component<
     login(username, password).then(res => {
       localStorage.setItem('ca_token', res.token)
       localStorage.setItem('ca_expiration', res.expire)
-      this.props.navigate('/my/chores')
+      this.props.navigate('/my/tasks')
     })
     .catch(() => {
       this.setState({ error: 'Login failed' })

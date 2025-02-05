@@ -27,14 +27,14 @@ import {
 } from '../Modals/Inputs/ConfirmationModal'
 import React from 'react'
 import { withNavigation } from '../../contexts/hooks'
-import { Chore } from '../../models/chore'
-import { MarkChoreComplete, GetChoreDetailById, SkipChore } from '../../api/chores'
+import { Task } from '../../models/task'
+import { MarkTaskComplete, GetTaskDetailById, SkipTask } from '../../api/tasks'
 
-interface ChoreViewProps {
-  choreId: string
+interface TaskViewProps {
+  taskId: string
 }
 
-type ChoreViewInnerProps = ChoreViewProps & {
+type TaskViewInnerProps = TaskViewProps & {
   navigate: (path: string) => void
 }
 
@@ -45,23 +45,23 @@ interface InfoCard {
   subtext: string
 }
 
-interface ChoreViewState {
-  chore: Chore | null
+interface TaskViewState {
+  task: Task | null
   infoCards: InfoCard[]
   confirmModelConfig: ConfirmationModalProps
 }
 
-class ChoreViewInner extends React.Component<
-  ChoreViewInnerProps,
-  ChoreViewState
+class TaskViewInner extends React.Component<
+  TaskViewInnerProps,
+  TaskViewState
 > {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
 
-  constructor(props: ChoreViewInnerProps) {
+  constructor(props: TaskViewInnerProps) {
     super(props)
 
     this.state = {
-      chore: null,
+      task: null,
       infoCards: [],
       confirmModelConfig: {
         title: '',
@@ -74,57 +74,57 @@ class ChoreViewInner extends React.Component<
   }
 
   private handleTaskCompletion = async () => {
-    const { choreId } = this.props
-    if (!choreId) {
+    const { taskId } = this.props
+    if (!taskId) {
       return
     }
 
-    const data = await MarkChoreComplete(choreId, null)
+    const data = await MarkTaskComplete(taskId, null)
     this.setState({
-      chore: data.res,
+      task: data.res,
     })
 
     // TODO: redundant
-    const data2 = await GetChoreDetailById(choreId)
+    const data2 = await GetTaskDetailById(taskId)
     this.setState({
-      chore: data2.res,
+      task: data2.res,
     })
   }
 
   componentDidMount(): void {
-    GetChoreDetailById(this.props.choreId).then(data => {
-      const chore = data.res
+    GetTaskDetailById(this.props.taskId).then(data => {
+      const task = data.res
 
       this.setState({
-        chore,
+        task,
       })
 
-      this.generateInfoCards(chore)
+      this.generateInfoCards(task)
     })
   }
 
-  private generateInfoCards = (chore: any) => {
+  private generateInfoCards = (task: any) => {
     const cards = [
       {
         size: 6,
         icon: <CalendarMonth />,
         text: 'Due Date',
-        subtext: chore.nextDueDate
-          ? moment(chore.nextDueDate).fromNow()
+        subtext: task.nextDueDate
+          ? moment(task.nextDueDate).fromNow()
           : 'N/A',
       },
       {
         size: 6,
         icon: <Checklist />,
         text: 'Total Completed',
-        subtext: `${chore.totalCompletedCount} times`,
+        subtext: `${task.totalCompletedCount} times`,
       },
       {
         size: 6,
         icon: <Timelapse />,
         text: 'Last Completed',
         subtext:
-          chore.lastCompletedDate && moment(chore.lastCompletedDate).fromNow(),
+          task.lastCompletedDate && moment(task.lastCompletedDate).fromNow(),
       },
     ]
 
@@ -134,18 +134,18 @@ class ChoreViewInner extends React.Component<
   }
 
   private handleSkippingTask = async () => {
-    const data = await SkipChore(this.props.choreId)
+    const data = await SkipTask(this.props.taskId)
     this.setState({
-      chore: data.res,
+      task: data.res,
     })
   }
 
   render(): React.ReactNode {
-    const { choreId } = this.props
-    const { chore, infoCards, confirmModelConfig } = this.state
+    const { taskId } = this.props
+    const { task, infoCards, confirmModelConfig } = this.state
 
-    // TODO: Chore should just be a prop?
-    if (!chore) {
+    // TODO: Task should just be a prop?
+    if (!task) {
       return null
     }
 
@@ -175,18 +175,18 @@ class ChoreViewInner extends React.Component<
               mb: 0.5,
             }}
           >
-            {chore.title}
+            {task.title}
           </Typography>
           <Chip
             startDecorator={<CalendarMonth />}
             size='md'
             sx={{ mb: 1 }}
           >
-            {chore.nextDueDate
-              ? `Due at ${moment(chore.nextDueDate).format('MM/DD/YYYY hh:mm A')}`
+            {task.nextDueDate
+              ? `Due at ${moment(task.nextDueDate).format('MM/DD/YYYY hh:mm A')}`
               : 'N/A'}
           </Chip>
-          {chore?.labels?.map((label, index) => (
+          {task?.labels?.map((label, index) => (
             <Chip
               key={index}
               sx={{
@@ -257,7 +257,7 @@ class ChoreViewInner extends React.Component<
               variant='outlined'
               fullWidth
               onClick={() => {
-                this.props.navigate(`/chores/${choreId}/history`)
+                this.props.navigate(`/tasks/${taskId}/history`)
               }}
               sx={{
                 flexDirection: 'column',
@@ -281,7 +281,7 @@ class ChoreViewInner extends React.Component<
                 p: 1,
               }}
               onClick={() => {
-                this.props.navigate(`/chores/${choreId}/edit`)
+                this.props.navigate(`/tasks/${taskId}/edit`)
               }}
             >
               <Edit />
@@ -366,4 +366,4 @@ class ChoreViewInner extends React.Component<
   }
 }
 
-export const ChoreView = withNavigation(ChoreViewInner)
+export const TaskView = withNavigation(TaskViewInner)
