@@ -1,4 +1,4 @@
-import { login } from "@/api/auth"
+import { Login } from "@/api/auth"
 import { withNavigation } from "@/contexts/hooks"
 import { Logo } from "@/Logo"
 import { Sheet } from "@mui/joy"
@@ -36,21 +36,21 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
 
     const { username, password } = this.state
 
-    login(username, password)
-      .then(data => {
-        localStorage.setItem('ca_token', data.token)
-        localStorage.setItem('ca_expiration', data.expire)
-        const redirectUrl = Cookies.get('ca_redirect')
-        if (redirectUrl) {
-          Cookies.remove('ca_redirect')
-          this.props.navigate(redirectUrl)
-        } else {
-          this.props.navigate('/my/tasks')
-        }
-      })
-      .catch((error: Error) => {
-        this.setState({ error: error.message })
-      })
+    try {
+      const data = await Login(username, password)
+      localStorage.setItem('ca_token', data.token)
+      localStorage.setItem('ca_expiration', data.expiration)
+
+      const redirectUrl = Cookies.get('ca_redirect')
+      if (redirectUrl) {
+        Cookies.remove('ca_redirect')
+        this.props.navigate(redirectUrl)
+      } else {
+        this.props.navigate('/my/tasks')
+      }
+    } catch(error) {
+      this.setState({ error: (error as Error).message })
+    }
   }
 
   render(): React.ReactNode {

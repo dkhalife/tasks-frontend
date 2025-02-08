@@ -1,85 +1,47 @@
 import { Task } from "@/models/task"
 import { Request } from "../utils/TokenManager"
+import { HistoryEntry } from "@/models/history"
 
-export const GetTasks = async (): Promise<any> => {
-  const response = await Request(`/tasks/`)
-  if (!response.ok) {
-    throw new Error('Failed to get tasks: ' + response.statusText)
-  }
-
-  return response.json()
+type SingleTaskResponse = {
+  task: Task
 }
 
-export const GetTaskByID = async (id: string) => {
-  const response = await Request(`/tasks/${id}`)
-  if (!response.ok) {
-    throw new Error('Failed to get task')
-  }
+type TaskDetailResponse = object
 
-  return response.json()
+type TasksResponse = {
+  tasks: Task[]
 }
 
-export const GetTaskDetailById = async (id: string): Promise<any> => {
-  const response = await Request(`/tasks/${id}/details`)
-  if (!response.ok) {
-    throw new Error('Failed to get task details')
-  }
-
-  return response.json()
+type TaskHistoryResponse = {
+  history: HistoryEntry[]
 }
 
-export const MarkTaskComplete = async (id: string, completedDate: Date | null): Promise<any> => {
+export const GetTasks = async () => await Request<TasksResponse>(`/tasks/`)
+
+export const GetTaskByID = async (id: string) => await Request<SingleTaskResponse>(`/tasks/${id}`)
+
+export const GetTaskDetailById = async (id: string) => await Request<TaskDetailResponse>(`/tasks/${id}/details`)
+
+export const MarkTaskComplete = async (id: string, completedDate: Date | null) => {
   const body: any = {}
 
   if (completedDate) {
     body.completedDate = completedDate.toISOString()
   }
 
-  const response = await Request(`/tasks/${id}/do`, 'POST', body)
-  if (!response.ok) {
-    throw new Error('Failed to mark task complete')
-  }
-
-  return response.json()
+  return await Request<SingleTaskResponse>(`/tasks/${id}/do`, 'POST', body)
 }
 
-export const SkipTask = async (id: string): Promise<any> => {
-  const response = await Request(`/tasks/${id}/skip`, 'POST')
-  if (!response.ok) {
-    throw new Error('Failed to skip task')
-  }
+export const SkipTask = async (id: string): Promise<any> => await Request<SingleTaskResponse>(`/tasks/${id}/skip`, 'POST')
 
-  return response.json()
-}
+export const CreateTask = async (task: Task) => await Request<void>(`/tasks/`, 'POST', task)
 
-export const CreateTask = (task: Task) => {
-  return Request(`/tasks/`, 'POST', task)
-}
+export const DeleteTask = async (id: string) => await Request<void>(`/tasks/${id}`, 'DELETE')
 
-export const DeleteTask = async (id: string) => {
-  const response = await Request(`/tasks/${id}`, 'DELETE')
-  if (!response.ok) {
-    throw new Error('Failed to delete task')
-  }
-}
+export const SaveTask = async (task: Task) => await Request<void>(`/tasks/`, 'PUT', task)
 
-export const SaveTask = (task: Task) => {
-  return Request(`/tasks/`, 'PUT', task)
-}
+export const GetTaskHistory = async (taskId: string) => await Request<TaskHistoryResponse>(`/tasks/${taskId}/history`)
 
-export const GetTaskHistory = async (taskId: string) => {
-  const response = await Request(`/tasks/${taskId}/history`)
-  return response.json()
-}
-
-export const UpdateDueDate = async (id: string, dueDate: Date | null) => {
-  const response = await Request(`/tasks/${id}/dueDate`, 'PUT', {
-    dueDate: dueDate ? dueDate.toISOString() : null,
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to update due date')
-  }
-
-  return response.json()
-}
+export const UpdateDueDate = async (id: string, dueDate: Date | null) => await Request<SingleTaskResponse>(`/tasks/${id}/dueDate`, 'PUT', {
+  dueDate: dueDate ? dueDate.toISOString() : null,
+})

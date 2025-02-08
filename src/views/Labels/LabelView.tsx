@@ -45,30 +45,27 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     this.modalRef.current?.open()
   }
 
-  private handleDeleteLabel = (id: string) => {
-    DeleteLabel(id).then(() => {
-      const { userLabels } = this.state
-      const updatedLabels = userLabels.filter(label => label.id !== id)
+  private handleDeleteLabel = async (id: string) => {
+    await DeleteLabel(id)
+    const { userLabels } = this.state
+    const updatedLabels = userLabels.filter(label => label.id !== id)
 
-      this.setState({ userLabels: updatedLabels })
-    })
+    this.setState({ userLabels: updatedLabels })
   }
 
   componentDidMount(): void {
-    GetLabels().then(
-      res => {
-        this.setState({
-          userLabels: res,
-          isLabelsLoading: false,
-        })
-      },
-      () => {
-        this.setState({
-          isLabelsLoading: false,
-          isError: true,
-        })
-      },
-    )
+    GetLabels().then(data => {
+      this.setState({
+        userLabels: data.labels,
+        isLabelsLoading: false,
+      })
+    },
+    () => {
+      this.setState({
+        isLabelsLoading: false,
+        isError: true,
+      })
+    })
   }
 
   render(): React.ReactNode {

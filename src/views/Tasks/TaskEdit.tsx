@@ -177,7 +177,7 @@ class TaskEditInner extends React.Component<
     this.setState({ dueDate: e.target.value })
   }
 
-  private HandleSaveTask = () => {
+  private HandleSaveTask = async () => {
     if (!this.HandleValidateTask()) {
       return
     }
@@ -212,17 +212,16 @@ class TaskEditInner extends React.Component<
       SaveFunction = SaveTask
     }
 
-    SaveFunction(task).then(response => {
-      if (response.status === 200) {
-        this.props.navigate(`/my/tasks`)
-      } else {
-        this.setState({
-          isSnackbarOpen: true,
-          snackbarMessage: 'Failed to save task',
-          snackbarColor: 'danger',
-        })
-      }
-    })
+    try {
+      await SaveFunction(task)
+      this.props.navigate(`/my/tasks`)
+    } catch {
+      this.setState({
+        isSnackbarOpen: true,
+        snackbarMessage: 'Failed to save task',
+        snackbarColor: 'danger',
+      })
+    }
   }
 
   private handleDelete = (taskId: string) => {

@@ -66,16 +66,11 @@ class UpdatePasswordViewInner extends React.Component<
         document.location.search,
       ).get('c') ?? ""
 
-      if (await ChangePassword(verificationCode, password)) {
-        this.setState({
-          updateStatusOk: true,
-        })
-        navigate('/login')
-      } else {
-        this.setState({
-          updateStatusOk: false,
-        })
-      }
+      await ChangePassword(verificationCode, password)
+      this.setState({
+        updateStatusOk: true,
+      })
+      navigate('/login')
     } catch {
       this.setState({
         updateStatusOk: false,

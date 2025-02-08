@@ -63,7 +63,7 @@ export class LabelModal extends React.Component<
     return true
   }
 
-  private onSave = () => {
+  private onSave = async () => {
     if (!this.validateLabel()) {
       return
     }
@@ -73,9 +73,9 @@ export class LabelModal extends React.Component<
 
     try {
       if (label) {
-        UpdateLabel({ id: label.id, name: labelName, color })
+        await UpdateLabel({ id: label.id, name: labelName, color })
       } else {
-        CreateLabel({ name: labelName, color })
+        await CreateLabel({ name: labelName, color })
       }
       this.setState({ isOpen: false })
     } catch {

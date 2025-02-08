@@ -63,36 +63,32 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
     })
   }
 
-  private handleTaskCompletion = () => {
+  private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
-    MarkTaskComplete(task.id, null).then(data => {
-      onTaskUpdate(data.res, 'completed')
-    })
+    const data = await MarkTaskComplete(task.id, null)
+    onTaskUpdate(data.task, 'completed')
   }
 
-  private handleChangeDueDate = (newDate: string | null) => {
+  private handleChangeDueDate = async (newDate: string | null) => {
     if (newDate === null) {
       return
     }
 
     const { task, onTaskUpdate } = this.props
 
-    UpdateDueDate(task.id, new Date(newDate)).then(data => {
-      const newTask = data.res
-      onTaskUpdate(newTask, 'rescheduled')
-    })
+    const data = await UpdateDueDate(task.id, new Date(newDate))
+    onTaskUpdate(data.task, 'rescheduled')
   }
 
-  private handleCompleteWithPastDate = (newDate: string | null) => {
+  private handleCompleteWithPastDate = async (newDate: string | null) => {
     if (newDate === null) {
       return
     }
 
     const { task, onTaskUpdate } = this.props
 
-    MarkTaskComplete(task.id, new Date(newDate)).then((data) => {
-      onTaskUpdate(data.res, 'completed')
-    })
+    const data = await MarkTaskComplete(task.id, new Date(newDate))
+    onTaskUpdate(data.task, 'completed')
   }
 
   private getFrequencyIcon = (task: Task) => {

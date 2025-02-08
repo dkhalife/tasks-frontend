@@ -53,9 +53,9 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
       //TODO: Sorter
       //tasksData.res.sort(taskSorter)
       this.setState({
-        tasks: tasksData.res,
-        filteredTasks: tasksData.res,
-        userProfile: userProfileData.res,
+        tasks: tasksData.tasks,
+        filteredTasks: tasksData.tasks,
+        userProfile: userProfileData.user,
         isLoading: false,
       })
     })

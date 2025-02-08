@@ -41,9 +41,9 @@ export class TaskHistory extends React.Component<
 
   componentDidMount(): void {
     GetTaskHistory(this.props.taskId)
-      .then(historyData => {
-        this.setState({ taskHistory: historyData.res })
-        this.updateHistoryInfo(historyData.res)
+      .then(data => {
+        this.setState({ taskHistory: data.history })
+        this.updateHistoryInfo(data.history)
       })
       .catch(error => {
         console.error('Error fetching data:', error)

@@ -7,7 +7,11 @@ const API_URL = import.meta.env.VITE_APP_API_URL
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
-export function Request(url: string, method: RequestMethod = 'GET', body: unknown = {}, requiresAuth: boolean = true): Promise<Response>{
+type FailureResponse = {
+  error: string
+}
+
+export async function Request<SuccessfulResponse>(url: string, method: RequestMethod = 'GET', body: unknown = {}, requiresAuth: boolean = true): Promise<SuccessfulResponse>{
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'
@@ -33,7 +37,14 @@ export function Request(url: string, method: RequestMethod = 'GET', body: unknow
     options.body = JSON.stringify(body)
   }
 
-  return fetch(fullURL, options)
+  const response: Response = await fetch(fullURL, options)
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error((data as FailureResponse).error)
+  }
+
+  return data as SuccessfulResponse
 }
 
 export const isTokenValid = () => {
@@ -58,5 +69,5 @@ export const isTokenValid = () => {
 export const refreshAccessToken = async () => {
   const data = await RefreshToken()
   localStorage.setItem('ca_token', data.token)
-  localStorage.setItem('ca_expiration', data.expire)
+  localStorage.setItem('ca_expiration', data.expiration)
 }
