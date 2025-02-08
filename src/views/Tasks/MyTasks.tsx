@@ -53,16 +53,19 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
     }
   }
 
-  componentDidMount(): void {
-    GetTasks().then(tasksData => {
-      //TODO: Sorter
-      //tasksData.res.sort(taskSorter)
-      this.setState({
-        tasks: tasksData.tasks,
-        filteredTasks: tasksData.tasks,
-        isLoading: false,
-      })
+  private loadTasks = async () => {
+    const data = await GetTasks()
+    //TODO: Sorter
+    //tasksData.res.sort(taskSorter)
+    this.setState({
+      tasks: data.tasks,
+      filteredTasks: data.tasks,
+      isLoading: false,
     })
+  }
+
+  componentDidMount(): void {
+    this.loadTasks()
   }
 
   render(): React.ReactNode {

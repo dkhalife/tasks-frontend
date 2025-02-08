@@ -88,16 +88,19 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
     })
   }
 
-  componentDidMount(): void {
-    GetTaskDetailById(this.props.taskId).then((data: any) => {
-      const task: Task = data.taskDetail
+  private loadTaskDetail = async () => {
+    const data = await GetTaskDetailById(this.props.taskId)
+    const task: Task = (data as any).taskDetail
 
-      this.setState({
-        task,
-      })
-
-      this.generateInfoCards(task)
+    this.setState({
+      task,
     })
+
+    this.generateInfoCards(task)
+  }
+
+  componentDidMount(): void {
+    this.loadTaskDetail()
   }
 
   private generateInfoCards = (task: any) => {

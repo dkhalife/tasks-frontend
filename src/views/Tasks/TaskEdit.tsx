@@ -247,6 +247,19 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     }
   }
 
+  private onTaskDelete = async (taskId: string) => {
+    try {
+      await DeleteTask(taskId)
+      this.props.navigate('/my/tasks')
+    } catch {
+      this.setState({
+        isSnackbarOpen: true,
+        snackbarMessage: 'Failed to delete task',
+        snackbarColor: 'danger',
+      })
+    }
+  }
+
   private handleDelete = (taskId: string) => {
     this.setState({
       confirmModelConfig: {
@@ -256,17 +269,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
         message: 'Are you sure you want to delete this task?',
         onClose: isConfirmed => {
           if (isConfirmed === true) {
-            DeleteTask(taskId)
-              .then(() => {
-                this.props.navigate('/my/tasks')
-              })
-              .catch(() => {
-                this.setState({
-                  isSnackbarOpen: true,
-                  snackbarMessage: 'Failed to delete task',
-                  snackbarColor: 'danger',
-                })
-              })
+            this.onTaskDelete(taskId)
           }
 
           this.setState({
@@ -307,44 +310,47 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     },
   ]
 
+  private loadTask = async (taskId: string) => {
+    try {
+      const data = await GetTaskByID(taskId)
+      // TODO: There is so much redundancy here
+      const task: any = data.task
+
+      this.setState({
+        task: task,
+        name: task.name ? task.name : '',
+        frequencyType: task.frequencyType ? task.frequencyType : 'once',
+        frequencyMetadata: JSON.parse(task.frequencyMetadata),
+        frequency: task.frequency,
+        notificationMetadata: JSON.parse(task.notificationMetadata),
+        labels: task.labels,
+        isRolling: task.isRolling,
+        dueDate: task.nextDueDate
+          ? moment(task.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
+          : null,
+        updatedBy: task.updatedBy,
+        isNotificable: task.notification,
+      })
+    } catch {
+      this.setState({
+        isSnackbarOpen: true,
+        snackbarMessage: 'You are not authorized to view this task.',
+        snackbarColor: 'danger',
+      })
+
+      setTimeout(() => {
+        this.props.navigate('/my/tasks')
+      }, 3000)
+    }
+  }
+
   componentDidMount(): void {
     // TODO: Load and set labels and userLabels
 
     // Load task data
     const { taskId } = this.props
     if (taskId != null) {
-      GetTaskByID(taskId)
-        .then(data => {
-          // TODO: There is so much redundancy here
-          const task: any = data.task
-
-          this.setState({
-            task: task,
-            name: task.name ? task.name : '',
-            frequencyType: task.frequencyType ? task.frequencyType : 'once',
-            frequencyMetadata: JSON.parse(task.frequencyMetadata),
-            frequency: task.frequency,
-            notificationMetadata: JSON.parse(task.notificationMetadata),
-            labels: task.labels,
-            isRolling: task.isRolling,
-            dueDate: task.nextDueDate
-              ? moment(task.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
-              : null,
-            updatedBy: task.updatedBy,
-            isNotificable: task.notification,
-          })
-        })
-        .catch(() => {
-          this.setState({
-            isSnackbarOpen: true,
-            snackbarMessage: 'You are not authorized to view this task.',
-            snackbarColor: 'danger',
-          })
-
-          setTimeout(() => {
-            this.props.navigate('/my/tasks')
-          }, 3000)
-        })
+      this.loadTask(taskId)
     } else {
       // TODO: Use a more specific ref
       document.querySelector('input')?.focus()

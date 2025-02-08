@@ -40,10 +40,13 @@ export class APITokenSettings extends React.Component<
     }
   }
 
+  private loadTokens = async () => {
+    const data = await GetLongLiveTokens()
+    this.setState({ tokens: data.tokens })
+  }
+
   componentDidMount(): void {
-    GetLongLiveTokens().then(data => {
-      this.setState({ tokens: data.tokens })
-    })
+    this.loadTokens()
   }
 
   private handleSaveToken = async (name: string | null) => {
