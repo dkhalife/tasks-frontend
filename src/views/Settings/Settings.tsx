@@ -28,7 +28,6 @@ export class Settings extends React.Component {
             paddingTop: '4',
             paddingBottom: '4',
           }}
-          id='account'
         >
           <Typography level='h3'>Account Settings</Typography>
           <Divider />

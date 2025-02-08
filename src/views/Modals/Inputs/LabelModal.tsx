@@ -124,7 +124,6 @@ export class LabelModal extends React.Component<
             </Typography>
             <Input
               fullWidth
-              id='labelName'
               value={labelName}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ labelName: e.target.value })

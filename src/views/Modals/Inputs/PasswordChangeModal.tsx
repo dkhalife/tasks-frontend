@@ -104,7 +104,6 @@ export class PassowrdChangeModal extends React.Component<
               fullWidth
               name='password'
               type='password'
-              id='password'
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ password: e.target.value })
@@ -117,9 +116,7 @@ export class PassowrdChangeModal extends React.Component<
             <Input
               required
               fullWidth
-              name='confirmPassword'
               type='password'
-              id='confirmPassword'
               value={confirmPassword}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ confirmPassword: e.target.value })

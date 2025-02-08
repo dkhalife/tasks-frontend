@@ -113,8 +113,6 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
             <Input
               required
               fullWidth
-              id='email'
-              name='email'
               autoComplete='email'
               autoFocus
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -125,9 +123,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
             <Input
               required
               fullWidth
-              name='password'
               type='password'
-              id='password'
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ password: e.target.value })
               }}
