@@ -2,8 +2,23 @@ import { getNextThemeMode } from '@/constants/theme'
 import { withNavigation, withLocation } from '@/contexts/hooks'
 import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
 import { Logo } from '@/Logo'
-import { MenuRounded, HomeOutlined, ListAlt, SettingsOutlined, Logout } from '@mui/icons-material'
-import { IconButton, Box, Typography, Drawer, List, ListItemButton, ListItemDecorator, ListItemContent } from '@mui/joy'
+import {
+  MenuRounded,
+  HomeOutlined,
+  ListAlt,
+  SettingsOutlined,
+  Logout,
+} from '@mui/icons-material'
+import {
+  IconButton,
+  Box,
+  Typography,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemDecorator,
+  ListItemContent,
+} from '@mui/joy'
 import React, { version } from 'react'
 import { Location } from 'react-router-dom'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
@@ -84,7 +99,9 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             {({ themeMode, setThemeMode }: StorageContextState) => (
               <ThemeToggleButton
                 themeMode={themeMode}
-                onThemeModeToggle={ () => setThemeMode(getNextThemeMode(themeMode)) }
+                onThemeModeToggle={() =>
+                  setThemeMode(getNextThemeMode(themeMode))
+                }
                 sx={{
                   position: 'absolute',
                   right: 10,

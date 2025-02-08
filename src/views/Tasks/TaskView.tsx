@@ -1,12 +1,34 @@
-import { MarkTaskComplete, GetTaskDetailById, SkipTask } from "@/api/tasks"
-import { withNavigation } from "@/contexts/hooks"
-import { Task } from "@/models/task"
-import { getTextColorFromBackgroundColor } from "@/utils/Colors"
-import { CalendarMonth, Checklist, Timelapse, Edit, Check, SwitchAccessShortcut } from "@mui/icons-material"
-import { Container, Box, Typography, Chip, Sheet, Grid, ListItem, ListItemContent, Button, Card } from "@mui/joy"
-import moment from "moment"
-import React from "react"
-import { ConfirmationModalProps, ConfirmationModal } from "@/views/Modals/Inputs/ConfirmationModal"
+import { MarkTaskComplete, GetTaskDetailById, SkipTask } from '@/api/tasks'
+import { withNavigation } from '@/contexts/hooks'
+import { Task } from '@/models/task'
+import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import {
+  CalendarMonth,
+  Checklist,
+  Timelapse,
+  Edit,
+  Check,
+  SwitchAccessShortcut,
+  History,
+} from '@mui/icons-material'
+import {
+  Container,
+  Box,
+  Typography,
+  Chip,
+  Sheet,
+  Grid,
+  ListItem,
+  ListItemContent,
+  Button,
+  Card,
+} from '@mui/joy'
+import moment from 'moment'
+import React from 'react'
+import {
+  ConfirmationModalProps,
+  ConfirmationModal,
+} from '@/views/Modals/Inputs/ConfirmationModal'
 
 interface TaskViewProps {
   taskId: string
@@ -29,10 +51,7 @@ interface TaskViewState {
   confirmModelConfig: ConfirmationModalProps
 }
 
-class TaskViewInner extends React.Component<
-  TaskViewInnerProps,
-  TaskViewState
-> {
+class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
 
   constructor(props: TaskViewInnerProps) {
@@ -87,9 +106,7 @@ class TaskViewInner extends React.Component<
         size: 6,
         icon: <CalendarMonth />,
         text: 'Due Date',
-        subtext: task.nextDueDate
-          ? moment(task.nextDueDate).fromNow()
-          : 'N/A',
+        subtext: task.nextDueDate ? moment(task.nextDueDate).fromNow() : 'N/A',
       },
       {
         size: 6,
@@ -337,7 +354,8 @@ class TaskViewInner extends React.Component<
 
           <ConfirmationModal
             ref={this.confirmationModalRef}
-            {...confirmModelConfig} />
+            {...confirmModelConfig}
+          />
         </Card>
       </Container>
     )

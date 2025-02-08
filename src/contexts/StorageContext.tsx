@@ -1,6 +1,6 @@
-import { ThemeMode } from "@/constants/theme"
-import { retrieveValue, storeValue } from "@/utils/Storage"
-import React from "react"
+import { ThemeMode } from '@/constants/theme'
+import { retrieveValue, storeValue } from '@/utils/Storage'
+import React from 'react'
 
 interface StorageContextProps {
   children: React.ReactNode

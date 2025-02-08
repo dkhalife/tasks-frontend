@@ -1,10 +1,19 @@
-import { ChangePassword } from "@/api/auth"
-import { withNavigation } from "@/contexts/hooks"
-import { Logo } from "@/Logo"
-import { validatePassword } from "@/models/user"
-import { Sheet } from "@mui/joy"
-import { Container, Box, Typography, FormControl, Input, FormHelperText, Button, Snackbar } from "@mui/joy"
-import React, { ChangeEvent } from "react"
+import { ChangePassword } from '@/api/auth'
+import { withNavigation } from '@/contexts/hooks'
+import { Logo } from '@/Logo'
+import { validatePassword } from '@/models/user'
+import { Sheet } from '@mui/joy'
+import {
+  Container,
+  Box,
+  Typography,
+  FormControl,
+  Input,
+  FormHelperText,
+  Button,
+  Snackbar,
+} from '@mui/joy'
+import React, { ChangeEvent } from 'react'
 
 interface UpdatePasswordViewProps {
   navigate: (path: string) => void
@@ -62,9 +71,8 @@ class UpdatePasswordViewInner extends React.Component<
     }
 
     try {
-      const verificationCode = new URLSearchParams(
-        document.location.search,
-      ).get('c') ?? ""
+      const verificationCode =
+        new URLSearchParams(document.location.search).get('c') ?? ''
 
       await ChangePassword(verificationCode, password)
       this.setState({

@@ -52,7 +52,9 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
           <Textarea
             placeholder='Type in here…'
             value={text}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ text: e.target.value })}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              this.setState({ text: e.target.value })
+            }
             minRows={2}
             maxRows={4}
             sx={{ minWidth: 300 }}

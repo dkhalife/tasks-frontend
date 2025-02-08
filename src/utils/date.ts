@@ -1,4 +1,4 @@
-import moment from "moment"
+import moment from 'moment'
 
 export const MONTHS = [
   'january',
@@ -26,38 +26,38 @@ export const DAYS = [
 ]
 
 export const dayOfMonthSuffix = (n: number): string => {
-    if (n >= 11 && n <= 13) {
-        return 'th'
-    }
+  if (n >= 11 && n <= 13) {
+    return 'th'
+  }
 
-    switch (n % 10) {
-        case 1:
-            return 'st'
-        case 2:
-            return 'nd'
-        case 3:
-            return 'rd'
-        default:
-            return 'th'
-    }
+  switch (n % 10) {
+    case 1:
+      return 'st'
+    case 2:
+      return 'nd'
+    case 3:
+      return 'rd'
+    default:
+      return 'th'
+  }
 }
 
 export const formatTimeDifference = (startDate: string, endDate: string) => {
-    const diffInMinutes = moment(startDate).diff(endDate, 'minutes')
-    let timeValue = diffInMinutes
-    let unit = 'minute'
+  const diffInMinutes = moment(startDate).diff(endDate, 'minutes')
+  let timeValue = diffInMinutes
+  let unit = 'minute'
 
-    if (diffInMinutes >= 60) {
-      const diffInHours = moment(startDate).diff(endDate, 'hours')
-      timeValue = diffInHours
-      unit = 'hour'
+  if (diffInMinutes >= 60) {
+    const diffInHours = moment(startDate).diff(endDate, 'hours')
+    timeValue = diffInHours
+    unit = 'hour'
 
-      if (diffInHours >= 24) {
-        const diffInDays = moment(startDate).diff(endDate, 'days')
-        timeValue = diffInDays
-        unit = 'day'
-      }
+    if (diffInHours >= 24) {
+      const diffInDays = moment(startDate).diff(endDate, 'days')
+      timeValue = diffInDays
+      unit = 'day'
     }
-
-    return `${timeValue} ${unit}${timeValue !== 1 ? 's' : ''}`
   }
+
+  return `${timeValue} ${unit}${timeValue !== 1 ? 's' : ''}`
+}

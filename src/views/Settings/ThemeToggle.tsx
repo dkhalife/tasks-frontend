@@ -1,7 +1,11 @@
-import { ThemeMode } from "@/constants/theme"
-import { LightModeOutlined, DarkModeOutlined, LaptopOutlined } from "@mui/icons-material"
-import { FormControl, FormLabel, ToggleButtonGroup, Button } from "@mui/joy"
-import React from "react"
+import { ThemeMode } from '@/constants/theme'
+import {
+  LightModeOutlined,
+  DarkModeOutlined,
+  LaptopOutlined,
+} from '@mui/icons-material'
+import { FormControl, FormLabel, ToggleButtonGroup, Button } from '@mui/joy'
+import React from 'react'
 
 interface ThemeToggleProps {
   themeMode: ThemeMode

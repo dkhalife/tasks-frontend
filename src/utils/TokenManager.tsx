@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-import { RefreshToken } from "@/api/auth"
+import { RefreshToken } from '@/api/auth'
 import Cookies from 'js-cookie'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
@@ -11,7 +11,12 @@ type FailureResponse = {
   error: string
 }
 
-export async function Request<SuccessfulResponse>(url: string, method: RequestMethod = 'GET', body: unknown = {}, requiresAuth: boolean = true): Promise<SuccessfulResponse>{
+export async function Request<SuccessfulResponse>(
+  url: string,
+  method: RequestMethod = 'GET',
+  body: unknown = {},
+  requiresAuth: boolean = true,
+): Promise<SuccessfulResponse> {
   if (!isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'

@@ -1,10 +1,20 @@
-import { Login, SignUp } from "@/api/auth"
-import { withNavigation } from "@/contexts/hooks"
-import { Logo } from "@/Logo"
-import { validateEmail, validatePassword } from "@/models/user"
-import { Sheet } from "@mui/joy"
-import { Container, Box, Typography, Input, FormControl, FormHelperText, Button, Divider, Snackbar } from "@mui/joy"
-import React, { ChangeEvent } from "react"
+import { Login, SignUp } from '@/api/auth'
+import { withNavigation } from '@/contexts/hooks'
+import { Logo } from '@/Logo'
+import { validateEmail, validatePassword } from '@/models/user'
+import { Sheet } from '@mui/joy'
+import {
+  Container,
+  Box,
+  Typography,
+  Input,
+  FormControl,
+  FormHelperText,
+  Button,
+  Divider,
+  Snackbar,
+} from '@mui/joy'
+import React, { ChangeEvent } from 'react'
 
 interface SignupViewProps {
   navigate: (path: string) => void
@@ -118,7 +128,7 @@ class SignupViewInner extends React.Component<
     try {
       await SignUp(username, password, displayName, email)
       this.handleLogin(username, password)
-    } catch(error) {
+    } catch (error) {
       this.setState({ error: (error as Error).message })
     }
   }

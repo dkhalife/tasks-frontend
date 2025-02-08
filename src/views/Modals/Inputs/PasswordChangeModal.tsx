@@ -79,7 +79,10 @@ export class PassowrdChangeModal extends React.Component<
     const { password, confirmPassword, passwordError, isOpen } = this.state
 
     return (
-      <Modal open={isOpen} onClose={this.onCancel}>
+      <Modal
+        open={isOpen}
+        onClose={this.onCancel}
+      >
         <ModalDialog>
           <Typography
             level='h4'

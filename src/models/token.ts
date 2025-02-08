@@ -1,6 +1,6 @@
 export interface APIToken {
-    id: string
-    name: string
-    token: string
-    createdAt: string
+  id: string
+  name: string
+  token: string
+  createdAt: string
 }

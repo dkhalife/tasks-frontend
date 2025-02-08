@@ -1,10 +1,20 @@
-import { DeleteLabel, GetLabels } from "@/api/labels"
-import { Label } from "@/models/label"
-import { getTextColorFromBackgroundColor } from "@/utils/Colors"
-import { Add } from "@mui/icons-material"
-import { Box, CircularProgress, Typography, Container, Chip, Button, IconButton } from "@mui/joy"
-import React from "react"
-import { LabelModal } from "../Modals/Inputs/LabelModal"
+import { DeleteLabel, GetLabels } from '@/api/labels'
+import { Label } from '@/models/label'
+import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { Add } from '@mui/icons-material'
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  Container,
+  Chip,
+  Button,
+  IconButton,
+} from '@mui/joy'
+import React from 'react'
+import { LabelModal } from '../Modals/Inputs/LabelModal'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 
 type LabelViewProps = object
 
@@ -54,23 +64,24 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
   }
 
   componentDidMount(): void {
-    GetLabels().then(data => {
-      this.setState({
-        userLabels: data.labels,
-        isLabelsLoading: false,
-      })
-    },
-    () => {
-      this.setState({
-        isLabelsLoading: false,
-        isError: true,
-      })
-    })
+    GetLabels().then(
+      data => {
+        this.setState({
+          userLabels: data.labels,
+          isLabelsLoading: false,
+        })
+      },
+      () => {
+        this.setState({
+          isLabelsLoading: false,
+          isError: true,
+        })
+      },
+    )
   }
 
   render(): React.ReactNode {
-    const { isLabelsLoading, userLabels, currentLabel, isError } =
-      this.state
+    const { isLabelsLoading, userLabels, currentLabel, isError } = this.state
 
     if (isLabelsLoading) {
       return (

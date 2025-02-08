@@ -1,9 +1,17 @@
-import { Login } from "@/api/auth"
-import { withNavigation } from "@/contexts/hooks"
-import { Logo } from "@/Logo"
-import { Sheet } from "@mui/joy"
-import { Container, Box, Typography, Input, Button, Divider, Snackbar } from "@mui/joy"
-import React, { ChangeEvent } from "react"
+import { Login } from '@/api/auth'
+import { withNavigation } from '@/contexts/hooks'
+import { Logo } from '@/Logo'
+import { Sheet } from '@mui/joy'
+import {
+  Container,
+  Box,
+  Typography,
+  Input,
+  Button,
+  Divider,
+  Snackbar,
+} from '@mui/joy'
+import React, { ChangeEvent } from 'react'
 import Cookies from 'js-cookie'
 
 interface LoginViewProps {
@@ -48,7 +56,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
       } else {
         this.props.navigate('/my/tasks')
       }
-    } catch(error) {
+    } catch (error) {
       this.setState({ error: (error as Error).message })
     }
   }

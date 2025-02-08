@@ -7,7 +7,7 @@ export function withLocation<Props>(
   return function impl(props: Omit<Props, 'location'>) {
     return (
       <Component
-        {...props as Props}
+        {...(props as Props)}
         location={useLocation()}
       />
     )
@@ -20,7 +20,7 @@ export function withNavigation<Props>(
   return function impl(props: Omit<Props, 'navigate'>) {
     return (
       <Component
-        {...props as Props}
+        {...(props as Props)}
         navigate={useNavigate()}
       />
     )

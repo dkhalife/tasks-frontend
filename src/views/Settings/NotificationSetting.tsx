@@ -1,7 +1,19 @@
-import { UpdateNotificationTarget } from "@/api/users"
-import { Close } from "@mui/icons-material"
-import { Typography, Divider, FormControl, FormLabel, FormHelperText, Box, Select, Button, Snackbar, IconButton } from "@mui/joy"
-import React from "react"
+import { UpdateNotificationTarget } from '@/api/users'
+import { Close } from '@mui/icons-material'
+import {
+  Typography,
+  Divider,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  Box,
+  Select,
+  Button,
+  Snackbar,
+  IconButton,
+  Option,
+} from '@mui/joy'
+import React from 'react'
 
 type NotificationSettingProps = object
 
