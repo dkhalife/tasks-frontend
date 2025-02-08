@@ -86,7 +86,6 @@ export class APITokenSettings extends React.Component<
           paddingTop: '4',
           paddingBottom: '4',
         }}
-        id='apitokens'
       >
         <Typography level='h3'>Access Token</Typography>
         <Divider />

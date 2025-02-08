@@ -199,8 +199,6 @@ class SignupViewInner extends React.Component<
             <Input
               required
               fullWidth
-              id='username'
-              name='username'
               autoComplete='username'
               autoFocus
               value={username}
@@ -218,8 +216,6 @@ class SignupViewInner extends React.Component<
             <Input
               required
               fullWidth
-              id='email'
-              name='email'
               autoComplete='email'
               value={email}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -236,9 +232,7 @@ class SignupViewInner extends React.Component<
             <Input
               required
               fullWidth
-              name='password'
               type='password'
-              id='password'
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({ passwordError: null, password: e.target.value })
@@ -251,8 +245,6 @@ class SignupViewInner extends React.Component<
             <Input
               required
               fullWidth
-              name='displayName'
-              id='displayName'
               value={displayName}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 this.setState({

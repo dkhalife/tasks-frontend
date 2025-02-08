@@ -70,7 +70,6 @@ export class NotificationSetting extends React.Component<
           paddingTop: '4',
           paddingBottom: '4',
         }}
-        id='notifications'
       >
         <Typography level='h3'>Custom Notification</Typography>
         <Divider />
