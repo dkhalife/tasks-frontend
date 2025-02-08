@@ -1,13 +1,13 @@
-import { GetTaskHistory } from "@/api/tasks"
-import { Loading } from "@/Loading"
-import { HistoryEntry } from "@/models/history"
-import { Checklist, Timelapse, EventBusy } from "@mui/icons-material"
-import { Sheet, ListItemContent, Grid } from "@mui/joy"
-import { Container, Typography, Button, ListItem, Chip, List } from "@mui/joy"
-import moment from "moment"
-import React from "react"
-import { Link } from "react-router-dom"
-import { HistoryCard } from "./HistoryCard"
+import { GetTaskHistory } from '@/api/tasks'
+import { Loading } from '@/Loading'
+import { HistoryEntry } from '@/models/history'
+import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
+import { Sheet, ListItemContent, Grid } from '@mui/joy'
+import { Container, Typography, Button, ListItem, Chip, List } from '@mui/joy'
+import moment from 'moment'
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { HistoryCard } from './HistoryCard'
 
 interface TaskHistoryProps {
   taskId: string

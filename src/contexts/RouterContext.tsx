@@ -26,7 +26,7 @@ export class RouterContext extends React.Component {
     )
 
     if (!match) {
-      return ""
+      return ''
     }
 
     return match.params.taskId as string

@@ -1,10 +1,10 @@
-import { HistoryEntry } from "@/models/history"
-import { formatTimeDifference } from "@/utils/date"
-import { ListItemContent, ListDivider } from "@mui/joy"
-import { ListItem, Box, Typography } from "@mui/joy"
-import moment from "moment"
-import React from "react"
-import { CompletedChip } from "./CompletedChip"
+import { HistoryEntry } from '@/models/history'
+import { formatTimeDifference } from '@/utils/date'
+import { ListItemContent, ListDivider } from '@mui/joy'
+import { ListItem, Box, Typography } from '@mui/joy'
+import moment from 'moment'
+import React from 'react'
+import { CompletedChip } from './CompletedChip'
 
 interface HistoryCardProps {
   allHistory: HistoryEntry[]

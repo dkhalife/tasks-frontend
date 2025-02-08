@@ -70,7 +70,9 @@ export const TASK_COLOR = {
   ANYTIME: '#90a4ae',
 }
 
-export const getTextColorFromBackgroundColor = (bgColor: string | undefined) => {
+export const getTextColorFromBackgroundColor = (
+  bgColor: string | undefined,
+) => {
   if (!bgColor) {
     return ''
   }

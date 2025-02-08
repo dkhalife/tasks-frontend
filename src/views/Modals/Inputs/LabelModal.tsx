@@ -1,9 +1,18 @@
-import { UpdateLabel, CreateLabel } from "@/api/labels"
-import { Label } from "@/models/label"
-import { LABEL_COLORS } from "@/utils/Colors"
-import { ModalDialog } from "@mui/joy"
-import { Modal, Typography, FormControl, Input, Select, Box, Button, Option } from "@mui/joy"
-import React, { ChangeEvent } from "react"
+import { UpdateLabel, CreateLabel } from '@/api/labels'
+import { Label } from '@/models/label'
+import { LABEL_COLORS } from '@/utils/Colors'
+import { ModalDialog } from '@mui/joy'
+import {
+  Modal,
+  Typography,
+  FormControl,
+  Input,
+  Select,
+  Box,
+  Button,
+  Option,
+} from '@mui/joy'
+import React, { ChangeEvent } from 'react'
 
 interface LabelModalProps {
   label: Label | null
@@ -117,7 +126,9 @@ export class LabelModal extends React.Component<
               fullWidth
               id='labelName'
               value={labelName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ labelName: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                this.setState({ labelName: e.target.value })
+              }
             />
           </FormControl>
 

@@ -1,13 +1,48 @@
-import { DeleteTask, MarkTaskComplete, UpdateDueDate, SkipTask } from "@/api/tasks"
-import { withNavigation } from "@/contexts/hooks"
-import { Task, getDueDateChipColor, getDueDateChipText, getRecurrentChipText } from "@/models/task"
-import { getTextColorFromBackgroundColor } from "@/utils/Colors"
-import { TimesOneMobiledata, Webhook, Repeat, Check, MoreVert, SwitchAccessShortcut, MoreTime, Edit, ManageSearch, Delete } from "@mui/icons-material"
-import { Box, Chip, Card, Grid, Avatar, Typography, IconButton, Menu, MenuItem, Divider } from "@mui/joy"
-import { SxProps } from "@mui/joy"
-import React from "react"
-import { ConfirmationModalProps, ConfirmationModal } from "../Modals/Inputs/ConfirmationModal"
-import { DateModal } from "../Modals/Inputs/DateModal"
+import {
+  DeleteTask,
+  MarkTaskComplete,
+  UpdateDueDate,
+  SkipTask,
+} from '@/api/tasks'
+import { withNavigation } from '@/contexts/hooks'
+import {
+  Task,
+  getDueDateChipColor,
+  getDueDateChipText,
+  getRecurrentChipText,
+} from '@/models/task'
+import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import {
+  TimesOneMobiledata,
+  Webhook,
+  Repeat,
+  Check,
+  MoreVert,
+  SwitchAccessShortcut,
+  MoreTime,
+  Edit,
+  ManageSearch,
+  Delete,
+} from '@mui/icons-material'
+import {
+  Box,
+  Chip,
+  Card,
+  Grid,
+  Avatar,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+} from '@mui/joy'
+import { SxProps } from '@mui/joy'
+import React from 'react'
+import {
+  ConfirmationModalProps,
+  ConfirmationModal,
+} from '../Modals/Inputs/ConfirmationModal'
+import { DateModal } from '../Modals/Inputs/DateModal'
 
 interface TaskCardProps {
   task: Task
@@ -92,13 +127,13 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
   }
 
   private getFrequencyIcon = (task: Task) => {
-      if (['once', 'no_repeat'].includes(task.frequencyType)) {
-          return <TimesOneMobiledata />
-      } else if (task.frequencyType === 'trigger') {
-          return <Webhook />
-      } else {
-          return <Repeat />
-      }
+    if (['once', 'no_repeat'].includes(task.frequencyType)) {
+      return <TimesOneMobiledata />
+    } else if (task.frequencyType === 'trigger') {
+      return <Webhook />
+    } else {
+      return <Repeat />
+    }
   }
 
   private getName = (name: string) => {
@@ -120,9 +155,7 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
 
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
-    const {
-      confirmModelConfig,
-    } = this.state
+    const { confirmModelConfig } = this.state
 
     return (
       <Box key={task.id + '-box'}>
@@ -318,11 +351,11 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
             onClose={this.handleCompleteWithPastDate}
           />
 
-          { confirmModelConfig && (
+          {confirmModelConfig && (
             <ConfirmationModal
               ref={this.confirmationModalRef}
               {...confirmModelConfig}
-              />
+            />
           )}
         </Card>
       </Box>

@@ -1,12 +1,29 @@
-import { GetTasks, MarkTaskComplete } from "@/api/tasks"
-import { withNavigation } from "@/contexts/hooks"
-import { Task, getDueDateChipColor, getDueDateChipText } from "@/models/task"
-import { User } from "@/models/user"
-import { CancelRounded, SearchRounded, CheckBox, Edit, History } from "@mui/icons-material"
-import { Container, Typography, Grid, Input, Button, Table, Chip, Tooltip, ButtonGroup, IconButton } from "@mui/joy"
-import moment from "moment"
-import React, { ChangeEvent } from "react"
-import { DateModal } from "@/views/Modals/Inputs/DateModal"
+import { GetTasks, MarkTaskComplete } from '@/api/tasks'
+import { withNavigation } from '@/contexts/hooks'
+import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
+import { User } from '@/models/user'
+import {
+  CancelRounded,
+  SearchRounded,
+  CheckBox,
+  Edit,
+  History,
+} from '@mui/icons-material'
+import {
+  Container,
+  Typography,
+  Grid,
+  Input,
+  Button,
+  Table,
+  Chip,
+  Tooltip,
+  ButtonGroup,
+  IconButton,
+} from '@mui/joy'
+import moment from 'moment'
+import React, { ChangeEvent } from 'react'
+import { DateModal } from '@/views/Modals/Inputs/DateModal'
 
 interface TasksOverviewProps {
   navigate: (path: string) => void
@@ -38,10 +55,9 @@ class TasksOverviewInner extends React.Component<
   }
 
   componentDidMount(): void {
-    GetTasks()
-      .then(data => {
-        this.setState({ tasks: data.tasks, filteredTasks: data.tasks })
-      })
+    GetTasks().then(data => {
+      this.setState({ tasks: data.tasks, filteredTasks: data.tasks })
+    })
 
     const user = JSON.parse(localStorage.getItem('user') as string) as User
     if (user != null && user.id > 0) {
@@ -72,8 +88,7 @@ class TasksOverviewInner extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { tasks, filteredTasks, search, taskId } =
-      this.state
+    const { tasks, filteredTasks, search, taskId } = this.state
 
     return (
       <Container>

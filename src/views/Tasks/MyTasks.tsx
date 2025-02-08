@@ -1,13 +1,24 @@
-import { GetTasks } from "@/api/tasks"
-import { withNavigation } from "@/contexts/hooks"
-import { Loading } from "@/Loading"
-import { Task, TaskGroup } from "@/models/task"
-import { TasksGrouper } from "@/utils/Tasks"
-import { ExpandCircleDown, Add } from "@mui/icons-material"
-import { Container, Box, AccordionGroup, Accordion, Divider, Chip, AccordionDetails, IconButton, Snackbar, Typography } from "@mui/joy"
-import React from "react"
-import { IconButtonWithMenu } from "./IconButtonWithMenu"
-import { TaskCard } from "./TaskCard"
+import { GetTasks } from '@/api/tasks'
+import { withNavigation } from '@/contexts/hooks'
+import { Loading } from '@/Loading'
+import { Task, TaskGroup } from '@/models/task'
+import { TasksGrouper } from '@/utils/Tasks'
+import { ExpandCircleDown, Add } from '@mui/icons-material'
+import {
+  Container,
+  Box,
+  AccordionGroup,
+  Accordion,
+  Divider,
+  Chip,
+  AccordionDetails,
+  IconButton,
+  Snackbar,
+  Typography,
+} from '@mui/joy'
+import React from 'react'
+import { IconButtonWithMenu } from './IconButtonWithMenu'
+import { TaskCard } from './TaskCard'
 
 interface MyTasksProps {
   navigate: (path: string) => void
@@ -43,7 +54,7 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   componentDidMount(): void {
-    GetTasks().then((tasksData) => {
+    GetTasks().then(tasksData => {
       //TODO: Sorter
       //tasksData.res.sort(taskSorter)
       this.setState({

@@ -22,7 +22,10 @@ interface ConfirmationModalState {
   isOpen: boolean
 }
 
-export class ConfirmationModal extends React.Component<ConfirmationModalProps, ConfirmationModalState> {
+export class ConfirmationModal extends React.Component<
+  ConfirmationModalProps,
+  ConfirmationModalState
+> {
   constructor(props: ConfirmationModalProps) {
     super(props)
 
@@ -46,8 +49,7 @@ export class ConfirmationModal extends React.Component<ConfirmationModalProps, C
   }
 
   public render(): React.ReactNode {
-    const { title, message, confirmText, cancelText, color } =
-      this.props
+    const { title, message, confirmText, cancelText, color } = this.props
     const { isOpen } = this.state
 
     return (

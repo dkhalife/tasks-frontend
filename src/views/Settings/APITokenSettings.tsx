@@ -1,12 +1,24 @@
-import { GetLongLiveTokens, CreateLongLiveToken, DeleteLongLiveToken } from "@/api/users"
-import { APIToken } from "@/models/token"
-import { CopyAll } from "@mui/icons-material"
-import { Typography, Divider, Card, Box, Button, Input, IconButton } from "@mui/joy"
-import moment from "moment"
-import React from "react"
-import { TextModal } from "../Modals/Inputs/TextModal"
+import {
+  GetLongLiveTokens,
+  CreateLongLiveToken,
+  DeleteLongLiveToken,
+} from '@/api/users'
+import { APIToken } from '@/models/token'
+import { CopyAll } from '@mui/icons-material'
+import {
+  Typography,
+  Divider,
+  Card,
+  Box,
+  Button,
+  Input,
+  IconButton,
+} from '@mui/joy'
+import moment from 'moment'
+import React from 'react'
+import { TextModal } from '../Modals/Inputs/TextModal'
 
-type APITokenSettingsProps = object 
+type APITokenSettingsProps = object
 
 interface APITokenSettingsState {
   tokens: APIToken[]
@@ -59,7 +71,7 @@ export class APITokenSettings extends React.Component<
     await DeleteLongLiveToken(token.id)
 
     this.setState({
-      tokens: tokens.filter((t: APIToken) => t.id !== token.id)
+      tokens: tokens.filter((t: APIToken) => t.id !== token.id),
     })
   }
 

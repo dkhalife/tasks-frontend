@@ -1,7 +1,16 @@
-import { FrequencyMetadata } from "@/models/task"
-import { FrequencyType, FREQUENCY_TYPES } from "@/utils/recurrance"
-import { Box, Typography, FormControl, Checkbox, FormHelperText, Card, List, ListItem } from "@mui/joy"
-import React, { ChangeEvent } from "react"
+import { FrequencyMetadata } from '@/models/task'
+import { FrequencyType, FREQUENCY_TYPES } from '@/utils/recurrance'
+import {
+  Box,
+  Typography,
+  FormControl,
+  Checkbox,
+  FormHelperText,
+  Card,
+  List,
+  ListItem,
+} from '@mui/joy'
+import React, { ChangeEvent } from 'react'
 
 interface RepeatOptionProps {
   frequencyType: FrequencyType
@@ -16,11 +25,7 @@ interface RepeatOptionProps {
 
 export class RepeatOption extends React.Component<RepeatOptionProps> {
   render(): React.ReactNode {
-    const {
-      frequencyType,
-      onFrequencyTypeUpdate,
-      frequencyError,
-    } = this.props
+    const { frequencyType, onFrequencyTypeUpdate, frequencyError } = this.props
 
     return (
       <Box mt={2}>

@@ -1,6 +1,6 @@
-import { getTextColorFromBackgroundColor } from "@/utils/Colors"
-import { IconButton, Menu, MenuItem, Typography, Chip } from "@mui/joy"
-import React from "react"
+import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { IconButton, Menu, MenuItem, Typography, Chip } from '@mui/joy'
+import React from 'react'
 
 interface Option {
   name: string
@@ -23,15 +23,8 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
   private menuRef = React.createRef<HTMLDivElement>()
 
   render(): React.ReactNode {
-    const {
-      keyName,
-      icon,
-      options,
-      onItemSelect,
-      isActive,
-      useChips,
-      title,
-    } = this.props
+    const { keyName, icon, options, onItemSelect, isActive, useChips, title } =
+      this.props
 
     return (
       <>

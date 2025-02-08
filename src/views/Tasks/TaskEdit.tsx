@@ -5,10 +5,36 @@ import { FrequencyMetadata, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import { FrequencyType, NotificationTrigger } from '@/utils/recurrance'
 import { Add } from '@mui/icons-material'
-import { ColorPaletteProp, ListItem, Stack, Typography, List, Container, Box, FormControl, Input, FormHelperText, Checkbox, RadioGroup, Radio, Card, Select, Chip, MenuItem, Sheet, Divider, Button, Snackbar, Option } from '@mui/joy'
+import {
+  ColorPaletteProp,
+  ListItem,
+  Stack,
+  Typography,
+  List,
+  Container,
+  Box,
+  FormControl,
+  Input,
+  FormHelperText,
+  Checkbox,
+  RadioGroup,
+  Radio,
+  Card,
+  Select,
+  Chip,
+  MenuItem,
+  Sheet,
+  Divider,
+  Button,
+  Snackbar,
+  Option,
+} from '@mui/joy'
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
-import { ConfirmationModalProps, ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
+import {
+  ConfirmationModalProps,
+  ConfirmationModal,
+} from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
 
@@ -60,10 +86,7 @@ type NotificationTriggerOption = {
   description: string
 }
 
-class TaskEditInner extends React.Component<
-  TaskEditInnerProps,
-  TaskEditState
-> {
+class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
   private labelModalRef = React.createRef<LabelModal>()
 
   constructor(props: TaskEditInnerProps) {
@@ -233,15 +256,17 @@ class TaskEditInner extends React.Component<
         message: 'Are you sure you want to delete this task?',
         onClose: isConfirmed => {
           if (isConfirmed === true) {
-            DeleteTask(taskId).then(() => {
-              this.props.navigate('/my/tasks')
-            }).catch(() => {
-              this.setState({
-                isSnackbarOpen: true,
-                snackbarMessage: 'Failed to delete task',
-                snackbarColor: 'danger',
+            DeleteTask(taskId)
+              .then(() => {
+                this.props.navigate('/my/tasks')
               })
-            })
+              .catch(() => {
+                this.setState({
+                  isSnackbarOpen: true,
+                  snackbarMessage: 'Failed to delete task',
+                  snackbarColor: 'danger',
+                })
+              })
           }
 
           this.setState({
@@ -375,12 +400,14 @@ class TaskEditInner extends React.Component<
             <Typography>What is this task about?</Typography>
             <Input
               value={name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({ name: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                this.setState({ name: e.target.value })
+              }
             />
             <FormHelperText>{errors.name}</FormHelperText>
           </FormControl>
         </Box>
-        { frequencyMetadata && (
+        {frequencyMetadata && (
           <RepeatOption
             frequency={frequency}
             onFrequencyUpdate={newFrequency =>
