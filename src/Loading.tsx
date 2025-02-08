@@ -10,7 +10,7 @@ interface LoadingState {
 }
 
 export class Loading extends React.Component<LoadingProps, LoadingState> {
-  private timeout: NodeJS.Timeout | null = null
+  private timeout: number = -1
 
   constructor(props: LoadingProps) {
     super(props)
@@ -30,7 +30,7 @@ export class Loading extends React.Component<LoadingProps, LoadingState> {
   }
 
   componentWillUnmount() {
-    if (this.timeout) {
+    if (this.timeout !== -1) {
       clearTimeout(this.timeout)
     }
   }
