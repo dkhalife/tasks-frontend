@@ -22,8 +22,10 @@ export const UpdatePassword = async (newPassword: string) =>
 export const GetUserProfile = async () =>
   await Request<UserResponse>(`/users/profile`)
 
-export const UpdateNotificationTarget = async (notificationTarget: any) =>
-  await Request<void>(`/users/targets`, 'PUT', notificationTarget)
+export const UpdateNotificationTarget = async (notificationTarget: number) =>
+  await Request<void>(`/users/targets`, 'PUT', {
+    notificationTarget
+  })
 export const CreateLongLiveToken = async (name: string) =>
   await Request<SingleTokenResponse>(`/users/tokens`, 'POST', {
     name,

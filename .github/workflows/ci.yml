@@ -23,8 +23,10 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       run: yarn install --frozen-lockfile
-    - run: yarn build
-
+    - name: Build (TSC)
+      run: yarn tsc
+    - name: Build (Vite)
+      run: yarn build
   lint:
     runs-on: ubuntu-latest
     steps:

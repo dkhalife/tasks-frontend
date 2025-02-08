@@ -14,6 +14,7 @@ import {
   Option,
 } from '@mui/joy'
 import React from 'react'
+import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 
 type NotificationSettingProps = object
 
@@ -46,9 +47,7 @@ export class NotificationSetting extends React.Component<
 
     const { notificationTarget } = this.state
     try {
-      await UpdateNotificationTarget({
-        type: notificationTarget,
-      })
+      await UpdateNotificationTarget(notificationTarget)
       this.setState({
         notificationTarget: notificationTarget,
       })
@@ -59,8 +58,10 @@ export class NotificationSetting extends React.Component<
     }
   }
 
-  private onNotificationTargetChange = (selected: any) => {
-    this.setState({ notificationTarget: selected })
+  private onNotificationTargetChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<number, false>) => {
+    this.setState({
+      notificationTarget: option ?? 0
+    })
   }
 
   private onSnackbarClose = () => {

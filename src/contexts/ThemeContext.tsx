@@ -1,29 +1,31 @@
-import { COLORS } from '@/utils/Colors'
+// import { COLORS } from '@/utils/Colors'
 import { CssBaseline } from '@mui/joy'
 import { CssVarsProvider, extendTheme } from '@mui/joy/styles'
 import React from 'react'
 
-const primaryColor = 'cyan'
+// const primaryColor = 'cyan'
 
-const shades = [
-  '50',
-  ...Array.from({ length: 9 }, (_, i) => String((i + 1) * 100)),
-]
+// const shades = [
+//   '50',
+//   ...Array.from({ length: 9 }, (_, i) => String((i + 1) * 100)),
+// ]
 
-const getPallete = (key = primaryColor) => {
-  return shades.reduce((acc: any, shade) => {
-    acc[shade] = COLORS[key][shade]
-    return acc
-  }, {})
-}
+// TODO: Theming
+// const getPallete = (key = primaryColor) => {
+//   return shades.reduce((acc: any, shade) => {
+//     acc[shade] = COLORS[key][shade]
+//     return acc
+//   }, {})
+// }
 
-const primaryPalette = getPallete(primaryColor)
+// const primaryPalette = getPallete(primaryColor)
 
 const theme = extendTheme({
   colorSchemes: {
     light: {
       palette: {
-        primary: primaryPalette,
+        // TODO: theming
+        // primary: primaryPalette,
         success: {
           50: '#f3faf7',
           100: '#def5eb',
@@ -48,25 +50,26 @@ const theme = extendTheme({
           800: '#cc1f1a',
           900: '#b91c1c',
         },
-      },
-      warning: {
-        50: '#fffdf7',
-        100: '#fef8e1',
-        200: '#fdecb2',
-        300: '#fcd982',
-        400: '#fbcf52',
-        500: '#f9c222',
-        600: '#f6b81e',
-        700: '#f3ae1a',
-        800: '#f0a416',
-        900: '#e99b0e',
+        warning: {
+          50: '#fffdf7',
+          100: '#fef8e1',
+          200: '#fdecb2',
+          300: '#fcd982',
+          400: '#fbcf52',
+          500: '#f9c222',
+          600: '#f6b81e',
+          700: '#f3ae1a',
+          800: '#f0a416',
+          900: '#e99b0e',
+        },
       },
     },
-  },
-  dark: {
-    palette: {
-      primary: primaryPalette,
-    },
+    // TODO: Theming
+    // dark: {
+    //   palette: {
+    //     primary: primaryPalette,
+    //   },
+    // },
   },
 })
 

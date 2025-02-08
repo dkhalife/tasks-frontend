@@ -11,7 +11,7 @@ import {
   FormHelperText,
   Button,
   Snackbar,
-} from '@mui/material'
+} from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
 type ForgotPasswordViewProps = object
@@ -188,7 +188,7 @@ export class ForgotPasswordView extends React.Component<
             {resetStatusOk != null && (
               <>
                 <Box mt={-30}>
-                  <Typography level='body-md'>
+                  <Typography>
                     if there is an account associated with the email you
                     entered, you will receive an email with instructions on how
                     to reset your
@@ -209,10 +209,8 @@ export class ForgotPasswordView extends React.Component<
               open={resetStatusOk ? resetStatusOk : resetStatusOk === false}
               autoHideDuration={5000}
               onClose={this.onSnackbarClose}
-            >
-              {resetStatusOk
-                ? 'Reset email sent, check your email'
-                : 'Reset email failed, try again later'}
+             >
+              {resetStatusOk ? 'Reset email sent, check your email' : 'Reset email failed, try again later'}
             </Snackbar>
           </Sheet>
         </Box>

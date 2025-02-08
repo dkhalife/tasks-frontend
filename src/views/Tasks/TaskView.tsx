@@ -88,6 +88,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
     this.loadTaskDetail()
   }
 
+  // TODO: type hardening
   private generateInfoCards = (task: any) => {
     const cards = [
       {

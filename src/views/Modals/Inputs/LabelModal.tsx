@@ -13,6 +13,7 @@ import {
   Option,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
+import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 
 interface LabelModalProps {
   label: Label | null
@@ -20,9 +21,14 @@ interface LabelModalProps {
   onClose: () => void
 }
 
+type ColorOption = {
+  name: string
+  value: string
+}
+
 interface LabelModalState {
   labelName: string
-  color: string
+  color: ColorOption | null
   error: string
   isOpen: boolean
 }
@@ -35,7 +41,7 @@ export class LabelModal extends React.Component<
     super(props)
     this.state = {
       labelName: '',
-      color: '',
+      color: null,
       error: '',
       isOpen: false,
     }
@@ -73,18 +79,26 @@ export class LabelModal extends React.Component<
   }
 
   private onSave = async () => {
-    if (!this.validateLabel()) {
+    const { labelName, color } = this.state
+
+    if (!this.validateLabel() || !color) {
       return
     }
 
     const { label } = this.props
-    const { labelName, color } = this.state
 
     try {
       if (label) {
-        await UpdateLabel({ id: label.id, name: labelName, color })
+        await UpdateLabel({
+          id: label.id,
+          name: labelName,
+          color: color.value,
+        })
       } else {
-        await CreateLabel({ name: labelName, color })
+        await CreateLabel({
+          name: labelName,
+          color: color.value,
+        })
       }
       this.setState({ isOpen: false })
     } catch {
@@ -101,9 +115,9 @@ export class LabelModal extends React.Component<
     this.setState({ labelName: e.target.value })
   }
 
-  private onColorChange = (e: ChangeEvent<{ value: any }>) => {
-    if (e.value) {
-      this.setState({ color: e.value })
+  private onColorChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<ColorOption, false>) => {
+    if (value) {
+      this.setState({ color: value })
     } 
   }
 
@@ -152,23 +166,17 @@ export class LabelModal extends React.Component<
               onChange={this.onColorChange}
               required={true}
               defaultValue={color}
-              renderValue={(selected: HTMLOptionElement | undefined) => (
-                <Typography
-                  startDecorator={
-                    <span
-                      style={{
-                        borderRadius: 10,
-                        display: 'inline-block',
-                        background: selected?.value,
-                        width: '20px',
-                        height: '20px',
-                      }}
-                    />
-                  }
-                >
-                  {selected?.label}
-                </Typography>
-              )}
+              startDecorator={
+                <span
+                  style={{
+                    borderRadius: 10,
+                    display: 'inline-block',
+                    background: color?.value,
+                    width: '20px',
+                    height: '20px',
+                  }}
+                />
+              }
             >
               {LABEL_COLORS.map(val => (
                 <Option

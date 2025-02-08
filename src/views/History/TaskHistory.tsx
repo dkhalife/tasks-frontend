@@ -55,7 +55,7 @@ export class TaskHistory extends React.Component<
     this.loadHistory()
   }
 
-  private updateHistoryInfo = (histories: any[]) => {
+  private updateHistoryInfo = (histories: HistoryEntry[]) => {
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, task) => {
