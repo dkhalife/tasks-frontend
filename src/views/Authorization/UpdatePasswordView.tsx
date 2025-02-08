@@ -1,7 +1,7 @@
 import { ChangePassword } from '@/api/auth'
-import { withNavigation } from '@/contexts/hooks'
 import { Logo } from '@/Logo'
 import { validatePassword } from '@/models/user'
+import { getQuery, goToLogin } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
   Container,
@@ -15,9 +15,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
-interface UpdatePasswordViewProps {
-  navigate: (path: string) => void
-}
+type UpdatePasswordViewProps = object
 
 interface UpdatePasswordViewState {
   password: string
@@ -27,7 +25,7 @@ interface UpdatePasswordViewState {
   updateStatusOk: boolean | null
 }
 
-class UpdatePasswordViewInner extends React.Component<
+export class UpdatePasswordView extends React.Component<
   UpdatePasswordViewProps,
   UpdatePasswordViewState
 > {
@@ -48,10 +46,10 @@ class UpdatePasswordViewInner extends React.Component<
   }
 
   private onSnackbarClose = () => {
-    this.props.navigate('/login')
+    goToLogin()
   }
 
-  private goToLogin = () => {
+  private onCancel = () => {
     this.setState({
       updateStatusOk: null,
      })
@@ -73,7 +71,6 @@ class UpdatePasswordViewInner extends React.Component<
   }
 
   private handleSubmit = async () => {
-    const { navigate } = this.props
     const { password, passwordError, passwordConfirmationError } = this.state
 
     if (passwordError != null || passwordConfirmationError != null) {
@@ -81,14 +78,12 @@ class UpdatePasswordViewInner extends React.Component<
     }
 
     try {
-      const verificationCode =
-        new URLSearchParams(document.location.search).get('c') ?? ''
-
+      const verificationCode = getQuery('c')
       await ChangePassword(verificationCode, password)
       this.setState({
         updateStatusOk: true,
       })
-      navigate('/login')
+      goToLogin()
     } catch {
       this.setState({
         updateStatusOk: false,
@@ -190,7 +185,7 @@ class UpdatePasswordViewInner extends React.Component<
               fullWidth
               size='lg'
               variant='soft'
-              onClick={this.goToLogin}
+              onClick={this.onCancel}
             >
               Cancel
             </Button>
@@ -207,5 +202,3 @@ class UpdatePasswordViewInner extends React.Component<
     )
   }
 }
-
-export const UpdatePasswordView = withNavigation(UpdatePasswordViewInner)

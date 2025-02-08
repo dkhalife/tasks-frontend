@@ -1,7 +1,7 @@
 import { Login, SignUp } from '@/api/auth'
-import { withNavigation } from '@/contexts/hooks'
 import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
+import { goToLogin, goToMyTasks } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
   Container,
@@ -16,9 +16,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
-interface SignupViewProps {
-  navigate: (path: string) => void
-}
+type SignupViewProps = object
 
 interface SignupViewState {
   username: string
@@ -32,7 +30,7 @@ interface SignupViewState {
   error: string | null
 }
 
-class SignupViewInner extends React.Component<
+export class SignupView extends React.Component<
   SignupViewProps,
   SignupViewState
 > {
@@ -57,7 +55,7 @@ class SignupViewInner extends React.Component<
       const data = await Login(username, password)
       localStorage.setItem('ca_token', data.token)
       localStorage.setItem('ca_expiration', data.expiration)
-      this.props.navigate('/my/tasks')
+      goToMyTasks()
     } catch {
       this.setState({ error: 'Login failed' })
     }
@@ -159,10 +157,6 @@ class SignupViewInner extends React.Component<
       displayNameError: null,
       displayName: e.target.value.trim(),
     })  
-  }
-
-  private goToLogin = () => {
-    this.props.navigate('/login')
   }
 
   render(): React.ReactNode {
@@ -283,7 +277,7 @@ class SignupViewInner extends React.Component<
             <Divider> or </Divider>
             <Button
               size='lg'
-              onClick={this.goToLogin}
+              onClick={goToLogin}
               fullWidth
               variant='soft'
             >
@@ -302,5 +296,3 @@ class SignupViewInner extends React.Component<
     )
   }
 }
-
-export const SignupView = withNavigation(SignupViewInner)

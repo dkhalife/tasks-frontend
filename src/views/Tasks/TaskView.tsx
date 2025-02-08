@@ -1,5 +1,4 @@
 import { MarkTaskComplete, GetTaskDetailById, SkipTask } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import {
@@ -26,13 +25,10 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
+import { goToTaskEdit, goToTaskHistory } from '@/utils/navigation'
 
 interface TaskViewProps {
   taskId: string
-}
-
-type TaskViewInnerProps = TaskViewProps & {
-  navigate: (path: string) => void
 }
 
 interface InfoCard {
@@ -47,10 +43,10 @@ interface TaskViewState {
   infoCards: InfoCard[]
 }
 
-class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
+export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
 
-  constructor(props: TaskViewInnerProps) {
+  constructor(props: TaskViewProps) {
     super(props)
 
     this.state = {
@@ -125,14 +121,6 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
     this.setState({
       task: data.res,
     })
-  }
-
-  private goToTaskHistory = (taskId: string) => {
-    this.props.navigate(`/tasks/${taskId}/history`)
-  }
-
-  private goToTaskEdit = (taskId: string) => {
-    this.props.navigate(`/tasks/${taskId}/edit`)
   }
 
   private onConfirmSkip = (confirmed: boolean) => {
@@ -261,7 +249,7 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
               color='neutral'
               variant='outlined'
               fullWidth
-              onClick={() => this.goToTaskHistory(taskId)}
+              onClick={() => goToTaskHistory(taskId)}
               sx={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -283,7 +271,7 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
                 justifyContent: 'center',
                 p: 1,
               }}
-              onClick={() => this.goToTaskEdit(taskId)}
+              onClick={() => goToTaskEdit(taskId)}
             >
               <Edit />
               Edit
@@ -347,5 +335,3 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
     )
   }
 }
-
-export const TaskView = withNavigation(TaskViewInner)

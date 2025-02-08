@@ -1,6 +1,6 @@
 import { ResetPassword } from '@/api/auth'
-import { withNavigation } from '@/contexts/hooks'
 import { validateEmail } from '@/models/user'
+import { goToLogin } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
   Container,
@@ -14,9 +14,7 @@ import {
 } from '@mui/material'
 import React, { ChangeEvent } from 'react'
 
-interface ForgotPasswordViewProps {
-  navigate: (path: string) => void
-}
+type ForgotPasswordViewProps = object
 
 interface ForgotPasswordViewState {
   email: string
@@ -24,7 +22,7 @@ interface ForgotPasswordViewState {
   resetStatusOk: boolean | null
 }
 
-class ForgotPasswordViewInner extends React.Component<
+export class ForgotPasswordView extends React.Component<
   ForgotPasswordViewProps,
   ForgotPasswordViewState
 > {
@@ -70,14 +68,10 @@ class ForgotPasswordViewInner extends React.Component<
     this.handleSubmit()
   }
 
-  private goToLogin = () => {
-    this.props.navigate('/login')
-  }
-
   private onSnackbarClose = () => {
     const { resetStatusOk } = this.state
     if (resetStatusOk) {
-      this.props.navigate('/login')
+      goToLogin()
     }
   }
 
@@ -182,7 +176,7 @@ class ForgotPasswordViewInner extends React.Component<
                         border: 'moccasin',
                         borderRadius: '8px',
                       }}
-                      onClick={this.goToLogin}
+                      onClick={goToLogin}
                       color='neutral'
                     >
                       Back to Login
@@ -204,7 +198,7 @@ class ForgotPasswordViewInner extends React.Component<
                   variant='soft'
                   size='lg'
                   sx={{ position: 'relative', bottom: '0' }}
-                  onClick={this.goToLogin}
+                  onClick={goToLogin}
                   fullWidth
                 >
                   Go to Login
@@ -226,5 +220,3 @@ class ForgotPasswordViewInner extends React.Component<
     )
   }
 }
-
-export const ForgotPasswordView = withNavigation(ForgotPasswordViewInner)

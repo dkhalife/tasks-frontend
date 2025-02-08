@@ -1,5 +1,4 @@
 import { GetTasks, MarkTaskComplete } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -23,10 +22,9 @@ import {
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
 import { DateModal } from '@/views/Modals/Inputs/DateModal'
+import { goToTaskCreate, goToTaskEdit } from '@/utils/navigation'
 
-interface TasksOverviewProps {
-  navigate: (path: string) => void
-}
+type TasksOverviewProps = object
 
 interface TasksOverviewState {
   tasks: Task[]
@@ -35,7 +33,7 @@ interface TasksOverviewState {
   taskId: string | null
 }
 
-class TasksOverviewInner extends React.Component<
+export class TasksOverview extends React.Component<
   TasksOverviewProps,
   TasksOverviewState
 > {
@@ -117,14 +115,6 @@ class TasksOverviewInner extends React.Component<
     this.setState({ search: '', filteredTasks: tasks })
   }
 
-  private goToNewTask = () => {
-    this.props.navigate(`/tasks/create`)
-  }
-
-  private goToEditTask = (task: Task) => {
-    this.props.navigate(`/tasks/${task.id}/edit`)
-  }
-
   private onSetDueDate = (task: Task) => {
     this.setState({
       taskId: task.id,
@@ -178,7 +168,7 @@ class TasksOverviewInner extends React.Component<
             gap={2}
           >
             <Button
-              onClick={this.goToNewTask}
+              onClick={goToTaskCreate}
             >
               New Task
             </Button>
@@ -203,7 +193,7 @@ class TasksOverviewInner extends React.Component<
                   </Chip>
                 </td>
                 <td
-                  onClick={() => this.goToEditTask(task)}
+                  onClick={() => goToTaskEdit(task.id)}
                 >
                   {task.title || '--'}
                 </td>
@@ -245,7 +235,7 @@ class TasksOverviewInner extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.goToEditTask(task)}
+                      onClick={() => goToTaskEdit(task.id)}
                     >
                       <Edit />
                     </IconButton>
@@ -266,5 +256,3 @@ class TasksOverviewInner extends React.Component<
     )
   }
 }
-
-export const TasksOverview = withNavigation(TasksOverviewInner)

@@ -1,5 +1,4 @@
 import { getNextThemeMode } from '@/constants/theme'
-import { withNavigation, withLocation } from '@/contexts/hooks'
 import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
 import {
   MenuRounded,
@@ -19,20 +18,17 @@ import {
   ListItemContent,
 } from '@mui/joy'
 import React, { version } from 'react'
-import { Location } from 'react-router-dom'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
+import { getPathName, goToLogin, goToMyTasks } from '@/utils/navigation'
 
-type NavBarProps = {
-  location: Location
-  navigate: (path: string) => void
-}
+type NavBarProps = object
 
 interface NavBarState {
   drawerOpen: boolean
 }
 
-export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
+export class NavBar extends React.Component<NavBarProps, NavBarState> {
   constructor(props: NavBarProps) {
     super(props)
     this.state = {
@@ -48,20 +44,16 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
     this.setState({ drawerOpen: false })
   }
 
-  private goToTasks = () => {
-    this.props.navigate('/my/tasks')
-  }
-
   private logout = () => {
     localStorage.removeItem('ca_token')
     localStorage.removeItem('ca_expiration')
-    window.location.href = '/login'
+    goToLogin()
   }
 
   render(): React.ReactNode {
     if (
       ['/signup', '/login', '/forgot-password'].includes(
-        this.props.location.pathname,
+        getPathName(),
       )
     ) {
       return null
@@ -88,7 +80,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             alignItems: 'center',
             gap: 2,
           }}
-          onClick={this.goToTasks}
+          onClick={goToMyTasks}
         >
           <img
             alt='DoneTick'
@@ -202,5 +194,3 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
     )
   }
 }
-
-export const NavBar = withNavigation(withLocation<NavBarProps>(NavBarInner))

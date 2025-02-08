@@ -1,5 +1,4 @@
 import { GetTasks } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Loading } from '@/Loading'
 import { Task, TaskGroup } from '@/models/task'
 import { TasksGrouper } from '@/utils/Tasks'
@@ -18,11 +17,10 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { IconButtonWithMenu } from './IconButtonWithMenu'
-import { TaskCard } from './TaskCard'
+import { goToTaskCreate } from '@/utils/navigation'
+import { TaskCard } from '@/views/Tasks/TaskCard'
 
-interface MyTasksProps {
-  navigate: (path: string) => void
-}
+type MyTasksProps = object
 
 interface MyTasksState {
   isSnackbarOpen: boolean
@@ -36,7 +34,7 @@ interface MyTasksState {
   isLoading: boolean
 }
 
-class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
+export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   constructor(props: MyTasksProps) {
     super(props)
 
@@ -66,10 +64,6 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
 
   componentDidMount(): void {
     this.loadTasks()
-  }
-
-  private goToCreateTask = () => {
-    this.props.navigate(`/tasks/create`)
   }
 
   private onSnackbarClose = () => {
@@ -190,7 +184,7 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
               width: 50,
               height: 50,
             }}
-            onClick={this.goToCreateTask}
+            onClick={goToTaskCreate}
           >
             <Add />
           </IconButton>
@@ -210,5 +204,3 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
     )
   }
 }
-
-export const MyTasks = withNavigation(MyTasksInner)

@@ -1,5 +1,4 @@
 import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Label } from '@/models/label'
 import { FrequencyMetadata, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
@@ -31,12 +30,10 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
-import {
-  ConfirmationModalProps,
-  ConfirmationModal,
-} from '@/views/Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
+import { goToMyTasks } from '@/utils/navigation'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -44,10 +41,6 @@ const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
 interface TaskEditProps {
   taskId: string | null
-}
-
-type TaskEditInnerProps = TaskEditProps & {
-  navigate: (path: string) => void
 }
 
 interface NotificationMetadata {
@@ -85,11 +78,11 @@ type NotificationTriggerOption = {
   description: string
 }
 
-class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
+export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private labelModalRef = React.createRef<LabelModal>()
   private confirmModelRef = React.createRef<ConfirmationModal>()
 
-  constructor(props: TaskEditInnerProps) {
+  constructor(props: TaskEditProps) {
     super(props)
     this.state = {
       isRolling: false,
@@ -230,7 +223,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
 
     try {
       await SaveFunction(task)
-      this.props.navigate(`/my/tasks`)
+      goToMyTasks()
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -243,7 +236,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
   private onTaskDelete = async (taskId: string) => {
     try {
       await DeleteTask(taskId)
-      this.props.navigate('/my/tasks')
+      goToMyTasks()
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -309,7 +302,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
       })
 
       setTimeout(() => {
-        this.props.navigate('/my/tasks')
+        goToMyTasks()
       }, 3000)
     }
   }
@@ -322,8 +315,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     if (taskId != null) {
       this.loadTask(taskId)
     } else {
-      // TODO: Use a more specific ref
-      document.querySelector('input')?.focus()
+      // TODO: focus input box
     }
   }
 
@@ -753,5 +745,3 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     )
   }
 }
-
-export const TaskEdit = withNavigation<TaskEditProps>(TaskEditInner)
