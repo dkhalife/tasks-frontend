@@ -5,6 +5,8 @@ import { Add } from "@mui/icons-material"
 import { Box, CircularProgress, Typography, Container, Chip, Button, IconButton } from "@mui/joy"
 import React from "react"
 import { LabelModal } from "../Modals/Inputs/LabelModal"
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 
 type LabelViewProps = object
 

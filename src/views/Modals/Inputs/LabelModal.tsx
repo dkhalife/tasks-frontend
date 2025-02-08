@@ -2,7 +2,7 @@ import { UpdateLabel, CreateLabel } from "@/api/labels"
 import { Label } from "@/models/label"
 import { LABEL_COLORS } from "@/utils/Colors"
 import { ModalDialog } from "@mui/joy"
-import { Modal, Typography, FormControl, Input, Select, Box, Button } from "@mui/joy"
+import { Modal, Typography, FormControl, Input, Select, Box, Button, Option } from "@mui/joy"
 import React, { ChangeEvent } from "react"
 
 interface LabelModalProps {
