@@ -2,7 +2,6 @@ import { Login, SignUp } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
 import { goToLogin, goToMyTasks } from '@/utils/navigation'
-import { Sheet } from '@mui/joy'
 import {
   Container,
   Box,
@@ -11,6 +10,7 @@ import {
   FormControl,
   FormHelperText,
   Button,
+  Sheet,
   Divider,
   Snackbar,
 } from '@mui/joy'
@@ -115,7 +115,7 @@ export class SignupView extends React.Component<
     return isValid
   }
 
-  private handleSubmit = async (e: MouseEvent) => {
+  private handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault()
 
     if (!this.handleSignUpValidation()) {

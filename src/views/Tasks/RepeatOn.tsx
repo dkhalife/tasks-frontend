@@ -46,7 +46,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     )
   }
 
-  private onIntervalUnitChange = (item: any) => {
+  private onIntervalUnitChange = (item: IntervalUnit) => {
     this.setState({ intervalUnit: item })
 
     const { frequencyMetadata, onFrequencyMetadataUpdate } = this.props

@@ -12,7 +12,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import Cookies from 'js-cookie'
-import { goToRegister, goToResetPassword } from '@/utils/navigation'
+import { goTo, goToMyTasks, goToRegister, goToResetPassword } from '@/utils/navigation'
 
 type LoginViewProps = object
 
@@ -33,7 +33,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
     }
   }
 
-  private handleSubmit = async (e: MouseEvent) => {
+  private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
 
     const { username, password } = this.state

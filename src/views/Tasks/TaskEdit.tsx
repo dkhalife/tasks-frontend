@@ -34,6 +34,7 @@ import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
 import { goToMyTasks } from '@/utils/navigation'
+import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -203,6 +204,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       labels,
       notificationMetadata,
     } = this.state
+
+    // TODO: type hardening
     const task: any = {
       id: taskId,
       name: name,
@@ -375,11 +378,14 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
-  private onLabelsChange = (e: ChangeEvent<{ newValue: string[] }>) => {
-    const { newValue } = e
+  private onLabelsChange = (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<string[], false>) => {
+    if (!value) {
+      return
+    }
+
     const { userLabels } = this.state
     this.setState({
-      labels: userLabels.filter(l => newValue.indexOf(l.name) > -1),
+      labels: userLabels.filter(l => value.indexOf(l.name) > -1),
     })
   }
 
