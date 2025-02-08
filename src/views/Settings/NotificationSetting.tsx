@@ -1,5 +1,4 @@
-import { GetUserProfile, UpdateNotificationTarget } from "@/api/users"
-import { User } from "@/models/user"
+import { UpdateNotificationTarget } from "@/api/users"
 import { Close } from "@mui/icons-material"
 import { Typography, Divider, FormControl, FormLabel, FormHelperText, Box, Select, Button, Snackbar, IconButton } from "@mui/joy"
 import React from "react"
@@ -10,7 +9,6 @@ interface NotificationSettingState {
   isSnackbarOpen: boolean
   notificationTarget: number
   error: string
-  userProfile: User | null // TODO: This should never be null
 }
 
 export class NotificationSetting extends React.Component<
@@ -24,35 +22,23 @@ export class NotificationSetting extends React.Component<
       isSnackbarOpen: false,
       notificationTarget: -1,
       error: '',
-      userProfile: null,
     }
   }
 
   componentDidMount(): void {
-    GetUserProfile().then(data => {
-      this.setState({
-        userProfile: data.user,
-      })
-    })
-
-    // TODO: notification settings are not loaded
+    // TODO: load notification settings?
   }
 
   private handleSave = async () => {
     this.setState({ error: '' })
 
-    const { userProfile, notificationTarget } = this.state
+    const { notificationTarget } = this.state
     try {
       await UpdateNotificationTarget({
-        type: Number(notificationTarget),
+        type: notificationTarget,
       })
       this.setState({
-        userProfile: {
-          ...userProfile,
-          notification_target: {
-            type: Number(notificationTarget),
-          },
-        },
+        notificationTarget: notificationTarget,
       })
     } catch (error) {
       this.setState({

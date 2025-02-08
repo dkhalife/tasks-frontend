@@ -1,9 +1,7 @@
 import { GetTasks } from "@/api/tasks"
-import { GetUserProfile } from "@/api/users"
 import { withNavigation } from "@/contexts/hooks"
 import { Loading } from "@/Loading"
 import { Task, TaskGroup } from "@/models/task"
-import { User } from "@/models/user"
 import { TasksGrouper } from "@/utils/Tasks"
 import { ExpandCircleDown, Add } from "@mui/icons-material"
 import { Container, Box, AccordionGroup, Accordion, Divider, Chip, AccordionDetails, IconButton, Snackbar, Typography } from "@mui/joy"
@@ -24,7 +22,6 @@ interface MyTasksState {
   selectedFilter: string
   taskSections: TaskGroup[]
   selectedTaskSection: string
-  userProfile: User | null
   isLoading: boolean
 }
 
@@ -41,21 +38,17 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
       selectedFilter: 'All',
       taskSections: [],
       selectedTaskSection: 'due_date',
-      userProfile: null,
       isLoading: true,
     }
   }
 
   componentDidMount(): void {
-    Promise.all([GetTasks(), GetUserProfile()]).then(responses => {
-      // TODO: Split this and move state ownership to the respective components
-      const [tasksData, userProfileData] = responses
+    GetTasks().then((tasksData) => {
       //TODO: Sorter
       //tasksData.res.sort(taskSorter)
       this.setState({
         tasks: tasksData.tasks,
         filteredTasks: tasksData.tasks,
-        userProfile: userProfileData.user,
         isLoading: false,
       })
     })
