@@ -47,6 +47,16 @@ class UpdatePasswordViewInner extends React.Component<
     }
   }
 
+  private onSnackbarClose = () => {
+    this.props.navigate('/login')
+  }
+
+  private goToLogin = () => {
+    this.setState({
+      updateStatusOk: null,
+     })
+  }
+
   private handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { password } = this.state
     if (e.target.value !== password) {
@@ -180,9 +190,7 @@ class UpdatePasswordViewInner extends React.Component<
               fullWidth
               size='lg'
               variant='soft'
-              onClick={() => {
-                this.props.navigate('/login')
-              }}
+              onClick={this.goToLogin}
             >
               Cancel
             </Button>
@@ -191,9 +199,7 @@ class UpdatePasswordViewInner extends React.Component<
         <Snackbar
           open={updateStatusOk !== true}
           autoHideDuration={6000}
-          onClose={() => {
-            this.setState({ updateStatusOk: null })
-          }}
+          onClose={this.onSnackbarClose}
         >
           Password update failed, try again later
         </Snackbar>

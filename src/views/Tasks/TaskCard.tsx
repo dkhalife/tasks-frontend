@@ -153,6 +153,14 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
     onTaskUpdate(newTask, 'skipped')
   }
 
+  private goToTask = (taskId: string) => {
+    this.props.navigate(`/tasks/${taskId}`)
+  }
+
+  private onChangeDueDate = () => {
+    this.confirmationModalRef.current?.open()
+  }
+
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
     const { confirmModelConfig } = this.state
@@ -211,9 +219,7 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
           <Grid container>
             <Grid
               xs={9}
-              onClick={() => {
-                this.props.navigate(`/tasks/${task.id}`)
-              }}
+              onClick={() => this.goToTask(task.id)}
             >
               <Box
                 display='flex'
@@ -305,9 +311,7 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
                   </MenuItem>
                   <Divider />
                   <MenuItem
-                    onClick={() => {
-                      this.confirmationModalRef.current?.open()
-                    }}
+                    onClick={this.onChangeDueDate}
                   >
                     <MoreTime />
                     Change due date

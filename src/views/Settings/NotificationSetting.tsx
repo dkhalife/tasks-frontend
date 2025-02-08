@@ -59,6 +59,14 @@ export class NotificationSetting extends React.Component<
     }
   }
 
+  private onNotificationTargetChange = (selected: any) => {
+    this.setState({ notificationTarget: selected })
+  }
+
+  private onSnackbarClose = () => {
+    this.setState({ isSnackbarOpen: false })
+  }
+
   render(): React.ReactNode {
     const { isSnackbarOpen, error, notificationTarget } = this.state
 
@@ -98,9 +106,7 @@ export class NotificationSetting extends React.Component<
           <Select
             value={notificationTarget}
             sx={{ maxWidth: '200px' }}
-            onChange={(e: any, selected: any) =>
-              this.setState({ notificationTarget: selected })
-            }
+            onChange={this.onNotificationTargetChange}
           >
             <Option value='0'>None</Option>
             <Option value='3'>Mqtt</Option>
@@ -127,11 +133,11 @@ export class NotificationSetting extends React.Component<
         <Snackbar
           open={isSnackbarOpen}
           autoHideDuration={8000}
-          onClose={() => this.setState({ isSnackbarOpen: false })}
+          onClose={this.onSnackbarClose}
           endDecorator={
             <IconButton
               size='md'
-              onClick={() => this.setState({ isSnackbarOpen: false })}
+              onClick={this.onSnackbarClose}
             >
               <Close />
             </IconButton>

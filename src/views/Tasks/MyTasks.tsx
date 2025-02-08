@@ -68,6 +68,14 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
     this.loadTasks()
   }
 
+  private goToCreateTask = () => {
+    this.props.navigate(`/tasks/create`)
+  }
+
+  private onSnackbarClose = () => {
+    this.setState({ isSnackbarOpen: false })
+  }
+
   render(): React.ReactNode {
     const { isSnackbarOpen, snackBarMessage, isLoading, tasks } = this.state
 
@@ -123,9 +131,7 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
                 variant='soft'
                 color='neutral'
                 size='md'
-                onClick={() => {
-                  // TODO: Expand/collapse
-                }}
+                onClick={undefined /* TODO: Expand/collapse */}
                 endDecorator={
                   <ExpandCircleDown
                     color='primary'
@@ -155,8 +161,8 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
                 <TaskCard
                   key={task.id}
                   task={task}
-                  onTaskUpdate={() => {}}
-                  onTaskRemove={() => {}}
+                  onTaskUpdate={() => {} /* TODO: update */}
+                  onTaskRemove={() => {} /* TODO: update */}
                   sx={{}}
                   viewOnly={false}
                 />
@@ -184,18 +190,14 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
               width: 50,
               height: 50,
             }}
-            onClick={() => {
-              this.props.navigate(`/tasks/create`)
-            }}
+            onClick={this.goToCreateTask}
           >
             <Add />
           </IconButton>
         </Box>
         <Snackbar
           open={isSnackbarOpen}
-          onClose={() => {
-            this.setState({ isSnackbarOpen: false })
-          }}
+          onClose={this.onSnackbarClose}
           autoHideDuration={3000}
           variant='soft'
           color='success'

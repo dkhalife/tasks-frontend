@@ -133,6 +133,38 @@ class SignupViewInner extends React.Component<
     }
   }
 
+  private onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      usernameError: null,
+      username: e.target.value.trim(),
+    })
+  }
+
+  private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      emailError: null,
+      email: e.target.value.trim(),
+    })
+  }
+
+  private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      passwordError: null,
+      password: e.target.value
+    })
+  }
+
+  private onDisplayNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      displayNameError: null,
+      displayName: e.target.value.trim(),
+    })  
+  }
+
+  private goToLogin = () => {
+    this.props.navigate('/login')
+  }
+
   render(): React.ReactNode {
     const {
       username,
@@ -202,12 +234,7 @@ class SignupViewInner extends React.Component<
               autoComplete='username'
               autoFocus
               value={username}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({
-                  usernameError: null,
-                  username: e.target.value.trim(),
-                })
-              }}
+              onChange={this.onUsernameChange}
             />
             <FormControl>
               <FormHelperText>{usernameError}</FormHelperText>
@@ -218,12 +245,7 @@ class SignupViewInner extends React.Component<
               fullWidth
               autoComplete='email'
               value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({
-                  emailError: null,
-                  email: e.target.value.trim(),
-                })
-              }}
+              onChange={this.onEmailChange}
             />
             <FormControl>
               <FormHelperText>{emailError}</FormHelperText>
@@ -234,9 +256,7 @@ class SignupViewInner extends React.Component<
               fullWidth
               type='password'
               value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ passwordError: null, password: e.target.value })
-              }}
+              onChange={this.onPasswordChange}
             />
             <FormControl>
               <FormHelperText>{passwordError}</FormHelperText>
@@ -246,12 +266,7 @@ class SignupViewInner extends React.Component<
               required
               fullWidth
               value={displayName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({
-                  displayNameError: null,
-                  displayName: e.target.value.trim(),
-                })
-              }}
+              onChange={this.onDisplayNameChange}
             />
             <FormControl>
               <FormHelperText>{displayNameError}</FormHelperText>
@@ -268,9 +283,7 @@ class SignupViewInner extends React.Component<
             <Divider> or </Divider>
             <Button
               size='lg'
-              onClick={() => {
-                this.props.navigate('/login')
-              }}
+              onClick={this.goToLogin}
               fullWidth
               variant='soft'
             >

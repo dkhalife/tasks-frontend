@@ -48,6 +48,16 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
     this.setState({ drawerOpen: false })
   }
 
+  private goToTasks = () => {
+    this.props.navigate('/my/tasks')
+  }
+
+  private logout = () => {
+    localStorage.removeItem('ca_token')
+    localStorage.removeItem('ca_expiration')
+    window.location.href = '/login'
+  }
+
   render(): React.ReactNode {
     if (
       ['/signup', '/login', '/forgot-password'].includes(
@@ -78,9 +88,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             alignItems: 'center',
             gap: 2,
           }}
-          onClick={() => {
-            this.props.navigate('/my/tasks')
-          }}
+          onClick={this.goToTasks}
         >
           <img
             alt='DoneTick'
@@ -108,9 +116,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             {({ themeMode, setThemeMode }: StorageContextState) => (
               <ThemeToggleButton
                 themeMode={themeMode}
-                onThemeModeToggle={() =>
-                  setThemeMode(getNextThemeMode(themeMode))
-                }
+                onThemeModeToggle={() => setThemeMode(getNextThemeMode(themeMode))}
                 sx={{
                   position: 'absolute',
                   right: 10,
@@ -168,11 +174,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
               onClick={this.openDrawer}
             >
               <ListItemButton
-                onClick={() => {
-                  localStorage.removeItem('ca_token')
-                  localStorage.removeItem('ca_expiration')
-                  window.location.href = '/login'
-                }}
+                onClick={this.logout}
                 sx={{
                   py: 1.2,
                 }}
@@ -183,7 +185,6 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
                 <ListItemContent>Logout</ListItemContent>
               </ListItemButton>
               <Typography
-                onClick={() => window.location.reload()}
                 level='body-xs'
                 sx={{
                   p: 1,

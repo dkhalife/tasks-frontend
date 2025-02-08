@@ -38,6 +38,12 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
     this.props.onClose(null)
   }
 
+  private onTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    this.setState({
+      text: e.target.value,
+    })
+  }
+
   render(): React.ReactNode {
     const { title, okText, cancelText } = this.props
     const { text, isOpen } = this.state
@@ -52,9 +58,7 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
           <Textarea
             placeholder='Type in here…'
             value={text}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              this.setState({ text: e.target.value })
-            }
+            onChange={this.onTextChange}
             minRows={2}
             maxRows={4}
             sx={{ minWidth: 300 }}

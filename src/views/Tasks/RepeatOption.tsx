@@ -24,17 +24,19 @@ interface RepeatOptionProps {
 }
 
 export class RepeatOption extends React.Component<RepeatOptionProps> {
+  private onRepeatToggle = (e: ChangeEvent<HTMLInputElement>): void => {
+    this.props.onFrequencyTypeUpdate(e.target.checked ? 'interval' : 'once')
+  }
+
   render(): React.ReactNode {
-    const { frequencyType, onFrequencyTypeUpdate, frequencyError } = this.props
+    const { frequencyType, frequencyError } = this.props
 
     return (
       <Box mt={2}>
         <Typography level='h4'>Repeat :</Typography>
         <FormControl sx={{ mt: 1 }}>
           <Checkbox
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              onFrequencyTypeUpdate(e.target.checked ? 'interval' : 'once')
-            }}
+            onChange={this.onRepeatToggle}
             defaultChecked={!['once', 'trigger'].includes(frequencyType)}
             overlay
             label='Repeat this task'
@@ -60,9 +62,9 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                   <ListItem key={item}>
                     <Checkbox
                       checked={item === frequencyType}
-                      onClick={() => {
+                      /*onClick={() => {
                         if (item === 'custom') {
-                          /*onFrequencyTypeUpdate(INTERVAL_UNITS[0])
+                          onFrequencyTypeUpdate(INTERVAL_UNITS[0])
                           onFrequencyUpdate(1)
                           onFrequencyMetadataUpdate({
                             unit: 'days',
@@ -73,12 +75,12 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                                     'T' +
                                     '18:00',
                                 ).format(),
-                          })*/
+                          })
 
                           return
                         }
                         onFrequencyTypeUpdate(item)
-                      }}
+                      }}*/
                       overlay
                       disableIcon
                       variant='soft'

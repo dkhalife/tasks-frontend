@@ -61,6 +61,26 @@ class ForgotPasswordViewInner extends React.Component<
     this.setState({ email: e.target.value })
   }
 
+  private onEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') {
+      return
+    }
+
+    e.preventDefault()
+    this.handleSubmit()
+  }
+
+  private goToLogin = () => {
+    this.props.navigate('/login')
+  }
+
+  private onSnackbarClose = () => {
+    const { resetStatusOk } = this.state
+    if (resetStatusOk) {
+      this.props.navigate('/login')
+    }
+  }
+
   render(): React.ReactNode {
     const { email, emailError, resetStatusOk } = this.state
 
@@ -138,12 +158,7 @@ class ForgotPasswordViewInner extends React.Component<
                     value={email}
                     onChange={this.handleEmailChange}
                     error={emailError !== null}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        this.handleSubmit()
-                      }
-                    }}
+                    onKeyDown={this.onEmailKeyDown}
                   />
                   <FormHelperText>{emailError}</FormHelperText>
                   <Box>
@@ -167,9 +182,7 @@ class ForgotPasswordViewInner extends React.Component<
                         border: 'moccasin',
                         borderRadius: '8px',
                       }}
-                      onClick={() => {
-                        this.props.navigate('/login')
-                      }}
+                      onClick={this.goToLogin}
                       color='neutral'
                     >
                       Back to Login
@@ -191,9 +204,7 @@ class ForgotPasswordViewInner extends React.Component<
                   variant='soft'
                   size='lg'
                   sx={{ position: 'relative', bottom: '0' }}
-                  onClick={() => {
-                    this.props.navigate('/login')
-                  }}
+                  onClick={this.goToLogin}
                   fullWidth
                 >
                   Go to Login
@@ -203,11 +214,7 @@ class ForgotPasswordViewInner extends React.Component<
             <Snackbar
               open={resetStatusOk ? resetStatusOk : resetStatusOk === false}
               autoHideDuration={5000}
-              onClose={() => {
-                if (resetStatusOk) {
-                  this.props.navigate('/login')
-                }
-              }}
+              onClose={this.onSnackbarClose}
             >
               {resetStatusOk
                 ? 'Reset email sent, check your email'

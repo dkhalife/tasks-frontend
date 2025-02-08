@@ -61,6 +61,22 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
     }
   }
 
+  private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ username: e.target.value })
+  }
+
+  private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ password: e.target.value })
+  }
+
+  private goToRegister = () => {
+    this.props.navigate('/signup')
+  }
+
+  private onSnackbarClose = () => {
+    this.setState({ error: null })
+  }
+
   render(): React.ReactNode {
     const { error } = this.state
 
@@ -115,18 +131,14 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
               fullWidth
               autoComplete='email'
               autoFocus
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ username: e.target.value })
-              }}
+              onChange={this.onEmailChange}
             />
             <Typography alignSelf={'start'}>Password:</Typography>
             <Input
               required
               fullWidth
               type='password'
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ password: e.target.value })
-              }}
+              onChange={this.onPasswordChange}
             />
 
             <Button
@@ -161,9 +173,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
 
             <Divider> or </Divider>
             <Button
-              onClick={() => {
-                this.props.navigate('/signup')
-              }}
+              onClick={this.goToRegister}
               fullWidth
               variant='soft'
               size='lg'
@@ -177,9 +187,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
         </Box>
         <Snackbar
           open={error !== null}
-          onClose={() => {
-            this.setState({ error: null })
-          }}
+          onClose={this.onSnackbarClose}
           autoHideDuration={3000}
         >
           {error}

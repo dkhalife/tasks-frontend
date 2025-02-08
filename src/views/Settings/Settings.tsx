@@ -10,12 +10,16 @@ import { ThemeToggle } from './ThemeToggle'
 export class Settings extends React.Component {
   private changePasswordModal = React.createRef<PassowrdChangeModal>()
 
-  private onPasswordChange = async (password: string | null) => {
+  private onPasswordChanged = async (password: string | null) => {
     if (!password) {
       return
     }
 
     await UpdatePassword(password)
+  }
+
+  private onChangePassword = () => {
+    this.changePasswordModal.current?.open()
   }
 
   render(): React.ReactNode {
@@ -45,15 +49,13 @@ export class Settings extends React.Component {
             ></Typography>
             <Button
               variant='soft'
-              onClick={() => {
-                this.changePasswordModal.current?.open()
-              }}
+              onClick={this.onChangePassword}
             >
               Change Password
             </Button>
             <PassowrdChangeModal
               ref={this.changePasswordModal}
-              onClose={newPassword => this.onPasswordChange(newPassword)}
+              onClose={this.onPasswordChanged}
             />
           </Box>
         </div>
