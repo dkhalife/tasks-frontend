@@ -78,6 +78,25 @@ export class APITokenSettings extends React.Component<
     })
   }
 
+  private toggleTokenVisibility = (token: APIToken) => {
+    const { showTokenId } = this.state
+    if (showTokenId === token.id) {
+      this.setState({ showTokenId: null })
+      return
+    }
+
+    this.setState({ showTokenId: token.id })
+  }
+
+  private onCopyToken = (token: APIToken) => {
+    navigator.clipboard.writeText(token.token)
+    this.setState({ showTokenId: null })
+  }
+
+  private onGenerateToken = () => {
+    this.modalRef.current?.open()
+  }
+
   render(): React.ReactNode {
     const { tokens, showTokenId } = this.state
 
@@ -114,14 +133,7 @@ export class APITokenSettings extends React.Component<
                   variant='outlined'
                   color='primary'
                   sx={{ mr: 1 }}
-                  onClick={() => {
-                    if (showTokenId === token.id) {
-                      this.setState({ showTokenId: null })
-                      return
-                    }
-
-                    this.setState({ showTokenId: token.id })
-                  }}
+                  onClick={() => this.toggleTokenVisibility(token)}
                 >
                   {showTokenId === token?.id ? 'Hide' : 'Show'} Token
                 </Button>
@@ -145,10 +157,7 @@ export class APITokenSettings extends React.Component<
                     <IconButton
                       variant='outlined'
                       color='primary'
-                      onClick={() => {
-                        navigator.clipboard.writeText(token.token)
-                        this.setState({ showTokenId: null })
-                      }}
+                      onClick={() => this.onCopyToken(token)}
                     >
                       <CopyAll />
                     </IconButton>
@@ -166,9 +175,7 @@ export class APITokenSettings extends React.Component<
             width: '210px',
             mb: 1,
           }}
-          onClick={() => {
-            this.modalRef.current?.open()
-          }}
+          onClick={this.onGenerateToken}
         >
           Generate New Token
         </Button>

@@ -1,5 +1,4 @@
 import { MarkTaskComplete, GetTaskDetailById, SkipTask } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import {
@@ -25,17 +24,11 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import React from 'react'
-import {
-  ConfirmationModalProps,
-  ConfirmationModal,
-} from '@/views/Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
+import { goToTaskEdit, goToTaskHistory } from '@/utils/navigation'
 
 interface TaskViewProps {
   taskId: string
-}
-
-type TaskViewInnerProps = TaskViewProps & {
-  navigate: (path: string) => void
 }
 
 interface InfoCard {
@@ -48,25 +41,17 @@ interface InfoCard {
 interface TaskViewState {
   task: Task | null
   infoCards: InfoCard[]
-  confirmModelConfig: ConfirmationModalProps
 }
 
-class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
+export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
 
-  constructor(props: TaskViewInnerProps) {
+  constructor(props: TaskViewProps) {
     super(props)
 
     this.state = {
       task: null,
       infoCards: [],
-      confirmModelConfig: {
-        title: '',
-        message: '',
-        confirmText: '',
-        cancelText: '',
-        onClose: () => {},
-      },
     }
   }
 
@@ -138,9 +123,19 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
     })
   }
 
+  private onConfirmSkip = (confirmed: boolean) => {
+    if (confirmed) {
+      this.handleSkippingTask()
+    }
+  }
+
+  private onSkipTask = () => {
+    this.confirmationModalRef.current?.open()
+  }
+
   render(): React.ReactNode {
     const { taskId } = this.props
-    const { task, infoCards, confirmModelConfig } = this.state
+    const { task, infoCards } = this.state
 
     // TODO: Task should just be a prop?
     if (!task) {
@@ -254,9 +249,7 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
               color='neutral'
               variant='outlined'
               fullWidth
-              onClick={() => {
-                this.props.navigate(`/tasks/${taskId}/history`)
-              }}
+              onClick={() => goToTaskHistory(taskId)}
               sx={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -278,9 +271,7 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
                 justifyContent: 'center',
                 p: 1,
               }}
-              onClick={() => {
-                this.props.navigate(`/tasks/${taskId}/edit`)
-              }}
+              onClick={() => goToTaskEdit(taskId)}
             >
               <Edit />
               Edit
@@ -321,31 +312,7 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
             <Button
               fullWidth
               size='lg'
-              onClick={() => {
-                this.setState({
-                  confirmModelConfig: {
-                    title: 'Skip Task',
-
-                    message: 'Are you sure you want to skip this task?',
-
-                    confirmText: 'Skip',
-                    cancelText: 'Cancel',
-                    onClose: confirmed => {
-                      if (confirmed) {
-                        this.handleSkippingTask()
-                      }
-
-                      this.setState({
-                        confirmModelConfig: {
-                          ...this.state.confirmModelConfig,
-                        },
-                      })
-                    },
-                  },
-                })
-
-                this.confirmationModalRef.current?.open()
-              }}
+              onClick={this.onSkipTask}
               startDecorator={<SwitchAccessShortcut />}
               sx={{
                 flex: 1,
@@ -357,12 +324,14 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
 
           <ConfirmationModal
             ref={this.confirmationModalRef}
-            {...confirmModelConfig}
+            title='Skip Task'
+            message='Are you sure you want to skip this task?'
+            confirmText='Skip'
+            cancelText='Cancel'
+            onClose={this.onConfirmSkip}
           />
         </Card>
       </Container>
     )
   }
 }
-
-export const TaskView = withNavigation(TaskViewInner)

@@ -1,7 +1,7 @@
 import { Login, SignUp } from '@/api/auth'
-import { withNavigation } from '@/contexts/hooks'
 import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
+import { goToLogin, goToMyTasks } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
   Container,
@@ -16,9 +16,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
-interface SignupViewProps {
-  navigate: (path: string) => void
-}
+type SignupViewProps = object
 
 interface SignupViewState {
   username: string
@@ -32,7 +30,7 @@ interface SignupViewState {
   error: string | null
 }
 
-class SignupViewInner extends React.Component<
+export class SignupView extends React.Component<
   SignupViewProps,
   SignupViewState
 > {
@@ -57,7 +55,7 @@ class SignupViewInner extends React.Component<
       const data = await Login(username, password)
       localStorage.setItem('ca_token', data.token)
       localStorage.setItem('ca_expiration', data.expiration)
-      this.props.navigate('/my/tasks')
+      goToMyTasks()
     } catch {
       this.setState({ error: 'Login failed' })
     }
@@ -133,6 +131,34 @@ class SignupViewInner extends React.Component<
     }
   }
 
+  private onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      usernameError: null,
+      username: e.target.value.trim(),
+    })
+  }
+
+  private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      emailError: null,
+      email: e.target.value.trim(),
+    })
+  }
+
+  private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      passwordError: null,
+      password: e.target.value
+    })
+  }
+
+  private onDisplayNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      displayNameError: null,
+      displayName: e.target.value.trim(),
+    })  
+  }
+
   render(): React.ReactNode {
     const {
       username,
@@ -202,12 +228,7 @@ class SignupViewInner extends React.Component<
               autoComplete='username'
               autoFocus
               value={username}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({
-                  usernameError: null,
-                  username: e.target.value.trim(),
-                })
-              }}
+              onChange={this.onUsernameChange}
             />
             <FormControl>
               <FormHelperText>{usernameError}</FormHelperText>
@@ -218,12 +239,7 @@ class SignupViewInner extends React.Component<
               fullWidth
               autoComplete='email'
               value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({
-                  emailError: null,
-                  email: e.target.value.trim(),
-                })
-              }}
+              onChange={this.onEmailChange}
             />
             <FormControl>
               <FormHelperText>{emailError}</FormHelperText>
@@ -234,9 +250,7 @@ class SignupViewInner extends React.Component<
               fullWidth
               type='password'
               value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ passwordError: null, password: e.target.value })
-              }}
+              onChange={this.onPasswordChange}
             />
             <FormControl>
               <FormHelperText>{passwordError}</FormHelperText>
@@ -246,12 +260,7 @@ class SignupViewInner extends React.Component<
               required
               fullWidth
               value={displayName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({
-                  displayNameError: null,
-                  displayName: e.target.value.trim(),
-                })
-              }}
+              onChange={this.onDisplayNameChange}
             />
             <FormControl>
               <FormHelperText>{displayNameError}</FormHelperText>
@@ -268,9 +277,7 @@ class SignupViewInner extends React.Component<
             <Divider> or </Divider>
             <Button
               size='lg'
-              onClick={() => {
-                this.props.navigate('/login')
-              }}
+              onClick={goToLogin}
               fullWidth
               variant='soft'
             >
@@ -289,5 +296,3 @@ class SignupViewInner extends React.Component<
     )
   }
 }
-
-export const SignupView = withNavigation(SignupViewInner)

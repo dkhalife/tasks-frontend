@@ -39,6 +39,10 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
     this.props.onClose(null)
   }
 
+  private onDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    this.setState({ date: e.target.value })
+  }
+
   public render(): React.ReactNode {
     const { title } = this.props
     const { isOpen } = this.state
@@ -55,7 +59,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
             sx={{ mt: 3 }}
             type='date'
             value={date}
-            onChange={e => this.setState({ date: e.target.value })}
+            onChange={this.onDateChange}
           />
           <Box
             display={'flex'}

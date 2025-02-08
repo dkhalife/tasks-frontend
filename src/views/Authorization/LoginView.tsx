@@ -1,5 +1,4 @@
 import { Login } from '@/api/auth'
-import { withNavigation } from '@/contexts/hooks'
 import { Logo } from '@/Logo'
 import { Sheet } from '@mui/joy'
 import {
@@ -13,10 +12,9 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import Cookies from 'js-cookie'
+import { goToRegister, goToResetPassword } from '@/utils/navigation'
 
-interface LoginViewProps {
-  navigate: (path: string) => void
-}
+type LoginViewProps = object
 
 interface LoginViewState {
   username: string
@@ -24,7 +22,7 @@ interface LoginViewState {
   error: string | null
 }
 
-class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
+export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
   constructor(props: LoginViewProps) {
     super(props)
 
@@ -33,10 +31,6 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
       password: '',
       error: null,
     }
-  }
-
-  private handleForgotPassword = () => {
-    this.props.navigate('/forgot-password')
   }
 
   private handleSubmit = async (e: MouseEvent) => {
@@ -52,13 +46,25 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
       const redirectUrl = Cookies.get('ca_redirect')
       if (redirectUrl) {
         Cookies.remove('ca_redirect')
-        this.props.navigate(redirectUrl)
+        goTo(redirectUrl)
       } else {
-        this.props.navigate('/my/tasks')
+        goToMyTasks()
       }
     } catch (error) {
       this.setState({ error: (error as Error).message })
     }
+  }
+
+  private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ username: e.target.value })
+  }
+
+  private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ password: e.target.value })
+  }
+
+  private onSnackbarClose = () => {
+    this.setState({ error: null })
   }
 
   render(): React.ReactNode {
@@ -115,18 +121,14 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
               fullWidth
               autoComplete='email'
               autoFocus
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ username: e.target.value })
-              }}
+              onChange={this.onEmailChange}
             />
             <Typography alignSelf={'start'}>Password:</Typography>
             <Input
               required
               fullWidth
               type='password'
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ password: e.target.value })
-              }}
+              onChange={this.onPasswordChange}
             />
 
             <Button
@@ -154,16 +156,14 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
                 border: 'moccasin',
                 borderRadius: '8px',
               }}
-              onClick={this.handleForgotPassword}
+              onClick={goToResetPassword}
             >
               Forgot password?
             </Button>
 
             <Divider> or </Divider>
             <Button
-              onClick={() => {
-                this.props.navigate('/signup')
-              }}
+              onClick={goToRegister}
               fullWidth
               variant='soft'
               size='lg'
@@ -177,9 +177,7 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
         </Box>
         <Snackbar
           open={error !== null}
-          onClose={() => {
-            this.setState({ error: null })
-          }}
+          onClose={this.onSnackbarClose}
           autoHideDuration={3000}
         >
           {error}
@@ -188,5 +186,3 @@ class LoginViewInner extends React.Component<LoginViewProps, LoginViewState> {
     )
   }
 }
-
-export const LoginView = withNavigation(LoginViewInner)

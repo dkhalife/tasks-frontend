@@ -38,16 +38,109 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     }
   }
 
+  private onTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.props.onFrequencyTimeUpdate(
+      moment(
+        moment(new Date()).format('YYYY-MM-DD') + 'T' + e.target.value,
+      ).format(),
+    )
+  }
+
+  private onIntervalUnitChange = (item: any) => {
+    this.setState({ intervalUnit: item })
+
+    const { frequencyMetadata, onFrequencyMetadataUpdate } = this.props
+    onFrequencyMetadataUpdate({
+      ...frequencyMetadata,
+      unit: item,
+    })
+  }
+
+  private onDaySelected = (item: string) => {
+    const { frequencyMetadata, onFrequencyMetadataUpdate } = this.props
+    const newDaysOfTheWeek = frequencyMetadata['days'] || []
+    if (newDaysOfTheWeek.includes(item)) {
+      newDaysOfTheWeek.splice(
+        newDaysOfTheWeek.indexOf(item),
+        1,
+      )
+    } else {
+      newDaysOfTheWeek.push(item)
+    }
+
+    onFrequencyMetadataUpdate({
+      ...frequencyMetadata,
+      days: newDaysOfTheWeek.sort(),
+    })
+  }
+
+  private onToggleAllDays = () => {
+    const { frequencyMetadata, onFrequencyMetadataUpdate } = this.props
+
+    if (frequencyMetadata?.days?.length === 7) {
+      onFrequencyMetadataUpdate({
+        ...frequencyMetadata,
+        days: [],
+      })
+    } else {
+      onFrequencyMetadataUpdate({
+        ...frequencyMetadata,
+        days: DAYS.map(item => item),
+      })
+    }  
+  }
+
+  private onMonthSelected = (item: string) => {
+    const { frequencyMetadata, onFrequencyMetadataUpdate } = this.props
+    const newMonthsOfTheYear = frequencyMetadata['months'] || []
+    if (newMonthsOfTheYear.includes(item)) {
+      newMonthsOfTheYear.splice(
+        newMonthsOfTheYear.indexOf(item),
+        1,
+      )
+    } else {
+      newMonthsOfTheYear.push(item)
+    }
+
+    onFrequencyMetadataUpdate({
+      ...frequencyMetadata,
+      months: newMonthsOfTheYear.sort(),
+    })
+  }
+
+  private onToggleAllMonths = () => {
+    const { frequencyMetadata, onFrequencyMetadataUpdate } = this.props
+    if (frequencyMetadata?.months?.length === 12) {
+      onFrequencyMetadataUpdate({
+        ...frequencyMetadata,
+        months: [],
+      })
+    } else {
+      onFrequencyMetadataUpdate({
+        ...frequencyMetadata,
+        months: MONTHS,
+      })
+    }
+  }
+
+  private onDayOfTheMonthChange = (e: ChangeEvent<HTMLInputElement>) => {
+    let value = parseInt(e.target.value)
+    value = Math.min(31, Math.max(1, value))
+    this.props.onFrequencyUpdate(value)
+  }
+
   render(): React.ReactNode {
     const {
       frequencyType,
       frequency,
       onFrequencyUpdate,
       frequencyMetadata,
-      onFrequencyMetadataUpdate,
-      onFrequencyTimeUpdate,
     } = this.props
     const { intervalUnit } = this.state
+
+    const currentTime = frequencyMetadata?.time
+      ? moment(frequencyMetadata?.time).format('HH:mm')
+      : '18:00'
 
     const timePickerComponent = (
       <Grid
@@ -57,18 +150,8 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
         <Typography>At: </Typography>
         <Input
           type='time'
-          defaultValue={
-            frequencyMetadata?.time
-              ? moment(frequencyMetadata?.time).format('HH:mm')
-              : '18:00'
-          }
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            onFrequencyTimeUpdate(
-              moment(
-                moment(new Date()).format('YYYY-MM-DD') + 'T' + e.target.value,
-              ).format(),
-            )
-          }}
+          defaultValue={currentTime}
+          onChange={this.onTimeChange}
         />
       </Grid>
     )
@@ -91,9 +174,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 }}
                 type='number'
                 value={frequency}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  onFrequencyUpdate(parseInt(e.target.value))
-                }}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => onFrequencyUpdate(parseInt(e.target.value))}
               />
               <Select
                 placeholder='Unit'
@@ -103,13 +184,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                   <Option
                     key={item}
                     value={item}
-                    onClick={() => {
-                      this.setState({ intervalUnit: item })
-                      onFrequencyMetadataUpdate({
-                        ...frequencyMetadata,
-                        unit: item,
-                      })
-                    }}
+                    onClick={() => this.onIntervalUnitChange(item)}
                   >
                     {item.charAt(0).toUpperCase() + item.slice(1)}
                   </Option>
@@ -141,23 +216,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                         checked={
                           frequencyMetadata?.days?.includes(item) || false
                         }
-                        onClick={() => {
-                          const newDaysOfTheWeek =
-                            frequencyMetadata['days'] || []
-                          if (newDaysOfTheWeek.includes(item)) {
-                            newDaysOfTheWeek.splice(
-                              newDaysOfTheWeek.indexOf(item),
-                              1,
-                            )
-                          } else {
-                            newDaysOfTheWeek.push(item)
-                          }
-
-                          onFrequencyMetadataUpdate({
-                            ...frequencyMetadata,
-                            days: newDaysOfTheWeek.sort(),
-                          })
-                        }}
+                        onClick={() => this.onDaySelected(item)}
                         overlay
                         disableIcon
                         variant='soft'
@@ -170,19 +229,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                   size='sm'
                   variant='soft'
                   color='neutral'
-                  onClick={() => {
-                    if (frequencyMetadata?.days?.length === 7) {
-                      onFrequencyMetadataUpdate({
-                        ...frequencyMetadata,
-                        days: [],
-                      })
-                    } else {
-                      onFrequencyMetadataUpdate({
-                        ...frequencyMetadata,
-                        days: DAYS.map(item => item),
-                      })
-                    }
-                  }}
+                  onClick={this.onToggleAllDays}
                 >
                   {frequencyMetadata?.days?.length === 7
                     ? 'Unselect All'
@@ -218,23 +265,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                     <ListItem key={item}>
                       <Checkbox
                         checked={frequencyMetadata?.months?.includes(item)}
-                        onClick={() => {
-                          const newMonthsOfTheYear =
-                            frequencyMetadata['months'] || []
-                          if (newMonthsOfTheYear.includes(item)) {
-                            newMonthsOfTheYear.splice(
-                              newMonthsOfTheYear.indexOf(item),
-                              1,
-                            )
-                          } else {
-                            newMonthsOfTheYear.push(item)
-                          }
-
-                          onFrequencyMetadataUpdate({
-                            ...frequencyMetadata,
-                            months: newMonthsOfTheYear.sort(),
-                          })
-                        }}
+                        onClick={() => this.onMonthSelected(item)}
                         overlay
                         disableIcon
                         variant='soft'
@@ -247,19 +278,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                   size='sm'
                   variant='soft'
                   color='neutral'
-                  onClick={() => {
-                    if (frequencyMetadata?.months?.length === 12) {
-                      onFrequencyMetadataUpdate({
-                        ...frequencyMetadata,
-                        months: [],
-                      })
-                    } else {
-                      onFrequencyMetadataUpdate({
-                        ...frequencyMetadata,
-                        months: MONTHS.map(item => item),
-                      })
-                    }
-                  }}
+                  onClick={this.onToggleAllMonths}
                 >
                   {frequencyMetadata?.months?.length === 12
                     ? 'Unselect All'
@@ -279,13 +298,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 sx={{ width: '80px' }}
                 type='number'
                 value={frequency}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  const value = Math.min(
-                    31,
-                    Math.max(1, parseInt(e.target.value)),
-                  )
-                  onFrequencyUpdate(value)
-                }}
+                onChange={this.onDayOfTheMonthChange}
               />
               <Typography>of the above month/s</Typography>
             </Box>

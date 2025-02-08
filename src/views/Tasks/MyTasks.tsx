@@ -1,5 +1,4 @@
 import { GetTasks } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Loading } from '@/Loading'
 import { Task, TaskGroup } from '@/models/task'
 import { TasksGrouper } from '@/utils/Tasks'
@@ -18,11 +17,10 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { IconButtonWithMenu } from './IconButtonWithMenu'
-import { TaskCard } from './TaskCard'
+import { goToTaskCreate } from '@/utils/navigation'
+import { TaskCard } from '@/views/Tasks/TaskCard'
 
-interface MyTasksProps {
-  navigate: (path: string) => void
-}
+type MyTasksProps = object
 
 interface MyTasksState {
   isSnackbarOpen: boolean
@@ -36,7 +34,7 @@ interface MyTasksState {
   isLoading: boolean
 }
 
-class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
+export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   constructor(props: MyTasksProps) {
     super(props)
 
@@ -66,6 +64,10 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
 
   componentDidMount(): void {
     this.loadTasks()
+  }
+
+  private onSnackbarClose = () => {
+    this.setState({ isSnackbarOpen: false })
   }
 
   render(): React.ReactNode {
@@ -123,9 +125,7 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
                 variant='soft'
                 color='neutral'
                 size='md'
-                onClick={() => {
-                  // TODO: Expand/collapse
-                }}
+                onClick={undefined /* TODO: Expand/collapse */}
                 endDecorator={
                   <ExpandCircleDown
                     color='primary'
@@ -155,8 +155,8 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
                 <TaskCard
                   key={task.id}
                   task={task}
-                  onTaskUpdate={() => {}}
-                  onTaskRemove={() => {}}
+                  onTaskUpdate={() => {} /* TODO: update */}
+                  onTaskRemove={() => {} /* TODO: update */}
                   sx={{}}
                   viewOnly={false}
                 />
@@ -184,18 +184,14 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
               width: 50,
               height: 50,
             }}
-            onClick={() => {
-              this.props.navigate(`/tasks/create`)
-            }}
+            onClick={goToTaskCreate}
           >
             <Add />
           </IconButton>
         </Box>
         <Snackbar
           open={isSnackbarOpen}
-          onClose={() => {
-            this.setState({ isSnackbarOpen: false })
-          }}
+          onClose={this.onSnackbarClose}
           autoHideDuration={3000}
           variant='soft'
           color='success'
@@ -208,5 +204,3 @@ class MyTasksInner extends React.Component<MyTasksProps, MyTasksState> {
     )
   }
 }
-
-export const MyTasks = withNavigation(MyTasksInner)

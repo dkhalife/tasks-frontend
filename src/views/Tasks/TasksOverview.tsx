@@ -1,5 +1,4 @@
 import { GetTasks, MarkTaskComplete } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -23,10 +22,9 @@ import {
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
 import { DateModal } from '@/views/Modals/Inputs/DateModal'
+import { goToTaskCreate, goToTaskEdit } from '@/utils/navigation'
 
-interface TasksOverviewProps {
-  navigate: (path: string) => void
-}
+type TasksOverviewProps = object
 
 interface TasksOverviewState {
   tasks: Task[]
@@ -35,7 +33,7 @@ interface TasksOverviewState {
   taskId: string | null
 }
 
-class TasksOverviewInner extends React.Component<
+export class TasksOverview extends React.Component<
   TasksOverviewProps,
   TasksOverviewState
 > {
@@ -99,8 +97,33 @@ class TasksOverviewInner extends React.Component<
     })
   }
 
+  private onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { tasks } = this.state
+    const newTasks = tasks.filter(task => {
+      return task.title.includes(e.target.value)
+    })
+
+    const newState = {
+      search: e.target.value,
+      filteredTasks: e.target.value === '' ? tasks : newTasks,
+    }
+    this.setState(newState)
+  }
+
+  private onClearSearch = () => {
+    const { tasks } = this.state
+    this.setState({ search: '', filteredTasks: tasks })
+  }
+
+  private onSetDueDate = (task: Task) => {
+    this.setState({
+      taskId: task.id,
+    })
+    this.dateModalRef.current?.open()
+  }
+
   render(): React.ReactNode {
-    const { tasks, filteredTasks, search, taskId } = this.state
+    const { filteredTasks, search, taskId } = this.state
 
     return (
       <Container>
@@ -122,23 +145,11 @@ class TasksOverviewInner extends React.Component<
             <Input
               placeholder='Search'
               value={search}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const newTasks = tasks.filter(task => {
-                  return task.title.includes(e.target.value)
-                })
-
-                const newState = {
-                  search: e.target.value,
-                  filteredTasks: e.target.value === '' ? tasks : newTasks,
-                }
-                this.setState(newState)
-              }}
+              onChange={this.onSearchChange}
               endDecorator={
                 search !== '' ? (
                   <Button
-                    onClick={() => {
-                      this.setState({ search: '', filteredTasks: tasks })
-                    }}
+                    onClick={this.onClearSearch}
                   >
                     <CancelRounded />
                   </Button>
@@ -157,9 +168,7 @@ class TasksOverviewInner extends React.Component<
             gap={2}
           >
             <Button
-              onClick={() => {
-                this.props.navigate(`/tasks/create`)
-              }}
+              onClick={goToTaskCreate}
             >
               New Task
             </Button>
@@ -184,9 +193,7 @@ class TasksOverviewInner extends React.Component<
                   </Chip>
                 </td>
                 <td
-                  onClick={() => {
-                    this.props.navigate(`/tasks/${task.id}/edit`)
-                  }}
+                  onClick={() => goToTaskEdit(task.id)}
                 >
                   {task.title || '--'}
                 </td>
@@ -220,12 +227,7 @@ class TasksOverviewInner extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => {
-                        this.setState({
-                          taskId: task.id,
-                        })
-                        this.dateModalRef.current?.open()
-                      }}
+                      onClick={() => this.onSetDueDate(task)}
                       aria-setsize={2}
                     >
                       <History />
@@ -233,9 +235,7 @@ class TasksOverviewInner extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => {
-                        this.props.navigate(`/tasks/${task.id}/edit`)
-                      }}
+                      onClick={() => goToTaskEdit(task.id)}
                     >
                       <Edit />
                     </IconButton>
@@ -256,5 +256,3 @@ class TasksOverviewInner extends React.Component<
     )
   }
 }
-
-export const TasksOverview = withNavigation(TasksOverviewInner)

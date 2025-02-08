@@ -1,4 +1,5 @@
 import { App } from '@/App'
+import { getPathName } from '@/utils/navigation'
 import { ForgotPasswordView } from '@/views/Authorization/ForgotPasswordView'
 import { LoginView } from '@/views/Authorization/LoginView'
 import { SignupView } from '@/views/Authorization/Signup'
@@ -22,7 +23,7 @@ export class RouterContext extends React.Component {
         caseSensitive: true,
         end: false,
       },
-      document.location.pathname,
+      getPathName(),
     )
 
     if (!match) {

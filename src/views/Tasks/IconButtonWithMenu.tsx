@@ -60,9 +60,7 @@ export class IconButtonWithMenu extends React.Component<IconButtonWithMenuProps>
           {options?.map(item => (
             <MenuItem
               key={`${keyName}-${item.value}`}
-              onClick={() => {
-                onItemSelect(item)
-              }}
+              onClick={() => onItemSelect(item)}
             >
               {useChips ? (
                 <Chip

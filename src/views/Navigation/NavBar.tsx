@@ -1,5 +1,4 @@
 import { getNextThemeMode } from '@/constants/theme'
-import { withNavigation, withLocation } from '@/contexts/hooks'
 import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
 import {
   MenuRounded,
@@ -19,20 +18,17 @@ import {
   ListItemContent,
 } from '@mui/joy'
 import React, { version } from 'react'
-import { Location } from 'react-router-dom'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
+import { getPathName, goToLogin, goToMyTasks } from '@/utils/navigation'
 
-type NavBarProps = {
-  location: Location
-  navigate: (path: string) => void
-}
+type NavBarProps = object
 
 interface NavBarState {
   drawerOpen: boolean
 }
 
-export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
+export class NavBar extends React.Component<NavBarProps, NavBarState> {
   constructor(props: NavBarProps) {
     super(props)
     this.state = {
@@ -48,10 +44,16 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
     this.setState({ drawerOpen: false })
   }
 
+  private logout = () => {
+    localStorage.removeItem('ca_token')
+    localStorage.removeItem('ca_expiration')
+    goToLogin()
+  }
+
   render(): React.ReactNode {
     if (
       ['/signup', '/login', '/forgot-password'].includes(
-        this.props.location.pathname,
+        getPathName(),
       )
     ) {
       return null
@@ -78,9 +80,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             alignItems: 'center',
             gap: 2,
           }}
-          onClick={() => {
-            this.props.navigate('/my/tasks')
-          }}
+          onClick={goToMyTasks}
         >
           <img
             alt='DoneTick'
@@ -108,9 +108,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
             {({ themeMode, setThemeMode }: StorageContextState) => (
               <ThemeToggleButton
                 themeMode={themeMode}
-                onThemeModeToggle={() =>
-                  setThemeMode(getNextThemeMode(themeMode))
-                }
+                onThemeModeToggle={() => setThemeMode(getNextThemeMode(themeMode))}
                 sx={{
                   position: 'absolute',
                   right: 10,
@@ -168,11 +166,7 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
               onClick={this.openDrawer}
             >
               <ListItemButton
-                onClick={() => {
-                  localStorage.removeItem('ca_token')
-                  localStorage.removeItem('ca_expiration')
-                  window.location.href = '/login'
-                }}
+                onClick={this.logout}
                 sx={{
                   py: 1.2,
                 }}
@@ -183,7 +177,6 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
                 <ListItemContent>Logout</ListItemContent>
               </ListItemButton>
               <Typography
-                onClick={() => window.location.reload()}
                 level='body-xs'
                 sx={{
                   p: 1,
@@ -201,5 +194,3 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
     )
   }
 }
-
-export const NavBar = withNavigation(withLocation<NavBarProps>(NavBarInner))

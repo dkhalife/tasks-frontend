@@ -7,6 +7,7 @@ import React from 'react'
 import { ThemeMode } from './constants/theme'
 import { GetUserProfile } from './api/users'
 import { User } from './models/user'
+import { useRoot } from './utils/dom'
 
 type AppProps = object
 
@@ -31,7 +32,7 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   private applyTheme = (className: string) => {
-    document.getElementById('root')?.classList.add(className)
+    useRoot().classList.add(className)
   }
 
   private setUserProfile = (userProfile: User | null) => {

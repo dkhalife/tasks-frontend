@@ -1,5 +1,4 @@
 import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import { Label } from '@/models/label'
 import { FrequencyMetadata, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
@@ -31,12 +30,10 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
-import {
-  ConfirmationModalProps,
-  ConfirmationModal,
-} from '@/views/Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
+import { goToMyTasks } from '@/utils/navigation'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -44,10 +41,6 @@ const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
 interface TaskEditProps {
   taskId: string | null
-}
-
-type TaskEditInnerProps = TaskEditProps & {
-  navigate: (path: string) => void
 }
 
 interface NotificationMetadata {
@@ -77,7 +70,6 @@ interface TaskEditState {
   userLabels: Label[]
   task: Task | null
   name: string
-  confirmModelConfig: ConfirmationModalProps
 }
 
 type NotificationTriggerOption = {
@@ -86,10 +78,11 @@ type NotificationTriggerOption = {
   description: string
 }
 
-class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
+export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private labelModalRef = React.createRef<LabelModal>()
+  private confirmModelRef = React.createRef<ConfirmationModal>()
 
-  constructor(props: TaskEditInnerProps) {
+  constructor(props: TaskEditProps) {
     super(props)
     this.state = {
       isRolling: false,
@@ -113,13 +106,6 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
       userLabels: [],
       task: null,
       name: '',
-      confirmModelConfig: {
-        cancelText: '',
-        confirmText: '',
-        message: '',
-        onClose: () => {},
-        title: '',
-      },
     }
   }
 
@@ -237,7 +223,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
 
     try {
       await SaveFunction(task)
-      this.props.navigate(`/my/tasks`)
+      goToMyTasks()
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -250,7 +236,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
   private onTaskDelete = async (taskId: string) => {
     try {
       await DeleteTask(taskId)
-      this.props.navigate('/my/tasks')
+      goToMyTasks()
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -260,31 +246,8 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     }
   }
 
-  private handleDelete = (taskId: string) => {
-    this.setState({
-      confirmModelConfig: {
-        title: 'Delete Task',
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-        message: 'Are you sure you want to delete this task?',
-        onClose: isConfirmed => {
-          if (isConfirmed === true) {
-            this.onTaskDelete(taskId)
-          }
-
-          this.setState({
-            confirmModelConfig: {
-              title: '',
-              confirmText: '',
-              cancelText: '',
-              message: '',
-              onClose: () => {},
-            },
-          })
-        },
-      },
-    })
-    this.labelModalRef.current?.open()
+  private handleDelete = () => {
+    this.confirmModelRef.current?.open()
   }
 
   private NotificationTriggerOptions: NotificationTriggerOption[] = [
@@ -339,7 +302,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
       })
 
       setTimeout(() => {
-        this.props.navigate('/my/tasks')
+        goToMyTasks()
       }, 3000)
     }
   }
@@ -352,8 +315,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     if (taskId != null) {
       this.loadTask(taskId)
     } else {
-      // TODO: Use a more specific ref
-      document.querySelector('input')?.focus()
+      // TODO: focus input box
     }
   }
 
@@ -377,6 +339,71 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     }
   }
 
+  private onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ name: e.target.value })
+  }
+
+  private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      this.setState({
+        dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
+      })
+    } else {
+      this.setState({ dueDate: null })
+    }
+  }
+
+  private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ isNotificable: e.target.checked })
+  }
+
+  private onRescheduleFromDueDate = () => {
+    this.setState({ isRolling: false })
+  }
+
+  private onRescheduleFromCompletionDate = () => {
+    this.setState({ isRolling: true })
+  }
+
+  private onNotificationOptionChange = (item: NotificationTriggerOption) => {
+    const { notificationMetadata } = this.state
+    this.setState({
+      notificationMetadata: {
+        ...notificationMetadata,
+        [item.type]: !notificationMetadata[item.type],
+      },
+    })
+  }
+
+  private onLabelsChange = (e: ChangeEvent<{ newValue: string[] }>) => {
+    const { newValue } = e
+    const { userLabels } = this.state
+    this.setState({
+      labels: userLabels.filter(l => newValue.indexOf(l.name) > -1),
+    })
+  }
+
+  private onAddNewLabel = () => {
+    this.labelModalRef.current?.open()
+  }
+  private onDeleteConfirmed = (isConfirmed: boolean) => {
+    if (this.props.taskId === null) {
+      console.error('Task ID is null')
+      return
+    }
+
+    if (isConfirmed === true) {
+      this.onTaskDelete(this.props.taskId)
+    }
+  }
+
+  private onSnackbarClose = () => {
+    this.setState({
+      isSnackbarOpen: false,
+      snackbarMessage: null,
+    })
+  }
+
   render(): React.ReactNode {
     const { taskId } = this.props
     const {
@@ -396,7 +423,6 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
       isSnackbarOpen,
       snackbarMessage,
       snackbarColor,
-      confirmModelConfig,
     } = this.state
     return (
       <Container maxWidth='md'>
@@ -406,9 +432,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
             <Typography>What is this task about?</Typography>
             <Input
               value={name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                this.setState({ name: e.target.value })
-              }
+              onChange={this.onNameChange}
             />
             <FormHelperText>{errors.name}</FormHelperText>
           </FormControl>
@@ -445,15 +469,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
           {NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && (
             <FormControl sx={{ mt: 1 }}>
               <Checkbox
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.checked) {
-                    this.setState({
-                      dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
-                    })
-                  } else {
-                    this.setState({ dueDate: null })
-                  }
-                }}
+                onChange={this.onDueDateChange}
                 defaultChecked={dueDate !== null}
                 overlay
                 label='Give this task a due date'
@@ -492,7 +508,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
                 <Radio
                   overlay
                   checked={!isRolling}
-                  onClick={() => this.setState({ isRolling: false })}
+                  onClick={this.onRescheduleFromDueDate}
                   label='Reschedule from due date'
                 />
                 <FormHelperText>
@@ -504,7 +520,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
                 <Radio
                   overlay
                   checked={isRolling}
-                  onClick={() => this.setState({ isRolling: true })}
+                  onClick={this.onRescheduleFromCompletionDate}
                   label='Reschedule from completion date'
                 />
                 <FormHelperText>
@@ -523,9 +539,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
 
           <FormControl sx={{ mt: 1 }}>
             <Checkbox
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ isNotificable: e.target.checked })
-              }}
+              onChange={this.onNotificationsChange}
               defaultChecked={isNotificable}
               overlay
               label='Notify for this task'
@@ -555,14 +569,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
                 >
                   <Checkbox
                     overlay
-                    onClick={() => {
-                      this.setState({
-                        notificationMetadata: {
-                          ...notificationMetadata,
-                          [item.type]: !notificationMetadata[item.type],
-                        },
-                      })
-                    }}
+                    onClick={() => this.onNotificationOptionChange(item)}
                     checked={
                       notificationMetadata
                         ? notificationMetadata[item.type]
@@ -584,11 +591,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
           </Typography>
           <Select
             multiple
-            onChange={(_: any, newValue: any) => {
-              this.setState({
-                labels: userLabels.filter(l => newValue.indexOf(l.name) > -1),
-              })
-            }}
+            onChange={this.onLabelsChange}
             value={labels.map(l => l.name)}
             renderValue={() => (
               <Box sx={{ display: 'flex', gap: '0.25rem' }}>
@@ -640,9 +643,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
               ))}
             <MenuItem
               key={'addNewLabel'}
-              onClick={() => {
-                this.labelModalRef.current?.open()
-              }}
+              onClick={this.onAddNewLabel}
             >
               <Add />
               Add New Label
@@ -650,7 +651,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
           </Select>
         </Box>
 
-        {taskId !== null && task && (
+        { task && (
           <Box
             sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
           >
@@ -669,7 +670,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
                     Updated at {moment(task.updatedAt).fromNow()}
                   </Typography>
                 </>
-              )) || <></>}
+              ))}
             </Sheet>
           </Box>
         )}
@@ -696,9 +697,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
             <Button
               color='danger'
               variant='solid'
-              onClick={() => {
-                this.handleDelete(taskId)
-              }}
+              onClick={this.handleDelete}
             >
               Delete
             </Button>
@@ -706,9 +705,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
           <Button
             color='neutral'
             variant='outlined'
-            onClick={() => {
-              window.history.back()
-            }}
+            onClick={window.history.back}
           >
             Cancel
           </Button>
@@ -720,7 +717,14 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
             {taskId != null ? 'Save' : 'Create'}
           </Button>
         </Sheet>
-        <ConfirmationModal {...confirmModelConfig} />
+        <ConfirmationModal
+          ref={this.confirmModelRef}
+          title='Delete Task'
+          confirmText='Delete'
+          cancelText='Cancel'
+          message='Are you sure you want to delete this task?'
+          onClose={this.onDeleteConfirmed}
+        />
         <LabelModal
           label={null}
           ref={this.labelModalRef}
@@ -728,12 +732,7 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
         />
         <Snackbar
           open={isSnackbarOpen}
-          onClose={() => {
-            this.setState({
-              isSnackbarOpen: false,
-              snackbarMessage: null,
-            })
-          }}
+          onClose={this.onSnackbarClose}
           color={snackbarColor}
           autoHideDuration={4000}
           sx={{ bottom: 70 }}
@@ -746,5 +745,3 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
     )
   }
 }
-
-export const TaskEdit = withNavigation<TaskEditProps>(TaskEditInner)

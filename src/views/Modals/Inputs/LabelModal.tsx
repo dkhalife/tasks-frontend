@@ -97,6 +97,16 @@ export class LabelModal extends React.Component<
     this.props.onClose()
   }
 
+  private onLabelNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ labelName: e.target.value })
+  }
+
+  private onColorChange = (e: ChangeEvent<{ value: any }>) => {
+    if (e.value) {
+      this.setState({ color: e.value })
+    } 
+  }
+
   public render(): React.ReactNode {
     const { label } = this.props
     const { labelName, color, error, isOpen } = this.state
@@ -125,9 +135,7 @@ export class LabelModal extends React.Component<
             <Input
               fullWidth
               value={labelName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                this.setState({ labelName: e.target.value })
-              }
+              onChange={this.onLabelNameChange}
             />
           </FormControl>
 
@@ -141,11 +149,7 @@ export class LabelModal extends React.Component<
             </Typography>
             <Select
               value={color}
-              onChange={(_: ChangeEvent<HTMLSelectElement>, value: string) => {
-                if (value) {
-                  this.setState({ color: value })
-                }
-              }}
+              onChange={this.onColorChange}
               required={true}
               defaultValue={color}
               renderValue={(selected: HTMLOptionElement | undefined) => (

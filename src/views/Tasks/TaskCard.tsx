@@ -4,7 +4,6 @@ import {
   UpdateDueDate,
   SkipTask,
 } from '@/api/tasks'
-import { withNavigation } from '@/contexts/hooks'
 import {
   Task,
   getDueDateChipColor,
@@ -43,6 +42,7 @@ import {
 } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/material'
+import { goToTaskEdit, goToTask, goToTaskHistory } from '@/utils/navigation'
 
 interface TaskCardProps {
   task: Task
@@ -50,7 +50,6 @@ interface TaskCardProps {
   onTaskRemove: (task: Task) => void
   sx: SxProps
   viewOnly: boolean
-  navigate: (path: string) => void
 }
 
 interface TaskCardState {
@@ -58,7 +57,7 @@ interface TaskCardState {
   confirmModelConfig: ConfirmationModalProps | null
 }
 
-class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
+export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   private menuRef = React.createRef<HTMLDivElement>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
@@ -70,10 +69,6 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
       isCompleteWithPastDateModalOpen: false,
       confirmModelConfig: null,
     }
-  }
-
-  private handleEdit = () => {
-    this.props.navigate(`/tasks/${this.props.task.id}/edit`)
   }
 
   private handleDeleteConfirm = async (isConfirmed: boolean) => {
@@ -153,6 +148,10 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
     onTaskUpdate(newTask, 'skipped')
   }
 
+  private onChangeDueDate = () => {
+    this.confirmationModalRef.current?.open()
+  }
+
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
     const { confirmModelConfig } = this.state
@@ -211,9 +210,7 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
           <Grid container>
             <Grid
               xs={9}
-              onClick={() => {
-                this.props.navigate(`/tasks/${task.id}`)
-              }}
+              onClick={() => goToTask(task.id)}
             >
               <Box
                 display='flex'
@@ -305,22 +302,18 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
                   </MenuItem>
                   <Divider />
                   <MenuItem
-                    onClick={() => {
-                      this.confirmationModalRef.current?.open()
-                    }}
+                    onClick={this.onChangeDueDate}
                   >
                     <MoreTime />
                     Change due date
                   </MenuItem>
-                  <MenuItem onClick={this.handleEdit}>
+                  <MenuItem onClick={() => goToTaskEdit(task.id)}>
                     <Edit />
                     Edit
                   </MenuItem>
                   <Divider />
                   <MenuItem
-                    onClick={() => {
-                      this.props.navigate(`/tasks/${task.id}/history`)
-                    }}
+                    onClick={() => goToTaskHistory(task.id)}
                   >
                     <ManageSearch />
                     History
@@ -362,5 +355,3 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
     )
   }
 }
-
-export const TaskCard = withNavigation(TaskCardInner)

@@ -75,6 +75,14 @@ export class PassowrdChangeModal extends React.Component<
     }
   }
 
+  private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ password: e.target.value })
+  }
+
+  private onConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ confirmPassword: e.target.value })
+  }
+
   public render(): React.ReactNode {
     const { password, confirmPassword, passwordError, isOpen } = this.state
 
@@ -105,9 +113,7 @@ export class PassowrdChangeModal extends React.Component<
               name='password'
               type='password'
               value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ password: e.target.value })
-              }}
+              onChange={this.onPasswordChange}
             />
           </FormControl>
 
@@ -118,9 +124,7 @@ export class PassowrdChangeModal extends React.Component<
               fullWidth
               type='password'
               value={confirmPassword}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                this.setState({ confirmPassword: e.target.value })
-              }}
+              onChange={this.onConfirmPasswordChange}
             />
 
             <FormHelperText>{passwordError}</FormHelperText>
