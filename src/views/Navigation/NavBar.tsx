@@ -1,7 +1,6 @@
 import { getNextThemeMode } from '@/constants/theme'
 import { withNavigation, withLocation } from '@/contexts/hooks'
 import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
-import { Logo } from '@/Logo'
 import {
   MenuRounded,
   HomeOutlined,
@@ -59,7 +58,13 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
     }
 
     return (
-      <nav className='flex gap-2 p-3'>
+      <nav
+        style={{
+          display: 'flex',
+          gap: 2,
+          padding: '3px',
+        }}
+      >
         <IconButton
           size='sm'
           variant='plain'
@@ -68,14 +73,18 @@ export class NavBarInner extends React.Component<NavBarProps, NavBarState> {
           <MenuRounded />
         </IconButton>
         <Box
-          className='flex items-center gap-2'
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
           onClick={() => {
             this.props.navigate('/my/tasks')
           }}
         >
           <img
             alt='DoneTick'
-            src={Logo}
+            src={'./logo'}
             width='34'
           />
           <Typography

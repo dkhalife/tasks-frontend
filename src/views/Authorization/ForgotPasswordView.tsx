@@ -97,7 +97,7 @@ class ForgotPasswordViewInner extends React.Component<
           >
             <Box>
               <img
-                src={LogoSVG}
+                src={'./logo.svg'}
                 alt='logo'
                 width='128px'
                 height='128px'
@@ -120,7 +120,12 @@ class ForgotPasswordViewInner extends React.Component<
                 error={emailError !== null}
                 onSubmit={this.handleSubmit}
               >
-                <div className='grid gap-6'>
+                <div
+                  style={{
+                    display: 'grid',
+                    gap: 6,
+                  }}
+                >
                   <Typography gutterBottom>
                     Enter your email, and we&lsquo;ll send you a link to get
                     into your account.
@@ -130,7 +135,6 @@ class ForgotPasswordViewInner extends React.Component<
                     type='email'
                     variant='soft'
                     fullWidth
-                    size='lg'
                     value={email}
                     onChange={this.handleEmailChange}
                     error={emailError !== null}

@@ -80,7 +80,12 @@ export class APITokenSettings extends React.Component<
 
     return (
       <div
-        className='grid gap-4 py-4'
+        style={{
+          display: 'grid',
+          gap: '4',
+          paddingTop: '4',
+          paddingBottom: '4',
+        }}
         id='apitokens'
       >
         <Typography level='h3'>Access Token</Typography>
@@ -92,7 +97,7 @@ export class APITokenSettings extends React.Component<
         {tokens.map((token: APIToken) => (
           <Card
             key={token.token}
-            className='p-4'
+            style={{ padding: '4px' }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>

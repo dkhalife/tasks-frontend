@@ -82,15 +82,15 @@ class TaskViewInner extends React.Component<TaskViewInnerProps, TaskViewState> {
     })
 
     // TODO: redundant
-    const data2 = await GetTaskDetailById(taskId)
+    const data2: any = await GetTaskDetailById(taskId)
     this.setState({
       task: data2.taskDetail,
     })
   }
 
   componentDidMount(): void {
-    GetTaskDetailById(this.props.taskId).then(data => {
-      const task = data.res
+    GetTaskDetailById(this.props.taskId).then((data: any) => {
+      const task: Task = data.taskDetail
 
       this.setState({
         task,

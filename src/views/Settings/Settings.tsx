@@ -22,7 +22,12 @@ export class Settings extends React.Component {
     return (
       <Container>
         <div
-          className='grid gap-4 py-4'
+          style={{
+            display: 'grid',
+            gap: '4',
+            paddingTop: '4',
+            paddingBottom: '4',
+          }}
           id='account'
         >
           <Typography level='h3'>Account Settings</Typography>
@@ -55,7 +60,14 @@ export class Settings extends React.Component {
         </div>
         <NotificationSetting />
         <APITokenSettings />
-        <div className='grid gap-4 py-4'>
+        <div
+          style={{
+            display: 'grid',
+            gap: '4',
+            paddingTop: '4',
+            paddingBottom: '4',
+          }}
+        >
           <Typography level='h3'>Theme preferences</Typography>
           <Divider />
           <Typography level='body-md'>

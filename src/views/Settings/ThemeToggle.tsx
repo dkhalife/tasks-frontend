@@ -33,7 +33,13 @@ export class ThemeToggle extends React.Component<ThemeToggleProps> {
         >
           Theme mode
         </FormLabel>
-        <div className='flex items-center gap-4'>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4',
+          }}
+        >
           <ToggleButtonGroup
             id={ELEMENTID}
             variant='outlined'

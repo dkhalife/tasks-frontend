@@ -64,7 +64,12 @@ export class NotificationSetting extends React.Component<
 
     return (
       <div
-        className='grid gap-4 py-4'
+        style={{
+          display: 'grid',
+          gap: '4',
+          paddingTop: '4',
+          paddingBottom: '4',
+        }}
         id='notifications'
       >
         <Typography level='h3'>Custom Notification</Typography>

@@ -153,11 +153,12 @@ export class LabelModal extends React.Component<
                 <Typography
                   startDecorator={
                     <span
-                      className='size-4'
                       style={{
                         borderRadius: 10,
                         display: 'inline-block',
                         background: selected?.value,
+                        width: '20px',
+                        height: '20px',
                       }}
                     />
                   }
@@ -171,7 +172,13 @@ export class LabelModal extends React.Component<
                   key={val.value}
                   value={val.value}
                 >
-                  <Box className='flex items-center justify-between'>
+                  <Box
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Box
                       width={20}
                       height={20}
