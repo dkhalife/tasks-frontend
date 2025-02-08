@@ -1,16 +1,17 @@
 import { NavBar } from './views/Navigation/NavBar'
 import { useColorScheme } from '@mui/joy'
 import { Outlet } from 'react-router-dom'
-import { UserContext, UserProfile } from './contexts/UserContext'
+import { UserContext } from './contexts/UserContext'
 import { isTokenValid } from './utils/TokenManager'
 import React from 'react'
 import { ThemeMode } from './constants/theme'
 import { GetUserProfile } from './api/users'
+import { User } from './models/user'
 
 type AppProps = object
 
 interface AppState {
-  userProfile: UserProfile | null
+  userProfile: User | null
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -22,11 +23,10 @@ export class App extends React.Component<AppProps, AppState> {
     }
   }
 
-  private loadUserProfile = () => {
-    GetUserProfile().then(data => {
-      this.setState({
-        userProfile: data.res,
-      })
+  private loadUserProfile = async () => {
+    const data = await GetUserProfile()
+    this.setState({
+      userProfile: data.user,
     })
   }
 
@@ -34,7 +34,7 @@ export class App extends React.Component<AppProps, AppState> {
     document.getElementById('root')?.classList.add(className)
   }
 
-  private setUserProfile = (userProfile: UserProfile | null) => {
+  private setUserProfile = (userProfile: User | null) => {
     this.setState({ userProfile })
   }
 

@@ -40,7 +40,7 @@ class TasksOverviewInner extends React.Component<
   componentDidMount(): void {
     GetTasks()
       .then(data => {
-        this.setState({ tasks: data.res, filteredTasks: data.res })
+        this.setState({ tasks: data.tasks, filteredTasks: data.tasks })
       })
 
     const user = JSON.parse(localStorage.getItem('user') as string) as User
@@ -49,7 +49,7 @@ class TasksOverviewInner extends React.Component<
     }
   }
 
-  private onCloseDateModal = (date: string | null) => {
+  private onCloseDateModal = async (date: string | null) => {
     if (!date) {
       return
     }
@@ -59,16 +59,15 @@ class TasksOverviewInner extends React.Component<
       return
     }
 
-    MarkTaskComplete(taskId, new Date(date)).then(data => {
-      const newTask = data.res
-      const newTasks = [...tasks]
-      const index = newTasks.findIndex(c => c.id === newTask.id)
-      newTasks[index] = newTask
+    const data = await MarkTaskComplete(taskId, new Date(date))
+    const newTask = data.task
+    const newTasks = [...tasks]
+    const index = newTasks.findIndex(c => c.id === newTask.id)
+    newTasks[index] = newTask
 
-      this.setState({
-        tasks: newTasks,
-        filteredTasks: newTasks,
-      })
+    this.setState({
+      tasks: newTasks,
+      filteredTasks: newTasks,
     })
   }
 
@@ -188,7 +187,7 @@ class TasksOverviewInner extends React.Component<
                       size='sm'
                       onClick={() => {
                         MarkTaskComplete(task.id, null).then(data => {
-                          const newTask = data.res
+                          const newTask = data.task
                           const newTasks = [...tasks]
                           const index = newTasks.findIndex(
                             c => c.id === task.id,

@@ -59,13 +59,13 @@ class TaskViewInner extends React.Component<
 
     const data = await MarkTaskComplete(taskId, null)
     this.setState({
-      task: data.res,
+      task: data.task,
     })
 
     // TODO: redundant
     const data2 = await GetTaskDetailById(taskId)
     this.setState({
-      task: data2.res,
+      task: data2.taskDetail,
     })
   }
 

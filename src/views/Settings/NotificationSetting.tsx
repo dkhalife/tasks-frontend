@@ -31,27 +31,21 @@ export class NotificationSetting extends React.Component<
   componentDidMount(): void {
     GetUserProfile().then(data => {
       this.setState({
-        userProfile: data.res,
+        userProfile: data.user,
       })
     })
 
     // TODO: notification settings are not loaded
   }
 
-  private handleSave = () => {
+  private handleSave = async () => {
     this.setState({ error: '' })
 
     const { userProfile, notificationTarget } = this.state
-    UpdateNotificationTarget({
-      type: Number(notificationTarget),
-    }).then(resp => {
-      if (resp.status != 200) {
-        this.setState({
-          error: `Error while updating notification target: ${resp.statusText}`,
-        })
-        return
-      }
-
+    try {
+      await UpdateNotificationTarget({
+        type: Number(notificationTarget),
+      })
       this.setState({
         userProfile: {
           ...userProfile,
@@ -60,7 +54,11 @@ export class NotificationSetting extends React.Component<
           },
         },
       })
-    })
+    } catch (error) {
+      this.setState({
+        error: `Error while updating notification target: ${(error as Error).message}`,
+      })
+    }
   }
 
   render(): React.ReactNode {

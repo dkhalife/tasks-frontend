@@ -1,10 +1,9 @@
+import { User } from '@/models/user'
 import { createContext } from 'react'
 
-export type UserProfile = unknown
-
 interface UserProfileState {
-  userProfile: UserProfile | null
-  setUserProfile: (userProfile: UserProfile | null) => void
+  userProfile: User | null
+  setUserProfile: (userProfile: User | null) => void
 }
 
 export const UserContext = createContext<UserProfileState>({

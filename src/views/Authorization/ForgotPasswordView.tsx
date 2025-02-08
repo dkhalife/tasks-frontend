@@ -1,4 +1,9 @@
-import React from "react"
+import { ResetPassword } from "@/api/auth"
+import { withNavigation } from "@/contexts/hooks"
+import { validateEmail } from "@/models/user"
+import { Sheet } from "@mui/joy"
+import { Container, Box, Typography, FormControl, Input, FormHelperText, Button, Snackbar } from "@mui/material"
+import React, { ChangeEvent } from "react"
 
 interface ForgotPasswordViewProps {
   navigate: (path: string) => void
@@ -36,7 +41,8 @@ class ForgotPasswordViewInner extends React.Component<
     }
 
     try {
-      this.setState({ resetStatusOk: await ResetPassword(this.state.email) })
+      await ResetPassword(this.state.email)
+      this.setState({ resetStatusOk: true })
     } catch {
       this.setState({ resetStatusOk: false })
     }

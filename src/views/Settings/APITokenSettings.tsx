@@ -30,22 +30,21 @@ export class APITokenSettings extends React.Component<
 
   componentDidMount(): void {
     GetLongLiveTokens().then(data => {
-      this.setState({ tokens: data.res })
+      this.setState({ tokens: data.tokens })
     })
   }
 
-  private handleSaveToken = (name: string | null) => {
+  private handleSaveToken = async (name: string | null) => {
     if (!name) {
       return
     }
 
-    CreateLongLiveToken(name).then((data) => {
-      const newTokens = [...this.state.tokens]
-      newTokens.push(data.res)
+    const data = await CreateLongLiveToken(name)
+    const newTokens = [...this.state.tokens]
+    newTokens.push(data.token)
 
-      this.setState({
-        tokens: newTokens,
-      })
+    this.setState({
+      tokens: newTokens,
     })
   }
 

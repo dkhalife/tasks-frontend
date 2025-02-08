@@ -1,19 +1,11 @@
 import { Label } from "@/models/label"
 import { Request } from "../utils/TokenManager"
 
-export const CreateLabel = (label: Omit<Label, 'id'>) => {
-  return Request(`/labels`, 'POST', label)
+type LabelsResponse = {
+  "labels": Label[]
 }
 
-export const GetLabels = async () => {
-  const response = await Request(`/labels`)
-  return response.json()
-}
-
-export const UpdateLabel = (label: Label) => {
-  return Request(`/labels`, 'PUT', label)
-}
-
-export const DeleteLabel = (id: string) => {
-  return Request(`/labels/${id}`, 'DELETE')
-}
+export const CreateLabel = async (label: Omit<Label, 'id'>) => await Request<void>(`/labels`, 'POST', label)
+export const GetLabels = async () => await Request<LabelsResponse>(`/labels`)
+export const UpdateLabel = async (label: Label) => await Request<void>(`/labels`, 'PUT', label)
+export const DeleteLabel = async (id: string) => await Request<void>(`/labels/${id}`, 'DELETE')

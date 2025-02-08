@@ -1,4 +1,4 @@
-import { login, signUp } from "@/api/auth"
+import { Login, SignUp } from "@/api/auth"
 import { withNavigation } from "@/contexts/hooks"
 import { Logo } from "@/Logo"
 import { validateEmail, validatePassword } from "@/models/user"
@@ -42,17 +42,16 @@ class SignupViewInner extends React.Component<
     }
   }
 
-  private handleLogin = (username: string, password: string) => {
-    login(username, password).then(res => {
-      localStorage.setItem('ca_token', res.token)
-      localStorage.setItem('ca_expiration', res.expire)
+  private handleLogin = async (username: string, password: string) => {
+    try {
+      const data = await Login(username, password)
+      localStorage.setItem('ca_token', data.token)
+      localStorage.setItem('ca_expiration', data.expiration)
       this.props.navigate('/my/tasks')
-    })
-    .catch(() => {
+    } catch {
       this.setState({ error: 'Login failed' })
-    })
+    }
   }
-
   private handleSignUpValidation = () => {
     // Reset errors before validation
     const newState: SignupViewState = {
@@ -116,11 +115,12 @@ class SignupViewInner extends React.Component<
     }
 
     const { username, password, displayName, email } = this.state
-    signUp(username, password, displayName, email).then(() => {
+    try {
+      await SignUp(username, password, displayName, email)
       this.handleLogin(username, password)
-    }).catch((error: Error) => {
-      this.setState({ error: error.message })
-    })
+    } catch(error) {
+      this.setState({ error: (error as Error).message })
+    }
   }
 
   render(): React.ReactNode {

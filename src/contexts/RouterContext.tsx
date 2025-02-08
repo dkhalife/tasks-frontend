@@ -5,6 +5,7 @@ import { SignupView } from '@/views/Authorization/Signup'
 import { UpdatePasswordView } from '@/views/Authorization/UpdatePasswordView'
 import { TaskHistory } from '@/views/History/TaskHistory'
 import { LabelView } from '@/views/Labels/LabelView'
+import { NotFound } from '@/views/NotFound'
 import { MyTasks } from '@/views/Tasks/MyTasks'
 import { TaskEdit } from '@/views/Tasks/TaskEdit'
 import { TasksOverview } from '@/views/Tasks/TasksOverview'
@@ -46,7 +47,7 @@ export class RouterContext extends React.Component {
           <Route
             path='/'
             element={<App />}
-            errorElement={<Error />}
+            errorElement={<NotFound />}
           >
             <Route
               path='/'

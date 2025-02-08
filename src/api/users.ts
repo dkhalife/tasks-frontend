@@ -1,49 +1,30 @@
+import { APIToken } from "@/models/token"
 import { Request } from "../utils/TokenManager"
+import { User } from "@/models/user"
 
-export const UpdatePassword = async (newPassword: string): Promise<void> => {
-  const response = await Request(`/users/change_password`, 'PUT', {
-    password: newPassword,
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to update password')
-  }
+type SingleTokenResponse = {
+  token: APIToken
 }
 
-export const GetUserProfile = async () => {
-  const response = await Request(`/users/profile`)
-  if (!response.ok) {
-    throw new Error('Failed to get user profile: ' + response.statusText)
-  }
-
-  return response.json()
+type TokensResponse = {
+  tokens: APIToken[]
 }
 
-export const UpdateNotificationTarget = (notificationTarget: any) => {
-  return Request(`/users/targets`, 'PUT', notificationTarget)
+type UserResponse = {
+  user: User
 }
 
-export const CreateLongLiveToken = async (name: string): Promise<any> => {
-  const response = await Request(`/users/tokens`, 'POST', {
-    name,
-  })
+export const UpdatePassword = async (newPassword: string) => await Request<void>(`/users/change_password`, 'PUT', {
+  password: newPassword,
+})
 
-  if (!response.ok) {
-    throw new Error('Failed to create token')
-  }
+export const GetUserProfile = async () => await Request<UserResponse>(`/users/profile`)
 
-  return response.json();
-}
+export const UpdateNotificationTarget = async (notificationTarget: any) => await Request<void>(`/users/targets`, 'PUT', notificationTarget)
+export const CreateLongLiveToken = async (name: string) => await Request<SingleTokenResponse>(`/users/tokens`, 'POST', {
+  name,
+})
 
-export const DeleteLongLiveToken = async (id: string): Promise<void> => {
-  const response = await Request(`/users/tokens/${id}`, 'DELETE')
+export const DeleteLongLiveToken = async (id: string) => await Request<void>(`/users/tokens/${id}`, 'DELETE')
 
-  if (!response.ok) {
-    throw new Error('Failed to delete token')
-  }
-}
-
-export const GetLongLiveTokens = async () => {
-  const response = await Request(`/users/tokens`)
-  return response.json()
-}
+export const GetLongLiveTokens = async () => await Request<TokensResponse>(`/users/tokens`)
