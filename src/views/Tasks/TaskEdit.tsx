@@ -316,22 +316,22 @@ class TaskEditInner extends React.Component<TaskEditInnerProps, TaskEditState> {
       GetTaskByID(taskId)
         .then(data => {
           // TODO: There is so much redundancy here
+          const task: any = data.task
+
           this.setState({
-            task: data.res,
-            name: data.res.name ? data.res.name : '',
-            frequencyType: data.res.frequencyType
-              ? data.res.frequencyType
-              : 'once',
-            frequencyMetadata: JSON.parse(data.res.frequencyMetadata),
-            frequency: data.res.frequency,
-            notificationMetadata: JSON.parse(data.res.notificationMetadata),
-            labels: data.res.labels,
-            isRolling: data.res.isRolling,
-            dueDate: data.res.nextDueDate
-              ? moment(data.res.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
+            task: task,
+            name: task.name ? task.name : '',
+            frequencyType: task.frequencyType ? task.frequencyType : 'once',
+            frequencyMetadata: JSON.parse(task.frequencyMetadata),
+            frequency: task.frequency,
+            notificationMetadata: JSON.parse(task.notificationMetadata),
+            labels: task.labels,
+            isRolling: task.isRolling,
+            dueDate: task.nextDueDate
+              ? moment(task.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
               : null,
-            updatedBy: data.res.updatedBy,
-            isNotificable: data.res.notification,
+            updatedBy: task.updatedBy,
+            isNotificable: task.notification,
           })
         })
         .catch(() => {

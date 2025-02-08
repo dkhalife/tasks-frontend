@@ -10,5 +10,5 @@
   "tabWidth": 2,
   "trailingComma": "all",
   "singleAttributePerLine": true,
-  "plugins": ["prettier-plugin-react", "prettier-plugin-tailwindcss"]
+  "plugins": ["prettier-plugin-react"]
 }

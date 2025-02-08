@@ -5,7 +5,7 @@ import {
   LightModeOutlined,
 } from '@mui/icons-material'
 import { FormControl, IconButton } from '@mui/joy'
-import { SxProps } from '@mui/joy'
+import { SxProps } from '@mui/material'
 import React from 'react'
 
 interface ThemeToggleButtonProps {

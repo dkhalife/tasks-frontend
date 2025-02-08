@@ -72,7 +72,7 @@ export class App extends React.Component<AppProps, AppState> {
     const { setUserProfile } = this
 
     return (
-      <div className='min-h-screen'>
+      <div style={{ minHeight: '100vh' }}>
         <UserContext.Provider value={{ userProfile, setUserProfile }}>
           <NavBar />
           <Outlet />

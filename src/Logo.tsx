@@ -1,4 +1,3 @@
-import LogoSVG from './assets/logo.svg'
 import React from 'react'
 
 export class Logo extends React.Component {
@@ -6,7 +5,7 @@ export class Logo extends React.Component {
     return (
       <div>
         <img
-          src={LogoSVG}
+          src={'./logo.svg'}
           alt='logo'
           width='128px'
           height='128px'

@@ -109,11 +109,24 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
     return (
       <Container maxWidth='md'>
-        <div className='flex flex-col gap-2'>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2',
+          }}
+        >
           {userLabels.map(label => (
             <div
               key={label.name}
-              className='grid w-full grid-cols-[1fr,auto,auto] rounded-lg border border-zinc-200/80 p-4 shadow-sm dark:bg-zinc-900'
+              style={{
+                border: '1px',
+                boxShadow: '2px',
+                display: 'grid',
+                width: '100%',
+                padding: '4px',
+                borderRadius: '8px',
+              }}
             >
               <Chip
                 variant='outlined'
@@ -128,7 +141,12 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
                 {label.name}
               </Chip>
 
-              <div className='flex gap-2'>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 2,
+                }}
+              >
                 <Button
                   size='sm'
                   variant='soft'

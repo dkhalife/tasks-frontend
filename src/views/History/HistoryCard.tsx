@@ -20,7 +20,10 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
     return (
       <>
         <ListItem
-          sx={{ gap: 1.5, alignItems: 'flex-start' }}
+          sx={{
+            gap: 1.5,
+            alignItems: 'flex-start',
+          }}
           onClick={onClick}
         >
           <ListItemContent sx={{ my: 0 }}>

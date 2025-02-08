@@ -1,4 +1,4 @@
-import { COLORS } from '@/constants/theme'
+import { COLORS } from '@/utils/Colors'
 import { CssBaseline } from '@mui/joy'
 import { CssVarsProvider, extendTheme } from '@mui/joy/styles'
 import React from 'react'

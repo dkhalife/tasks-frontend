@@ -37,10 +37,20 @@ export class Loading extends React.Component<LoadingProps, LoadingState> {
     const { subMessage } = this.state
 
     return (
-      <Container className='flex h-full items-center justify-center'>
+      <Container
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+        }}
+      >
         <Box
-          className='flex flex-col items-center justify-center'
           sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             minHeight: '80vh',
           }}
         >
@@ -51,8 +61,10 @@ export class Loading extends React.Component<LoadingProps, LoadingState> {
             <Logo />
           </CircularProgress>
           <Box
-            className='flex items-center gap-2'
             sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
               fontWeight: 700,
               fontSize: 24,
               mt: 2,

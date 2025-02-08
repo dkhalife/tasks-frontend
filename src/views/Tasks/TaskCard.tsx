@@ -36,13 +36,13 @@ import {
   MenuItem,
   Divider,
 } from '@mui/joy'
-import { SxProps } from '@mui/joy'
 import React from 'react'
 import {
   ConfirmationModalProps,
   ConfirmationModal,
 } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
+import { SxProps } from '@mui/material'
 
 interface TaskCardProps {
   task: Task
@@ -278,7 +278,7 @@ class TaskCardInner extends React.Component<TaskCardProps, TaskCardState> {
                     zIndex: 1,
                   }}
                 >
-                  <div className='relative grid place-items-center'>
+                  <div style={{ position: 'relative', alignItems: 'center' }}>
                     <Check />
                   </div>
                 </IconButton>
