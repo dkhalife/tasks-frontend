@@ -1,7 +1,6 @@
 import { GetTasks, MarkTaskComplete } from '@/api/tasks'
 import { withNavigation } from '@/contexts/hooks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
-import { User } from '@/models/user'
 import {
   CancelRounded,
   SearchRounded,
@@ -34,7 +33,6 @@ interface TasksOverviewState {
   filteredTasks: Task[]
   search: string
   taskId: string | null
-  activeUserId: number | null
 }
 
 class TasksOverviewInner extends React.Component<
@@ -50,19 +48,16 @@ class TasksOverviewInner extends React.Component<
       filteredTasks: [],
       search: '',
       taskId: null,
-      activeUserId: null,
     }
   }
 
-  componentDidMount(): void {
-    GetTasks().then(data => {
-      this.setState({ tasks: data.tasks, filteredTasks: data.tasks })
-    })
+  private loadTasks = async () => {
+    const data = await GetTasks()
+    this.setState({ tasks: data.tasks, filteredTasks: data.tasks })
+  }
 
-    const user = JSON.parse(localStorage.getItem('user') as string) as User
-    if (user != null && user.id > 0) {
-      this.setState({ activeUserId: user.id })
-    }
+  componentDidMount(): void {
+    this.loadTasks()
   }
 
   private onCloseDateModal = async (date: string | null) => {
@@ -79,6 +74,23 @@ class TasksOverviewInner extends React.Component<
     const newTask = data.task
     const newTasks = [...tasks]
     const index = newTasks.findIndex(c => c.id === newTask.id)
+    newTasks[index] = newTask
+
+    this.setState({
+      tasks: newTasks,
+      filteredTasks: newTasks,
+    })
+  }
+
+  private onCompleteTask = (task: Task) => async () => {
+    const data = await MarkTaskComplete(task.id, null)
+    const newTask = data.task
+
+    const { tasks } = this.state
+    const newTasks = [...tasks]
+    const index = newTasks.findIndex(
+      c => c.id === task.id,
+    )
     newTasks[index] = newTask
 
     this.setState({
@@ -200,21 +212,7 @@ class TasksOverviewInner extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => {
-                        MarkTaskComplete(task.id, null).then(data => {
-                          const newTask = data.task
-                          const newTasks = [...tasks]
-                          const index = newTasks.findIndex(
-                            c => c.id === task.id,
-                          )
-                          newTasks[index] = newTask
-
-                          this.setState({
-                            tasks: newTasks,
-                            filteredTasks: newTasks,
-                          })
-                        })
-                      }}
+                      onClick={this.onCompleteTask(task)}
                       aria-setsize={2}
                     >
                       <CheckBox />

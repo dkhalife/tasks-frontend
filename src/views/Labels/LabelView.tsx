@@ -63,21 +63,23 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     this.setState({ userLabels: updatedLabels })
   }
 
+  private loadLabels = async() => {
+    try {
+      const data = await GetLabels()
+      this.setState({
+        userLabels: data.labels,
+        isLabelsLoading: false,
+      })
+    } catch {
+      this.setState({
+        isLabelsLoading: false,
+        isError: true,
+      })
+    }
+  }
+
   componentDidMount(): void {
-    GetLabels().then(
-      data => {
-        this.setState({
-          userLabels: data.labels,
-          isLabelsLoading: false,
-        })
-      },
-      () => {
-        this.setState({
-          isLabelsLoading: false,
-          isError: true,
-        })
-      },
-    )
+    this.loadLabels()
   }
 
   render(): React.ReactNode {
