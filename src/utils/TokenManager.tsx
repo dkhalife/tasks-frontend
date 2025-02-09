@@ -1,12 +1,43 @@
 import { RefreshToken } from '@/api/auth'
 import Cookies from 'js-cookie'
 
-const API_URL = import.meta.env.REACT_APP_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 type FailureResponse = {
   error: string
+}
+
+let isRefreshingAccessToken = false
+const isTokenNearExpiration = () => {
+  const now = new Date()
+  const expiration = localStorage.getItem('ca_expiration') || ''
+  const expire = new Date(expiration)
+  return now.getTime() + 24 * 60 * 60 * 1000 > expire.getTime()
+}
+
+export const isTokenValid = () => {
+  if (localStorage.getItem('ca_token')) {
+    const now = new Date()
+    const expiration = localStorage.getItem('ca_expiration') || ''
+    const expire = new Date(expiration)
+    if (now < expire) {
+      return true
+    } else {
+      localStorage.removeItem('ca_token')
+      localStorage.removeItem('ca_expiration')
+    }
+    return false
+  }
+}
+
+export const refreshAccessToken = async () => {
+  isRefreshingAccessToken = true
+  const data = await RefreshToken()
+  localStorage.setItem('ca_token', data.token)
+  localStorage.setItem('ca_expiration', data.expiration)
+  isRefreshingAccessToken = false
 }
 
 export async function Request<SuccessfulResponse>(
@@ -15,7 +46,11 @@ export async function Request<SuccessfulResponse>(
   body: unknown = {},
   requiresAuth: boolean = true,
 ): Promise<SuccessfulResponse> {
-  if (!isTokenValid()) {
+  if (isTokenValid()) {
+    if (!isRefreshingAccessToken && isTokenNearExpiration()) {
+      await refreshAccessToken()
+    }
+  } else if (requiresAuth) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'
     // TODO: Stop execution when better type safety is in place
@@ -48,29 +83,4 @@ export async function Request<SuccessfulResponse>(
   }
 
   return data as SuccessfulResponse
-}
-
-export const isTokenValid = () => {
-  if (localStorage.getItem('ca_token')) {
-    const now = new Date()
-    const expiration = localStorage.getItem('ca_expiration') || ''
-    const expire = new Date(expiration)
-    if (now < expire) {
-      if (now.getTime() + 24 * 60 * 60 * 1000 > expire.getTime()) {
-        refreshAccessToken()
-      }
-
-      return true
-    } else {
-      localStorage.removeItem('ca_token')
-      localStorage.removeItem('ca_expiration')
-    }
-    return false
-  }
-}
-
-export const refreshAccessToken = async () => {
-  const data = await RefreshToken()
-  localStorage.setItem('ca_token', data.token)
-  localStorage.setItem('ca_expiration', data.expiration)
 }

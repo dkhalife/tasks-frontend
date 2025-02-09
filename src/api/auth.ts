@@ -6,7 +6,6 @@ type TokenResponse = {
 }
 
 export const SignUp = async (
-  username: string,
   password: string,
   displayName: string,
   email: string,
@@ -15,7 +14,6 @@ export const SignUp = async (
     '/auth/',
     'POST',
     {
-      username,
       password,
       displayName,
       email,
@@ -23,12 +21,12 @@ export const SignUp = async (
     false,
   )
 
-export const Login = async (username: string, password: string) =>
+export const Login = async (email: string, password: string) =>
   await Request<TokenResponse>(
     '/auth/login',
     'POST',
     {
-      username,
+      email,
       password,
     },
     false,

@@ -6,8 +6,6 @@ type SingleTaskResponse = {
   task: Task
 }
 
-type TaskDetailResponse = object
-
 type TasksResponse = {
   tasks: Task[]
 }
@@ -20,9 +18,6 @@ export const GetTasks = async () => await Request<TasksResponse>(`/tasks/`)
 
 export const GetTaskByID = async (id: string) =>
   await Request<SingleTaskResponse>(`/tasks/${id}`)
-
-export const GetTaskDetailById = async (id: string) =>
-  await Request<TaskDetailResponse>(`/tasks/${id}/details`)
 
 export const MarkTaskComplete = async (
   id: string,

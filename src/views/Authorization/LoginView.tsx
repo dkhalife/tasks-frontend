@@ -1,4 +1,3 @@
-import { Login } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { Sheet } from '@mui/joy'
 import {
@@ -11,13 +10,13 @@ import {
   Snackbar,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
-import Cookies from 'js-cookie'
-import { goTo, goToMyTasks, goToRegister, goToResetPassword } from '@/utils/navigation'
+import { goToRegister, goToResetPassword } from '@/utils/navigation'
+import { doLogin } from '@/utils/auth'
 
 type LoginViewProps = object
 
 interface LoginViewState {
-  username: string
+  email: string
   password: string
   error: string | null
 }
@@ -27,7 +26,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
     super(props)
 
     this.state = {
-      username: '',
+      email: '',
       password: '',
       error: null,
     }
@@ -36,27 +35,16 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
   private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
 
-    const { username, password } = this.state
-
     try {
-      const data = await Login(username, password)
-      localStorage.setItem('ca_token', data.token)
-      localStorage.setItem('ca_expiration', data.expiration)
-
-      const redirectUrl = Cookies.get('ca_redirect')
-      if (redirectUrl) {
-        Cookies.remove('ca_redirect')
-        goTo(redirectUrl)
-      } else {
-        goToMyTasks()
-      }
+      const { email, password } = this.state
+      doLogin(email, password)
     } catch (error) {
       this.setState({ error: (error as Error).message })
     }
   }
 
   private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ username: e.target.value })
+    this.setState({ email: e.target.value })
   }
 
   private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +102,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
               alignSelf={'start'}
               mt={4}
             >
-              Username
+              Email
             </Typography>
             <Input
               required

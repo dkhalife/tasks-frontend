@@ -15,6 +15,7 @@ import React from 'react'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import { colorOptionFromColor } from '@/utils/labels'
 
 type LabelViewProps = object
 
@@ -78,12 +79,29 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     }
   }
 
+  private onLabelModalClose = (newLabel: Label | null) => {
+    if (!newLabel) {
+      // No creation or update was made
+      return
+    }
+
+    const { userLabels, currentLabel } = this.state
+    if (!currentLabel) {
+      this.setState({ userLabels: [...userLabels, newLabel] })
+      return
+    }
+
+    const updatedLabels = userLabels.map(label => label.id === currentLabel.id ? newLabel : label)
+    this.setState({ userLabels: updatedLabels })
+  }
+
   componentDidMount(): void {
     this.loadLabels()
   }
 
   render(): React.ReactNode {
     const { isLabelsLoading, userLabels, currentLabel, isError } = this.state
+    const currentColor = currentLabel ? colorOptionFromColor(currentLabel.color) : undefined
 
     if (isLabelsLoading) {
       return (
@@ -182,8 +200,10 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
         <LabelModal
           ref={this.modalRef}
-          onClose={() => console.error('missing impl')}
-          label={currentLabel}
+          onClose={this.onLabelModalClose}
+          id={currentLabel?.id}
+          name={currentLabel?.name}
+          color={currentColor}
         />
 
         <Box
