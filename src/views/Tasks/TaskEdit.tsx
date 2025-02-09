@@ -111,8 +111,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private HandleValidateTask = () => {
-    return true
-    const { title: name, frequencyType, frequency, frequencyMetadata, dueDate } =
+    const { title, frequencyType, frequency, frequencyMetadata, dueDate } =
       this.state
 
     // TODO: This should no longer be required once the redundancy is removed
@@ -122,8 +121,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     const errors: Errors = {}
 
-    if (name.trim() === '') {
-      errors.name = 'Name is required'
+    if (title.trim() === '') {
+      errors.title = 'Title is required'
     }
     if (frequencyType === 'interval' && frequency <= 0) {
       errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
@@ -285,7 +284,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
       this.setState({
         task: task,
-        title: task.name ? task.name : '',
+        title: task.title,
         frequencyType: task.frequencyType ? task.frequencyType : 'once',
         frequencyMetadata: JSON.parse(task.frequencyMetadata),
         frequency: task.frequency,
@@ -343,7 +342,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  private onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+  private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ title: e.target.value })
   }
 
@@ -414,7 +413,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   render(): React.ReactNode {
     const { taskId } = this.props
     const {
-      title: name,
+      title,
       frequency,
       frequencyType,
       frequencyMetadata,
@@ -434,14 +433,14 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     return (
       <Container maxWidth='md'>
         <Box>
-          <FormControl error={Boolean(errors.name)}>
+          <FormControl error={Boolean(errors.title)}>
             <Typography level='h4'>Description :</Typography>
             <Typography>What is this task about?</Typography>
             <Input
-              value={name}
-              onChange={this.onNameChange}
+              value={title}
+              onChange={this.onTitleChange}
             />
-            <FormHelperText>{errors.name}</FormHelperText>
+            <FormHelperText>{errors.title}</FormHelperText>
           </FormControl>
         </Box>
         {frequencyMetadata && (
@@ -733,7 +732,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           onClose={this.onDeleteConfirmed}
         />
         <LabelModal
-          label={null}
+          id={undefined}
+          name={undefined}
+          color={undefined}
           ref={this.labelModalRef}
           onClose={() => console.error('missing impl')}
         />

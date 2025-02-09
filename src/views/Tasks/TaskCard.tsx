@@ -28,7 +28,6 @@ import {
   Chip,
   Card,
   Grid,
-  Avatar,
   Typography,
   IconButton,
   Menu,
