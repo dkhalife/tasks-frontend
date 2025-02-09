@@ -1,4 +1,4 @@
-import { MarkTaskComplete, GetTaskDetailById, SkipTask } from '@/api/tasks'
+import { GetTaskByID, MarkTaskComplete, SkipTask } from '@/api/tasks'
 import { Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import {
@@ -56,36 +56,28 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
   }
 
   private handleTaskCompletion = async () => {
-    const { taskId } = this.props
-    if (!taskId) {
+    const { task } = this.state
+    if (!task) {
       return
     }
 
-    const data = await MarkTaskComplete(taskId, null)
+    const data = await MarkTaskComplete(task.id, null)
+    this.setState({
+      task: data.task,
+    })
+  }
+
+  private initTask = async () => {
+    const data = await GetTaskByID(this.props.taskId)
     this.setState({
       task: data.task,
     })
 
-    // TODO: redundant
-    const data2: any = await GetTaskDetailById(taskId)
-    this.setState({
-      task: data2.taskDetail,
-    })
-  }
-
-  private loadTaskDetail = async () => {
-    const data = await GetTaskDetailById(this.props.taskId)
-    const task: Task = (data as any).taskDetail
-
-    this.setState({
-      task,
-    })
-
-    this.generateInfoCards(task)
+    this.generateInfoCards(data.task)
   }
 
   componentDidMount(): void {
-    this.loadTaskDetail()
+    this.initTask()
   }
 
   // TODO: type hardening
