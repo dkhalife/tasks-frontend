@@ -70,7 +70,7 @@ interface TaskEditState {
   notificationMetadata: NotificationMetadata
   userLabels: Label[]
   task: Task | null
-  name: string
+  title: string
 }
 
 type NotificationTriggerOption = {
@@ -106,12 +106,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       },
       userLabels: [],
       task: null,
-      name: '',
+      title: '',
     }
   }
 
   private HandleValidateTask = () => {
-    const { name, frequencyType, frequency, frequencyMetadata, dueDate } =
+    return true
+    const { title: name, frequencyType, frequency, frequencyMetadata, dueDate } =
       this.state
 
     // TODO: This should no longer be required once the redundancy is removed
@@ -194,7 +195,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     const { taskId } = this.props
     const {
-      name,
+      title,
       frequencyType,
       frequency,
       frequencyMetadata,
@@ -208,12 +209,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     // TODO: type hardening
     const task: any = {
       id: taskId,
-      name: name,
+      title,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+      isRolling,
+      frequency,
       frequencyType: frequencyType,
-      frequency: Number(frequency),
-      frequencyMetadata: frequencyMetadata,
-      isRolling: isRolling,
+      frequencyMetadata: JSON.stringify(frequencyMetadata ),
       notification: isNotificable,
       labels: labels,
       notificationMetadata: notificationMetadata,
@@ -284,7 +285,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
       this.setState({
         task: task,
-        name: task.name ? task.name : '',
+        title: task.name ? task.name : '',
         frequencyType: task.frequencyType ? task.frequencyType : 'once',
         frequencyMetadata: JSON.parse(task.frequencyMetadata),
         frequency: task.frequency,
@@ -343,7 +344,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ name: e.target.value })
+    this.setState({ title: e.target.value })
   }
 
   private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -413,7 +414,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   render(): React.ReactNode {
     const { taskId } = this.props
     const {
-      name,
+      title: name,
       frequency,
       frequencyType,
       frequencyMetadata,
