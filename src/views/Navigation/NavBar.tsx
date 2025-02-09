@@ -82,11 +82,6 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
           }}
           onClick={goToMyTasks}
         >
-          <img
-            alt='DoneTick'
-            src={'./logo'}
-            width='34'
-          />
           <Typography
             level='title-lg'
             sx={{
