@@ -19,11 +19,9 @@ import React, { ChangeEvent } from 'react'
 type SignupViewProps = object
 
 interface SignupViewState {
-  username: string
   password: string
   displayName: string
   email: string
-  usernameError: string | null
   passwordError: string | null
   emailError: string | null
   displayNameError: string | null
@@ -38,11 +36,9 @@ export class SignupView extends React.Component<
     super(props)
 
     this.state = {
-      username: '',
       password: '',
       displayName: '',
       email: '',
-      usernameError: null,
       passwordError: null,
       emailError: null,
       displayNameError: null,
@@ -50,9 +46,9 @@ export class SignupView extends React.Component<
     }
   }
 
-  private handleLogin = async (username: string, password: string) => {
+  private handleLogin = async (email: string, password: string) => {
     try {
-      const data = await Login(username, password)
+      const data = await Login(email, password)
       localStorage.setItem('ca_token', data.token)
       localStorage.setItem('ca_expiration', data.expiration)
       goToMyTasks()
@@ -64,24 +60,15 @@ export class SignupView extends React.Component<
     // Reset errors before validation
     const newState: SignupViewState = {
       ...this.state,
-      usernameError: null,
       passwordError: null,
       displayNameError: null,
       emailError: null,
     }
 
-    const { username, password, displayName, email } = this.state
+    const { password, displayName, email } = this.state
 
     let isValid = true
 
-    if (!username.trim()) {
-      newState.usernameError = 'Username is required'
-      isValid = false
-    }
-    if (username.length < 4) {
-      newState.usernameError = 'Username must be at least 4 characters'
-      isValid = false
-    }
     if (!validateEmail(email)) {
       newState.emailError = 'Invalid email address'
       isValid = false
@@ -104,13 +91,6 @@ export class SignupView extends React.Component<
       isValid = false
     }
 
-    // username should only contain letters , numbers , dot and dash:
-    if (!/^[a-zA-Z0-9.-]+$/.test(username)) {
-      newState.usernameError =
-        'Username can only contain letters, numbers, dot and dash'
-      isValid = false
-    }
-
     this.setState(newState)
     return isValid
   }
@@ -122,20 +102,13 @@ export class SignupView extends React.Component<
       return
     }
 
-    const { username, password, displayName, email } = this.state
+    const { password, displayName, email } = this.state
     try {
-      await SignUp(username, password, displayName, email)
-      this.handleLogin(username, password)
+      await SignUp(password, displayName, email)
+      this.handleLogin(email, password)
     } catch (error) {
       this.setState({ error: (error as Error).message })
     }
-  }
-
-  private onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      usernameError: null,
-      username: e.target.value.trim(),
-    })
   }
 
   private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -161,11 +134,9 @@ export class SignupView extends React.Component<
 
   render(): React.ReactNode {
     const {
-      username,
       password,
       displayName,
       email,
-      usernameError,
       passwordError,
       displayNameError,
       emailError,
@@ -216,23 +187,6 @@ export class SignupView extends React.Component<
               </Typography>
               <Typography>Create an account to get started!</Typography>
             </Box>
-            <Typography
-              alignSelf={'start'}
-              mt={4}
-            >
-              Username
-            </Typography>
-            <Input
-              required
-              fullWidth
-              autoComplete='username'
-              autoFocus
-              value={username}
-              onChange={this.onUsernameChange}
-            />
-            <FormControl>
-              <FormHelperText>{usernameError}</FormHelperText>
-            </FormControl>
             <Typography alignSelf={'start'}>Email</Typography>
             <Input
               required

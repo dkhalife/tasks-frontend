@@ -17,7 +17,7 @@ import { goTo, goToMyTasks, goToRegister, goToResetPassword } from '@/utils/navi
 type LoginViewProps = object
 
 interface LoginViewState {
-  username: string
+  email: string
   password: string
   error: string | null
 }
@@ -27,7 +27,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
     super(props)
 
     this.state = {
-      username: '',
+      email: '',
       password: '',
       error: null,
     }
@@ -36,10 +36,10 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
   private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
 
-    const { username, password } = this.state
+    const { email, password } = this.state
 
     try {
-      const data = await Login(username, password)
+      const data = await Login(email, password)
       localStorage.setItem('ca_token', data.token)
       localStorage.setItem('ca_expiration', data.expiration)
 
@@ -56,7 +56,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
   }
 
   private onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ username: e.target.value })
+    this.setState({ email: e.target.value })
   }
 
   private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +114,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
               alignSelf={'start'}
               mt={4}
             >
-              Username
+              Email
             </Typography>
             <Input
               required
