@@ -1,8 +1,10 @@
+export interface NotificationType {
+  type: number
+}
+
 export interface User {
-  id: number
-  notification_target: {
-    type: number
-  }
+  display_name: string
+  notification_type: NotificationType
 }
 
 export const validateEmail = (email: string) => {

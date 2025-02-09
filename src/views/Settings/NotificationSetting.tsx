@@ -1,4 +1,4 @@
-import { UpdateNotificationTarget } from '@/api/users'
+import { UpdateNotificationType } from '@/api/users'
 import { Close } from '@mui/icons-material'
 import {
   Typography,
@@ -20,7 +20,7 @@ type NotificationSettingProps = object
 
 interface NotificationSettingState {
   isSnackbarOpen: boolean
-  notificationTarget: number
+  type: number
   error: string
 }
 
@@ -33,7 +33,7 @@ export class NotificationSetting extends React.Component<
 
     this.state = {
       isSnackbarOpen: false,
-      notificationTarget: -1,
+      type: -1,
       error: '',
     }
   }
@@ -45,11 +45,11 @@ export class NotificationSetting extends React.Component<
   private handleSave = async () => {
     this.setState({ error: '' })
 
-    const { notificationTarget } = this.state
+    const { type } = this.state
     try {
-      await UpdateNotificationTarget(notificationTarget)
+      await UpdateNotificationType(type)
       this.setState({
-        notificationTarget: notificationTarget,
+        type,
       })
     } catch (error) {
       this.setState({
@@ -58,9 +58,9 @@ export class NotificationSetting extends React.Component<
     }
   }
 
-  private onNotificationTargetChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<number, false>) => {
+  private onNotificationTypeChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<number, false>) => {
     this.setState({
-      notificationTarget: option ?? 0
+      type: option ?? 0
     })
   }
 
@@ -69,7 +69,7 @@ export class NotificationSetting extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { isSnackbarOpen, error, notificationTarget } = this.state
+    const { isSnackbarOpen, error, type } = this.state
 
     return (
       <div
@@ -105,12 +105,12 @@ export class NotificationSetting extends React.Component<
           }}
         >
           <Select
-            value={notificationTarget}
+            value={type}
             sx={{ maxWidth: '200px' }}
-            onChange={this.onNotificationTargetChange}
+            onChange={this.onNotificationTypeChange}
           >
-            <Option value='0'>None</Option>
-            <Option value='3'>Mqtt</Option>
+            <Option value={0}>None</Option>
+            <Option value={3}>Mqtt</Option>
           </Select>
           {error && (
             <Typography
