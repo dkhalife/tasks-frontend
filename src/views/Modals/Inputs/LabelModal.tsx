@@ -14,21 +14,19 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
+import { ColorOption } from '@/utils/labels'
 
 interface LabelModalProps {
-  label: Label | null
+  id: string | undefined
+  name: string | undefined
+  color: ColorOption | undefined
 
   onClose: (label: Label | null) => void
 }
 
-type ColorOption = {
-  name: string
-  value: string
-}
-
 interface LabelModalState {
   labelName: string
-  color: ColorOption | null
+  color: ColorOption | undefined
   error: string
   isOpen: boolean
 }
@@ -40,10 +38,20 @@ export class LabelModal extends React.Component<
   constructor(props: LabelModalProps) {
     super(props)
     this.state = {
-      labelName: '',
-      color: null,
+      labelName: props.name ?? '',
+      color: props.color,
       error: '',
       isOpen: false,
+    }
+  }
+
+  componentDidUpdate(prevProps: Readonly<LabelModalProps>): void {
+    if (this.props.name !== prevProps.name || this.props.color !== prevProps.color || this.props.id !== prevProps.id) {
+      this.setState({
+        labelName: this.props.name ?? '',
+        color: this.props.color,
+        error: '',
+      })
     }
   }
 
@@ -85,13 +93,12 @@ export class LabelModal extends React.Component<
       return
     }
 
-    const { label } = this.props
-
+    const { id } = this.props
     let newLabel: Label | null = null
-    if (label) {
+    if (id) {
       try {
         newLabel = (await UpdateLabel({
-          id: label.id,
+          id: id,
           name: labelName,
           color: color.value,
         })).label
@@ -129,7 +136,7 @@ export class LabelModal extends React.Component<
   }
 
   public render(): React.ReactNode {
-    const { label } = this.props
+    const { id } = this.props
     const { labelName, color, error, isOpen } = this.state
 
     return (
@@ -142,7 +149,7 @@ export class LabelModal extends React.Component<
             level='title-md'
             mb={1}
           >
-            {label ? 'Edit Label' : 'Add Label'}
+            {id ? 'Edit Label' : 'Add Label'}
           </Typography>
 
           <FormControl>
@@ -155,7 +162,7 @@ export class LabelModal extends React.Component<
             </Typography>
             <Input
               fullWidth
-              value={labelName}
+              defaultValue={labelName}
               onChange={this.onLabelNameChange}
             />
           </FormControl>
@@ -229,7 +236,7 @@ export class LabelModal extends React.Component<
               fullWidth
               sx={{ mr: 1 }}
             >
-              {label ? 'Save Changes' : 'Add Label'}
+              {id ? 'Save Changes' : 'Add Label'}
             </Button>
             <Button
               onClick={this.onCancel}

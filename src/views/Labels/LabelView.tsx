@@ -15,6 +15,7 @@ import React from 'react'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import { colorOptionFromColor } from '@/utils/labels'
 
 type LabelViewProps = object
 
@@ -100,6 +101,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
   render(): React.ReactNode {
     const { isLabelsLoading, userLabels, currentLabel, isError } = this.state
+    const currentColor = currentLabel ? colorOptionFromColor(currentLabel.color) : undefined
 
     if (isLabelsLoading) {
       return (
@@ -199,7 +201,9 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
         <LabelModal
           ref={this.modalRef}
           onClose={this.onLabelModalClose}
-          label={currentLabel}
+          id={currentLabel?.id}
+          name={currentLabel?.name}
+          color={currentColor}
         />
 
         <Box
