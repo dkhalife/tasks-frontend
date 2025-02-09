@@ -209,50 +209,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
         >
           <Grid container>
             <Grid
-              xs={9}
-              onClick={() => goToTask(task.id)}
-            >
-              <Box
-                display='flex'
-                justifyContent='start'
-                alignItems='center'
-              >
-                <Avatar sx={{ mr: 1, fontSize: 22 }}>
-                  {Array.from<string>(task.title)[0]}
-                </Avatar>
-                <Box
-                  display='flex'
-                  flexDirection='column'
-                >
-                  <Typography level='title-md'>
-                    {this.getName(task.title)}
-                  </Typography>
-                  <Box key={`${task.id}-labels`}>
-                    {task.labels?.map((l, index) => {
-                      return (
-                        <Chip
-                          variant='solid'
-                          key={`taskcard-${task.id}-label-${l.id}`}
-                          color='primary'
-                          sx={{
-                            position: 'relative',
-                            ml: index === 0 ? 0 : 0.5,
-                            top: 2,
-                            zIndex: 1,
-                            backgroundColor: `${l?.color} !important`,
-                            color: getTextColorFromBackgroundColor(l?.color),
-                          }}
-                        >
-                          {l?.name}
-                        </Chip>
-                      )
-                    })}
-                  </Box>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid
-              xs={3}
+              xs={2}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -261,8 +218,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             >
               <Box
                 display='flex'
-                justifyContent='flex-end'
-                alignItems='flex-end'
+                justifyContent='center'
+                alignItems='center'
               >
                 <IconButton
                   variant='solid'
@@ -327,6 +284,46 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                     Delete
                   </MenuItem>
                 </Menu>
+              </Box>
+            </Grid>
+            <Grid
+              xs={9}
+              onClick={() => goToTask(task.id)}
+            >
+              <Box
+                display='flex'
+                justifyContent='start'
+                alignItems='center'
+              >
+                <Box
+                  display='flex'
+                  flexDirection='column'
+                >
+                  <Typography level='title-md'>
+                    {this.getName(task.title)}
+                  </Typography>
+                  <Box key={`${task.id}-labels`}>
+                    {task.labels?.map((l, index) => {
+                      return (
+                        <Chip
+                          variant='solid'
+                          key={`taskcard-${task.id}-label-${l.id}`}
+                          color='primary'
+                          sx={{
+                            position: 'relative',
+                            ml: index === 0 ? 0 : 0.5,
+                            top: 2,
+                            zIndex: 1,
+                            backgroundColor: `${l?.color} !important`,
+                            color: getTextColorFromBackgroundColor(l?.color),
+                          }}
+                        >
+                          {l?.name}
+                        </Chip>
+                      )
+                    })}
+                  </Box>
+                </Box>
               </Box>
             </Grid>
           </Grid>
