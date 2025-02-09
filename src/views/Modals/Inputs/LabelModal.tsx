@@ -18,7 +18,7 @@ import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 interface LabelModalProps {
   label: Label | null
 
-  onClose: () => void
+  onClose: (label: Label | null) => void
 }
 
 type ColorOption = {
@@ -87,28 +87,35 @@ export class LabelModal extends React.Component<
 
     const { label } = this.props
 
-    try {
-      if (label) {
-        await UpdateLabel({
+    let newLabel: Label | null = null
+    if (label) {
+      try {
+        newLabel = (await UpdateLabel({
           id: label.id,
           name: labelName,
           color: color.value,
-        })
-      } else {
-        await CreateLabel({
+        })).label
+      } catch {
+        this.setState({ error: 'Failed to save label. Please try again.' })
+      }
+    } else {
+      try {
+        newLabel = (await CreateLabel({
           name: labelName,
           color: color.value,
-        })
+        })).label
+      } catch {
+        this.setState({ error: 'Failed to create label. Please try again.' })
       }
-      this.setState({ isOpen: false })
-    } catch {
-      this.setState({ error: 'Failed to save label. Please try again.' })
     }
+
+    this.props.onClose(newLabel)
+    this.setState({ isOpen: false })
   }
 
   private onCancel = () => {
+    this.props.onClose(null)
     this.setState({ isOpen: false })
-    this.props.onClose()
   }
 
   private onLabelNameChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -78,6 +78,22 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     }
   }
 
+  private onLabelModalClose = (newLabel: Label | null) => {
+    if (!newLabel) {
+      // No creation or update was made
+      return
+    }
+
+    const { userLabels, currentLabel } = this.state
+    if (!currentLabel) {
+      this.setState({ userLabels: [...userLabels, newLabel] })
+      return
+    }
+
+    const updatedLabels = userLabels.map(label => label.id === currentLabel.id ? newLabel : label)
+    this.setState({ userLabels: updatedLabels })
+  }
+
   componentDidMount(): void {
     this.loadLabels()
   }
@@ -182,7 +198,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
         <LabelModal
           ref={this.modalRef}
-          onClose={() => console.error('missing impl')}
+          onClose={this.onLabelModalClose}
           label={currentLabel}
         />
 
