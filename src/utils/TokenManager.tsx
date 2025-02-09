@@ -15,7 +15,7 @@ export async function Request<SuccessfulResponse>(
   body: unknown = {},
   requiresAuth: boolean = true,
 ): Promise<SuccessfulResponse> {
-  if (!isTokenValid()) {
+  if (requiresAuth && !isTokenValid()) {
     Cookies.set('ca_redirect', window.location.pathname)
     window.location.href = '/login'
     // TODO: Stop execution when better type safety is in place

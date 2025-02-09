@@ -1,4 +1,3 @@
-import { Login } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { Sheet } from '@mui/joy'
 import {
@@ -11,8 +10,8 @@ import {
   Snackbar,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
-import Cookies from 'js-cookie'
-import { goTo, goToMyTasks, goToRegister, goToResetPassword } from '@/utils/navigation'
+import { goToRegister, goToResetPassword } from '@/utils/navigation'
+import { doLogin } from '@/utils/auth'
 
 type LoginViewProps = object
 
@@ -36,20 +35,9 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
   private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
 
-    const { email, password } = this.state
-
     try {
-      const data = await Login(email, password)
-      localStorage.setItem('ca_token', data.token)
-      localStorage.setItem('ca_expiration', data.expiration)
-
-      const redirectUrl = Cookies.get('ca_redirect')
-      if (redirectUrl) {
-        Cookies.remove('ca_redirect')
-        goTo(redirectUrl)
-      } else {
-        goToMyTasks()
-      }
+      const { email, password } = this.state
+      doLogin(email, password)
     } catch (error) {
       this.setState({ error: (error as Error).message })
     }

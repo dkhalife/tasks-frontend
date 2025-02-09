@@ -1,7 +1,8 @@
-import { Login, SignUp } from '@/api/auth'
+import { SignUp } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
-import { goToLogin, goToMyTasks } from '@/utils/navigation'
+import { doLogin } from '@/utils/auth'
+import { goToLogin } from '@/utils/navigation'
 import {
   Container,
   Box,
@@ -48,10 +49,7 @@ export class SignupView extends React.Component<
 
   private handleLogin = async (email: string, password: string) => {
     try {
-      const data = await Login(email, password)
-      localStorage.setItem('ca_token', data.token)
-      localStorage.setItem('ca_expiration', data.expiration)
-      goToMyTasks()
+      doLogin(email, password)
     } catch {
       this.setState({ error: 'Login failed' })
     }
