@@ -115,8 +115,8 @@ export class TasksOverview extends React.Component<
     this.setState({ search: '', filteredTasks: tasks })
   }
 
-  private onSetDueDate = (task: Task) => {
-    this.setState({
+  private onCompleteAtDate = async (task: Task) => {
+    await this.setState({
       taskId: task.id,
     })
     this.dateModalRef.current?.open()
@@ -131,7 +131,7 @@ export class TasksOverview extends React.Component<
           level='h4'
           mb={1.5}
         >
-          Tasks Overviews
+          Tasks Overview
         </Typography>
 
         <Grid container>
@@ -227,7 +227,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.onSetDueDate(task)}
+                      onClick={() => this.onCompleteAtDate(task)}
                       aria-setsize={2}
                     >
                       <History />

@@ -25,16 +25,16 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
     }
   }
 
-  public open(): void {
+  public open = () => {
     this.setState({ isOpen: true })
   }
 
-  private onSave(): void {
+  private onSave = () => {
     this.setState({ isOpen: false })
     this.props.onClose(this.state.date)
   }
 
-  private onCancel(): void {
+  private onCancel = () => {
     this.setState({ isOpen: false })
     this.props.onClose(null)
   }

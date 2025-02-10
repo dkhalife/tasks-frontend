@@ -40,16 +40,16 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     }
   }
 
-  private handleAddLabel = () => {
-    this.setState({
+  private handleAddLabel = async () => {
+    await this.setState({
       currentLabel: null,
     })
 
     this.modalRef.current?.open()
   }
 
-  private handleEditLabel = (label: Label) => {
-    this.setState({
+  private handleEditLabel = async (label: Label) => {
+    await this.setState({
       currentLabel: label,
     })
 

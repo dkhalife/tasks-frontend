@@ -286,15 +286,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         task: task,
         title: task.title,
         frequencyType: task.frequencyType ? task.frequencyType : 'once',
-        frequencyMetadata: JSON.parse(task.frequencyMetadata),
+        // frequencyMetadata: JSON.parse(task.frequencyMetadata),
         frequency: task.frequency,
-        notificationMetadata: JSON.parse(task.notificationMetadata),
-        labels: task.labels,
+        // notificationMetadata: JSON.parse(task.notificationMetadata),
         isRolling: task.isRolling,
         dueDate: task.nextDueDate
           ? moment(task.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
           : null,
-        updatedBy: task.updatedBy,
         isNotificable: task.notification,
       })
     } catch {
@@ -410,6 +408,10 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
+  private onCancelClicked = () => {
+    goToMyTasks()
+  }
+
   render(): React.ReactNode {
     const { taskId } = this.props
     const {
@@ -423,8 +425,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       labels,
       notificationMetadata,
       userLabels,
-      task,
-      updatedBy,
       errors,
       isSnackbarOpen,
       snackbarMessage,
@@ -657,30 +657,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           </Select>
         </Box>
 
-        { task && (
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
-          >
-            <Sheet
-              sx={{
-                p: 2,
-                borderRadius: 'md',
-                boxShadow: 'sm',
-              }}
-            >
-              {(task.updatedAt && updatedBy > 0 && (
-                <>
-                  <Divider sx={{ my: 1 }} />
-
-                  <Typography>
-                    Updated at {moment(task.updatedAt).fromNow()}
-                  </Typography>
-                </>
-              ))}
-            </Sheet>
-          </Box>
-        )}
-
         <Divider sx={{ mb: 9 }} />
 
         <Sheet
@@ -711,7 +687,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           <Button
             color='neutral'
             variant='outlined'
-            onClick={window.history.back}
+            onClick={this.onCancelClicked}
           >
             Cancel
           </Button>
