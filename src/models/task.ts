@@ -40,7 +40,7 @@ export const getDueDateChipText = (nextDueDate: string): string => {
     return moment(nextDueDate).calendar().replace(' at', '')
   }
 
-  return 'Due ' + moment(nextDueDate).fromNow()
+  return moment(nextDueDate).fromNow()
 }
 
 export const getDueDateChipColor = (nextDueDate: string): ColorPaletteProp => {
