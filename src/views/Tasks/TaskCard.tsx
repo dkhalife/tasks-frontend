@@ -35,10 +35,7 @@ import {
   Divider,
 } from '@mui/joy'
 import React from 'react'
-import {
-  ConfirmationModalProps,
-  ConfirmationModal,
-} from '../Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/material'
 import { goToTaskEdit, goToTask, goToTaskHistory } from '@/utils/navigation'
@@ -51,10 +48,7 @@ interface TaskCardProps {
   viewOnly: boolean
 }
 
-interface TaskCardState {
-  isCompleteWithPastDateModalOpen: boolean
-  confirmModelConfig: ConfirmationModalProps | null
-}
+type TaskCardState = object
 
 export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   private menuRef = React.createRef<HTMLDivElement>()
@@ -63,10 +57,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
   constructor(props: TaskCardProps) {
     super(props)
-
     this.state = {
-      isCompleteWithPastDateModalOpen: false,
-      confirmModelConfig: null,
     }
   }
 
@@ -76,20 +67,10 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
       await DeleteTask(task.id)
       onTaskRemove(task)
     }
-
-    this.setState({ confirmModelConfig: null })
   }
 
   private handleDelete = () => {
-    this.setState({
-      confirmModelConfig: {
-        title: 'Delete Task',
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-        message: 'Are you sure you want to delete this task?',
-        onClose: this.handleDeleteConfirm,
-      },
-    })
+    this.confirmationModalRef.current?.open()
   }
 
   private handleTaskCompletion = async () => {
@@ -148,12 +129,11 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   }
 
   private onChangeDueDate = () => {
-    this.confirmationModalRef.current?.open()
+    this.dateModalRef.current?.open()
   }
 
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
-    const { confirmModelConfig } = this.state
 
     return (
       <Box key={task.id + '-box'}>
@@ -340,12 +320,14 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             onClose={this.handleCompleteWithPastDate}
           />
 
-          {confirmModelConfig && (
-            <ConfirmationModal
-              ref={this.confirmationModalRef}
-              {...confirmModelConfig}
-            />
-          )}
+          <ConfirmationModal
+            ref={this.confirmationModalRef}
+            title='Delete Task'
+            confirmText='Delete'
+            cancelText='Cancel'
+            message='Are you sure you want to delete this task?'
+            onClose={this.handleDeleteConfirm}
+          />
         </Card>
       </Box>
     )
