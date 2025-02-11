@@ -133,17 +133,19 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '2',
+            alignItems: 'center',
+            gap: '4px'
           }}
         >
           {userLabels.map(label => (
             <div
               key={label.name}
               style={{
-                border: '1px',
+                border: '1px solid #ccc',
                 boxShadow: '2px',
                 display: 'grid',
                 width: '100%',
+                maxWidth: '400px',
                 padding: '4px',
                 borderRadius: '8px',
               }}
@@ -156,6 +158,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
                   background: label.color,
                   borderColor: label.color,
                   color: getTextColorFromBackgroundColor(label.color),
+                  gridColumn: '1',
                 }}
               >
                 {label.name}
@@ -164,7 +167,9 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
               <div
                 style={{
                   display: 'flex',
+                  gridColumn: '2',
                   gap: 2,
+                  justifyContent: 'flex-end',
                 }}
               >
                 <Button
@@ -176,14 +181,15 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
                 >
                   Edit
                 </Button>
-                <IconButton
+                <Button
                   size='sm'
                   variant='soft'
                   onClick={() => this.handleDeleteLabel(label.id)}
+                  startDecorator={<DeleteIcon />}
                   color='danger'
                 >
-                  <DeleteIcon />
-                </IconButton>
+                  Delete
+                </Button>
               </div>
             </div>
           ))}
