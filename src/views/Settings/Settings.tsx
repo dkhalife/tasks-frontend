@@ -33,20 +33,11 @@ export class Settings extends React.Component {
             paddingBottom: '4',
           }}
         >
-          <Typography level='h3'>Account Settings</Typography>
+          <Typography level='h3'>Password</Typography>
           <Divider />
-          <Typography level='body-md'>Update your password</Typography>
-          <Box>
-            <Typography
-              level='title-md'
-              mb={1}
-            >
-              Password
-            </Typography>
-            <Typography
-              mb={1}
-              level='body-sm'
-            ></Typography>
+          <Box sx={{
+            mt: 1,
+          }}>
             <Button
               variant='soft'
               onClick={this.onChangePassword}
@@ -61,21 +52,12 @@ export class Settings extends React.Component {
         </div>
         <NotificationSetting />
         <APITokenSettings />
-        <div
-          style={{
-            display: 'grid',
-            gap: '4',
-            paddingTop: '4',
-            paddingBottom: '4',
-          }}
-        >
+        <Box sx={{
+          mt: 2,
+        }}>
           <Typography level='h3'>Theme preferences</Typography>
           <Divider />
-          <Typography level='body-md'>
-            Choose how the site looks to you. Select a single theme, or sync
-            with your system and automatically switch between day and night
-            themes.
-          </Typography>
+
           <StorageContext.Consumer>
             {storedState => (
               <ThemeToggle
@@ -84,7 +66,7 @@ export class Settings extends React.Component {
               />
             )}
           </StorageContext.Consumer>
-        </div>
+        </Box>
       </Container>
     )
   }
