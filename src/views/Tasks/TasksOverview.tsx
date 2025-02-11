@@ -178,7 +178,7 @@ export class TasksOverview extends React.Component<
         <Table>
           <thead>
             <tr>
-              <th style={{ width: 100 }}>Due</th>
+              <th>Due</th>
               <th>Task</th>
               <th>Due</th>
               <th>Action</th>
