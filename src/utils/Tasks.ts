@@ -1,103 +1,93 @@
-import { Label } from '@/models/label'
-import { Task, TaskGroup } from '@/models/task'
+import { Task } from '@/models/task'
 import { TASK_COLOR } from './Colors'
+import moment from 'moment'
 
-export const TasksGrouper = (groupBy: string, tasks: Task[]) => {
-  tasks.sort((a, b) => {
-    if (a.nextDueDate === null) {
-      return 1
+export type GROUP_BY = 'due_date' | 'labels'
+
+export type TaskGroup = {
+  name: string
+  content: Task[]
+  color: string
+}
+
+interface DueDateGroups {
+  'overdue': TaskGroup
+  'today': TaskGroup 
+  'this_week': TaskGroup
+  'next_week': TaskGroup
+  'later': TaskGroup
+  'any_time': TaskGroup
+}
+export type TaskGroups = DueDateGroups
+
+const groupByDueDate = (tasks: Task[]): DueDateGroups => {
+  const groups: DueDateGroups = {
+    'overdue': {
+      name: 'Overdue',
+      content: [],
+      color: TASK_COLOR.OVERDUE,
+    },
+    'today': {
+      name: 'Today',
+      content: [],
+      color: TASK_COLOR.TODAY,
+    },
+    'this_week': {
+      name: 'This week',
+      content: [],
+      color: TASK_COLOR.THIS_WEEK,
+    },
+    'next_week': {
+      name: 'Next week',
+      content: [],
+      color: TASK_COLOR.NEXT_WEEK,
+    },
+    'later': {
+      name: 'Later',
+      content: [],
+      color: TASK_COLOR.LATER,
+    },
+    'any_time': {
+      name: 'Any time',
+      content: [],
+      color: TASK_COLOR.ANY_TIME,
     }
-    if (b.nextDueDate === null) {
-      return -1
+  }
+
+  const now = new Date().getTime()
+  const endOfThisWeek = moment().endOf('week').toDate().getTime()
+  const endOfNextWeek = moment().endOf('week').add(1, 'week').toDate().getTime()
+
+  tasks.forEach((task) => {
+    if (task.nextDueDate === null) {
+      groups['any_time'].content.push(task)
+      return
     }
-    return new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
+
+    const due_date = new Date(task.nextDueDate).getTime()
+    if (now >= due_date) {
+      groups['overdue'].content.push(task)
+      return
+    }
+
+    if (due_date > endOfNextWeek) {
+      groups['later'].content.push(task)
+      return
+    }
+
+    if (due_date > endOfThisWeek) {
+      groups['next_week'].content.push(task)
+      return
+    }
+
+    groups['this_week'].content.push(task)
   })
 
-  const labels: { [key: string]: Label } = {}
-  let groups: TaskGroup[] = []
-  let groupRaw: { [key: string]: Task[] } = {
-    Today: [],
-    'In a week': [],
-    'This month': [],
-    Later: [],
-    Overdue: [],
-    Anytime: [],
-  }
-  switch (groupBy) {
-    case 'due_date':
-      tasks.forEach(task => {
-        if (task.nextDueDate === null) {
-          groupRaw.Anytime.push(task)
-        } else if (new Date(task.nextDueDate) < new Date()) {
-          groupRaw['Overdue'].push(task)
-        } else if (
-          new Date(task.nextDueDate).toDateString() ===
-          new Date().toDateString()
-        ) {
-          groupRaw['Today'].push(task)
-        } else if (
-          new Date(task.nextDueDate) <
-            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) &&
-          new Date(task.nextDueDate) > new Date()
-        ) {
-          groupRaw['In a week'].push(task)
-        } else if (
-          new Date(task.nextDueDate).getMonth() === new Date().getMonth()
-        ) {
-          groupRaw['This month'].push(task)
-        } else {
-          groupRaw['Later'].push(task)
-        }
-      })
-      groups = [
-        {
-          name: 'Overdue',
-          content: groupRaw['Overdue'],
-          color: TASK_COLOR.OVERDUE,
-        },
-        { name: 'Today', content: groupRaw['Today'], color: TASK_COLOR.TODAY },
-        {
-          name: 'In a week',
-          content: groupRaw['In a week'],
-          color: TASK_COLOR.IN_A_WEEK,
-        },
-        {
-          name: 'This month',
-          content: groupRaw['This month'],
-          color: TASK_COLOR.THIS_MONTH,
-        },
-        {
-          name: 'Later',
-          content: groupRaw['Later'],
-          color: TASK_COLOR.LATER,
-        },
-        {
-          name: 'Anytime',
-          content: groupRaw['Anytime'],
-          color: TASK_COLOR.ANYTIME,
-        },
-      ]
-      break
-    case 'labels':
-      groupRaw = {}
-      tasks.forEach(task => {
-        task.labels.forEach(label => {
-          labels[label.id] = label
-          if (groupRaw[label.id] === undefined) {
-            groupRaw[label.id] = []
-          }
-          groupRaw[label.id].push(task)
-        })
-      })
-      groups = Object.keys(groupRaw).map(key => {
-        return {
-          name: labels[key].name,
-          content: groupRaw[key],
-        }
-      })
-      groups.sort((a, b) => {
-        return a.name < b.name ? 1 : -1
-      })
-  }
   return groups
+}
+
+export const groupTasksBy = (tasks: Task[], groupBy: GROUP_BY): TaskGroups => {
+  //if (groupBy === 'due_date') {
+    return groupByDueDate(tasks)
+  //}
 }

@@ -23,12 +23,6 @@ export interface Task {
   updatedAt: string
 }
 
-export type TaskGroup = {
-  name: string
-  content: Task[]
-  color?: string
-}
-
 export const getDueDateChipText = (nextDueDate: string): string => {
   if (nextDueDate === null) {
     return 'No Due Date'
