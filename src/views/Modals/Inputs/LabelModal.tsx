@@ -162,7 +162,7 @@ export class LabelModal extends React.Component<
             </Typography>
             <Input
               fullWidth
-              defaultValue={labelName}
+              value={labelName}
               onChange={this.onLabelNameChange}
             />
           </FormControl>
@@ -176,10 +176,9 @@ export class LabelModal extends React.Component<
               Color
             </Typography>
             <Select
-              value={color}
               onChange={this.onColorChange}
               required={true}
-              defaultValue={color}
+              value={color}
               startDecorator={
                 <span
                   style={{
@@ -192,10 +191,10 @@ export class LabelModal extends React.Component<
                 />
               }
             >
-              {LABEL_COLORS.map(val => (
+              {LABEL_COLORS.map((opt: ColorOption) => (
                 <Option
-                  key={val.value}
-                  value={val.value}
+                  key={opt.value}
+                  value={opt}
                 >
                   <Box
                     style={{
@@ -208,9 +207,9 @@ export class LabelModal extends React.Component<
                       width={20}
                       height={20}
                       borderRadius={10}
-                      sx={{ background: val.value }}
+                      sx={{ background: opt.value }}
                     />
-                    <Typography sx={{ ml: 1 }}>{val.name}</Typography>
+                    <Typography sx={{ ml: 1 }}>{opt.name}</Typography>
                   </Box>
                 </Option>
               ))}

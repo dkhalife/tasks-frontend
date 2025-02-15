@@ -14,22 +14,14 @@ export interface Task {
   id: string
   title: string
   description: string
-  nextDueDate: string
+  next_due_date: Date | null
   frequency: number
-  frequencyType: string
-  frequencyMetadata: string
+  frequency_type: string
+  frequency_metadata: string
   labels: Label[]
-  isArchived: boolean
-  updatedAt: string
 }
 
-export type TaskGroup = {
-  name: string
-  content: Task[]
-  color?: string
-}
-
-export const getDueDateChipText = (nextDueDate: string): string => {
+export const getDueDateChipText = (nextDueDate: Date | null): string => {
   if (nextDueDate === null) {
     return 'No Due Date'
   }
@@ -40,43 +32,46 @@ export const getDueDateChipText = (nextDueDate: string): string => {
     return moment(nextDueDate).calendar().replace(' at', '')
   }
 
-  return 'Due ' + moment(nextDueDate).fromNow()
+  return moment(nextDueDate).fromNow()
 }
 
-export const getDueDateChipColor = (nextDueDate: string): ColorPaletteProp => {
+export const getDueDateChipColor = (nextDueDate: Date | null): ColorPaletteProp => {
   if (nextDueDate === null) {
     return 'neutral'
   }
 
-  const diff = moment(nextDueDate).diff(moment(), 'hours')
-  if (diff < 48 && diff > 0) {
-    return 'warning'
+  const due = nextDueDate.getTime()
+  const now = new Date().getTime()
+  const warnThreshold = moment().add(4, 'hours').toDate().getTime()
+
+  if (due < now) {
+    return 'danger'
   }
 
-  if (diff < 0) {
-    return 'danger'
+  if (due < warnThreshold) {
+    return 'warning'
   }
 
   return 'neutral'
 }
 
 export const getRecurrentChipText = (task: Task) => {
-  if (task.frequencyType === 'once') {
+  if (task.frequency_type === 'once') {
     return 'Once'
-  } else if (task.frequencyType === 'trigger') {
+  } else if (task.frequency_type === 'trigger') {
     return 'Trigger'
-  } else if (task.frequencyType === 'daily') {
+  } else if (task.frequency_type === 'daily') {
     return 'Daily'
-  } else if (task.frequencyType === 'adaptive') {
+  } else if (task.frequency_type === 'adaptive') {
     return 'Adaptive'
-  } else if (task.frequencyType === 'weekly') {
+  } else if (task.frequency_type === 'weekly') {
     return 'Weekly'
-  } else if (task.frequencyType === 'monthly') {
+  } else if (task.frequency_type === 'monthly') {
     return 'Monthly'
-  } else if (task.frequencyType === 'yearly') {
+  } else if (task.frequency_type === 'yearly') {
     return 'Yearly'
-  } else if (task.frequencyType === 'days_of_the_week') {
-    let days = JSON.parse(task.frequencyMetadata).days
+  } else if (task.frequency_type === 'days_of_the_week') {
+    let days = JSON.parse(task.frequency_metadata).days
     if (days.length > 4) {
       const allDays = [
         'Sunday',
@@ -99,8 +94,8 @@ export const getRecurrentChipText = (task: Task) => {
       days = days.map((d: string) => moment().day(d).format('ddd'))
       return days.join(', ')
     }
-  } else if (task.frequencyType === 'day_of_the_month') {
-    const months = JSON.parse(task.frequencyMetadata).months
+  } else if (task.frequency_type === 'day_of_the_month') {
+    const months = JSON.parse(task.frequency_metadata).months
     if (months.length > 6) {
       const allMonths = [
         'January',
@@ -129,7 +124,7 @@ export const getRecurrentChipText = (task: Task) => {
         task.frequency,
       )} except ${notSelectedShortMonths.join(', ')}`
     } else {
-      const freqData = JSON.parse(task.frequencyMetadata)
+      const freqData = JSON.parse(task.frequency_metadata)
       const months = freqData.months.map((m: string) =>
         moment().month(m).format('MMM'),
       )
@@ -137,9 +132,9 @@ export const getRecurrentChipText = (task: Task) => {
         task.frequency,
       )} of ${months.join(', ')}`
     }
-  } else if (task.frequencyType === 'interval') {
-    return `Every ${task.frequency} ${JSON.parse(task.frequencyMetadata).unit}`
+  } else if (task.frequency_type === 'interval') {
+    return `Every ${task.frequency} ${JSON.parse(task.frequency_metadata).unit}`
   } else {
-    return task.frequencyType
+    return task.frequency_type
   }
 }

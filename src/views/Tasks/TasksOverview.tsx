@@ -58,7 +58,7 @@ export class TasksOverview extends React.Component<
     this.loadTasks()
   }
 
-  private onCloseDateModal = async (date: string | null) => {
+  private onCloseDateModal = async (date: Date | null) => {
     if (!date) {
       return
     }
@@ -68,7 +68,7 @@ export class TasksOverview extends React.Component<
       return
     }
 
-    const data = await MarkTaskComplete(taskId, new Date(date))
+    const data = await MarkTaskComplete(taskId, date)
     const newTask = data.task
     const newTasks = [...tasks]
     const index = newTasks.findIndex(c => c.id === newTask.id)
@@ -115,8 +115,8 @@ export class TasksOverview extends React.Component<
     this.setState({ search: '', filteredTasks: tasks })
   }
 
-  private onSetDueDate = (task: Task) => {
-    this.setState({
+  private onCompleteAtDate = async (task: Task) => {
+    await this.setState({
       taskId: task.id,
     })
     this.dateModalRef.current?.open()
@@ -131,7 +131,7 @@ export class TasksOverview extends React.Component<
           level='h4'
           mb={1.5}
         >
-          Tasks Overviews
+          Tasks Overview
         </Typography>
 
         <Grid container>
@@ -178,7 +178,7 @@ export class TasksOverview extends React.Component<
         <Table>
           <thead>
             <tr>
-              <th style={{ width: 100 }}>Due</th>
+              <th>Due</th>
               <th>Task</th>
               <th>Due</th>
               <th>Action</th>
@@ -188,8 +188,8 @@ export class TasksOverview extends React.Component<
             {filteredTasks.map((task: Task) => (
               <tr key={task.id}>
                 <td>
-                  <Chip color={getDueDateChipColor(task.nextDueDate)}>
-                    {getDueDateChipText(task.nextDueDate)}
+                  <Chip color={getDueDateChipColor(task.next_due_date)}>
+                    {getDueDateChipText(task.next_due_date)}
                   </Chip>
                 </td>
                 <td
@@ -200,16 +200,16 @@ export class TasksOverview extends React.Component<
                 <td>
                   <Tooltip
                     title={
-                      task.nextDueDate === null
+                      task.next_due_date === null
                         ? 'no due date'
-                        : moment(task.nextDueDate).format('YYYY-MM-DD')
+                        : moment(task.next_due_date).format('YYYY-MM-DD')
                     }
                     size='sm'
                   >
                     <Typography>
-                      {task.nextDueDate === null
+                      {task.next_due_date === null
                         ? '--'
-                        : moment(task.nextDueDate).fromNow()}
+                        : moment(task.next_due_date).fromNow()}
                     </Typography>
                   </Tooltip>
                 </td>
@@ -227,7 +227,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.onSetDueDate(task)}
+                      onClick={() => this.onCompleteAtDate(task)}
                       aria-setsize={2}
                     >
                       <History />
@@ -248,7 +248,7 @@ export class TasksOverview extends React.Component<
         <DateModal
           ref={this.dateModalRef}
           key={taskId}
-          current=''
+          current={null}
           title={`Change due date`}
           onClose={this.onCloseDateModal}
         />

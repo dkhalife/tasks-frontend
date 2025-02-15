@@ -1,5 +1,4 @@
 import { HistoryEntry } from '@/models/history'
-import { formatTimeDifference } from '@/utils/date'
 import { ListItemContent, ListDivider } from '@mui/joy'
 import { ListItem, Box, Typography } from '@mui/joy'
 import moment from 'moment'
@@ -35,15 +34,15 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
               }}
             >
               <Typography sx={{ fontWeight: 'md' }}>
-                {historyEntry.completedAt
-                  ? moment(historyEntry.completedAt).format(
+                {historyEntry.completedDate
+                  ? moment(historyEntry.completedDate).format(
                       'ddd MM/DD/yyyy HH:mm',
                     )
                   : 'Skipped'}
               </Typography>
               <CompletedChip
                 dueDate={historyEntry.dueDate}
-                completedAt={historyEntry.completedAt}
+                completedDate={historyEntry.completedDate}
               />
             </Box>
             {historyEntry.dueDate && (
@@ -51,21 +50,18 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
                 Due: {moment(historyEntry.dueDate).format('ddd MM/DD/yyyy')}
               </Typography>
             )}
-            {historyEntry.notes && (
-              <Typography>Note: {historyEntry.notes}</Typography>
-            )}
           </ListItemContent>
         </ListItem>
         {index < allHistory.length - 1 && (
           <>
             <ListDivider component='li'>
               {index < allHistory.length - 1 &&
-                allHistory[index + 1].completedAt && (
+                allHistory[index + 1].completedDate && (
                   <Typography>
-                    {formatTimeDifference(
-                      historyEntry.completedAt,
-                      allHistory[index + 1].completedAt,
-                    )}
+                    {/*TODO: formatTimeDifference(
+                      historyEntry.completedDate,
+                      allHistory[index + 1].completedDate,
+                    )*/}
                     &nbsp;before
                   </Typography>
                 )}

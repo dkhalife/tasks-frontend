@@ -101,19 +101,9 @@ export class APITokenSettings extends React.Component<
     const { tokens, showTokenId } = this.state
 
     return (
-      <div
-        style={{
-          display: 'grid',
-          gap: '4',
-          paddingTop: '4',
-          paddingBottom: '4',
-        }}
-      >
+      <Box sx={{ mt: 2 }}>
         <Typography level='h3'>Access Token</Typography>
         <Divider />
-        <Typography level='body-sm'>
-          Create token to use with the API to update tasks
-        </Typography>
 
         {tokens.map((token: APIToken) => (
           <Card
@@ -173,7 +163,7 @@ export class APITokenSettings extends React.Component<
           color='primary'
           sx={{
             width: '210px',
-            mb: 1,
+            mt: 1,
           }}
           onClick={this.onGenerateToken}
         >
@@ -185,7 +175,7 @@ export class APITokenSettings extends React.Component<
           onClose={this.handleSaveToken}
           okText={'Generate Token'}
         />
-      </div>
+      </Box>
     )
   }
 }

@@ -23,18 +23,17 @@ import {
   Chip,
   MenuItem,
   Sheet,
-  Divider,
   Button,
   Snackbar,
   Option,
 } from '@mui/joy'
-import moment from 'moment'
 import React, { ChangeEvent } from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
 import { goToMyTasks } from '@/utils/navigation'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
+import moment from 'moment'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -62,7 +61,7 @@ interface TaskEditState {
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
   snackbarColor: ColorPaletteProp
-  dueDate: string | null
+  dueDate: Date | null
   frequencyType: FrequencyType
   frequency: number
   frequencyMetadata: FrequencyMetadata | null
@@ -111,44 +110,44 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private HandleValidateTask = () => {
-    return true
-    const { title: name, frequencyType, frequency, frequencyMetadata, dueDate } =
+    const { title, frequencyType, frequency, frequencyMetadata, dueDate } =
       this.state
-
-    // TODO: This should no longer be required once the redundancy is removed
-    if (!frequencyMetadata) {
-      return false
-    }
 
     const errors: Errors = {}
 
-    if (name.trim() === '') {
-      errors.name = 'Name is required'
+    if (title.trim() === '') {
+      errors.title = 'Title is required'
     }
-    if (frequencyType === 'interval' && frequency <= 0) {
-      errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
-    }
-    if (
-      frequencyType === 'days_of_the_week' &&
-      frequencyMetadata['days']?.length === 0
-    ) {
-      errors.frequency = 'At least 1 day is required'
-    }
-    if (
-      frequencyType === 'day_of_the_month' &&
-      frequencyMetadata['months']?.length === 0
-    ) {
-      errors.frequency = 'At least 1 month is required'
-    }
-    if (
-      dueDate === null &&
-      !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
-      !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
-    ) {
-      if (REPEAT_ON_TYPE.includes(frequencyType)) {
-        errors.dueDate = 'Start date is required'
-      } else {
-        errors.dueDate = 'Due date is required'
+
+    if (frequencyMetadata) {
+      if (frequencyType === 'interval' && frequency <= 0) {
+        errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
+      }
+
+      if (
+        frequencyType === 'days_of_the_week' &&
+        frequencyMetadata['days']?.length === 0
+      ) {
+        errors.frequency = 'At least 1 day is required'
+      }
+
+      if (
+        frequencyType === 'day_of_the_month' &&
+        frequencyMetadata['months']?.length === 0
+      ) {
+        errors.frequency = 'At least 1 month is required'
+      }
+
+      if (
+        dueDate === null &&
+        !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
+        !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
+      ) {
+        if (REPEAT_ON_TYPE.includes(frequencyType)) {
+          errors.dueDate = 'Start date is required'
+        } else {
+          errors.dueDate = 'Due date is required'
+        }
       }
     }
 
@@ -185,7 +184,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ dueDate: e.target.value })
+    this.setState({
+      dueDate: moment(e.target.value).toDate(),
+    })
   }
 
   private HandleSaveTask = async () => {
@@ -200,33 +201,26 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       frequencyMetadata,
       dueDate,
-      isRolling,
-      isNotificable,
       labels,
-      notificationMetadata,
     } = this.state
 
     // TODO: type hardening
-    const task: any = {
-      id: taskId,
+    const task: any /*Omit<Task, 'id'>*/ = {
       title,
-      dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      isRolling,
+      next_due_date: dueDate,
       frequency,
-      frequencyType: frequencyType,
-      frequencyMetadata: JSON.stringify(frequencyMetadata ),
-      notification: isNotificable,
+      frequency_type: frequencyType,
+      frequency_metadata: JSON.stringify(frequencyMetadata),
       labels: labels,
-      notificationMetadata: notificationMetadata,
-    }
-
-    let SaveFunction = CreateTask
-    if (taskId !== null) {
-      SaveFunction = SaveTask
     }
 
     try {
-      await SaveFunction(task)
+      const promise = (taskId === null) ? CreateTask(task) : SaveTask({
+        ...task,
+        id: taskId
+      })
+
+      await promise
       goToMyTasks()
     } catch {
       this.setState({
@@ -257,22 +251,22 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private NotificationTriggerOptions: NotificationTriggerOption[] = [
     {
       title: 'Due Date/Time',
-      description: 'A simple reminder that a task is due',
+      description: 'After the due date and time has passed',
       type: 'dueDate',
     },
     {
       title: 'Predued',
-      description: 'before a task is due in few hours',
+      description: 'A few hours before the due date',
       type: 'predue',
     },
     {
       title: 'Overdue',
-      description: 'A notification when a task is overdue',
+      description: 'When left uncompleted at least one day past its due date',
       type: 'overdue',
     },
     {
       title: 'Nagging',
-      description: 'Daily reminders until the task is completed',
+      description: 'Daily until completed',
       type: 'nagging',
     },
   ]
@@ -285,17 +279,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
       this.setState({
         task: task,
-        title: task.name ? task.name : '',
+        title: task.title,
         frequencyType: task.frequencyType ? task.frequencyType : 'once',
-        frequencyMetadata: JSON.parse(task.frequencyMetadata),
+        // frequencyMetadata: JSON.parse(task.frequencyMetadata),
         frequency: task.frequency,
-        notificationMetadata: JSON.parse(task.notificationMetadata),
-        labels: task.labels,
+        // notificationMetadata: JSON.parse(task.notificationMetadata),
         isRolling: task.isRolling,
-        dueDate: task.nextDueDate
-          ? moment(task.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
-          : null,
-        updatedBy: task.updatedBy,
+        dueDate: task.next_due_date,
         isNotificable: task.notification,
       })
     } catch {
@@ -332,9 +322,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     if (frequencyType !== prevState.frequencyType) {
       // if frequancy type change to somthing need a due date then set it to the current date:
       if (!NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && !dueDate) {
-        this.setState({
-          dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
-        })
+        /*this.setState({
+          // TODO: Set due date
+        })*/
       } else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
         this.setState({
           dueDate: null,
@@ -343,18 +333,14 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  private onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+  private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ title: e.target.value })
   }
 
   private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      this.setState({
-        dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
-      })
-    } else {
-      this.setState({ dueDate: null })
-    }
+    this.setState({
+      dueDate: e.target.checked ? new Date() : null,
+    })
   }
 
   private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -411,10 +397,14 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
+  private onCancelClicked = () => {
+    goToMyTasks()
+  }
+
   render(): React.ReactNode {
     const { taskId } = this.props
     const {
-      title: name,
+      title,
       frequency,
       frequencyType,
       frequencyMetadata,
@@ -424,173 +414,25 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       labels,
       notificationMetadata,
       userLabels,
-      task,
-      updatedBy,
       errors,
       isSnackbarOpen,
       snackbarMessage,
       snackbarColor,
     } = this.state
+
     return (
       <Container maxWidth='md'>
         <Box>
-          <FormControl error={Boolean(errors.name)}>
+          <FormControl error={Boolean(errors.title)}>
             <Typography level='h4'>Description :</Typography>
             <Typography>What is this task about?</Typography>
             <Input
-              value={name}
-              onChange={this.onNameChange}
+              value={title}
+              onChange={this.onTitleChange}
             />
-            <FormHelperText>{errors.name}</FormHelperText>
+            <FormHelperText>{errors.title}</FormHelperText>
           </FormControl>
         </Box>
-        {frequencyMetadata && (
-          <RepeatOption
-            frequency={frequency}
-            onFrequencyUpdate={newFrequency =>
-              this.setState({ frequency: newFrequency })
-            }
-            frequencyType={frequencyType}
-            onFrequencyTypeUpdate={newFrequencyType =>
-              this.setState({ frequencyType: newFrequencyType })
-            }
-            frequencyMetadata={frequencyMetadata}
-            onFrequencyMetadataUpdate={newFrequencyMetadata =>
-              this.setState({ frequencyMetadata: newFrequencyMetadata })
-            }
-            onFrequencyTimeUpdate={t => {
-              this.setState({
-                frequencyMetadata: { ...frequencyMetadata, time: t },
-              })
-            }}
-            frequencyError={errors?.frequency}
-          />
-        )}
-
-        <Box mt={2}>
-          <Typography level='h4'>
-            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Start date' : 'Due date'}{' '}
-            :
-          </Typography>
-
-          {NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && (
-            <FormControl sx={{ mt: 1 }}>
-              <Checkbox
-                onChange={this.onDueDateChange}
-                defaultChecked={dueDate !== null}
-                overlay
-                label='Give this task a due date'
-              />
-              <FormHelperText>
-                task needs to be completed by a specific time.
-              </FormHelperText>
-            </FormControl>
-          )}
-          {dueDate && (
-            <FormControl error={Boolean(errors.dueDate)}>
-              <Typography>
-                {REPEAT_ON_TYPE.includes(frequencyType)
-                  ? 'When does this task start?'
-                  : 'When is the next first time this task is due?'}
-              </Typography>
-              <Input
-                type='datetime-local'
-                value={dueDate}
-                onChange={this.handleDueDateChange}
-              />
-              <FormHelperText>{errors.dueDate}</FormHelperText>
-            </FormControl>
-          )}
-        </Box>
-        {!['once', 'no_repeat'].includes(frequencyType) && (
-          <Box mt={2}>
-            <Typography level='h4'>Scheduling Preferences: </Typography>
-            <Typography>How to reschedule the next due date?</Typography>
-
-            <RadioGroup
-              name='tiers'
-              sx={{ gap: 1, '& > div': { p: 1 } }}
-            >
-              <FormControl>
-                <Radio
-                  overlay
-                  checked={!isRolling}
-                  onClick={this.onRescheduleFromDueDate}
-                  label='Reschedule from due date'
-                />
-                <FormHelperText>
-                  the next task will be scheduled from the original due date,
-                  even if the previous task was completed late
-                </FormHelperText>
-              </FormControl>
-              <FormControl>
-                <Radio
-                  overlay
-                  checked={isRolling}
-                  onClick={this.onRescheduleFromCompletionDate}
-                  label='Reschedule from completion date'
-                />
-                <FormHelperText>
-                  the next task will be scheduled from the actual completion
-                  date of the previous task
-                </FormHelperText>
-              </FormControl>
-            </RadioGroup>
-          </Box>
-        )}
-        <Box mt={2}>
-          <Typography level='h4'>Notifications : </Typography>
-          <Typography>
-            Get Reminders when this task is due or completed
-          </Typography>
-
-          <FormControl sx={{ mt: 1 }}>
-            <Checkbox
-              onChange={this.onNotificationsChange}
-              defaultChecked={isNotificable}
-              overlay
-              label='Notify for this task'
-            />
-            <FormHelperText>
-              When should receive notifications for this task
-            </FormHelperText>
-          </FormControl>
-        </Box>
-        {isNotificable && (
-          <Box
-            ml={4}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-
-              '& > div': { p: 2, borderRadius: 'md', display: 'flex' },
-            }}
-          >
-            <Card variant='outlined'>
-              <Typography>What should trigger the notification?</Typography>
-              {this.NotificationTriggerOptions.map(item => (
-                <FormControl
-                  sx={{ mb: 1 }}
-                  key={item.type}
-                >
-                  <Checkbox
-                    overlay
-                    onClick={() => this.onNotificationOptionChange(item)}
-                    checked={
-                      notificationMetadata
-                        ? notificationMetadata[item.type]
-                        : false
-                    }
-                    label={item.title}
-                    key={item.title}
-                  />
-                  <FormHelperText>{item.description}</FormHelperText>
-                </FormControl>
-              ))}
-            </Card>
-          </Box>
-        )}
         <Box mt={2}>
           <Typography level='h4'>Labels :</Typography>
           <Typography>
@@ -657,32 +499,144 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             </MenuItem>
           </Select>
         </Box>
-
-        { task && (
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 3 }}
-          >
-            <Sheet
-              sx={{
-                p: 2,
-                borderRadius: 'md',
-                boxShadow: 'sm',
-              }}
-            >
-              {(task.updatedAt && updatedBy > 0 && (
-                <>
-                  <Divider sx={{ my: 1 }} />
-
-                  <Typography>
-                    Updated at {moment(task.updatedAt).fromNow()}
-                  </Typography>
-                </>
-              ))}
-            </Sheet>
-          </Box>
+        {frequencyMetadata && (
+          <RepeatOption
+            frequency={frequency}
+            onFrequencyUpdate={newFrequency =>
+              this.setState({ frequency: newFrequency })
+            }
+            frequencyType={frequencyType}
+            onFrequencyTypeUpdate={newFrequencyType =>
+              this.setState({ frequencyType: newFrequencyType })
+            }
+            frequencyMetadata={frequencyMetadata}
+            onFrequencyMetadataUpdate={newFrequencyMetadata =>
+              this.setState({ frequencyMetadata: newFrequencyMetadata })
+            }
+            onFrequencyTimeUpdate={t => {
+              this.setState({
+                frequencyMetadata: { ...frequencyMetadata, time: t },
+              })
+            }}
+            frequencyError={errors?.frequency}
+          />
         )}
 
-        <Divider sx={{ mb: 9 }} />
+        <Box mt={2}>
+          <Typography level='h4'>
+            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Start date' : 'Due date'}{' '}
+            :
+          </Typography>
+
+          {NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && (
+            <FormControl sx={{ mt: 1 }}>
+              <Checkbox
+                onChange={this.onDueDateChange}
+                checked={dueDate !== null}
+                overlay
+                label='Give this task a due date'
+              />
+            </FormControl>
+          )}
+          {dueDate && (
+            <FormControl error={Boolean(errors.dueDate)}>
+              <Typography>
+                {REPEAT_ON_TYPE.includes(frequencyType)
+                  ? 'When does this task start?'
+                  : 'When is the next first time this task is due?'}
+              </Typography>
+              <Input
+                type='datetime-local'
+                value={moment(dueDate).format('yyyy-MM-DD[T]HH:mm')}
+                onChange={this.handleDueDateChange}
+              />
+              <FormHelperText>{errors.dueDate}</FormHelperText>
+            </FormControl>
+          )}
+        </Box>
+        {!['once', 'no_repeat'].includes(frequencyType) && (
+          <Box mt={2}>
+            <Typography level='h4'>Scheduling Preferences: </Typography>
+            <Typography>How to reschedule the next due date?</Typography>
+
+            <RadioGroup
+              name='tiers'
+              sx={{ gap: 1, '& > div': { p: 1 } }}
+            >
+              <FormControl>
+                <Radio
+                  overlay
+                  checked={!isRolling}
+                  onClick={this.onRescheduleFromDueDate}
+                  label='Reschedule from due date'
+                />
+                <FormHelperText>
+                  the next task will be scheduled from the original due date,
+                  even if the previous task was completed late
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <Radio
+                  overlay
+                  checked={isRolling}
+                  onClick={this.onRescheduleFromCompletionDate}
+                  label='Reschedule from completion date'
+                />
+                <FormHelperText>
+                  the next task will be scheduled from the actual completion
+                  date of the previous task
+                </FormHelperText>
+              </FormControl>
+            </RadioGroup>
+          </Box>
+        )}
+        <Box mt={2}>
+          <Typography level='h4'>Notifications :</Typography>
+
+          <FormControl sx={{ mt: 1 }}>
+            <Checkbox
+              onChange={this.onNotificationsChange}
+              checked={isNotificable}
+              overlay
+              label='Notify for this task'
+            />
+          </FormControl>
+        </Box>
+        {isNotificable && (
+          <Box
+            mt={1}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+
+              '& > div': { p: 2, borderRadius: 'md', display: 'flex' },
+            }}
+          >
+            <Card variant='outlined'>
+              <Typography>When should notifications trigger?</Typography>
+              {this.NotificationTriggerOptions.map(item => (
+                <FormControl
+                  sx={{ mb: 1 }}
+                  key={item.type}
+                >
+                  <Checkbox
+                    overlay
+                    onClick={() => this.onNotificationOptionChange(item)}
+                    checked={
+                      notificationMetadata
+                        ? notificationMetadata[item.type]
+                        : false
+                    }
+                    label={item.title}
+                    key={item.title}
+                  />
+                  <FormHelperText>{item.description}</FormHelperText>
+                </FormControl>
+              ))}
+            </Card>
+          </Box>
+        )}
 
         <Sheet
           variant='outlined'
@@ -712,7 +666,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           <Button
             color='neutral'
             variant='outlined'
-            onClick={window.history.back}
+            onClick={this.onCancelClicked}
           >
             Cancel
           </Button>
@@ -733,7 +687,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           onClose={this.onDeleteConfirmed}
         />
         <LabelModal
-          label={null}
+          id={undefined}
+          name={undefined}
+          color={undefined}
           ref={this.labelModalRef}
           onClose={() => console.error('missing impl')}
         />

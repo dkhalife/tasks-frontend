@@ -61,13 +61,13 @@ export const TASK_COLOR = {
   UPCOMING: '#AF5B5B',
   SKIPPED: '#E2C2FF',
 
-  // For the calendar
   OVERDUE: '#F03A47',
   TODAY: '#ffc107',
-  IN_A_WEEK: '#4ec1a2',
-  THIS_MONTH: '#00bcd4',
+  TOMORROW: '#ff9800',
+  THIS_WEEK: '#4ec1a2',
+  NEXT_WEEK: '#00bcd4',
   LATER: '#d7ccc8',
-  ANYTIME: '#90a4ae',
+  ANY_TIME: '#90a4ae',
 }
 
 export const getTextColorFromBackgroundColor = (

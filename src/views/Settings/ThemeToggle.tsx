@@ -4,7 +4,7 @@ import {
   DarkModeOutlined,
   LaptopOutlined,
 } from '@mui/icons-material'
-import { FormControl, FormLabel, ToggleButtonGroup, Button } from '@mui/joy'
+import { ToggleButtonGroup, Button, Box } from '@mui/joy'
 import React from 'react'
 
 interface ThemeToggleProps {
@@ -26,47 +26,35 @@ export class ThemeToggle extends React.Component<ThemeToggleProps> {
     const { themeMode } = this.props
 
     return (
-      <FormControl>
-        <FormLabel
-          id={`${ELEMENTID}-label`}
-          htmlFor='select-theme-mode'
+      <Box sx={{
+        mt: 1,
+      }}>
+        <ToggleButtonGroup
+          id={ELEMENTID}
+          variant='outlined'
+          value={themeMode}
+          onChange={this.onChange}
         >
-          Theme mode
-        </FormLabel>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4',
-          }}
-        >
-          <ToggleButtonGroup
-            id={ELEMENTID}
-            variant='outlined'
-            value={themeMode}
-            onChange={this.onChange}
+          <Button
+            startDecorator={<LightModeOutlined />}
+            value='light'
           >
-            <Button
-              startDecorator={<LightModeOutlined />}
-              value='light'
-            >
-              Light
-            </Button>
-            <Button
-              startDecorator={<DarkModeOutlined />}
-              value='dark'
-            >
-              Dark
-            </Button>
-            <Button
-              startDecorator={<LaptopOutlined />}
-              value='system'
-            >
-              System
-            </Button>
-          </ToggleButtonGroup>
-        </div>
-      </FormControl>
+            Light
+          </Button>
+          <Button
+            startDecorator={<DarkModeOutlined />}
+            value='dark'
+          >
+            Dark
+          </Button>
+          <Button
+            startDecorator={<LaptopOutlined />}
+            value='system'
+          >
+            System
+          </Button>
+        </ToggleButtonGroup>
+      </Box>
     )
   }
 }

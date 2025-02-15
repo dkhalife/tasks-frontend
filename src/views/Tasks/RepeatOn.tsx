@@ -39,6 +39,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
   }
 
   private onTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // TODO: Update & simplify
     this.props.onFrequencyTimeUpdate(
       moment(
         moment(new Date()).format('YYYY-MM-DD') + 'T' + e.target.value,
@@ -150,7 +151,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
         <Typography>At: </Typography>
         <Input
           type='time'
-          defaultValue={currentTime}
+          value={currentTime}
           onChange={this.onTimeChange}
         />
       </Grid>

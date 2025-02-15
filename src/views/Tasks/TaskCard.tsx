@@ -28,7 +28,6 @@ import {
   Chip,
   Card,
   Grid,
-  Avatar,
   Typography,
   IconButton,
   Menu,
@@ -36,10 +35,7 @@ import {
   Divider,
 } from '@mui/joy'
 import React from 'react'
-import {
-  ConfirmationModalProps,
-  ConfirmationModal,
-} from '../Modals/Inputs/ConfirmationModal'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { SxProps } from '@mui/material'
 import { goToTaskEdit, goToTask, goToTaskHistory } from '@/utils/navigation'
@@ -52,10 +48,7 @@ interface TaskCardProps {
   viewOnly: boolean
 }
 
-interface TaskCardState {
-  isCompleteWithPastDateModalOpen: boolean
-  confirmModelConfig: ConfirmationModalProps | null
-}
+type TaskCardState = object
 
 export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   private menuRef = React.createRef<HTMLDivElement>()
@@ -64,10 +57,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
   constructor(props: TaskCardProps) {
     super(props)
-
     this.state = {
-      isCompleteWithPastDateModalOpen: false,
-      confirmModelConfig: null,
     }
   }
 
@@ -77,20 +67,10 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
       await DeleteTask(task.id)
       onTaskRemove(task)
     }
-
-    this.setState({ confirmModelConfig: null })
   }
 
   private handleDelete = () => {
-    this.setState({
-      confirmModelConfig: {
-        title: 'Delete Task',
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-        message: 'Are you sure you want to delete this task?',
-        onClose: this.handleDeleteConfirm,
-      },
-    })
+    this.confirmationModalRef.current?.open()
   }
 
   private handleTaskCompletion = async () => {
@@ -99,32 +79,32 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     onTaskUpdate(data.task, 'completed')
   }
 
-  private handleChangeDueDate = async (newDate: string | null) => {
+  private handleChangeDueDate = async (newDate: Date | null) => {
     if (newDate === null) {
       return
     }
 
     const { task, onTaskUpdate } = this.props
 
-    const data = await UpdateDueDate(task.id, new Date(newDate))
+    const data = await UpdateDueDate(task.id, newDate)
     onTaskUpdate(data.task, 'rescheduled')
   }
 
-  private handleCompleteWithPastDate = async (newDate: string | null) => {
+  private handleCompleteWithPastDate = async (newDate: Date | null) => {
     if (newDate === null) {
       return
     }
 
     const { task, onTaskUpdate } = this.props
 
-    const data = await MarkTaskComplete(task.id, new Date(newDate))
+    const data = await MarkTaskComplete(task.id, newDate)
     onTaskUpdate(data.task, 'completed')
   }
 
   private getFrequencyIcon = (task: Task) => {
-    if (['once', 'no_repeat'].includes(task.frequencyType)) {
+    if (['once', 'no_repeat'].includes(task.frequency_type)) {
       return <TimesOneMobiledata />
-    } else if (task.frequencyType === 'trigger') {
+    } else if (task.frequency_type === 'trigger') {
       return <Webhook />
     } else {
       return <Repeat />
@@ -143,18 +123,16 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   private onSkipTask = async () => {
     const { task, onTaskUpdate } = this.props
 
-    const data = await SkipTask(task.id)
-    const newTask = data.res
-    onTaskUpdate(newTask, 'skipped')
+    const response = await SkipTask(task.id)
+    onTaskUpdate(response.task, 'skipped')
   }
 
   private onChangeDueDate = () => {
-    this.confirmationModalRef.current?.open()
+    this.dateModalRef.current?.open()
   }
 
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
-    const { confirmModelConfig } = this.state
 
     return (
       <Box key={task.id + '-box'}>
@@ -166,9 +144,9 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             zIndex: 1,
             left: 10,
           }}
-          color={getDueDateChipColor(task.nextDueDate)}
+          color={getDueDateChipColor(task.next_due_date)}
         >
-          {getDueDateChipText(task.nextDueDate)}
+          {getDueDateChipText(task.next_due_date)}
         </Chip>
 
         <Chip
@@ -329,24 +307,26 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
           </Grid>
           <DateModal
             key={'changeDueDate' + task.id}
-            current={task.nextDueDate}
+            current={task.next_due_date}
             title={`Change due date`}
             onClose={this.handleChangeDueDate}
           />
           <DateModal
             ref={this.dateModalRef}
             key={'completedInPast' + task.id}
-            current={task.nextDueDate}
+            current={task.next_due_date}
             title={`Save Task that you completed in the past`}
             onClose={this.handleCompleteWithPastDate}
           />
 
-          {confirmModelConfig && (
-            <ConfirmationModal
-              ref={this.confirmationModalRef}
-              {...confirmModelConfig}
-            />
-          )}
+          <ConfirmationModal
+            ref={this.confirmationModalRef}
+            title='Delete Task'
+            confirmText='Delete'
+            cancelText='Cancel'
+            message='Are you sure you want to delete this task?'
+            onClose={this.handleDeleteConfirm}
+          />
         </Card>
       </Box>
     )
