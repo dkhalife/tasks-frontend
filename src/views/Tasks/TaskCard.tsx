@@ -49,17 +49,33 @@ interface TaskCardProps {
   viewOnly: boolean
 }
 
-type TaskCardState = object
+interface TaskCardState {
+  isMoreMenuOpen: boolean
+}
 
 export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   private menuRef = React.createRef<HTMLDivElement>()
+  private moreMenuRef = React.createRef<HTMLAnchorElement>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
 
   constructor(props: TaskCardProps) {
     super(props)
     this.state = {
+      isMoreMenuOpen: false,
     }
+  }
+
+  private handleMoreMenu = () => {
+    this.setState({
+      isMoreMenuOpen: !this.state.isMoreMenuOpen,
+    })
+  }
+
+  private dismissMoreMenu = () => {
+    this.setState({
+      isMoreMenuOpen: false,
+    })
   }
 
   private handleDeleteConfirm = async (isConfirmed: boolean) => {
@@ -70,7 +86,18 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     }
   }
 
+  private handleEdit = (taskId: string) => {
+    this.dismissMoreMenu()
+    goToTaskEdit(taskId)
+  }
+
+  private handleHistory = (taskId: string) => {
+    this.dismissMoreMenu()
+    goToTaskHistory(taskId)
+  }
+
   private handleDelete = () => {
+    this.dismissMoreMenu()
     this.confirmationModalRef.current?.open()
   }
 
@@ -122,18 +149,21 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   }
 
   private onSkipTask = async () => {
-    const { task, onTaskUpdate } = this.props
+    this.dismissMoreMenu()
 
+    const { task, onTaskUpdate } = this.props
     const response = await SkipTask(task.id)
     onTaskUpdate(response.task, 'skipped')
   }
 
   private onChangeDueDate = () => {
+    this.dismissMoreMenu()
     this.dateModalRef.current?.open()
   }
 
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
+    const { isMoreMenuOpen } = this.state
 
     return (
       <Box key={task.id + '-box'}>
@@ -218,6 +248,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                 <IconButton
                   variant='soft'
                   color='success'
+                  ref={this.moreMenuRef}
+                  onClick={this.handleMoreMenu}
                   sx={{
                     borderRadius: '50%',
                     width: 25,
@@ -230,6 +262,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                 </IconButton>
                 <Menu
                   size='lg'
+                  anchorEl={this.moreMenuRef.current}
+                  open={isMoreMenuOpen}
                   ref={this.menuRef}
                 >
                   <MenuItem onClick={this.onSkipTask}>
@@ -243,13 +277,13 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                     <MoreTime />
                     Change due date
                   </MenuItem>
-                  <MenuItem onClick={() => goToTaskEdit(task.id)}>
+                  <MenuItem onClick={() => this.handleEdit(task.id)}>
                     <Edit />
                     Edit
                   </MenuItem>
                   <Divider />
                   <MenuItem
-                    onClick={() => goToTaskHistory(task.id)}
+                    onClick={() => this.handleHistory(task.id)}
                   >
                     <ManageSearch />
                     History
