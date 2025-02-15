@@ -5,6 +5,7 @@ import {
   SkipTask,
 } from '@/api/tasks'
 import {
+  TASK_UPDATE_EVENT,
   Task,
   getDueDateChipColor,
   getDueDateChipText,
@@ -42,8 +43,8 @@ import { goToTaskEdit, goToTask, goToTaskHistory } from '@/utils/navigation'
 
 interface TaskCardProps {
   task: Task
-  onTaskUpdate: (task: Task, event: string) => void
-  onTaskRemove: (task: Task) => void
+  onTaskUpdate: (updatedTask: Task, event: TASK_UPDATE_EVENT) => void
+  onTaskRemove: () => void
   sx: SxProps
   viewOnly: boolean
 }
@@ -65,7 +66,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     const { task, onTaskRemove } = this.props
     if (isConfirmed === true) {
       await DeleteTask(task.id)
-      onTaskRemove(task)
+      onTaskRemove()
     }
   }
 
@@ -75,8 +76,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
-    const data = await MarkTaskComplete(task.id, null)
-    onTaskUpdate(data.task, 'completed')
+    const response = await MarkTaskComplete(task.id, null)
+    onTaskUpdate(response.task, 'completed')
   }
 
   private handleChangeDueDate = async (newDate: Date | null) => {
@@ -86,8 +87,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
     const { task, onTaskUpdate } = this.props
 
-    const data = await UpdateDueDate(task.id, newDate)
-    onTaskUpdate(data.task, 'rescheduled')
+    const response = await UpdateDueDate(task.id, newDate)
+    onTaskUpdate(response.task, 'rescheduled')
   }
 
   private handleCompleteWithPastDate = async (newDate: Date | null) => {
@@ -97,8 +98,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
     const { task, onTaskUpdate } = this.props
 
-    const data = await MarkTaskComplete(task.id, newDate)
-    onTaskUpdate(data.task, 'completed')
+    const response = await MarkTaskComplete(task.id, newDate)
+    onTaskUpdate(response.task, 'completed')
   }
 
   private getFrequencyIcon = (task: Task) => {

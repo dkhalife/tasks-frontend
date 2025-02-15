@@ -25,7 +25,7 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
-import { goToTaskEdit, goToTaskHistory } from '@/utils/navigation'
+import { goToMyTasks, goToTaskEdit, goToTaskHistory } from '@/utils/navigation'
 
 interface TaskViewProps {
   taskId: string
@@ -65,6 +65,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
     this.setState({
       task: data.task,
     })
+    goToMyTasks()
   }
 
   private initTask = async () => {
