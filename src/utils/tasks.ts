@@ -104,7 +104,7 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   return groups
 }
 
-export const groupTasksBy = (tasks: Task[], groupBy: GROUP_BY): TaskGroups => {
+export const groupTasksBy = (tasks: Task[]/*TODO:, groupBy: GROUP_BY*/): TaskGroups => {
   //if (groupBy === 'due_date') {
     return groupByDueDate(tasks)
   //}

@@ -1,5 +1,4 @@
 export interface HistoryEntry {
-  completedAt: string
-  dueDate: string
-  notes: string
+  completedDate: Date | null
+  dueDate: Date | null
 }

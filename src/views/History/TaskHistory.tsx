@@ -59,9 +59,9 @@ export class TaskHistory extends React.Component<
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, task) => {
-        if (task.dueDate && task.completedAt) {
+        if (task.dueDate && task.completedDate) {
           // Only consider tasks with a due date
-          return acc + moment(task.completedAt).diff(task.dueDate, 'hours')
+          return acc + moment(task.completedDate).diff(task.dueDate, 'hours')
         }
         return acc
       }, 0) / histories.filter(task => task.dueDate).length
@@ -69,7 +69,7 @@ export class TaskHistory extends React.Component<
     const maximumDelay = histories.reduce((acc, task) => {
       if (task.dueDate) {
         // Only consider tasks with a due date
-        const delay = moment(task.completedAt).diff(task.dueDate, 'hours')
+        const delay = moment(task.completedDate).diff(task.dueDate, 'hours')
         return delay > acc ? delay : acc
       }
       return acc

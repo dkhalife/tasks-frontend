@@ -56,7 +56,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     const data = await GetTasks()
     this.setState({
       tasks: data.tasks,
-      groups: groupTasksBy(data.tasks, 'due_date'),
+      groups: groupTasksBy(data.tasks/*, 'due_date'*/),
       isLoading: false,
     })
   }

@@ -4,7 +4,7 @@ import {
   DarkModeOutlined,
   LaptopOutlined,
 } from '@mui/icons-material'
-import { FormControl, FormLabel, ToggleButtonGroup, Button, Box } from '@mui/joy'
+import { ToggleButtonGroup, Button, Box } from '@mui/joy'
 import React from 'react'
 
 interface ThemeToggleProps {

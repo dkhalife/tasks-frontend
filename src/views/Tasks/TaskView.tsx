@@ -112,7 +112,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
   private handleSkippingTask = async () => {
     const data = await SkipTask(this.props.taskId)
     this.setState({
-      task: data.res,
+      task: data.task,
     })
   }
 
