@@ -88,7 +88,6 @@ export class ForgotPasswordView extends React.Component<
             marginTop: 4,
             display: 'flex',
             flexDirection: 'column',
-
             justifyContent: 'space-between',
             alignItems: 'center',
           }}
@@ -104,7 +103,7 @@ export class ForgotPasswordView extends React.Component<
               padding: 2,
               borderRadius: '8px',
               boxShadow: 'md',
-              minHeight: '70vh',
+              minHeight: '450px',
               justifyContent: 'space-between',
               justifyItems: 'center',
             }}
@@ -140,7 +139,7 @@ export class ForgotPasswordView extends React.Component<
                     gap: 6,
                   }}
                 >
-                  <Typography gutterBottom>
+                  <Typography>
                     Enter your email, and we&lsquo;ll send you a link to get
                     into your account.
                   </Typography>
