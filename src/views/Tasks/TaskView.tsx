@@ -87,7 +87,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
         size: 6,
         icon: <CalendarMonth />,
         text: 'Due Date',
-        subtext: task.nextDueDate ? moment(task.nextDueDate).fromNow() : 'N/A',
+        subtext: task.next_due_date ? moment(task.next_due_date).fromNow() : 'N/A',
       },
       {
         size: 6,
@@ -168,8 +168,8 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
             size='md'
             sx={{ mb: 1 }}
           >
-            {task.nextDueDate
-              ? `Due at ${moment(task.nextDueDate).format('MM/DD/YYYY hh:mm A')}`
+            {task.next_due_date
+              ? `Due at ${moment(task.next_due_date).format('MM/DD/YYYY hh:mm A')}`
               : 'N/A'}
           </Chip>
           {task?.labels?.map((label, index) => (

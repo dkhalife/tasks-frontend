@@ -1,15 +1,16 @@
 import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
+import moment from 'moment'
 import React from 'react'
 
 interface DateModalProps {
-  current: string
+  current: Date | null
   title: string
 
-  onClose: (newDate: string | null) => void
+  onClose: (newDate: Date | null) => void
 }
 
 interface DateModalState {
-  date: string
+  date: Date | null
   isOpen: boolean
 }
 
@@ -18,9 +19,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
     super(props)
 
     this.state = {
-      date: props.current
-        ? new Date(props.current).toISOString().split('T')[0]
-        : '',
+      date: props.current,
       isOpen: false,
     }
   }
@@ -40,13 +39,15 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   }
 
   private onDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({ date: e.target.value })
+    this.setState({
+      date: moment(e.target.value).toDate(),
+    })
   }
 
   public render(): React.ReactNode {
     const { title } = this.props
     const { isOpen } = this.state
-    const { date } = this.state
+    const date = moment(this.state.date).format('yyyy-MM-DD[T]HH:mm')
 
     return (
       <Modal

@@ -87,7 +87,7 @@ export class NotificationSetting extends React.Component<
           }}
         >
           <Select
-            defaultValue={type}
+            value={type}
             sx={{ maxWidth: '200px' }}
             onChange={this.onNotificationTypeChange}
           >

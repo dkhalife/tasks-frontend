@@ -3,38 +3,34 @@ import { Chip, ColorPaletteProp } from '@mui/joy'
 import React, { ReactElement } from 'react'
 
 interface CompletedChipProps {
-  dueDate: string
-  completedAt: string
+  dueDate: Date | null
+  completedDate: Date | null
 }
 
 export class CompletedChip extends React.Component<CompletedChipProps> {
   render(): React.ReactNode {
-    const dueDate = new Date(this.props.dueDate).getTime()
-    const completedAt = new Date(this.props.completedAt).getTime()
+    const { dueDate, completedDate } = this.props
+
+    const dueAt = dueDate?.getTime()
+    const completedAtOrNow = (completedDate ?? new Date()).getTime()
 
     let text = 'No Due Date'
     let color: ColorPaletteProp = 'neutral'
     let icon: ReactElement = <CalendarViewDay />
-    // if completed few hours +-6 hours
-    if (
-      dueDate &&
-      completedAt > dueDate - 1000 * 60 * 60 * 6 &&
-      completedAt < dueDate + 1000 * 60 * 60 * 6
-    ) {
-      text = 'On Time'
-      color = 'success'
-      icon = <Check />
-    } else if (dueDate && completedAt < dueDate) {
-      text = 'On Time'
-      color = 'success'
-      icon = <Check />
-    }
 
-    // if completed after due date then it's late
-    else if (dueDate && completedAt > dueDate) {
-      text = 'Late'
-      color = 'warning'
-      icon = <Timelapse />
+    if (dueAt) {
+      const sixHours = 6 * 60 * 60 * 1000;
+      const onTime = Math.abs(completedAtOrNow - dueAt) <= sixHours;
+
+      if (onTime) {
+        text = 'On Time'
+        color = 'success'
+        icon = <Check />
+      } else {
+        text = 'Late'
+        color = 'warning'
+        icon = <Timelapse />
+      }          
     }
 
     return (

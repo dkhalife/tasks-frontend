@@ -63,6 +63,7 @@ export const TASK_COLOR = {
 
   OVERDUE: '#F03A47',
   TODAY: '#ffc107',
+  TOMORROW: '#ff9800',
   THIS_WEEK: '#4ec1a2',
   NEXT_WEEK: '#00bcd4',
   LATER: '#d7ccc8',

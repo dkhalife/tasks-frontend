@@ -37,7 +37,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
         <FormControl sx={{ mt: 1 }}>
           <Checkbox
             onChange={this.onRepeatToggle}
-            defaultChecked={!['once', 'trigger'].includes(frequencyType)}
+            checked={!['once', 'trigger'].includes(frequencyType)}
             overlay
             label='Repeat this task'
           />

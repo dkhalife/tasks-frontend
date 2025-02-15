@@ -17,7 +17,7 @@ import {
 import React from 'react'
 import { goToTaskCreate } from '@/utils/navigation'
 import { TaskCard } from '@/views/Tasks/TaskCard'
-import { groupTasksBy, TaskGroups } from '@/utils/Tasks'
+import { TaskGroups, groupTasksBy } from '@/utils/tasks'
 
 type MyTasksProps = object
 
@@ -42,6 +42,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       isExpanded: {
         overdue: true,
         today: true,
+        tomorrow: false,
         this_week: false,
         next_week: false,
         later: false,

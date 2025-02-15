@@ -79,32 +79,32 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     onTaskUpdate(data.task, 'completed')
   }
 
-  private handleChangeDueDate = async (newDate: string | null) => {
+  private handleChangeDueDate = async (newDate: Date | null) => {
     if (newDate === null) {
       return
     }
 
     const { task, onTaskUpdate } = this.props
 
-    const data = await UpdateDueDate(task.id, new Date(newDate))
+    const data = await UpdateDueDate(task.id, newDate)
     onTaskUpdate(data.task, 'rescheduled')
   }
 
-  private handleCompleteWithPastDate = async (newDate: string | null) => {
+  private handleCompleteWithPastDate = async (newDate: Date | null) => {
     if (newDate === null) {
       return
     }
 
     const { task, onTaskUpdate } = this.props
 
-    const data = await MarkTaskComplete(task.id, new Date(newDate))
+    const data = await MarkTaskComplete(task.id, newDate)
     onTaskUpdate(data.task, 'completed')
   }
 
   private getFrequencyIcon = (task: Task) => {
-    if (['once', 'no_repeat'].includes(task.frequencyType)) {
+    if (['once', 'no_repeat'].includes(task.frequency_type)) {
       return <TimesOneMobiledata />
-    } else if (task.frequencyType === 'trigger') {
+    } else if (task.frequency_type === 'trigger') {
       return <Webhook />
     } else {
       return <Repeat />
@@ -123,9 +123,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   private onSkipTask = async () => {
     const { task, onTaskUpdate } = this.props
 
-    const data = await SkipTask(task.id)
-    const newTask = data.res
-    onTaskUpdate(newTask, 'skipped')
+    const response = await SkipTask(task.id)
+    onTaskUpdate(response.task, 'skipped')
   }
 
   private onChangeDueDate = () => {
@@ -145,9 +144,9 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             zIndex: 1,
             left: 10,
           }}
-          color={getDueDateChipColor(task.nextDueDate)}
+          color={getDueDateChipColor(task.next_due_date)}
         >
-          {getDueDateChipText(task.nextDueDate)}
+          {getDueDateChipText(task.next_due_date)}
         </Chip>
 
         <Chip
@@ -308,14 +307,14 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
           </Grid>
           <DateModal
             key={'changeDueDate' + task.id}
-            current={task.nextDueDate}
+            current={task.next_due_date}
             title={`Change due date`}
             onClose={this.handleChangeDueDate}
           />
           <DateModal
             ref={this.dateModalRef}
             key={'completedInPast' + task.id}
-            current={task.nextDueDate}
+            current={task.next_due_date}
             title={`Save Task that you completed in the past`}
             onClose={this.handleCompleteWithPastDate}
           />

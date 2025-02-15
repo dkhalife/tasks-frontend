@@ -23,18 +23,17 @@ import {
   Chip,
   MenuItem,
   Sheet,
-  Divider,
   Button,
   Snackbar,
   Option,
 } from '@mui/joy'
-import moment from 'moment'
 import React, { ChangeEvent } from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
 import { goToMyTasks } from '@/utils/navigation'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
+import moment from 'moment'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
@@ -62,7 +61,7 @@ interface TaskEditState {
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
   snackbarColor: ColorPaletteProp
-  dueDate: string | null
+  dueDate: Date | null
   frequencyType: FrequencyType
   frequency: number
   frequencyMetadata: FrequencyMetadata | null
@@ -114,40 +113,41 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     const { title, frequencyType, frequency, frequencyMetadata, dueDate } =
       this.state
 
-    // TODO: This should no longer be required once the redundancy is removed
-    if (!frequencyMetadata) {
-      return false
-    }
-
     const errors: Errors = {}
 
     if (title.trim() === '') {
       errors.title = 'Title is required'
     }
-    if (frequencyType === 'interval' && frequency <= 0) {
-      errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
-    }
-    if (
-      frequencyType === 'days_of_the_week' &&
-      frequencyMetadata['days']?.length === 0
-    ) {
-      errors.frequency = 'At least 1 day is required'
-    }
-    if (
-      frequencyType === 'day_of_the_month' &&
-      frequencyMetadata['months']?.length === 0
-    ) {
-      errors.frequency = 'At least 1 month is required'
-    }
-    if (
-      dueDate === null &&
-      !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
-      !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
-    ) {
-      if (REPEAT_ON_TYPE.includes(frequencyType)) {
-        errors.dueDate = 'Start date is required'
-      } else {
-        errors.dueDate = 'Due date is required'
+
+    if (frequencyMetadata) {
+      if (frequencyType === 'interval' && frequency <= 0) {
+        errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
+      }
+
+      if (
+        frequencyType === 'days_of_the_week' &&
+        frequencyMetadata['days']?.length === 0
+      ) {
+        errors.frequency = 'At least 1 day is required'
+      }
+
+      if (
+        frequencyType === 'day_of_the_month' &&
+        frequencyMetadata['months']?.length === 0
+      ) {
+        errors.frequency = 'At least 1 month is required'
+      }
+
+      if (
+        dueDate === null &&
+        !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
+        !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
+      ) {
+        if (REPEAT_ON_TYPE.includes(frequencyType)) {
+          errors.dueDate = 'Start date is required'
+        } else {
+          errors.dueDate = 'Due date is required'
+        }
       }
     }
 
@@ -184,7 +184,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ dueDate: e.target.value })
+    this.setState({
+      dueDate: moment(e.target.value).toDate(),
+    })
   }
 
   private HandleSaveTask = async () => {
@@ -199,33 +201,26 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       frequencyMetadata,
       dueDate,
-      isRolling,
-      isNotificable,
       labels,
-      notificationMetadata,
     } = this.state
 
     // TODO: type hardening
-    const task: any = {
-      id: taskId,
+    const task: any /*Omit<Task, 'id'>*/ = {
       title,
-      dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      isRolling,
+      next_due_date: dueDate,
       frequency,
-      frequencyType: frequencyType,
-      frequencyMetadata: JSON.stringify(frequencyMetadata ),
-      notification: isNotificable,
+      frequency_type: frequencyType,
+      frequency_metadata: JSON.stringify(frequencyMetadata),
       labels: labels,
-      notificationMetadata: notificationMetadata,
-    }
-
-    let SaveFunction = CreateTask
-    if (taskId !== null) {
-      SaveFunction = SaveTask
     }
 
     try {
-      await SaveFunction(task)
+      const promise = (taskId === null) ? CreateTask(task) : SaveTask({
+        ...task,
+        id: taskId
+      })
+
+      await promise
       goToMyTasks()
     } catch {
       this.setState({
@@ -290,9 +285,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         frequency: task.frequency,
         // notificationMetadata: JSON.parse(task.notificationMetadata),
         isRolling: task.isRolling,
-        dueDate: task.nextDueDate
-          ? moment(task.nextDueDate).format('YYYY-MM-DDTHH:mm:ss')
-          : null,
+        dueDate: task.next_due_date,
         isNotificable: task.notification,
       })
     } catch {
@@ -329,9 +322,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     if (frequencyType !== prevState.frequencyType) {
       // if frequancy type change to somthing need a due date then set it to the current date:
       if (!NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && !dueDate) {
-        this.setState({
-          dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
-        })
+        /*this.setState({
+          // TODO: Set due date
+        })*/
       } else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
         this.setState({
           dueDate: null,
@@ -345,13 +338,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      this.setState({
-        dueDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:00'),
-      })
-    } else {
-      this.setState({ dueDate: null })
-    }
+    this.setState({
+      dueDate: e.target.checked ? new Date() : null,
+    })
   }
 
   private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -430,6 +419,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       snackbarMessage,
       snackbarColor,
     } = this.state
+
     return (
       <Container maxWidth='md'>
         <Box>
@@ -542,7 +532,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             <FormControl sx={{ mt: 1 }}>
               <Checkbox
                 onChange={this.onDueDateChange}
-                defaultChecked={dueDate !== null}
+                checked={dueDate !== null}
                 overlay
                 label='Give this task a due date'
               />
@@ -557,7 +547,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               </Typography>
               <Input
                 type='datetime-local'
-                value={dueDate}
+                value={moment(dueDate).format('yyyy-MM-DD[T]HH:mm')}
                 onChange={this.handleDueDateChange}
               />
               <FormHelperText>{errors.dueDate}</FormHelperText>
@@ -606,7 +596,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           <FormControl sx={{ mt: 1 }}>
             <Checkbox
               onChange={this.onNotificationsChange}
-              defaultChecked={isNotificable}
+              checked={isNotificable}
               overlay
               label='Notify for this task'
             />

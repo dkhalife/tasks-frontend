@@ -162,7 +162,7 @@ export class LabelModal extends React.Component<
             </Typography>
             <Input
               fullWidth
-              defaultValue={labelName}
+              value={labelName}
               onChange={this.onLabelNameChange}
             />
           </FormControl>
@@ -178,7 +178,7 @@ export class LabelModal extends React.Component<
             <Select
               onChange={this.onColorChange}
               required={true}
-              defaultValue={color}
+              value={color}
               startDecorator={
                 <span
                   style={{

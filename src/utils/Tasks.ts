@@ -12,7 +12,8 @@ export type TaskGroup = {
 
 interface DueDateGroups {
   'overdue': TaskGroup
-  'today': TaskGroup 
+  'today': TaskGroup
+  'tomorrow': TaskGroup
   'this_week': TaskGroup
   'next_week': TaskGroup
   'later': TaskGroup
@@ -31,6 +32,11 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
       name: 'Today',
       content: [],
       color: TASK_COLOR.TODAY,
+    },
+    'tomorrow': {
+      name: 'Tomorrow',
+      content: [],
+      color: TASK_COLOR.TOMORROW,
     },
     'this_week': {
       name: 'This week',
@@ -55,16 +61,18 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   }
 
   const now = new Date().getTime()
-  const endOfThisWeek = moment().endOf('week').toDate().getTime()
-  const endOfNextWeek = moment().endOf('week').add(1, 'week').toDate().getTime()
+  const endOfToday = moment().endOf('day').toDate().getTime()
+  const endOfTomorrow = moment().endOf('day').add(1, 'day').toDate().getTime()
+  const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
+  const endOfNextWeek = moment().endOf('isoWeek').add(1, 'week').toDate().getTime()
 
   tasks.forEach((task) => {
-    if (task.nextDueDate === null) {
+    if (task.next_due_date === null) {
       groups['any_time'].content.push(task)
       return
     }
 
-    const due_date = new Date(task.nextDueDate).getTime()
+    const due_date = task.next_due_date.getTime()
     if (now >= due_date) {
       groups['overdue'].content.push(task)
       return
@@ -80,7 +88,17 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
       return
     }
 
-    groups['this_week'].content.push(task)
+    if (due_date > endOfTomorrow) {
+      groups['this_week'].content.push(task)
+      return
+    }
+
+    if (due_date > endOfToday) {
+      groups['tomorrow'].content.push(task)
+      return
+    }
+
+    groups['today'].content.push(task)
   })
 
   return groups
