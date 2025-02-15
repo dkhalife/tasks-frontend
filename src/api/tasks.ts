@@ -69,11 +69,11 @@ export const MarkTaskComplete = async (
   completedDate: Date | null,
 ): Promise<SingleTaskResponse> => {
   const body: {
-    completedDate?: number
+    completed_date?: number
   } = {}
 
   if (completedDate) {
-    body.completedDate = completedDate.getTime() // TODO: generalize marshalling logic
+    body.completed_date = completedDate.getTime() // TODO: generalize marshalling logic
   }
 
   return UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/do`, 'POST', body))

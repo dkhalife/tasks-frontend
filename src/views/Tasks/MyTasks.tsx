@@ -1,6 +1,6 @@
 import { GetTasks } from '@/api/tasks'
 import { Loading } from '@/Loading'
-import { Task } from '@/models/task'
+import { Task, TASK_UPDATE_EVENT } from '@/models/task'
 import { ExpandCircleDown, Add } from '@mui/icons-material'
 import {
   Container,
@@ -58,6 +58,44 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       tasks: data.tasks,
       groups: groupTasksBy(data.tasks/*, 'due_date'*/),
       isLoading: false,
+    })
+  }
+
+  private updateTask = async (group: keyof TaskGroups, oldTask: Task, newTask: Task, event: TASK_UPDATE_EVENT) => {
+    this.removeTask(group, oldTask)
+
+    // TODO: If the task is still active, add the new instance to the corresponding group
+
+    let message
+    switch (event) {
+      default:
+      case 'completed':
+        message = "Task completed"
+        break
+      case 'rescheduled':
+        message = "Task rescheduled"
+        break
+      case 'skipped':
+        message = "Task skipped"
+        break
+    }
+
+    this.setState({
+      snackBarMessage: message,
+      isSnackbarOpen: true,
+    })
+  }
+
+  private removeTask = async (group: keyof TaskGroups, task: Task) => {
+    const { groups } = this.state
+
+    if (!groups) {
+      throw new Error('Groups not loaded')
+    }
+
+    groups[group].content = groups[group].content.filter(t => t.id !== task.id)
+    this.setState({
+      groups,
     })
   }
 
@@ -147,8 +185,8 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                     <TaskCard
                       key={task.id}
                       task={task}
-                      onTaskUpdate={() => {} /* TODO: update */}
-                      onTaskRemove={() => {} /* TODO: update */}
+                      onTaskUpdate={(updatedTask, event) => this.updateTask(groupKey, task, updatedTask, event)}
+                      onTaskRemove={() => this.removeTask(groupKey, task)}
                       sx={{}}
                       viewOnly={false}
                     />
