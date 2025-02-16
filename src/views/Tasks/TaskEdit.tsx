@@ -174,6 +174,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       title,
       frequency,
       nextDueDate,
+      isRolling,
       labels,
     } = this.state
 
@@ -181,6 +182,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       title,
       labels: labels,
       next_due_date: nextDueDate,
+      is_rolling: isRolling,
       frequency,
     }
 
