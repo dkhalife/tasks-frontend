@@ -32,7 +32,7 @@ export type RepeatInterval = {
 }
 
 export type DayOfTheWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6
-type UniqueDaysOfWeek = [DayOfTheWeek, ...(DayOfTheWeek)[]]
+export type UniqueDaysOfWeek = [DayOfTheWeek, ...(DayOfTheWeek)[]]
 export type RepeatDaysOfTheWeek = {
   type: 'custom'
   on: 'days_of_the_week'
@@ -40,7 +40,7 @@ export type RepeatDaysOfTheWeek = {
 }
 
 export type Month = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
-type UniqueMonths = [Month, ...(Month)[]]
+export type UniqueMonths = [Month, ...(Month)[]]
 
 export type RepeatDayOfTheMonth = {
   type: 'custom'
