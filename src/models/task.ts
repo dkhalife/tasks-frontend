@@ -2,21 +2,60 @@ import moment from 'moment'
 import { Label } from './label'
 import { ColorPaletteProp } from '@mui/joy'
 import { dayOfMonthSuffix } from '../utils/date'
+import { IntervalUnit } from '@/utils/recurrance'
 
-export interface FrequencyMetadata {
-  unit: string
-  time: string
-  days?: string[]
-  months?: string[]
+export type RepeatOnce = {
+  type: 'once'
 }
+
+export type RepeatDaily = {
+  type: 'daily'
+}
+
+export type RepeatWeekly = {
+  type: 'weekly'
+}
+
+export type RepeatMonthly = {
+  type: 'monthly'
+}
+
+export type RepeatYearly = {
+  type: 'yearly'
+}
+
+export type RepeatInterval = {
+  type: 'custom'
+  on: 'interval'
+  interval: number
+  unit: IntervalUnit
+}
+
+export type DayOfTheWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6
+type UniqueDaysOfWeek = [DayOfTheWeek, ...(DayOfTheWeek)[]]
+export type RepeatDaysOfTheWeek = {
+  type: 'custom'
+  on: 'days_of_the_week'
+  days: UniqueDaysOfWeek
+}
+
+export type Month = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+type UniqueMonths = [Month, ...(Month)[]]
+
+export type RepeatDayOfTheMonth = {
+  type: 'custom'
+  on: 'days_of_the_month'
+  months: UniqueMonths
+}
+
+export type RepeatCustom = RepeatInterval | RepeatDaysOfTheWeek | RepeatDayOfTheMonth
+export type Frequency = RepeatOnce | RepeatDaily | RepeatWeekly | RepeatMonthly | RepeatYearly | RepeatCustom
 
 export interface Task {
   id: string
   title: string
   next_due_date: Date | null
-  frequency: number
-  frequency_type: string
-  frequency_metadata: string
+  frequency: Frequency
   labels: Label[]
 }
 
@@ -56,86 +95,43 @@ export const getDueDateChipColor = (nextDueDate: Date | null): ColorPaletteProp 
   return 'neutral'
 }
 
-export const getRecurrentChipText = (task: Task) => {
-  if (task.frequency_type === 'once') {
+export const getRecurrentChipText = (nextDueDate: Date | null, frequency: Frequency) => {
+  if (frequency.type === 'once') {
     return 'Once'
-  } else if (task.frequency_type === 'trigger') {
-    return 'Trigger'
-  } else if (task.frequency_type === 'daily') {
+  } else if (frequency.type === 'daily') {
     return 'Daily'
-  } else if (task.frequency_type === 'adaptive') {
-    return 'Adaptive'
-  } else if (task.frequency_type === 'weekly') {
+  } else if (frequency.type === 'weekly') {
     return 'Weekly'
-  } else if (task.frequency_type === 'monthly') {
+  } else if (frequency.type === 'monthly') {
     return 'Monthly'
-  } else if (task.frequency_type === 'yearly') {
+  } else if (frequency.type === 'yearly') {
     return 'Yearly'
-  } else if (task.frequency_type === 'days_of_the_week') {
-    let days = JSON.parse(task.frequency_metadata).days
-    if (days.length > 4) {
-      const allDays = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ]
-      const selectedDays = days.map((d: string) =>
-        moment().day(d).format('dddd'),
-      )
-      const notSelectedDay = allDays.filter(day => !selectedDays.includes(day))
-      const notSelectedShortdays = notSelectedDay.map(d =>
-        moment().day(d).format('ddd'),
-      )
-      return `Daily except ${notSelectedShortdays.join(', ')}`
-    } else {
-      days = days.map((d: string) => moment().day(d).format('ddd'))
-      return days.join(', ')
-    }
-  } else if (task.frequency_type === 'day_of_the_month') {
-    const months = JSON.parse(task.frequency_metadata).months
-    if (months.length > 6) {
-      const allMonths = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ]
-      const selectedMonths = months.map((m: string) =>
-        moment().month(m).format('MMMM'),
-      )
-      const notSelectedMonth = allMonths.filter(
-        month => !selectedMonths.includes(month),
-      )
-      const notSelectedShortMonths = notSelectedMonth.map(m =>
+  } else if (frequency.type === 'custom') {
+    if (frequency.on === 'interval') {
+      if (frequency.interval == 1) {
+        switch (frequency.unit) {
+          case 'hours':
+            return 'Hourly'
+          case 'days':
+            return 'Daily'
+          case 'weeks':
+            return 'Weekly'
+          case 'months':
+            return 'Monthly'
+          case 'years':
+            return 'Yearly'
+        }
+      } else {
+        return `Every ${frequency.interval} ${frequency.unit}`
+      }
+    } else if (frequency.on === 'days_of_the_week') {
+      return frequency.days.map((d: number) => moment().day(d).format('ddd')).join(', ')
+    } else if (frequency.on === 'days_of_the_month') {
+      const months = frequency.months.map((m: number) =>
         moment().month(m).format('MMM'),
       )
-      return `${task.frequency}${dayOfMonthSuffix(
-        task.frequency,
-      )} except ${notSelectedShortMonths.join(', ')}`
-    } else {
-      const freqData = JSON.parse(task.frequency_metadata)
-      const months = freqData.months.map((m: string) =>
-        moment().month(m).format('MMM'),
-      )
-      return `${task.frequency}${dayOfMonthSuffix(
-        task.frequency,
-      )} of ${months.join(', ')}`
+      const day = nextDueDate ? nextDueDate.getDate() : 0
+      return `${day}${dayOfMonthSuffix(day)} of ${months.join(', ')}`
     }
-  } else if (task.frequency_type === 'interval') {
-    return `Every ${task.frequency} ${JSON.parse(task.frequency_metadata).unit}`
-  } else {
-    return task.frequency_type
   }
 }

@@ -1,8 +1,8 @@
 import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
 import { Label } from '@/models/label'
-import { FrequencyMetadata, Task } from '@/models/task'
+import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
-import { FrequencyType, NotificationTrigger } from '@/utils/recurrance'
+import { NotificationTrigger } from '@/utils/recurrance'
 import { Add } from '@mui/icons-material'
 import {
   ColorPaletteProp,
@@ -34,9 +34,6 @@ import { goToMyTasks } from '@/utils/navigation'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 
-const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
-const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
-
 interface TaskEditProps {
   taskId: string | null
 }
@@ -55,10 +52,8 @@ interface TaskEditState {
   title: string
   nextDueDate: Date | null
   labels: Label[]
-  frequencyType: FrequencyType
-  frequency: number
+  frequency: Frequency
   isRolling: boolean
-  frequencyMetadata: FrequencyMetadata
   isNotificable: boolean
   notificationMetadata: NotificationMetadata
   errors: Errors
@@ -83,13 +78,10 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       title: '',
       nextDueDate: null,
       labels: [],
-      frequencyType: 'once',
-      frequency: 1,
-      isRolling: false,
-      frequencyMetadata: {
-        unit: 'days',
-        time: moment(new Date()).format('HH:mm'),
+      frequency: {
+        type: 'once',
       },
+      isRolling: false,
       isNotificable: false,
       notificationMetadata: {
         dueDate: false,
@@ -105,43 +97,34 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private HandleValidateTask = () => {
-    const { title, frequencyType, frequency, frequencyMetadata, nextDueDate } =
-      this.state
-
+    const { title, frequency, nextDueDate } = this.state
     const errors: Errors = {}
 
     if (title.trim() === '') {
       errors.title = 'Title is required'
     }
 
-    if (frequencyMetadata) {
-      if (frequencyType === 'interval' && frequency <= 0) {
-        errors.frequency = `Invalid frequency, the ${frequencyMetadata.unit} should be > 0`
+    const frequencyType = frequency.type
+
+    if (nextDueDate === null) {
+      if (frequencyType === 'once') {
+        errors.dueDate = 'Due date is required'
+      } else {
+        errors.dueDate = 'Start date is required'
+      }
+    }
+
+    if (frequencyType === 'custom') {
+      if (frequency.on === 'interval' && frequency.interval <= 0) {
+        errors.frequency = `Invalid frequency, the ${frequency.interval} should be > 0`
       }
 
-      if (
-        frequencyType === 'days_of_the_week' &&
-        frequencyMetadata['days']?.length === 0
-      ) {
+      if (frequency.on === 'days_of_the_week' && frequency.days.length === 0) {
         errors.frequency = 'At least 1 day is required'
       }
 
-      if (
-        frequencyType === 'day_of_the_month' &&
-        frequencyMetadata['months']?.length === 0
-      ) {
+      if (frequency.on === 'days_of_the_month' && frequency.months.length === 0) {
         errors.frequency = 'At least 1 month is required'
-      }
-
-      if (
-        nextDueDate === null &&
-        !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType)
-      ) {
-        if (REPEAT_ON_TYPE.includes(frequencyType)) {
-          errors.dueDate = 'Start date is required'
-        } else {
-          errors.dueDate = 'Due date is required'
-        }
       }
     }
 
@@ -189,9 +172,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     const { taskId } = this.props
     const {
       title,
-      frequencyType,
       frequency,
-      frequencyMetadata,
       nextDueDate,
       labels,
     } = this.state
@@ -201,8 +182,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       labels: labels,
       next_due_date: nextDueDate,
       frequency,
-      frequency_type: frequencyType,
-      frequency_metadata: JSON.stringify(frequencyMetadata)
     }
 
     try {
@@ -269,9 +248,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       this.setState({
         title: task.title,
         nextDueDate: task.next_due_date,
-        frequencyType: task.frequency_type as FrequencyType ?? 'once',
         frequency: task.frequency,
-        //frequencyMetadata: JSON.parse(task.frequencyMetadata),
         //isRolling: task.isRolling,
         //isNotificable: false // TODO: Notifications,
         // notificationMetadata: JSON.parse(task.notificationMetadata),
@@ -301,22 +278,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<TaskEditProps>,
-    prevState: Readonly<TaskEditState>,
-  ): void {
-    const { frequencyType, nextDueDate } = this.state
-
-    if (frequencyType !== prevState.frequencyType) {
-      // if frequency type change to somthing need a due date then set it to the current date:
-      if (!nextDueDate && !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType)) {
-        /*this.setState({
-          // TODO: Set due date
-        })*/
-      }
-    }
-  }
-
   private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ title: e.target.value })
   }
@@ -332,11 +293,15 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onRescheduleFromDueDate = () => {
-    this.setState({ isRolling: false })
+    this.setState({
+      isRolling: false,
+    })
   }
 
   private onRescheduleFromCompletionDate = () => {
-    this.setState({ isRolling: true })
+    this.setState({
+      isRolling: true,
+    })
   }
 
   private onNotificationOptionChange = (item: NotificationTriggerOption) => {
@@ -391,8 +356,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     const {
       title,
       frequency,
-      frequencyType,
-      frequencyMetadata,
       nextDueDate,
       isRolling,
       isNotificable,
@@ -403,6 +366,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       snackbarMessage,
       snackbarColor,
     } = this.state
+
+    const frequencyType = frequency.type
+    const isRecurring = frequencyType !== 'once'
 
     return (
       <Container maxWidth='md'>
@@ -487,26 +453,24 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
         <Box mt={2}>
           <Typography level='h4'>
-            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Next due date' : 'Due date'}{' '}
-            :
+            {isRecurring ? 'Next due date :' : 'Due date :'}
           </Typography>
 
-          {NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && (
-            <FormControl sx={{ mt: 1 }}>
-              <Checkbox
-                onChange={this.onDueDateChange}
-                checked={nextDueDate !== null}
-                overlay
-                label='Give this task a due date'
-              />
-            </FormControl>
-          )}
+          <FormControl sx={{ mt: 1 }}>
+            <Checkbox
+              onChange={this.onDueDateChange}
+              checked={nextDueDate !== null}
+              overlay
+              label='Give this task a due date'
+            />
+          </FormControl>
+
           {nextDueDate && (
             <FormControl error={Boolean(errors.dueDate)}>
               <Typography>
-                {REPEAT_ON_TYPE.includes(frequencyType)
-                  ? 'When does this task start?'
-                  : 'When is the next first time this task is due?'}
+                {isRecurring
+                  ? 'When is the next first time this task is due?'
+                  : 'When is this task due?'}
               </Typography>
               <Input
                 type='datetime-local'
@@ -520,32 +484,18 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
         {nextDueDate && (
           <RepeatOption
+            nextDueDate={nextDueDate}
             frequency={frequency}
             onFrequencyUpdate={newFrequency =>
               this.setState({
                 frequency: newFrequency,
               })
             }
-            frequencyType={frequencyType}
-            onFrequencyTypeUpdate={newFrequencyType =>
-              this.setState({
-                frequencyType: newFrequencyType,
-              })
-            }
-            frequencyMetadata={frequencyMetadata}
-            onFrequencyMetadataUpdate={newFrequencyMetadata =>
-              this.setState({ frequencyMetadata: newFrequencyMetadata })
-            }
-            onFrequencyTimeUpdate={t => {
-              this.setState({
-                frequencyMetadata: { ...frequencyMetadata, time: t },
-              })
-            }}
             frequencyError={errors?.frequency}
           />
         )}
 
-        {!['once', 'no_repeat'].includes(frequencyType) && (
+        {isRecurring && (
           <Box mt={2}>
             <Typography level='h4'>Scheduling Preferences :</Typography>
             <Typography>How should the next occurrence be calculated?</Typography>
