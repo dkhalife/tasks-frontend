@@ -25,7 +25,6 @@ import {
   Sheet,
   Button,
   Snackbar,
-  Option,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
@@ -54,22 +53,19 @@ type Errors = { [key: string]: string }
 
 // TODO: Some of these should be props
 interface TaskEditState {
+  title: string
+  nextDueDate: Date | null
+  labels: Label[]
+  frequencyType: FrequencyType
+  frequency: number
   isRolling: boolean
+  frequencyMetadata: FrequencyMetadata | null
   isNotificable: boolean
-  updatedBy: number
+  notificationMetadata: NotificationMetadata
   errors: Errors
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
   snackbarColor: ColorPaletteProp
-  dueDate: Date | null
-  frequencyType: FrequencyType
-  frequency: number
-  frequencyMetadata: FrequencyMetadata | null
-  labels: Label[]
-  notificationMetadata: NotificationMetadata
-  userLabels: Label[]
-  task: Task | null
-  title: string
 }
 
 type NotificationTriggerOption = {
@@ -85,32 +81,29 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   constructor(props: TaskEditProps) {
     super(props)
     this.state = {
-      isRolling: false,
-      isNotificable: false,
-      updatedBy: 0,
-      errors: {},
-      isSnackbarOpen: false,
-      snackbarMessage: null,
-      snackbarColor: 'warning',
-      dueDate: null,
+      title: '',
+      nextDueDate: null,
+      labels: [],
       frequencyType: 'once',
       frequency: 1,
+      isRolling: false,
       frequencyMetadata: null,
-      labels: [],
+      isNotificable: false,
       notificationMetadata: {
         dueDate: false,
         predue: false,
         overdue: false,
         nagging: false,
       },
-      userLabels: [],
-      task: null,
-      title: '',
+      isSnackbarOpen: false,
+      snackbarMessage: null,
+      snackbarColor: 'warning',
+      errors: {},
     }
   }
 
   private HandleValidateTask = () => {
-    const { title, frequencyType, frequency, frequencyMetadata, dueDate } =
+    const { title, frequencyType, frequency, frequencyMetadata, nextDueDate } =
       this.state
 
     const errors: Errors = {}
@@ -139,7 +132,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       }
 
       if (
-        dueDate === null &&
+        nextDueDate === null &&
         !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
         !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
       ) {
@@ -151,7 +144,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       }
     }
 
-    // if there is any error then return false:
     const newState: TaskEditState = {
       ...this.state,
       errors,
@@ -159,7 +151,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     let isSuccessful = true
     if (Object.keys(errors).length > 0) {
-      // generate a list with error and set it in snackbar:
       const errorList = Object.keys(errors).map(key => (
         <ListItem key={key}>{errors[key]}</ListItem>
       ))
@@ -185,7 +176,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      dueDate: moment(e.target.value).toDate(),
+      nextDueDate: moment(e.target.value).toDate(),
     })
   }
 
@@ -200,18 +191,17 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequencyType,
       frequency,
       frequencyMetadata,
-      dueDate,
+      nextDueDate,
       labels,
     } = this.state
 
-    // TODO: type hardening
-    const task: any /*Omit<Task, 'id'>*/ = {
+    const task: Omit<Task, 'id'> = {
       title,
-      next_due_date: dueDate,
+      labels: labels,
+      next_due_date: nextDueDate,
       frequency,
       frequency_type: frequencyType,
-      frequency_metadata: JSON.stringify(frequencyMetadata),
-      labels: labels,
+      frequency_metadata: JSON.stringify(frequencyMetadata)
     }
 
     try {
@@ -273,20 +263,17 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private loadTask = async (taskId: string) => {
     try {
-      const data = await GetTaskByID(taskId)
-      // TODO: There is so much redundancy here
-      const task: any = data.task
+      const task = (await GetTaskByID(taskId)).task
 
       this.setState({
-        task: task,
         title: task.title,
-        frequencyType: task.frequencyType ? task.frequencyType : 'once',
-        // frequencyMetadata: JSON.parse(task.frequencyMetadata),
+        nextDueDate: task.next_due_date,
+        frequencyType: task.frequency_type as FrequencyType ?? 'once',
         frequency: task.frequency,
+        //frequencyMetadata: JSON.parse(task.frequencyMetadata),
+        //isRolling: task.isRolling,
+        //isNotificable: false // TODO: Notifications,
         // notificationMetadata: JSON.parse(task.notificationMetadata),
-        isRolling: task.isRolling,
-        dueDate: task.next_due_date,
-        isNotificable: task.notification,
       })
     } catch {
       this.setState({
@@ -317,17 +304,17 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     prevProps: Readonly<TaskEditProps>,
     prevState: Readonly<TaskEditState>,
   ): void {
-    const { frequencyType, dueDate } = this.state
+    const { frequencyType, nextDueDate } = this.state
 
     if (frequencyType !== prevState.frequencyType) {
-      // if frequancy type change to somthing need a due date then set it to the current date:
-      if (!NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) && !dueDate) {
+      // if frequency type change to somthing need a due date then set it to the current date:
+      if (!nextDueDate && !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType)) {
         /*this.setState({
           // TODO: Set due date
         })*/
       } else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
         this.setState({
-          dueDate: null,
+          nextDueDate: null,
         })
       }
     }
@@ -339,7 +326,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      dueDate: e.target.checked ? new Date() : null,
+      nextDueDate: e.target.checked ? new Date() : null,
     })
   }
 
@@ -370,10 +357,11 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    const { userLabels } = this.state
+    // TODO: Consolidate labels
+    /*const { userLabels } = this.state
     this.setState({
       labels: userLabels.filter(l => value.indexOf(l.name) > -1),
-    })
+    })*/
   }
 
   private onAddNewLabel = () => {
@@ -408,12 +396,11 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       frequencyType,
       frequencyMetadata,
-      dueDate,
+      nextDueDate,
       isRolling,
       isNotificable,
       labels,
       notificationMetadata,
-      userLabels,
       errors,
       isSnackbarOpen,
       snackbarMessage,
@@ -473,7 +460,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               },
             }}
           >
-            {userLabels &&
+            { /* TODO: Consolidate labels
+            userLabels &&
               userLabels.map(label => (
                 <Option
                   key={label.id + label.name}
@@ -489,7 +477,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                   />
                   {label.name}
                 </Option>
-              ))}
+              ))*/}
             <MenuItem
               key={'addNewLabel'}
               onClick={this.onAddNewLabel}
@@ -532,13 +520,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             <FormControl sx={{ mt: 1 }}>
               <Checkbox
                 onChange={this.onDueDateChange}
-                checked={dueDate !== null}
+                checked={nextDueDate !== null}
                 overlay
                 label='Give this task a due date'
               />
             </FormControl>
           )}
-          {dueDate && (
+          {nextDueDate && (
             <FormControl error={Boolean(errors.dueDate)}>
               <Typography>
                 {REPEAT_ON_TYPE.includes(frequencyType)
@@ -547,7 +535,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               </Typography>
               <Input
                 type='datetime-local'
-                value={moment(dueDate).format('yyyy-MM-DD[T]HH:mm')}
+                value={moment(nextDueDate).format('yyyy-MM-DD[T]HH:mm')}
                 onChange={this.handleDueDateChange}
               />
               <FormHelperText>{errors.dueDate}</FormHelperText>

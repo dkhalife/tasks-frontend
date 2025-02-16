@@ -13,7 +13,6 @@ export interface FrequencyMetadata {
 export interface Task {
   id: string
   title: string
-  description: string
   next_due_date: Date | null
   frequency: number
   frequency_type: string
