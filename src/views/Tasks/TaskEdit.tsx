@@ -249,7 +249,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         title: task.title,
         nextDueDate: task.next_due_date,
         frequency: task.frequency,
-        //isRolling: task.isRolling,
+        isRolling: task.is_rolling,
         //isNotificable: false // TODO: Notifications,
         // notificationMetadata: JSON.parse(task.notificationMetadata),
       })

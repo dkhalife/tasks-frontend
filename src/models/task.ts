@@ -56,6 +56,7 @@ export interface Task {
   title: string
   next_due_date: Date | null
   frequency: Frequency
+  is_rolling: boolean
   labels: Label[]
 }
 
