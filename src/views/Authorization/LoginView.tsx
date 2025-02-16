@@ -87,13 +87,13 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
             <Logo />
 
             <Typography level='h2'>
-              Done
+              Task
               <span
                 style={{
                   color: '#06b6d4',
                 }}
               >
-                tick
+                Wizard
               </span>
             </Typography>
 

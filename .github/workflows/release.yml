@@ -34,5 +34,5 @@ jobs:
       uses: benc-uk/workflow-dispatch@v1
       with:
         workflow: 'go-release.yml'
-        repo: 'dkhalife/donetick'
+        repo: 'dkhalife/tasks-backend'
         token: ${{ secrets.WORKFLOW_TOKEN }}

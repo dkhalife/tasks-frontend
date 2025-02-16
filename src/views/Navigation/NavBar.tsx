@@ -89,14 +89,14 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
               fontSize: 24,
             }}
           >
-            Done
+            Task
             <span
               style={{
                 color: '#06b6d4',
                 fontWeight: 600,
               }}
             >
-              tick✓
+              Wizard🪄
             </span>
           </Typography>
           <StorageContext.Consumer>

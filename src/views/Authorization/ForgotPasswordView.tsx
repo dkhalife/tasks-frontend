@@ -116,13 +116,13 @@ export class ForgotPasswordView extends React.Component<
                 height='128px'
               />
               <Typography level='h2'>
-                Done
+                Tasks
                 <span
                   style={{
                     color: '#06b6d4',
                   }}
                 >
-                  tick
+                  Exp
                 </span>
               </Typography>
             </Box>

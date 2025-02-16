@@ -174,13 +174,13 @@ export class SignupView extends React.Component<
             >
               <Logo />
               <Typography level='h2'>
-                Done
+                Task
                 <span
                   style={{
                     color: '#06b6d4',
                   }}
                 >
-                  tick
+                  Wizard
                 </span>
               </Typography>
               <Typography>Create an account to get started!</Typography>

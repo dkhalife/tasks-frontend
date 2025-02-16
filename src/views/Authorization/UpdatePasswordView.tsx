@@ -134,13 +134,13 @@ export class UpdatePasswordView extends React.Component<
             >
               <Logo />
               <Typography level='h2'>
-                Done
+                Task
                 <span
                   style={{
                     color: '#06b6d4',
                   }}
                 >
-                  tick
+                  Wizard
                 </span>
               </Typography>
               <Typography mb={4}>
