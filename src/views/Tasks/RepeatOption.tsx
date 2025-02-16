@@ -28,26 +28,36 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
     this.props.onFrequencyTypeUpdate(e.target.checked ? 'interval' : 'once')
   }
 
+  private onFrequencyTypeChhange = (evt: React.ChangeEvent<HTMLInputElement>, type: FrequencyType): void => {
+    if (evt.target.checked) {
+      this.props.onFrequencyTypeUpdate(type)
+    } else {
+      this.props.onFrequencyTypeUpdate('once')
+    }
+  }
+
   render(): React.ReactNode {
     const { frequencyType, frequencyError } = this.props
+    const isRepeating = frequencyType !== 'once'
 
     return (
       <Box mt={2}>
         <Typography level='h4'>Repeat :</Typography>
-        <FormControl sx={{ mt: 1 }}>
+        <FormControl sx={{
+            mt: 1,
+          }}>
           <Checkbox
             onChange={this.onRepeatToggle}
-            checked={!['once', 'trigger'].includes(frequencyType)}
+            checked={isRepeating}
             overlay
             label='Repeat this task'
           />
-          <FormHelperText>
-            Is this something needed to be done regularly?
-          </FormHelperText>
         </FormControl>
-        {!['once', 'trigger'].includes(frequencyType) && (
+        {isRepeating && (
           <>
-            <Card sx={{ mt: 1 }}>
+            <Card sx={{
+                mt: 1,
+              }}>
               <Typography>How often should it be repeated?</Typography>
 
               <List
@@ -58,148 +68,28 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                   '--ListItem-radius': '20px',
                 }}
               >
-                {FREQUENCY_TYPES.map((item: FrequencyType) => (
-                  <ListItem key={item}>
-                    <Checkbox
-                      checked={item === frequencyType}
-                      /*onClick={() => {
-                        if (item === 'custom') {
-                          onFrequencyTypeUpdate(INTERVAL_UNITS[0])
-                          onFrequencyUpdate(1)
-                          onFrequencyMetadataUpdate({
-                            unit: 'days',
-                            time: frequencyMetadata?.time
-                              ? frequencyMetadata?.time
-                              : moment(
-                                  moment(new Date()).format('YYYY-MM-DD') +
-                                    'T' +
-                                    '18:00',
-                                ).format(),
-                          })
+                {FREQUENCY_TYPES.map((item: FrequencyType) => {
+                  if (item === 'once') {
+                    return null
+                  }
 
-                          return
+                  return (
+                    <ListItem key={item}>
+                      <Checkbox
+                        checked={item === frequencyType}
+                        onChange={(evt) => this.onFrequencyTypeChhange(evt, item)}
+                        overlay
+                        disableIcon
+                        variant='soft'
+                        label={
+                          item.charAt(0).toUpperCase() +
+                          item.slice(1).replace(/_/g, ' ')
                         }
-                        onFrequencyTypeUpdate(item)
-                      }}*/
-                      overlay
-                      disableIcon
-                      variant='soft'
-                      label={
-                        item.charAt(0).toUpperCase() +
-                        item.slice(1).replace('_', ' ')
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-              {/*frequencyType === 'custom' ||
-                (REPEAT_ON_TYPE.includes(frequencyType) && (
-                  <>
-                    <Grid
-                      container
-                      spacing={1}
-                      mt={2}
-                    >
-                      <Grid>
-                        <Typography>Repeat on:</Typography>
-                        <Box
-                          sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                        >
-                          <RadioGroup
-                            orientation='horizontal'
-                            aria-labelledby='segmented-controls-example'
-                            name='justify'
-                            sx={{
-                              minHeight: 48,
-                              padding: '4px',
-                              borderRadius: '12px',
-                              bgcolor: 'neutral.softBg',
-                              '--RadioGroup-gap': '4px',
-                              '--Radio-actionRadius': '8px',
-                              mb: 1,
-                            }}
-                          >
-                            {REPEAT_ON_TYPE.map(item => (
-                              <Radio
-                                key={item}
-                                color='neutral'
-                                checked={item === frequencyType}
-                                onClick={() => {
-                                  if (
-                                    item === 'day_of_the_month' ||
-                                    item === 'interval'
-                                  ) {
-                                    onFrequencyUpdate(1)
-                                  }
-                                  onFrequencyTypeUpdate(item)
-                                  if (item === 'days_of_the_week') {
-                                    onFrequencyMetadataUpdate({
-                                      ...frequencyMetadata,
-                                      days: [],
-                                    })
-                                  } else if (item === 'day_of_the_month') {
-                                    onFrequencyMetadataUpdate({
-                                      ...frequencyMetadata,
-                                      months: [],
-                                    })
-                                  } else if (item === 'interval') {
-                                    onFrequencyMetadataUpdate({
-                                      ...frequencyMetadata,
-                                      unit: 'days',
-                                    })
-                                  }
-                                }}
-                                value={item}
-                                disableIcon
-                                label={item
-                                  .split('_')
-                                  .map((i, idx) => {
-                                    if (
-                                      idx === 0 ||
-                                      idx === item.split('_').length - 1
-                                    ) {
-                                      return (
-                                        i.charAt(0).toUpperCase() + i.slice(1)
-                                      )
-                                    }
-                                    return i
-                                  })
-                                  .join(' ')}
-                                variant='plain'
-                                sx={{
-                                  px: 2,
-                                  alignItems: 'center',
-                                }}
-                                slotProps={{
-                                  action: ({ checked }: { checked: boolean}) => ({
-                                    sx: {
-                                      ...(checked && {
-                                        bgcolor: 'background.surface',
-                                        boxShadow: 'sm',
-                                        '&:hover': {
-                                          bgcolor: 'background.surface',
-                                        },
-                                      }),
-                                    },
-                                  }),
-                                }}
-                              />
-                            ))}
-                          </RadioGroup>
-                        </Box>
-                      </Grid>
-
-                      <RepeatOn
-                        frequency={frequency}
-                        onFrequencyUpdate={onFrequencyUpdate}
-                        frequencyType={frequencyType}
-                        frequencyMetadata={frequencyMetadata || {}}
-                        onFrequencyMetadataUpdate={onFrequencyMetadataUpdate}
-                        onFrequencyTimeUpdate={onFrequencyTimeUpdate}
                       />
-                    </Grid>
-                  </>
-                ))*/}
+                    </ListItem>
+                  )}
+                )}
+              </List>
               <FormControl error={Boolean(frequencyError)}>
                 <FormHelperText>{frequencyError}</FormHelperText>
               </FormControl>

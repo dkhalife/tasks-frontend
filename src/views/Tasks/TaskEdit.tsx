@@ -36,7 +36,6 @@ import moment from 'moment'
 
 const REPEAT_ON_TYPE = ['interval', 'days_of_the_week', 'day_of_the_month']
 const NO_DUE_DATE_REQUIRED_TYPE = ['no_repeat', 'once']
-const NO_DUE_DATE_ALLOWED_TYPE = ['trigger']
 
 interface TaskEditProps {
   taskId: string | null
@@ -59,7 +58,7 @@ interface TaskEditState {
   frequencyType: FrequencyType
   frequency: number
   isRolling: boolean
-  frequencyMetadata: FrequencyMetadata | null
+  frequencyMetadata: FrequencyMetadata
   isNotificable: boolean
   notificationMetadata: NotificationMetadata
   errors: Errors
@@ -87,7 +86,10 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequencyType: 'once',
       frequency: 1,
       isRolling: false,
-      frequencyMetadata: null,
+      frequencyMetadata: {
+        unit: 'days',
+        time: moment(new Date()).format('HH:mm'),
+      },
       isNotificable: false,
       notificationMetadata: {
         dueDate: false,
@@ -133,8 +135,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
       if (
         nextDueDate === null &&
-        !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType) &&
-        !NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)
+        !NO_DUE_DATE_REQUIRED_TYPE.includes(frequencyType)
       ) {
         if (REPEAT_ON_TYPE.includes(frequencyType)) {
           errors.dueDate = 'Start date is required'
@@ -312,10 +313,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         /*this.setState({
           // TODO: Set due date
         })*/
-      } else if (NO_DUE_DATE_ALLOWED_TYPE.includes(frequencyType)) {
-        this.setState({
-          nextDueDate: null,
-        })
       }
     }
   }
@@ -487,32 +484,10 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             </MenuItem>
           </Select>
         </Box>
-        {frequencyMetadata && (
-          <RepeatOption
-            frequency={frequency}
-            onFrequencyUpdate={newFrequency =>
-              this.setState({ frequency: newFrequency })
-            }
-            frequencyType={frequencyType}
-            onFrequencyTypeUpdate={newFrequencyType =>
-              this.setState({ frequencyType: newFrequencyType })
-            }
-            frequencyMetadata={frequencyMetadata}
-            onFrequencyMetadataUpdate={newFrequencyMetadata =>
-              this.setState({ frequencyMetadata: newFrequencyMetadata })
-            }
-            onFrequencyTimeUpdate={t => {
-              this.setState({
-                frequencyMetadata: { ...frequencyMetadata, time: t },
-              })
-            }}
-            frequencyError={errors?.frequency}
-          />
-        )}
 
         <Box mt={2}>
           <Typography level='h4'>
-            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Start date' : 'Due date'}{' '}
+            {REPEAT_ON_TYPE.includes(frequencyType) ? 'Next due date' : 'Due date'}{' '}
             :
           </Typography>
 
@@ -542,14 +517,47 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             </FormControl>
           )}
         </Box>
+
+        {nextDueDate && (
+          <RepeatOption
+            frequency={frequency}
+            onFrequencyUpdate={newFrequency =>
+              this.setState({
+                frequency: newFrequency,
+              })
+            }
+            frequencyType={frequencyType}
+            onFrequencyTypeUpdate={newFrequencyType =>
+              this.setState({
+                frequencyType: newFrequencyType,
+              })
+            }
+            frequencyMetadata={frequencyMetadata}
+            onFrequencyMetadataUpdate={newFrequencyMetadata =>
+              this.setState({ frequencyMetadata: newFrequencyMetadata })
+            }
+            onFrequencyTimeUpdate={t => {
+              this.setState({
+                frequencyMetadata: { ...frequencyMetadata, time: t },
+              })
+            }}
+            frequencyError={errors?.frequency}
+          />
+        )}
+
         {!['once', 'no_repeat'].includes(frequencyType) && (
           <Box mt={2}>
-            <Typography level='h4'>Scheduling Preferences: </Typography>
-            <Typography>How to reschedule the next due date?</Typography>
+            <Typography level='h4'>Scheduling Preferences :</Typography>
+            <Typography>How should the next occurrence be calculated?</Typography>
 
             <RadioGroup
               name='tiers'
-              sx={{ gap: 1, '& > div': { p: 1 } }}
+              sx={{
+                gap: 1,
+                '& > div': {
+                  p: 1,
+                }
+              }}
             >
               <FormControl>
                 <Radio
@@ -578,6 +586,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             </RadioGroup>
           </Box>
         )}
+
         <Box mt={2}>
           <Typography level='h4'>Notifications :</Typography>
 

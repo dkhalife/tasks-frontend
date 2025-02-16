@@ -20,7 +20,6 @@ export const FREQUENCY_TYPES: FrequencyType[] = [
   'interval',
   'days_of_the_week',
   'day_of_the_month',
-  'custom',
 ]
 
 export type NotificationTrigger = 'dueDate' | 'predue' | 'overdue' | 'nagging'
