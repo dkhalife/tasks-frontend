@@ -1,30 +1,5 @@
 import moment from 'moment'
 
-export const MONTHS = [
-  'january',
-  'february',
-  'march',
-  'april',
-  'may',
-  'june',
-  'july',
-  'august',
-  'september',
-  'october',
-  'november',
-  'december',
-]
-
-export const DAYS = [
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-  'sunday',
-]
-
 export const dayOfMonthSuffix = (n: number): string => {
   if (n >= 11 && n <= 13) {
     return 'th'

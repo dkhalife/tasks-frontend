@@ -1,5 +1,5 @@
-import { FrequencyMetadata } from '@/models/task'
-import { FrequencyType, FREQUENCY_TYPES } from '@/utils/recurrance'
+import { Frequency, RepeatCustom } from '@/models/task'
+import { FrequencyType, FREQUENCY_TYPES, REPEAT_ON_TYPES, RepeatOnType } from '@/utils/recurrance'
 import {
   Box,
   Typography,
@@ -11,200 +11,170 @@ import {
   ListItem,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
+import { RepeatOn } from './RepeatOn'
 
 interface RepeatOptionProps {
-  frequencyType: FrequencyType
-  frequency: number
-  onFrequencyUpdate: (frequency: number) => void
-  onFrequencyTypeUpdate: (type: FrequencyType) => void
-  frequencyMetadata: FrequencyMetadata
-  onFrequencyMetadataUpdate: (metadata: FrequencyMetadata) => void
-  onFrequencyTimeUpdate: (time: string) => void
+  nextDueDate: Date | null
+  frequency: Frequency
+  onFrequencyUpdate: (metadata: Frequency) => void
   frequencyError: string
 }
 
 export class RepeatOption extends React.Component<RepeatOptionProps> {
-  private onRepeatToggle = (e: ChangeEvent<HTMLInputElement>): void => {
-    this.props.onFrequencyTypeUpdate(e.target.checked ? 'interval' : 'once')
+  private onRepeatToggle = (evt: ChangeEvent<HTMLInputElement>): void => {
+    if (evt.target.checked) {
+      this.props.onFrequencyUpdate(this.defaultFrequencyForType('daily'))
+    } else {
+      this.props.onFrequencyUpdate(this.defaultFrequencyForType('once'))
+    }
+  }
+
+  private defaultFrequencyForType = (type: FrequencyType): Frequency => {
+    if (type == 'custom') {
+      return {
+        type: 'custom',
+        on: 'interval',
+        every: 1,
+        unit: 'weeks',
+      }
+    } else {
+      return {
+        type,
+      }
+    }
+  }
+
+  private defaultRepeatOnForType = (on: RepeatOnType): RepeatCustom => {
+    switch (on) {
+      default:
+      case 'interval':
+        return {
+          type: 'custom',
+          on: 'interval',
+          every: 1,
+          unit: 'weeks',
+        }
+      case 'days_of_the_week':
+        return {
+          type: 'custom',
+          on: 'days_of_the_week',
+          days: [0],
+        }
+      case 'day_of_the_months':
+        return {
+          type: 'custom',
+          on: 'day_of_the_months',
+          months: [0],
+        }
+    }
+  }
+
+  private onFrequencyTypeChange = (evt: React.ChangeEvent<HTMLInputElement>, type: FrequencyType): void => {
+    if (evt.target.checked) {
+      this.props.onFrequencyUpdate(this.defaultFrequencyForType(type))
+    } else {
+      this.props.onFrequencyUpdate(this.defaultFrequencyForType('once'))
+    }
+  }
+
+
+  private onRepeatOnTypeUpdate = (evt: React.ChangeEvent<HTMLInputElement>, type: RepeatOnType): void => {
+    if (evt.target.checked) {
+      this.props.onFrequencyUpdate(this.defaultRepeatOnForType(type))
+    } else {
+      this.props.onFrequencyUpdate(this.defaultRepeatOnForType('interval'))
+    }
   }
 
   render(): React.ReactNode {
-    const { frequencyType, frequencyError } = this.props
+    const { frequency, frequencyError, nextDueDate } = this.props
+    const isRepeating = frequency.type !== 'once'
 
     return (
       <Box mt={2}>
         <Typography level='h4'>Repeat :</Typography>
-        <FormControl sx={{ mt: 1 }}>
+        <FormControl sx={{
+            mt: 1,
+          }}>
           <Checkbox
             onChange={this.onRepeatToggle}
-            checked={!['once', 'trigger'].includes(frequencyType)}
+            checked={isRepeating}
             overlay
             label='Repeat this task'
           />
-          <FormHelperText>
-            Is this something needed to be done regularly?
-          </FormHelperText>
         </FormControl>
-        {!['once', 'trigger'].includes(frequencyType) && (
-          <>
-            <Card sx={{ mt: 1 }}>
-              <Typography>How often should it be repeated?</Typography>
+        {isRepeating && (
+          <Card sx={{
+              mt: 1,
+              alignItems: 'center',
+            }}>
+            <Typography>How often should it be repeated?</Typography>
 
-              <List
-                orientation='horizontal'
-                wrap
-                sx={{
-                  '--List-gap': '8px',
-                  '--ListItem-radius': '20px',
-                }}
-              >
-                {FREQUENCY_TYPES.map((item: FrequencyType) => (
+            <List
+              orientation='horizontal'
+              wrap
+              sx={{
+                '--List-gap': '8px',
+                '--ListItem-radius': '20px',
+              }}
+            >
+              {FREQUENCY_TYPES.map((item: FrequencyType) => {
+                if (item === 'once') {
+                  return null
+                }
+
+                return (
                   <ListItem key={item}>
                     <Checkbox
-                      checked={item === frequencyType}
-                      /*onClick={() => {
-                        if (item === 'custom') {
-                          onFrequencyTypeUpdate(INTERVAL_UNITS[0])
-                          onFrequencyUpdate(1)
-                          onFrequencyMetadataUpdate({
-                            unit: 'days',
-                            time: frequencyMetadata?.time
-                              ? frequencyMetadata?.time
-                              : moment(
-                                  moment(new Date()).format('YYYY-MM-DD') +
-                                    'T' +
-                                    '18:00',
-                                ).format(),
-                          })
-
-                          return
-                        }
-                        onFrequencyTypeUpdate(item)
-                      }}*/
+                      checked={item === frequency.type}
+                      onChange={(evt) => this.onFrequencyTypeChange(evt, item)}
                       overlay
                       disableIcon
                       variant='soft'
                       label={
                         item.charAt(0).toUpperCase() +
-                        item.slice(1).replace('_', ' ')
+                        item.slice(1)
                       }
                     />
                   </ListItem>
-                ))}
-              </List>
-              {/*frequencyType === 'custom' ||
-                (REPEAT_ON_TYPE.includes(frequencyType) && (
-                  <>
-                    <Grid
-                      container
-                      spacing={1}
-                      mt={2}
-                    >
-                      <Grid>
-                        <Typography>Repeat on:</Typography>
-                        <Box
-                          sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                        >
-                          <RadioGroup
-                            orientation='horizontal'
-                            aria-labelledby='segmented-controls-example'
-                            name='justify'
-                            sx={{
-                              minHeight: 48,
-                              padding: '4px',
-                              borderRadius: '12px',
-                              bgcolor: 'neutral.softBg',
-                              '--RadioGroup-gap': '4px',
-                              '--Radio-actionRadius': '8px',
-                              mb: 1,
-                            }}
-                          >
-                            {REPEAT_ON_TYPE.map(item => (
-                              <Radio
-                                key={item}
-                                color='neutral'
-                                checked={item === frequencyType}
-                                onClick={() => {
-                                  if (
-                                    item === 'day_of_the_month' ||
-                                    item === 'interval'
-                                  ) {
-                                    onFrequencyUpdate(1)
-                                  }
-                                  onFrequencyTypeUpdate(item)
-                                  if (item === 'days_of_the_week') {
-                                    onFrequencyMetadataUpdate({
-                                      ...frequencyMetadata,
-                                      days: [],
-                                    })
-                                  } else if (item === 'day_of_the_month') {
-                                    onFrequencyMetadataUpdate({
-                                      ...frequencyMetadata,
-                                      months: [],
-                                    })
-                                  } else if (item === 'interval') {
-                                    onFrequencyMetadataUpdate({
-                                      ...frequencyMetadata,
-                                      unit: 'days',
-                                    })
-                                  }
-                                }}
-                                value={item}
-                                disableIcon
-                                label={item
-                                  .split('_')
-                                  .map((i, idx) => {
-                                    if (
-                                      idx === 0 ||
-                                      idx === item.split('_').length - 1
-                                    ) {
-                                      return (
-                                        i.charAt(0).toUpperCase() + i.slice(1)
-                                      )
-                                    }
-                                    return i
-                                  })
-                                  .join(' ')}
-                                variant='plain'
-                                sx={{
-                                  px: 2,
-                                  alignItems: 'center',
-                                }}
-                                slotProps={{
-                                  action: ({ checked }: { checked: boolean}) => ({
-                                    sx: {
-                                      ...(checked && {
-                                        bgcolor: 'background.surface',
-                                        boxShadow: 'sm',
-                                        '&:hover': {
-                                          bgcolor: 'background.surface',
-                                        },
-                                      }),
-                                    },
-                                  }),
-                                }}
-                              />
-                            ))}
-                          </RadioGroup>
-                        </Box>
-                      </Grid>
-
-                      <RepeatOn
-                        frequency={frequency}
-                        onFrequencyUpdate={onFrequencyUpdate}
-                        frequencyType={frequencyType}
-                        frequencyMetadata={frequencyMetadata || {}}
-                        onFrequencyMetadataUpdate={onFrequencyMetadataUpdate}
-                        onFrequencyTimeUpdate={onFrequencyTimeUpdate}
-                      />
-                    </Grid>
-                  </>
-                ))*/}
-              <FormControl error={Boolean(frequencyError)}>
-                <FormHelperText>{frequencyError}</FormHelperText>
-              </FormControl>
-            </Card>
-          </>
+                )}
+              )}
+            </List>
+            { frequency.type === 'custom' && (
+              <>
+                <List
+                  orientation='horizontal'
+                  wrap
+                  sx={{
+                    '--List-gap': '8px',
+                    '--ListItem-radius': '20px',
+                  }}
+                >
+                  {REPEAT_ON_TYPES.map((item: RepeatOnType) => {
+                    return (
+                      <ListItem key={item}>
+                        <Checkbox
+                          checked={item === frequency.on}
+                          onChange={(evt) => this.onRepeatOnTypeUpdate(evt, item)}
+                          overlay
+                          disableIcon
+                          variant='soft'
+                          label={
+                            item.charAt(0).toUpperCase() +
+                            item.slice(1).replace(/_/g, ' ')
+                          }
+                        />
+                      </ListItem>
+                    )}
+                  )}
+                </List>
+                <RepeatOn frequency={frequency} nextDueDate={nextDueDate} onUpdate={this.props.onFrequencyUpdate} />
+              </>
+            )}
+            <FormControl error={Boolean(frequencyError)}>
+              <FormHelperText>{frequencyError}</FormHelperText>
+            </FormControl>
+          </Card>
         )}
       </Box>
     )

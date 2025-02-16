@@ -130,6 +130,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
   render(): React.ReactNode {
     const { taskId } = this.props
     const { task, infoCards } = this.state
+    const isRecurringTask = this.state.task?.frequency.type !== 'once'
 
     // TODO: Task should just be a prop?
     if (!task) {
@@ -303,17 +304,19 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
               <Box>Mark as done</Box>
             </Button>
 
-            <Button
-              fullWidth
-              size='lg'
-              onClick={this.onSkipTask}
-              startDecorator={<SwitchAccessShortcut />}
-              sx={{
-                flex: 1,
-              }}
-            >
-              <Box>Skip</Box>
-            </Button>
+            {isRecurringTask && (
+              <Button
+                fullWidth
+                size='lg'
+                onClick={this.onSkipTask}
+                startDecorator={<SwitchAccessShortcut />}
+                sx={{
+                  flex: 1,
+                }}
+              >
+                <Box>Skip</Box>
+              </Button>
+            )}
           </Box>
 
           <ConfirmationModal

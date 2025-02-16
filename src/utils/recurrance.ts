@@ -10,17 +10,30 @@ export const INTERVAL_UNITS: IntervalUnit[] = [
 
 export type FrequencyType =
   | 'once'
-  | 'interval'
-  | 'days_of_the_week'
-  | 'day_of_the_month'
+  | 'daily'
+  | 'weekly'
+  | 'monthly'
+  | 'yearly'
   | 'custom'
 
 export const FREQUENCY_TYPES: FrequencyType[] = [
   'once',
+  'daily',
+  'weekly',
+  'monthly',
+  'yearly',
+  'custom',
+]
+
+export type RepeatOnType =
+  | 'interval'
+  | 'days_of_the_week'
+  | 'day_of_the_months'
+
+export const REPEAT_ON_TYPES: RepeatOnType[] = [
   'interval',
   'days_of_the_week',
-  'day_of_the_month',
-  'custom',
+  'day_of_the_months',
 ]
 
 export type NotificationTrigger = 'dueDate' | 'predue' | 'overdue' | 'nagging'

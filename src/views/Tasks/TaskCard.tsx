@@ -14,7 +14,6 @@ import {
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import {
   TimesOneMobiledata,
-  Webhook,
   Repeat,
   Check,
   MoreVert,
@@ -130,10 +129,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   }
 
   private getFrequencyIcon = (task: Task) => {
-    if (['once', 'no_repeat'].includes(task.frequency_type)) {
+    if (task.frequency.type === 'once') {
       return <TimesOneMobiledata />
-    } else if (task.frequency_type === 'trigger') {
-      return <Webhook />
     } else {
       return <Repeat />
     }
@@ -198,7 +195,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             }}
           >
             {this.getFrequencyIcon(task)}
-            {getRecurrentChipText(task)}
+            {getRecurrentChipText(task.next_due_date, task.frequency)}
           </div>
         </Chip>
 
@@ -266,11 +263,12 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                   open={isMoreMenuOpen}
                   ref={this.menuRef}
                 >
-                  <MenuItem onClick={this.onSkipTask}>
-                    <SwitchAccessShortcut />
-                    Skip to next due date
-                  </MenuItem>
-                  <Divider />
+                  {task.frequency.type !== 'once' && (
+                    <MenuItem onClick={this.onSkipTask}>
+                      <SwitchAccessShortcut />
+                      Skip to next due date
+                    </MenuItem>
+                  )}
                   <MenuItem
                     onClick={this.onChangeDueDate}
                   >
