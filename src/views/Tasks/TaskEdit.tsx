@@ -116,7 +116,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     if (frequencyType === 'custom') {
       if (frequency.on === 'interval' && frequency.every <= 0) {
-        errors.frequency = `Invalid frequency, the ${frequency.every} should be > 0`
+        errors.frequency = 'Invalid frequency, the value should be greater than 0'
       }
 
       if (frequency.on === 'days_of_the_week' && frequency.days.length === 0) {
