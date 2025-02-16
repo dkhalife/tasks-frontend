@@ -34,7 +34,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
       return {
         type: 'custom',
         on: 'interval',
-        interval: 1,
+        every: 1,
         unit: 'weeks',
       }
     } else {
@@ -51,7 +51,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
         return {
           type: 'custom',
           on: 'interval',
-          interval: 1,
+          every: 1,
           unit: 'weeks',
         }
       case 'days_of_the_week':
@@ -60,10 +60,10 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
           on: 'days_of_the_week',
           days: [0],
         }
-      case 'days_of_the_month':
+      case 'day_of_the_months':
         return {
           type: 'custom',
-          on: 'days_of_the_month',
+          on: 'day_of_the_months',
           months: [0],
         }
     }

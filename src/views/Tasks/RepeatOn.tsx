@@ -1,4 +1,4 @@
-import { DayOfTheWeek, Month, RepeatCustom, RepeatDayOfTheMonth, RepeatDaysOfTheWeek, RepeatInterval, UniqueDaysOfWeek, UniqueMonths } from '@/models/task'
+import { DayOfTheWeek, Month, RepeatCustom, RepeatDayOfTheMonths, RepeatDaysOfTheWeek, RepeatInterval, UniqueDaysOfWeek, UniqueMonths } from '@/models/task'
 import { dayOfMonthSuffix } from '@/utils/date'
 import { INTERVAL_UNITS, IntervalUnit } from '@/utils/recurrance'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
@@ -24,7 +24,7 @@ interface RepeatOnProps {
 }
 
 type RepeatOnState = {
-  interval: number
+  every: number
   unit: IntervalUnit
 } | {
   days: UniqueDaysOfWeek
@@ -41,7 +41,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
 
   private initWith(frequency: RepeatInterval): RepeatOnState;
   private initWith(frequency: RepeatDaysOfTheWeek): RepeatOnState;
-  private initWith(frequency: RepeatDayOfTheMonth): RepeatOnState;
+  private initWith(frequency: RepeatDayOfTheMonths): RepeatOnState;
   private initWith(frequency: any): RepeatOnState {
     if (frequency.type != 'custom') {
       throw new Error('Invalid frequency')
@@ -50,7 +50,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     switch (frequency.on) {
       case 'interval':
         return {
-          interval: frequency.interval,
+          every: frequency.interval,
           unit: frequency.unit,
         }
 
@@ -59,7 +59,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
           days: frequency.days,
         }
 
-      case 'days_of_the_month':
+      case 'day_of_the_months':
         return {
           months: frequency.months,
         }
@@ -82,7 +82,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
 
     const currentState = this.state as RepeatInterval
     const newState = {
-      interval: parseInt(evt.target.value) || 1,
+      every: parseInt(evt.target.value) || 1,
     }
 
     this.setState(newState)
@@ -108,7 +108,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     this.props.onUpdate({
       type: 'custom',
       on: 'interval',
-      interval: currentState.interval,
+      every: currentState.every,
       ...newState
     })
   }
@@ -143,11 +143,11 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
 
   private onMonthChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { frequency, nextDueDate } = this.props
-    if (frequency.type != 'custom' && frequency.on != 'days_of_the_month') {
+    if (frequency.type != 'custom' && frequency.on != 'day_of_the_months') {
       throw new Error('Invalid frequency')
     }
 
-    const currentState = this.state as RepeatDayOfTheMonth
+    const currentState = this.state as RepeatDayOfTheMonths
     const months = currentState.months
 
     const month = parseInt(evt.target.value) as Month
@@ -164,7 +164,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     this.setState(newState)
     this.props.onUpdate({
       type: 'custom',
-      on: 'days_of_the_month',
+      on: 'day_of_the_months',
       ...newState,
     })
   }
@@ -194,7 +194,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                   maxWidth: '75px',
                   mr: 1,
                 }}
-                value={frequency.interval}
+                value={frequency.every}
                 onChange={this.onIntervalChange}
               />
               <Select
@@ -250,7 +250,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
             </Grid>
           </>
         )
-      case 'days_of_the_month':
+      case 'day_of_the_months':
         return (
           <Grid
             sm={12}

@@ -27,7 +27,7 @@ export type RepeatYearly = {
 export type RepeatInterval = {
   type: 'custom'
   on: 'interval'
-  interval: number
+  every: number
   unit: IntervalUnit
 }
 
@@ -42,13 +42,13 @@ export type RepeatDaysOfTheWeek = {
 export type Month = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 export type UniqueMonths = [Month, ...(Month)[]]
 
-export type RepeatDayOfTheMonth = {
+export type RepeatDayOfTheMonths = {
   type: 'custom'
-  on: 'days_of_the_month'
+  on: 'day_of_the_months'
   months: UniqueMonths
 }
 
-export type RepeatCustom = RepeatInterval | RepeatDaysOfTheWeek | RepeatDayOfTheMonth
+export type RepeatCustom = RepeatInterval | RepeatDaysOfTheWeek | RepeatDayOfTheMonths
 export type Frequency = RepeatOnce | RepeatDaily | RepeatWeekly | RepeatMonthly | RepeatYearly | RepeatCustom
 
 export interface Task {
@@ -108,7 +108,7 @@ export const getRecurrentChipText = (nextDueDate: Date | null, frequency: Freque
     return 'Yearly'
   } else if (frequency.type === 'custom') {
     if (frequency.on === 'interval') {
-      if (frequency.interval == 1) {
+      if (frequency.every == 1) {
         switch (frequency.unit) {
           case 'hours':
             return 'Hourly'
@@ -122,11 +122,11 @@ export const getRecurrentChipText = (nextDueDate: Date | null, frequency: Freque
             return 'Yearly'
         }
       } else {
-        return `Every ${frequency.interval} ${frequency.unit}`
+        return `Every ${frequency.every} ${frequency.unit}`
       }
     } else if (frequency.on === 'days_of_the_week') {
       return frequency.days.map((d: number) => moment().day(d).format('ddd')).join(', ')
-    } else if (frequency.on === 'days_of_the_month') {
+    } else if (frequency.on === 'day_of_the_months') {
       const months = frequency.months.map((m: number) =>
         moment().month(m).format('MMM'),
       )

@@ -28,12 +28,12 @@ export const FREQUENCY_TYPES: FrequencyType[] = [
 export type RepeatOnType =
   | 'interval'
   | 'days_of_the_week'
-  | 'days_of_the_month'
+  | 'day_of_the_months'
 
 export const REPEAT_ON_TYPES: RepeatOnType[] = [
   'interval',
   'days_of_the_week',
-  'days_of_the_month',
+  'day_of_the_months',
 ]
 
 export type NotificationTrigger = 'dueDate' | 'predue' | 'overdue' | 'nagging'
