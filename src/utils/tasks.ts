@@ -21,6 +21,49 @@ interface DueDateGroups {
 }
 export type TaskGroups = DueDateGroups
 
+export const bucketIntoDueDateGroup = (
+  task: Task,
+  groups: DueDateGroups,
+  now: number,
+  endOfToday: number,
+  endOfTomorrow: number,
+  endOfThisWeek: number,
+  endOfNextWeek: number,
+) => {
+  if (task.next_due_date === null) {
+    groups['any_time'].content.push(task)
+    return
+  }
+
+  const due_date = task.next_due_date.getTime()
+  if (now >= due_date) {
+    groups['overdue'].content.push(task)
+    return
+  }
+
+  if (due_date > endOfNextWeek) {
+    groups['later'].content.push(task)
+    return
+  }
+
+  if (due_date > endOfThisWeek) {
+    groups['next_week'].content.push(task)
+    return
+  }
+
+  if (due_date > endOfTomorrow) {
+    groups['this_week'].content.push(task)
+    return
+  }
+
+  if (due_date > endOfToday) {
+    groups['tomorrow'].content.push(task)
+    return
+  }
+
+  groups['today'].content.push(task)
+}
+
 const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   const groups: DueDateGroups = {
     'overdue': {
@@ -67,38 +110,7 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   const endOfNextWeek = moment().endOf('isoWeek').add(1, 'week').toDate().getTime()
 
   tasks.forEach((task) => {
-    if (task.next_due_date === null) {
-      groups['any_time'].content.push(task)
-      return
-    }
-
-    const due_date = task.next_due_date.getTime()
-    if (now >= due_date) {
-      groups['overdue'].content.push(task)
-      return
-    }
-
-    if (due_date > endOfNextWeek) {
-      groups['later'].content.push(task)
-      return
-    }
-
-    if (due_date > endOfThisWeek) {
-      groups['next_week'].content.push(task)
-      return
-    }
-
-    if (due_date > endOfTomorrow) {
-      groups['this_week'].content.push(task)
-      return
-    }
-
-    if (due_date > endOfToday) {
-      groups['tomorrow'].content.push(task)
-      return
-    }
-
-    groups['today'].content.push(task)
+    bucketIntoDueDateGroup(task, groups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
   })
 
   return groups
