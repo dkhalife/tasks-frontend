@@ -1,4 +1,5 @@
 import { ResetPassword } from '@/api/auth'
+import { Logo } from '@/Logo'
 import { validateEmail } from '@/models/user'
 import { setTitle } from '@/utils/dom'
 import { goToLogin } from '@/utils/navigation'
@@ -113,26 +114,8 @@ export class ForgotPasswordView extends React.Component<
               justifyItems: 'center',
             }}
           >
-            <Box>
-              <img
-                src={'./logo.svg'}
-                alt='logo'
-                width='128px'
-                height='128px'
-              />
-              <Typography level='h2'>
-                Tasks
-                <span
-                  style={{
-                    color: '#06b6d4',
-                  }}
-                >
-                  Exp
-                </span>
-              </Typography>
-            </Box>
+            <Logo />
 
-            <Box sx={{ textAlign: 'center' }}></Box>
             {resetStatusOk === null && (
               <FormControl
                 error={emailError !== null}

@@ -91,17 +91,6 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
           >
             <Logo />
 
-            <Typography level='h2'>
-              Task
-              <span
-                style={{
-                  color: '#06b6d4',
-                }}
-              >
-                Wizard
-              </span>
-            </Typography>
-
             <Typography>Sign in to your account to continue</Typography>
             <Typography
               alignSelf={'start'}
