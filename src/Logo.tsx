@@ -1,16 +1,29 @@
+import { Typography } from '@mui/joy'
+import { SxProps, TypographySystem } from '@mui/joy/styles/types'
 import React from 'react'
 
-export class Logo extends React.Component {
+interface LogoProps {
+  level?: keyof TypographySystem
+  sx?: SxProps
+}
+
+export class Logo extends React.Component<LogoProps> {
   render() {
+    const { level, sx } = this.props
+
     return (
-      <div>
-        <img
-          src={'./logo.svg'}
-          alt='logo'
-          width='128px'
-          height='128px'
-        />
-      </div>
+      <>
+        <Typography level={ level ?? 'h2' } sx={ sx }>
+          Task
+          <span
+            style={{
+              color: '#9b59b6',
+            }}
+          >
+            Wizard 🪄
+          </span>
+        </Typography>
+      </>
     )
   }
 }

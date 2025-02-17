@@ -21,6 +21,7 @@ import React, { version } from 'react'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import { getPathName, goToLogin, goToMyTasks } from '@/utils/navigation'
+import { Logo } from '@/Logo'
 
 type NavBarProps = object
 
@@ -82,23 +83,13 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
           }}
           onClick={goToMyTasks}
         >
-          <Typography
+          <Logo
             level='title-lg'
             sx={{
               fontWeight: 700,
               fontSize: 24,
             }}
-          >
-            Task
-            <span
-              style={{
-                color: '#06b6d4',
-                fontWeight: 600,
-              }}
-            >
-              Wizard🪄
-            </span>
-          </Typography>
+          />
           <StorageContext.Consumer>
             {({ themeMode, setThemeMode }: StorageContextState) => (
               <ThemeToggleButton
