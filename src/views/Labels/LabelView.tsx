@@ -203,7 +203,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
             textAlign='center'
             mt={2}
           >
-            No labels available. Add a new label to get started.
+            No labels available. Add one to get started.
           </Typography>
         )}
 
