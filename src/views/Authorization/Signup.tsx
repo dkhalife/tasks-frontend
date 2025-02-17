@@ -2,6 +2,7 @@ import { SignUp } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
 import { doLogin } from '@/utils/auth'
+import { setTitle } from '@/utils/dom'
 import { goToLogin } from '@/utils/navigation'
 import {
   Container,
@@ -45,6 +46,10 @@ export class SignupView extends React.Component<
       displayNameError: null,
       error: null,
     }
+  }
+
+  componentDidMount(): void {
+    setTitle('Sign Up')
   }
 
   private handleLogin = async (email: string, password: string) => {

@@ -32,6 +32,7 @@ import { RepeatOption } from './RepeatOption'
 import { goToMyTasks } from '@/utils/navigation'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
+import { setTitle } from '@/utils/dom'
 
 interface TaskEditProps {
   taskId: string | null
@@ -242,6 +243,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         isRolling: task.is_rolling,
         notification: task.notification,
       })
+
+      setTitle(task.title)
     } catch {
       this.setState({
         isSnackbarOpen: true,

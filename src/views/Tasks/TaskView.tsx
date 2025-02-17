@@ -26,6 +26,7 @@ import moment from 'moment'
 import React from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { goToMyTasks, goToTaskEdit, goToTaskHistory } from '@/utils/navigation'
+import { setTitle } from '@/utils/dom'
 
 interface TaskViewProps {
   taskId: string
@@ -73,6 +74,8 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
     this.setState({
       task: data.task,
     })
+
+    setTitle(data.task.title)
 
     this.generateInfoCards(data.task)
   }

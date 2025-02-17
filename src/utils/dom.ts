@@ -9,3 +9,7 @@ export const useRoot = (): HTMLDivElement => {
   document.body.appendChild(root)
   return root
 }
+
+export const setTitle = (title: string): void => {
+  document.title = `Task Wizard - ${title}`
+}

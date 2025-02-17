@@ -12,6 +12,7 @@ import {
 import React, { ChangeEvent } from 'react'
 import { goToRegister, goToResetPassword } from '@/utils/navigation'
 import { doLogin } from '@/utils/auth'
+import { setTitle } from '@/utils/dom'
 
 type LoginViewProps = object
 
@@ -30,6 +31,10 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
       password: '',
       error: null,
     }
+  }
+
+  componentDidMount(): void {
+    setTitle('Login')
   }
 
   private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement>) => {

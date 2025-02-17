@@ -1,4 +1,4 @@
-import { GetTaskHistory } from '@/api/tasks'
+import { GetTaskByID, GetTaskHistory } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { HistoryEntry } from '@/models/history'
 import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
@@ -8,6 +8,7 @@ import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { HistoryCard } from './HistoryCard'
+import { setTitle } from '@/utils/dom'
 
 interface TaskHistoryProps {
   taskId: string
@@ -39,6 +40,12 @@ export class TaskHistory extends React.Component<
     }
   }
 
+  private loadTask = async () => {
+    // TODO: Use local cache
+    const task = (await GetTaskByID(this.props.taskId)).task
+    setTitle(task.title)
+  }
+
   private loadHistory = async () => {
     try {
       const data = await GetTaskHistory(this.props.taskId)
@@ -52,6 +59,7 @@ export class TaskHistory extends React.Component<
   }
 
   componentDidMount(): void {
+    this.loadTask()
     this.loadHistory()
   }
 
