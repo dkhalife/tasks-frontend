@@ -16,6 +16,10 @@ export const goToResetPassword = () => {
   goTo('/forgot-password')
 }
 
+export const goToLabels = () => {
+  goTo('/labels')
+}
+
 export const goToMyTasks = () => {
   goTo('/my/tasks')
 }

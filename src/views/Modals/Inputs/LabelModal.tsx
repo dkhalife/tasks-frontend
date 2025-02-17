@@ -20,7 +20,7 @@ interface LabelModalProps {
   id: string | undefined
   name: string | undefined
   color: ColorOption | undefined
-
+  isUnique: (id: string | undefined, labelName: string) => boolean
   onClose: (label: Label | null) => void
 }
 
@@ -67,16 +67,11 @@ export class LabelModal extends React.Component<
       return false
     }
 
-    // TODO: Use local cache instead of fetching from server
-    /*const { data: userLabels = [] } = useLabels()
-    if (
-      userLabels.some(
-        userLabel => userLabel.name === labelName && userLabel.id !== this.props.label?.id,
-      )
-    ) {
+    const { isUnique } = this.props
+    if (!isUnique(this.props.id, labelName)) {
       this.setState({ error: 'Label with this name already exists' })
       return false
-    }*/
+    }
 
     if (!color) {
       this.setState({ error: 'Please select a color' })
