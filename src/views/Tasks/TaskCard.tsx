@@ -22,6 +22,7 @@ import {
   Edit,
   ManageSearch,
   Delete,
+  NotificationsActive,
 } from '@mui/icons-material'
 import {
   Box,
@@ -158,9 +159,21 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     this.dateModalRef.current?.open()
   }
 
+  private hasAnyNotificationsActive = () => {
+    const { task } = this.props
+    if (!task.notification.enabled) {
+      return false
+    }
+
+    const notifications = task.notification
+    return notifications.due_date || notifications.overdue || notifications.pre_due || notifications.nag;
+  }
+
   render(): React.ReactNode {
     const { task, sx, viewOnly } = this.props
     const { isMoreMenuOpen } = this.state
+
+    const notificationsActive = this.hasAnyNotificationsActive()
 
     return (
       <Box key={task.id + '-box'}>
@@ -198,6 +211,29 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             {getRecurrentChipText(task.next_due_date, task.frequency)}
           </div>
         </Chip>
+
+        {notificationsActive && (
+          <Chip
+            variant='soft'
+            sx={{
+              position: 'relative',
+              top: 10,
+              zIndex: 1,
+              ml: 0.4,
+              left: 10,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <NotificationsActive />
+            </div>
+          </Chip>
+        )}
 
         <Card
           style={viewOnly ? { pointerEvents: 'none' } : {}}
