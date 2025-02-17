@@ -22,10 +22,10 @@ import {
 import moment from 'moment'
 import React, { ChangeEvent } from 'react'
 import { DateModal } from '@/views/Modals/Inputs/DateModal'
-import { goToTaskCreate, goToTaskEdit } from '@/utils/navigation'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
 
-type TasksOverviewProps = object
+type TasksOverviewProps = object & WithNavigate
 
 interface TasksOverviewState {
   tasks: Task[]
@@ -127,6 +127,7 @@ export class TasksOverview extends React.Component<
 
   render(): React.ReactNode {
     const { filteredTasks, search, taskId } = this.state
+    const { navigate } = this.props
 
     return (
       <Container>
@@ -171,7 +172,7 @@ export class TasksOverview extends React.Component<
             gap={2}
           >
             <Button
-              onClick={goToTaskCreate}
+              onClick={() => navigate(NavigationPaths.TaskCreate)}
             >
               New Task
             </Button>
@@ -196,7 +197,7 @@ export class TasksOverview extends React.Component<
                   </Chip>
                 </td>
                 <td
-                  onClick={() => goToTaskEdit(task.id)}
+                  onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
                 >
                   {task.title || '--'}
                 </td>
@@ -238,7 +239,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => goToTaskEdit(task.id)}
+                      onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
                     >
                       <Edit />
                     </IconButton>
