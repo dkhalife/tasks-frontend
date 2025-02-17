@@ -96,5 +96,5 @@ export const GetTaskHistory = async (taskId: string) =>
 
 export const UpdateDueDate = async (id: string, dueDate: Date | null): Promise<SingleTaskResponse> =>
   await UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/dueDate`, 'PUT', {
-    dueDate: dueDate ? dueDate.getTime() : null, // TODO: Generalize marshalling logic
+    due_date: dueDate ? dueDate.getTime() : null, // TODO: Generalize marshalling logic
   }))

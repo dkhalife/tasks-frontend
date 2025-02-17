@@ -1,5 +1,3 @@
-import moment from 'moment'
-
 export const dayOfMonthSuffix = (n: number): string => {
   if (n >= 11 && n <= 13) {
     return 'th'
@@ -15,24 +13,4 @@ export const dayOfMonthSuffix = (n: number): string => {
     default:
       return 'th'
   }
-}
-
-export const formatTimeDifference = (startDate: string, endDate: string) => {
-  const diffInMinutes = moment(startDate).diff(endDate, 'minutes')
-  let timeValue = diffInMinutes
-  let unit = 'minute'
-
-  if (diffInMinutes >= 60) {
-    const diffInHours = moment(startDate).diff(endDate, 'hours')
-    timeValue = diffInHours
-    unit = 'hour'
-
-    if (diffInHours >= 24) {
-      const diffInDays = moment(startDate).diff(endDate, 'days')
-      timeValue = diffInDays
-      unit = 'day'
-    }
-  }
-
-  return `${timeValue} ${unit}${timeValue !== 1 ? 's' : ''}`
 }
