@@ -140,6 +140,16 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
+  private hasTasks = () => {
+    const { groups } = this.state
+
+    if (!groups) {
+      return true
+    }
+
+    return Object.values(groups).some(group => group.content.length > 0)
+  }
+
   render(): React.ReactNode {
     const { isSnackbarOpen, snackBarMessage, isLoading, groups } = this.state
 
@@ -147,77 +157,91 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       return <Loading />
     }
 
+    const hasTasks = this.hasTasks()
+
     return (
       <Container maxWidth='md'>
-        <AccordionGroup
-          transition='0.2s ease'
-          disableDivider
-        >
-          {Object.keys(groups).map((key) => {
-            const groupKey = key as keyof(TaskGroups)
-            const group = groups[groupKey]
-            if (group.content.length === 0) {
-              return null
-            }
+        {hasTasks && (
+          <AccordionGroup
+            transition='0.2s ease'
+            disableDivider
+          >
+            {Object.keys(groups).map((key) => {
+              const groupKey = key as keyof(TaskGroups)
+              const group = groups[groupKey]
+              if (group.content.length === 0) {
+                return null
+              }
 
-            const isExpanded = this.state.isExpanded[groupKey]
-            return (
-              <Accordion
-                key={`group-${key}`}
-                title={group.name}
-                sx={{
-                  my: 0,
-                }}
-                expanded={isExpanded}
-              >
-                <Divider orientation='horizontal'>
-                  <Chip
-                    variant='soft'
-                    color='neutral'
-                    size='md'
-                    onClick={() => this.toggleGroup(groupKey)}
-                    endDecorator={
-                      <ExpandCircleDown
-                        color='primary'
-                        sx={{
-                          transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }}
-                      />
-                    }
-                    startDecorator={
-                      <Chip
-                        color='primary'
-                        size='sm'
-                        variant='soft'
-                      >
-                        { group.content.length }
-                      </Chip>
-                    }
-                  >
-                    { group.name }
-                  </Chip>
-                </Divider>
-                <AccordionDetails
+              const isExpanded = this.state.isExpanded[groupKey]
+              return (
+                <Accordion
+                  key={`group-${key}`}
+                  title={group.name}
                   sx={{
-                    flexDirection: 'column',
                     my: 0,
                   }}
+                  expanded={isExpanded}
                 >
-                  {group.content.map(task => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onTaskUpdate={(updatedTask, event) => this.updateTask(groupKey, task, updatedTask, event)}
-                      onTaskRemove={() => this.removeTask(groupKey, task)}
-                      sx={{}}
-                      viewOnly={false}
-                    />
-                  ))}
-                </AccordionDetails>
-              </Accordion>
-            )
-          })}
-        </AccordionGroup>
+                  <Divider orientation='horizontal'>
+                    <Chip
+                      variant='soft'
+                      color='neutral'
+                      size='md'
+                      onClick={() => this.toggleGroup(groupKey)}
+                      endDecorator={
+                        <ExpandCircleDown
+                          color='primary'
+                          sx={{
+                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                          }}
+                        />
+                      }
+                      startDecorator={
+                        <Chip
+                          color='primary'
+                          size='sm'
+                          variant='soft'
+                        >
+                          { group.content.length }
+                        </Chip>
+                      }
+                    >
+                      { group.name }
+                    </Chip>
+                  </Divider>
+                  <AccordionDetails
+                    sx={{
+                      flexDirection: 'column',
+                      my: 0,
+                    }}
+                  >
+                    {group.content.map(task => (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        onTaskUpdate={(updatedTask, event) => this.updateTask(groupKey, task, updatedTask, event)}
+                        onTaskRemove={() => this.removeTask(groupKey, task)}
+                        sx={{}}
+                        viewOnly={false}
+                      />
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
+              )
+            })}
+          </AccordionGroup>
+        )}
+
+        {!hasTasks && (
+          <Typography
+            textAlign='center'
+            mt={2}
+          >
+            No tasks available. Add one to get started.
+          </Typography>
+        )}
+
         <Box
           sx={{
             position: 'fixed',

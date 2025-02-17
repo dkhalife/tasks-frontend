@@ -93,12 +93,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     const frequencyType = frequency.type
 
-    if (nextDueDate === null) {
-      if (frequencyType === 'once') {
-        errors.dueDate = 'Due date is required'
-      } else {
-        errors.dueDate = 'Start date is required'
-      }
+    if (frequencyType !== 'once' && nextDueDate === null) {
+      errors.dueDate = 'Start date is required'
     }
 
     if (frequencyType === 'custom') {
