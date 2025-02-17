@@ -1,5 +1,4 @@
 import { RefreshToken } from '@/api/auth'
-import Cookies from 'js-cookie'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -51,7 +50,7 @@ export async function Request<SuccessfulResponse>(
       await refreshAccessToken()
     }
   } else if (requiresAuth) {
-    Cookies.set('ca_redirect', window.location.pathname)
+    localStorage.setItem('ca_redirect', window.location.pathname)
     window.location.href = '/login'
     // TODO: Stop execution when better type safety is in place
   }
