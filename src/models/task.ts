@@ -51,11 +51,22 @@ export type RepeatDayOfTheMonths = {
 export type RepeatCustom = RepeatInterval | RepeatDaysOfTheWeek | RepeatDayOfTheMonths
 export type Frequency = RepeatOnce | RepeatDaily | RepeatWeekly | RepeatMonthly | RepeatYearly | RepeatCustom
 
+export type NotificationDisabled = {
+  enabled: false
+}
+export type NotificationMqtt = object
+export type NotificationTrigger = 'due_date' | 'pre_due' | 'overdue' | 'nag'
+export type NotificationEnabled = {
+  enabled: true
+} & Record<NotificationTrigger, boolean> & (NotificationMqtt)
+export type Notification = NotificationDisabled | NotificationEnabled
+
 export interface Task {
   id: string
   title: string
   next_due_date: Date | null
   frequency: Frequency
+  notification: Notification
   is_rolling: boolean
   labels: Label[]
 }

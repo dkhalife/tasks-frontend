@@ -34,10 +34,6 @@ export class NotificationSetting extends React.Component<
     }
   }
 
-  componentDidMount(): void {
-    // TODO: load notification settings?
-  }
-
   private handleSave = async () => {
     this.setState({ error: '' })
 
