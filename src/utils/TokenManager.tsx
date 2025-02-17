@@ -76,6 +76,11 @@ export async function Request<SuccessfulResponse>(
   }
 
   const response: Response = await fetch(fullURL, options)
+  const HTTP_STATUS_NO_CONTENT = 204
+  if (response.status === HTTP_STATUS_NO_CONTENT) {
+    return {} as SuccessfulResponse
+  }
+
   const data = await response.json()
 
   if (!response.ok) {
