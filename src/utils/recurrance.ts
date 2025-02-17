@@ -35,5 +35,3 @@ export const REPEAT_ON_TYPES: RepeatOnType[] = [
   'days_of_the_week',
   'day_of_the_months',
 ]
-
-export type NotificationTrigger = 'dueDate' | 'predue' | 'overdue' | 'nagging'

@@ -1,8 +1,7 @@
 import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
 import { Label } from '@/models/label'
-import { Frequency, Task } from '@/models/task'
+import { Frequency, Notification, NotificationTrigger, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
-import { NotificationTrigger } from '@/utils/recurrance'
 import { Add } from '@mui/icons-material'
 import {
   ColorPaletteProp,
@@ -38,24 +37,15 @@ interface TaskEditProps {
   taskId: string | null
 }
 
-interface NotificationMetadata {
-  dueDate: boolean
-  predue: boolean
-  overdue: boolean
-  nagging: boolean
-}
-
 type Errors = { [key: string]: string }
 
-// TODO: Some of these should be props
 interface TaskEditState {
   title: string
   nextDueDate: Date | null
   labels: Label[]
   frequency: Frequency
   isRolling: boolean
-  isNotificable: boolean
-  notificationMetadata: NotificationMetadata
+  notification: Notification
   errors: Errors
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
@@ -82,12 +72,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         type: 'once',
       },
       isRolling: false,
-      isNotificable: false,
-      notificationMetadata: {
-        dueDate: false,
-        predue: false,
-        overdue: false,
-        nagging: false,
+      notification: {
+        enabled: false,
       },
       isSnackbarOpen: false,
       snackbarMessage: null,
@@ -176,6 +162,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       nextDueDate,
       isRolling,
       labels,
+      notification,
     } = this.state
 
     const task: Omit<Task, 'id'> = {
@@ -184,6 +171,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       next_due_date: nextDueDate,
       is_rolling: isRolling,
       frequency,
+      notification,
     }
 
     try {
@@ -224,12 +212,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     {
       title: 'Due Date/Time',
       description: 'After the due date and time has passed',
-      type: 'dueDate',
+      type: 'due_date',
     },
     {
       title: 'Predued',
       description: 'A few hours before the due date',
-      type: 'predue',
+      type: 'pre_due',
     },
     {
       title: 'Overdue',
@@ -239,7 +227,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     {
       title: 'Nagging',
       description: 'Daily until completed',
-      type: 'nagging',
+      type: 'nag',
     },
   ]
 
@@ -252,8 +240,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         nextDueDate: task.next_due_date,
         frequency: task.frequency,
         isRolling: task.is_rolling,
-        //isNotificable: false // TODO: Notifications,
-        // notificationMetadata: JSON.parse(task.notificationMetadata),
+        notification: task.notification,
       })
     } catch {
       this.setState({
@@ -291,7 +278,17 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ isNotificable: e.target.checked })
+    this.setState({
+      notification: e.target.checked ? {
+        enabled: true,
+        due_date: true,
+        pre_due: false,
+        overdue: false,
+        nag: false,
+      } : {
+        enabled: false,
+      },
+    })
   }
 
   private onRescheduleFromDueDate = () => {
@@ -307,11 +304,15 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onNotificationOptionChange = (item: NotificationTriggerOption) => {
-    const { notificationMetadata } = this.state
+    const { notification } = this.state
+    if (!notification.enabled) {
+      throw new Error('Notifications are not enabled')
+    }
+
     this.setState({
-      notificationMetadata: {
-        ...notificationMetadata,
-        [item.type]: !notificationMetadata[item.type],
+      notification: {
+        ...notification,
+        [item.type]: !(notification as Record<NotificationTrigger, boolean>)[item.type],
       },
     })
   }
@@ -360,9 +361,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       nextDueDate,
       isRolling,
-      isNotificable,
+      notification,
       labels,
-      notificationMetadata,
       errors,
       isSnackbarOpen,
       snackbarMessage,
@@ -371,6 +371,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     const frequencyType = frequency.type
     const isRecurring = frequencyType !== 'once'
+    const notificationsEnabled = notification.enabled
 
     return (
       <Container maxWidth='md'>
@@ -545,13 +546,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           <FormControl sx={{ mt: 1 }}>
             <Checkbox
               onChange={this.onNotificationsChange}
-              checked={isNotificable}
+              checked={notificationsEnabled}
               overlay
               label='Notify for this task'
             />
           </FormControl>
         </Box>
-        {isNotificable && (
+        {notificationsEnabled && (
           <Box
             mt={1}
             sx={{
@@ -572,11 +573,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                   <Checkbox
                     overlay
                     onClick={() => this.onNotificationOptionChange(item)}
-                    checked={
-                      notificationMetadata
-                        ? notificationMetadata[item.type]
-                        : false
-                    }
+                    checked={notification[item.type]}
                     label={item.title}
                     key={item.title}
                   />
