@@ -17,7 +17,8 @@ import {
 import React from 'react'
 import { goToTaskCreate } from '@/utils/navigation'
 import { TaskCard } from '@/views/Tasks/TaskCard'
-import { TaskGroups, groupTasksBy } from '@/utils/tasks'
+import { TaskGroups, bucketIntoDueDateGroup, groupTasksBy } from '@/utils/tasks'
+import moment from 'moment'
 
 type MyTasksProps = object
 
@@ -61,10 +62,28 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
+  private addTask = async (task: Task) => {
+    const { groups } = this.state
+
+    if (!groups) {
+      throw new Error('Groups not loaded')
+    }
+
+    const now = new Date().getTime()
+    const endOfToday = moment().endOf('day').toDate().getTime()
+    const endOfTomorrow = moment().endOf('day').add(1, 'day').toDate().getTime()
+    const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
+    const endOfNextWeek = moment().endOf('isoWeek').add(1, 'week').toDate().getTime()
+
+    bucketIntoDueDateGroup(task, groups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
+  }
+
   private updateTask = async (group: keyof TaskGroups, oldTask: Task, newTask: Task, event: TASK_UPDATE_EVENT) => {
     this.removeTask(group, oldTask)
 
-    // TODO: If the task is still active, add the new instance to the corresponding group
+    if (newTask.next_due_date != null) {
+      this.addTask(newTask)
+    }
 
     let message
     switch (event) {
