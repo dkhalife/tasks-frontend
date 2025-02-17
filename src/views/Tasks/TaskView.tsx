@@ -25,10 +25,10 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
-import { goToMyTasks, goToTaskEdit, goToTaskHistory } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 
-interface TaskViewProps {
+type TaskViewProps = WithNavigate & {
   taskId: string
 }
 
@@ -66,7 +66,8 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
     this.setState({
       task: data.task,
     })
-    goToMyTasks()
+    
+    this.props.navigate(NavigationPaths.MyTasks)
   }
 
   private initTask = async () => {
@@ -131,7 +132,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
   }
 
   render(): React.ReactNode {
-    const { taskId } = this.props
+    const { taskId, navigate } = this.props
     const { task, infoCards } = this.state
     const isRecurringTask = this.state.task?.frequency.type !== 'once'
 
@@ -247,7 +248,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
               color='neutral'
               variant='outlined'
               fullWidth
-              onClick={() => goToTaskHistory(taskId)}
+              onClick={() => navigate(NavigationPaths.TaskHistory(taskId))}
               sx={{
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -269,7 +270,7 @@ export class TaskView extends React.Component<TaskViewProps, TaskViewState> {
                 justifyContent: 'center',
                 p: 1,
               }}
-              onClick={() => goToTaskEdit(taskId)}
+              onClick={() => navigate(NavigationPaths.TaskEdit(taskId))}
             >
               <Edit />
               Edit

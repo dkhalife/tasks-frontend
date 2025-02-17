@@ -2,7 +2,7 @@ import { ResetPassword } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { validateEmail } from '@/models/user'
 import { setTitle } from '@/utils/dom'
-import { goToLogin } from '@/utils/navigation'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
   Container,
@@ -16,7 +16,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
-type ForgotPasswordViewProps = object
+type ForgotPasswordViewProps = WithNavigate
 
 interface ForgotPasswordViewState {
   email: string
@@ -77,12 +77,13 @@ export class ForgotPasswordView extends React.Component<
   private onSnackbarClose = () => {
     const { resetStatusOk } = this.state
     if (resetStatusOk) {
-      goToLogin()
+      this.props.navigate(NavigationPaths.Login)
     }
   }
 
   render(): React.ReactNode {
     const { email, emailError, resetStatusOk } = this.state
+    const { navigate } = this.props
 
     return (
       <Container
@@ -163,7 +164,7 @@ export class ForgotPasswordView extends React.Component<
                         border: 'moccasin',
                         borderRadius: '8px',
                       }}
-                      onClick={goToLogin}
+                      onClick={() => navigate(NavigationPaths.Login)}
                       color='neutral'
                     >
                       Back to Login
@@ -185,7 +186,7 @@ export class ForgotPasswordView extends React.Component<
                   variant='soft'
                   size='lg'
                   sx={{ position: 'relative', bottom: '0' }}
-                  onClick={goToLogin}
+                  onClick={() => navigate(NavigationPaths.Login)}
                   fullWidth
                 >
                   Go to Login

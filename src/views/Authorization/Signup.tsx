@@ -3,7 +3,7 @@ import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
 import { doLogin } from '@/utils/auth'
 import { setTitle } from '@/utils/dom'
-import { goToLogin } from '@/utils/navigation'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import {
   Container,
   Box,
@@ -18,7 +18,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
-type SignupViewProps = object
+type SignupViewProps = WithNavigate
 
 interface SignupViewState {
   password: string
@@ -54,7 +54,7 @@ export class SignupView extends React.Component<
 
   private handleLogin = async (email: string, password: string) => {
     try {
-      doLogin(email, password)
+      doLogin(email, password, this.props.navigate)
     } catch {
       this.setState({ error: 'Login failed' })
     }
@@ -145,6 +145,8 @@ export class SignupView extends React.Component<
       emailError,
       error,
     } = this.state
+    const { navigate } = this.props
+
     return (
       <Container
         component='main'
@@ -224,7 +226,7 @@ export class SignupView extends React.Component<
             <Divider> or </Divider>
             <Button
               size='lg'
-              onClick={goToLogin}
+              onClick={() => navigate(NavigationPaths.Login)}
               fullWidth
               variant='soft'
             >

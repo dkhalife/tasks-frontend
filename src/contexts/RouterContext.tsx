@@ -13,9 +13,20 @@ import { TaskEdit } from '@/views/Tasks/TaskEdit'
 import { TasksOverview } from '@/views/Tasks/TasksOverview'
 import { TaskView } from '@/views/Tasks/TaskView'
 import React from 'react'
-import { BrowserRouter, matchPath, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, matchPath, Navigate, Route, Routes } from 'react-router-dom'
 
-export class RouterContext extends React.Component {
+type RouterContextState = {
+  navigateTo: string | null
+}
+
+export class RouterContext extends React.Component<object, RouterContextState> {
+  constructor(props: object) {
+    super(props)
+
+    this.state = {
+      navigateTo: null
+    }
+  }
   private getTaskId = (): string => {
     const match = matchPath<'taskId', string>(
       {
@@ -35,19 +46,35 @@ export class RouterContext extends React.Component {
 
   private getMainRoute = () => {
     if (window.innerWidth <= 768) {
-      return <MyTasks />
+      return <MyTasks navigate={this.navigate} />
     }
 
-    return <TasksOverview />
+    return <TasksOverview navigate={this.navigate} />
+  }
+
+  private navigate = (path: string) => {
+    this.setState({
+      navigateTo: path,
+    })
+  }
+
+  componentDidUpdate(): void {
+    if (this.state.navigateTo !== null) {
+      this.setState({
+        navigateTo: null
+      })
+    }
   }
 
   render() {
+    const { navigateTo } = this.state
+
     return (
       <BrowserRouter>
         <Routes>
           <Route
             path='/'
-            element={<App />}
+            element={<App navigate={this.navigate} />}
             errorElement={<NotFound />}
           >
             <Route
@@ -60,19 +87,19 @@ export class RouterContext extends React.Component {
             />
             <Route
               path='/tasks'
-              element={<TasksOverview />}
+              element={<TasksOverview navigate={this.navigate} />}
             />
             <Route
               path='/tasks/:taskId/edit'
-              element={<TaskEdit taskId={this.getTaskId()} />}
+              element={<TaskEdit taskId={this.getTaskId()} navigate={this.navigate} />}
             />
             <Route
               path='/tasks/:taskId'
-              element={<TaskView taskId={this.getTaskId()} />}
+              element={<TaskView taskId={this.getTaskId()} navigate={this.navigate} />}
             />
             <Route
               path='/tasks/create'
-              element={<TaskEdit taskId={null} />}
+              element={<TaskEdit taskId={null} navigate={this.navigate} />}
             />
             <Route
               path='/tasks/:taskId/history'
@@ -80,23 +107,23 @@ export class RouterContext extends React.Component {
             />
             <Route
               path='/my/tasks'
-              element={<MyTasks />}
+              element={<MyTasks navigate={this.navigate} />}
             />
             <Route
               path='/login'
-              element={<LoginView />}
+              element={<LoginView navigate={this.navigate} />}
             />
             <Route
               path='/signup'
-              element={<SignupView />}
+              element={<SignupView navigate={this.navigate} />}
             />
             <Route
               path='/forgot-password'
-              element={<ForgotPasswordView />}
+              element={<ForgotPasswordView navigate={this.navigate} />}
             />
             <Route
               path='/password/update'
-              element={<UpdatePasswordView />}
+              element={<UpdatePasswordView navigate={this.navigate} />}
             />
             <Route
               path='/labels/'
@@ -104,6 +131,10 @@ export class RouterContext extends React.Component {
             />
           </Route>
         </Routes>
+
+        {navigateTo && (
+          <Navigate to={navigateTo} />
+        )}
       </BrowserRouter>
     )
   }

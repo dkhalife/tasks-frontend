@@ -29,12 +29,12 @@ import React, { ChangeEvent } from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
-import { goToMyTasks } from '@/utils/navigation'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 
-interface TaskEditProps {
+type TaskEditProps = WithNavigate & {
   taskId: string | null
 }
 
@@ -152,7 +152,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    const { taskId } = this.props
+    const { taskId, navigate } = this.props
     const {
       title,
       frequency,
@@ -178,7 +178,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       })
 
       await promise
-      goToMyTasks()
+      navigate(NavigationPaths.MyTasks)
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -191,7 +191,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private onTaskDelete = async (taskId: string) => {
     try {
       await DeleteTask(taskId)
-      goToMyTasks()
+      this.props.navigate(NavigationPaths.MyTasks)
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -249,7 +249,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       })
 
       setTimeout(() => {
-        goToMyTasks()
+        this.props.navigate(NavigationPaths.MyTasks)
       }, 3000)
     }
   }
@@ -350,7 +350,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onCancelClicked = () => {
-    goToMyTasks()
+    this.props.navigate(NavigationPaths.MyTasks)
   }
 
   render(): React.ReactNode {

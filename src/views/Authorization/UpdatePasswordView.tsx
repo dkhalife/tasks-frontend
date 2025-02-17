@@ -1,7 +1,7 @@
 import { ChangePassword } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { validatePassword } from '@/models/user'
-import { getQuery, goToLogin } from '@/utils/navigation'
+import { getQuery, NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
   Container,
@@ -15,7 +15,7 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
-type UpdatePasswordViewProps = object
+type UpdatePasswordViewProps = WithNavigate
 
 interface UpdatePasswordViewState {
   password: string
@@ -46,7 +46,7 @@ export class UpdatePasswordView extends React.Component<
   }
 
   private onSnackbarClose = () => {
-    goToLogin()
+    this.props.navigate(NavigationPaths.Login)
   }
 
   private onCancel = () => {
@@ -83,7 +83,8 @@ export class UpdatePasswordView extends React.Component<
       this.setState({
         updateStatusOk: true,
       })
-      goToLogin()
+
+      this.props.navigate(NavigationPaths.Login)
     } catch {
       this.setState({
         updateStatusOk: false,

@@ -8,8 +8,9 @@ import { ThemeMode } from './constants/theme'
 import { GetUserProfile } from './api/users'
 import { User } from './models/user'
 import { useRoot } from './utils/dom'
+import { WithNavigate } from './utils/navigation'
 
-type AppProps = object
+type AppProps = WithNavigate
 
 interface AppState {
   userProfile: User | null
@@ -71,11 +72,12 @@ export class App extends React.Component<AppProps, AppState> {
   render() {
     const { userProfile } = this.state
     const { setUserProfile } = this
+    const { navigate } = this.props
 
     return (
       <div style={{ minHeight: '100vh' }}>
         <UserContext.Provider value={{ userProfile, setUserProfile }}>
-          <NavBar />
+          <NavBar navigate={navigate} />
           <Outlet />
         </UserContext.Provider>
       </div>

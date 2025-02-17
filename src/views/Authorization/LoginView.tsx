@@ -10,11 +10,11 @@ import {
   Snackbar,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
-import { goToRegister, goToResetPassword } from '@/utils/navigation'
 import { doLogin } from '@/utils/auth'
 import { setTitle } from '@/utils/dom'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 
-type LoginViewProps = object
+type LoginViewProps = WithNavigate
 
 interface LoginViewState {
   email: string
@@ -42,7 +42,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
 
     try {
       const { email, password } = this.state
-      doLogin(email, password)
+      doLogin(email, password, this.props.navigate)
     } catch (error) {
       this.setState({ error: (error as Error).message })
     }
@@ -62,6 +62,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
 
   render(): React.ReactNode {
     const { error } = this.state
+    const { navigate } = this.props
 
     return (
       <Container
@@ -138,14 +139,14 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
                 border: 'moccasin',
                 borderRadius: '8px',
               }}
-              onClick={goToResetPassword}
+              onClick={() => navigate(NavigationPaths.ResetPassword)}
             >
               Forgot password?
             </Button>
 
             <Divider> or </Divider>
             <Button
-              onClick={goToRegister}
+              onClick={() => navigate(NavigationPaths.Register)}
               fullWidth
               variant='soft'
               size='lg'

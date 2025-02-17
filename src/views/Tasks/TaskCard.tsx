@@ -38,14 +38,12 @@ import {
 import React from 'react'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
-import { SxProps } from '@mui/material'
-import { goToTaskEdit, goToTask, goToTaskHistory } from '@/utils/navigation'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 
-interface TaskCardProps {
+type TaskCardProps = WithNavigate & {
   task: Task
   onTaskUpdate: (updatedTask: Task, event: TASK_UPDATE_EVENT) => void
   onTaskRemove: () => void
-  sx: SxProps
   viewOnly: boolean
 }
 
@@ -88,12 +86,12 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
   private handleEdit = (taskId: string) => {
     this.dismissMoreMenu()
-    goToTaskEdit(taskId)
+    this.props.navigate(NavigationPaths.TaskEdit(taskId))
   }
 
   private handleHistory = (taskId: string) => {
     this.dismissMoreMenu()
-    goToTaskHistory(taskId)
+    this.props.navigate(NavigationPaths.TaskHistory(taskId))
   }
 
   private handleDelete = () => {
@@ -170,7 +168,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   }
 
   render(): React.ReactNode {
-    const { task, sx, viewOnly } = this.props
+    const { task, viewOnly, navigate } = this.props
     const { isMoreMenuOpen } = this.state
 
     const notificationsActive = this.hasAnyNotificationsActive()
@@ -239,7 +237,6 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
           style={viewOnly ? { pointerEvents: 'none' } : {}}
           variant='plain'
           sx={{
-            ...sx,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -335,7 +332,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             </Grid>
             <Grid
               xs={9}
-              onClick={() => goToTask(task.id)}
+              onClick={() => navigate(NavigationPaths.TaskView(task.id))}
             >
               <Box
                 display='flex'

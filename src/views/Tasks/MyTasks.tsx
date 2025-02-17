@@ -15,13 +15,13 @@ import {
   Typography,
 } from '@mui/joy'
 import React from 'react'
-import { goToTaskCreate } from '@/utils/navigation'
 import { TaskCard } from '@/views/Tasks/TaskCard'
 import { TaskGroups, bucketIntoDueDateGroup, groupTasksBy } from '@/utils/tasks'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
+import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 
-type MyTasksProps = object
+type MyTasksProps = WithNavigate
 
 interface MyTasksState {
   isSnackbarOpen: boolean
@@ -157,6 +157,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       return <Loading />
     }
 
+    const { navigate } = this.props
     const hasTasks = this.hasTasks()
 
     return (
@@ -222,8 +223,8 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                         task={task}
                         onTaskUpdate={(updatedTask, event) => this.updateTask(groupKey, task, updatedTask, event)}
                         onTaskRemove={() => this.removeTask(groupKey, task)}
-                        sx={{}}
                         viewOnly={false}
+                        navigate={navigate}
                       />
                     ))}
                   </AccordionDetails>
@@ -262,7 +263,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
               width: 50,
               height: 50,
             }}
-            onClick={goToTaskCreate}
+            onClick={() => navigate(NavigationPaths.TaskCreate)}
           >
             <Add />
           </IconButton>

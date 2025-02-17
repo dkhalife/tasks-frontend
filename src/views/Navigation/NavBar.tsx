@@ -20,10 +20,10 @@ import {
 import React, { version } from 'react'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
-import { getPathName, goToLogin, goToMyTasks } from '@/utils/navigation'
+import { getPathName, NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Logo } from '@/Logo'
 
-type NavBarProps = object
+type NavBarProps = WithNavigate
 
 interface NavBarState {
   drawerOpen: boolean
@@ -48,7 +48,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
   private logout = () => {
     localStorage.removeItem('ca_token')
     localStorage.removeItem('ca_expiration')
-    goToLogin()
+    this.props.navigate(NavigationPaths.Login)
   }
 
   render(): React.ReactNode {
@@ -81,7 +81,6 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
             alignItems: 'center',
             gap: 2,
           }}
-          onClick={goToMyTasks}
         >
           <Logo
             level='title-lg'
