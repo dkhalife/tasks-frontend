@@ -540,18 +540,21 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           </Box>
         )}
 
-        <Box mt={2}>
-          <Typography level='h4'>Notifications :</Typography>
+        {nextDueDate && (
+          <Box mt={2}>
+            <Typography level='h4'>Notifications :</Typography>
 
-          <FormControl sx={{ mt: 1 }}>
-            <Checkbox
-              onChange={this.onNotificationsChange}
-              checked={notificationsEnabled}
-              overlay
-              label='Notify for this task'
-            />
-          </FormControl>
-        </Box>
+            <FormControl sx={{ mt: 1 }}>
+              <Checkbox
+                onChange={this.onNotificationsChange}
+                checked={notificationsEnabled}
+                overlay
+                label='Notify for this task'
+              />
+            </FormControl>
+          </Box>
+        )}
+
         {notificationsEnabled && (
           <Box
             mt={1}
