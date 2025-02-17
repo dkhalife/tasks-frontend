@@ -23,6 +23,7 @@ import moment from 'moment'
 import React, { ChangeEvent } from 'react'
 import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { goToTaskCreate, goToTaskEdit } from '@/utils/navigation'
+import { setTitle } from '@/utils/dom'
 
 type TasksOverviewProps = object
 
@@ -56,6 +57,8 @@ export class TasksOverview extends React.Component<
 
   componentDidMount(): void {
     this.loadTasks()
+
+    setTitle('Tasks Overview')
   }
 
   private onCloseDateModal = async (date: Date | null) => {

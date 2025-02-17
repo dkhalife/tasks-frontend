@@ -19,6 +19,7 @@ import { goToTaskCreate } from '@/utils/navigation'
 import { TaskCard } from '@/views/Tasks/TaskCard'
 import { TaskGroups, bucketIntoDueDateGroup, groupTasksBy } from '@/utils/tasks'
 import moment from 'moment'
+import { setTitle } from '@/utils/dom'
 
 type MyTasksProps = object
 
@@ -120,6 +121,8 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
   componentDidMount(): void {
     this.loadTasks()
+
+    setTitle('My Tasks')
   }
 
   private onSnackbarClose = () => {

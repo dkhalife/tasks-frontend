@@ -1,5 +1,6 @@
 import { ResetPassword } from '@/api/auth'
 import { validateEmail } from '@/models/user'
+import { setTitle } from '@/utils/dom'
 import { goToLogin } from '@/utils/navigation'
 import { Sheet } from '@mui/joy'
 import {
@@ -34,6 +35,10 @@ export class ForgotPasswordView extends React.Component<
       emailError: null,
       resetStatusOk: null,
     }
+  }
+
+  componentDidMount(): void {
+    setTitle('Reset Password')
   }
 
   private handleSubmit = async () => {

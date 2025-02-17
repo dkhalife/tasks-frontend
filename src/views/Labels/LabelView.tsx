@@ -16,6 +16,7 @@ import { LabelModal } from '../Modals/Inputs/LabelModal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { colorOptionFromColor } from '@/utils/labels'
+import { setTitle } from '@/utils/dom'
 
 type LabelViewProps = object
 
@@ -97,6 +98,8 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
   componentDidMount(): void {
     this.loadLabels()
+
+    setTitle('Labels')
   }
 
   render(): React.ReactNode {
