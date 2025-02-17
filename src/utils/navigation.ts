@@ -9,6 +9,7 @@ export const NavigationPaths = {
   Register: '/signup',
   ResetPassword: '/forgot-password',
   MyTasks: '/my/tasks',
+  Labels: '/labels',
   TaskCreate: '/tasks/create',
   TaskEdit: (taskId: string) => `/tasks/${taskId}/edit`,
   TaskView: (taskId: string) => `/tasks/${taskId}`,

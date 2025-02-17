@@ -20,6 +20,7 @@ import { TaskGroups, bucketIntoDueDateGroup, groupTasksBy } from '@/utils/tasks'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
+import { Label } from '@/models/label'
 
 type MyTasksProps = WithNavigate
 
@@ -27,6 +28,7 @@ interface MyTasksState {
   isSnackbarOpen: boolean
   snackBarMessage: string | null
   tasks: Task[]
+  labels: Label[]
   groups: TaskGroups | null
   isExpanded: Record<keyof TaskGroups, boolean>
   isLoading: boolean
@@ -40,6 +42,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       isSnackbarOpen: false,
       snackBarMessage: null,
       tasks: [],
+      labels: [],
       groups: null,
       isExpanded: {
         overdue: true,
@@ -126,7 +129,9 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onSnackbarClose = () => {
-    this.setState({ isSnackbarOpen: false })
+    this.setState({
+      isSnackbarOpen: false,
+    })
   }
 
   private toggleGroup = (groupKey: keyof TaskGroups) => {

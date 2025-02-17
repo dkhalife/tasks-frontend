@@ -80,6 +80,11 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     }
   }
 
+  private isUniqueLabelName = (id: string | undefined, labelName: string): boolean => {
+    const { userLabels } = this.state
+    return !userLabels.some(label => label.name === labelName && label.id !== id)
+  }
+
   private onLabelModalClose = (newLabel: Label | null) => {
     if (!newLabel) {
       // No creation or update was made
@@ -88,12 +93,16 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
     const { userLabels, currentLabel } = this.state
     if (!currentLabel) {
-      this.setState({ userLabels: [...userLabels, newLabel] })
+      this.setState({
+        userLabels: [...userLabels, newLabel],
+      })
       return
     }
 
     const updatedLabels = userLabels.map(label => label.id === currentLabel.id ? newLabel : label)
-    this.setState({ userLabels: updatedLabels })
+    this.setState({
+      userLabels: updatedLabels,
+    })
   }
 
   componentDidMount(): void {
@@ -142,7 +151,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
         >
           {userLabels.map(label => (
             <div
-              key={label.name}
+              key={`label-${label.id}`}
               style={{
                 border: '1px solid #ccc',
                 boxShadow: '2px',
@@ -210,6 +219,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
         <LabelModal
           ref={this.modalRef}
           onClose={this.onLabelModalClose}
+          isUnique={this.isUniqueLabelName}
           id={currentLabel?.id}
           name={currentLabel?.name}
           color={currentColor}

@@ -23,17 +23,18 @@ import {
   Sheet,
   Button,
   Snackbar,
+  Option,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
-import { LabelModal } from '@/views/Modals/Inputs//LabelModal'
 import { RepeatOption } from './RepeatOption'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
-import { Notification, NotificationTriggerOptions } from '@/models/notifications'
+import { Notification, NotificationTrigger, NotificationTriggerOption, NotificationTriggerOptions } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
+import { GetLabels } from '@/api/labels'
 
 export type TaskEditProps = WithNavigate & {
   taskId: string | null
@@ -44,7 +45,8 @@ type Errors = { [key: string]: string }
 export interface TaskEditState {
   title: string
   nextDueDate: Date | null
-  labels: Label[]
+  taskLabels: Label[]
+  userLabels: Label[]
   frequency: Frequency
   isRolling: boolean
   notification: Notification
@@ -55,7 +57,6 @@ export interface TaskEditState {
 }
 
 export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
-  private labelModalRef = React.createRef<LabelModal>()
   private confirmModelRef = React.createRef<ConfirmationModal>()
 
   constructor(props: TaskEditProps) {
@@ -63,7 +64,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     this.state = {
       title: '',
       nextDueDate: null,
-      labels: [],
+      taskLabels: [],
+      userLabels: [],
       frequency: {
         type: 'once',
       },
@@ -153,13 +155,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       nextDueDate,
       isRolling,
-      labels,
+      taskLabels,
       notification,
     } = this.state
 
     const task: Omit<Task, 'id'> = {
       title,
-      labels: labels,
+      labels: taskLabels,
       next_due_date: nextDueDate,
       is_rolling: isRolling,
       frequency,
@@ -226,16 +228,21 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  componentDidMount(): void {
-    // TODO: Load and set labels and userLabels
-
-    // Load task data
+  private init = async () => {
     const { taskId } = this.props
-    if (taskId != null) {
-      this.loadTask(taskId)
-    } else {
-      // TODO: focus input box
-    }
+    
+    const [, data] = await Promise.all([
+      taskId != null ? this.loadTask(taskId) : Promise.resolve(),
+      GetLabels(),
+    ])
+
+    this.setState({
+      userLabels: data.labels,
+    })
+  }
+
+  componentDidMount(): void {
+    this.init()
   }
 
   private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -287,21 +294,35 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
-  private onLabelsChange = (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<string[], false>) => {
+  private onNotificationOptionChange = (item: NotificationTriggerOption) => {
+    const { notification } = this.state
+    if (!notification.enabled) {
+      throw new Error('Notifications are not enabled')
+    }
+
+    this.setState({
+      notification: {
+        ...notification,
+        [item.type]: !(notification as Record<NotificationTrigger, boolean>)[item.type],
+      },
+    })
+  }
+
+  private onLabelsChange = (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<Label[], false>) => {
     if (!value) {
       return
     }
 
-    // TODO: Consolidate labels
-    /*const { userLabels } = this.state
+    const { userLabels } = this.state
     this.setState({
-      labels: userLabels.filter(l => value.indexOf(l.name) > -1),
-    })*/
+      taskLabels: userLabels.filter(userLabel => value.findIndex((selected) => selected.id === userLabel.id) !== -1),
+    })
   }
 
   private onAddNewLabel = () => {
-    this.labelModalRef.current?.open()
+    this.props.navigate(NavigationPaths.Labels)
   }
+
   private onDeleteConfirmed = (isConfirmed: boolean) => {
     if (this.props.taskId === null) {
       console.error('Task ID is null')
@@ -332,7 +353,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       nextDueDate,
       isRolling,
       notification,
-      labels,
+      taskLabels,
+      userLabels,
       errors,
       isSnackbarOpen,
       snackbarMessage,
@@ -364,10 +386,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           <Select
             multiple
             onChange={this.onLabelsChange}
-            value={labels.map(l => l.name)}
+            value={taskLabels}
             renderValue={() => (
-              <Box sx={{ display: 'flex', gap: '0.25rem' }}>
-                {labels.map(selectedOption => {
+              <Box sx={{
+                  display: 'flex',
+                  gap: '0.25rem',
+                }}>
+                {taskLabels.map(selectedOption => {
                   return (
                     <Chip
                       variant='soft'
@@ -396,12 +421,11 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               },
             }}
           >
-            { /* TODO: Consolidate labels
-            userLabels &&
+            { userLabels &&
               userLabels.map(label => (
                 <Option
-                  key={label.id + label.name}
-                  value={label.name}
+                  key={`label-${label.id}`}
+                  value={label}
                 >
                   <div
                     style={{
@@ -413,7 +437,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                   />
                   {label.name}
                 </Option>
-              ))*/}
+              ))}
             <MenuItem
               key={'addNewLabel'}
               onClick={this.onAddNewLabel}
@@ -576,13 +600,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           cancelText='Cancel'
           message='Are you sure you want to delete this task?'
           onClose={this.onDeleteConfirmed}
-        />
-        <LabelModal
-          id={undefined}
-          name={undefined}
-          color={undefined}
-          ref={this.labelModalRef}
-          onClose={() => console.error('missing impl')}
         />
         <Snackbar
           open={isSnackbarOpen}
