@@ -1,9 +1,11 @@
 import { Task } from '@/models/task'
 import { Request } from '../utils/TokenManager'
 import { HistoryEntry } from '@/models/history'
+import { Label } from '@/models/label'
 
-type Marshalled<T> = Omit<T, 'next_due_date'> & {
-  next_due_date: number | null
+type Marshalled<T> = Omit<Omit<T, 'next_due_date'>, 'labels'> & {
+  next_due_date: number | null,
+  labels: string[]
 }
 
 type MarshalledTask = Marshalled<Task>
@@ -29,18 +31,32 @@ type TaskHistoryResponse = {
 }
 
 function MarshallTask<T extends {
-  next_due_date: Date | null
+  next_due_date: Date | null,
+  labels: Label[],
 }>(task: T): Marshalled<T> {
   return {
     ...task,
-    next_due_date: task.next_due_date?.getTime() ?? null
+    next_due_date: task.next_due_date?.getTime() ?? null,
+    labels: task.labels.map(l => l.id),
   }
 }
 
 const UnmarshallTask = (task: MarshalledTask): Task => {
+  // TODO: Cache labels and reuse here
+  const userLabels: Label[] = []
+
+  const taskLabels: Label[] = []
+  task.labels.forEach((id: string) => {
+    const label = userLabels.find(l => l.id === id)
+    if (label) {
+      taskLabels.push(label)
+    }
+  })
+
   return {
     ...task,
-    next_due_date: task.next_due_date ? new Date(task.next_due_date) : null
+    next_due_date: task.next_due_date ? new Date(task.next_due_date) : null,
+    labels: taskLabels,
   }
 }
 
