@@ -1,6 +1,5 @@
-import { Box, CircularProgress, Container, LinearProgress } from '@mui/joy'
+import { Box, CircularProgress, Container } from '@mui/joy'
 import { Typography } from '@mui/joy'
-import { Logo } from './Logo'
 import React from 'react'
 
 type LoadingProps = object
