@@ -1,14 +1,14 @@
 import React from "react";
 import { Box, Card, Checkbox, FormControl, FormHelperText, Typography } from "@mui/joy";
-import { NotificationTrigger, NotificationTriggerOption, NotificationTriggerOptions } from "@/models/notifications";
+import { NotificationTriggerOption, NotificationTriggerOptions } from "@/models/notifications";
 
 type NotificationOptionsProps = {
-  notification: Record<NotificationTrigger, boolean>
-  onChange: (notification: Record<NotificationTrigger, boolean>) => void
+  notification: NotificationTriggerOptions
+  onChange: (notification: NotificationTriggerOptions) => void
 }
 
 type NotificationOptionsState = {
-  notification: Record<NotificationTrigger, boolean>
+  notification: NotificationTriggerOptions
 }
 
 export class NotificationOptions extends React.Component<NotificationOptionsProps, NotificationOptionsState> {

@@ -3,22 +3,40 @@ export type NotificationDisabled = {
 }
 export type NotificationMqtt = object
 export type NotificationTrigger = 'due_date' | 'pre_due' | 'overdue' | 'nag'
+export type NotificationTriggerOptions = Record<NotificationTrigger, boolean>
 export type NotificationEnabled = {
   enabled: true
-} & Record<NotificationTrigger, boolean> & (NotificationMqtt)
+} & NotificationTriggerOptions & (NotificationMqtt)
 export type Notification = NotificationDisabled | NotificationEnabled
-
-export type NotificationNone = {
-  type: 'none'
+export type NotificationProvider = 'none' | 'webhook'
+export type NotificationTypeNone = {
+  provider: 'none'
 }
 
-export type NotificationWebhook = {
-  type: 'webhook'
+export type NotificationTypeWebhook = {
+  provider: 'webhook'
   url: string
   method: 'GET' | 'POST'
 }
 
-export type NotificationType = NotificationNone | NotificationWebhook
+export type NotificationType = NotificationTypeNone | NotificationTypeWebhook
+
+export const getDefaultTypeForProvider = (provider: NotificationProvider): NotificationType => {
+  switch (provider) {
+    default:
+    case 'none':
+      return {
+        provider: 'none',
+      }
+
+    case 'webhook':
+      return {
+        provider: 'webhook',
+        url: '',
+        method: 'GET',
+      }
+  }
+}
 
 export type NotificationTriggerOption = {
   type: NotificationTrigger

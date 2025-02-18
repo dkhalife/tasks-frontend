@@ -1,10 +1,8 @@
-export interface NotificationType {
-  type: number
-}
+import { NotificationType } from "@/models/notifications"
 
 export interface User {
   display_name: string
-  notification_type: NotificationType
+  notifications: NotificationType & Notification
 }
 
 export const validateEmail = (email: string) => {

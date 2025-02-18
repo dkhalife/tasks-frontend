@@ -4,7 +4,7 @@ import { Container, Typography, Divider, Box, Button } from '@mui/joy'
 import React from 'react'
 import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
-import { NotificationSetting } from './NotificationSetting'
+import { NotificationSetting } from '../Notifications/NotificationSettings'
 import { ThemeToggle } from './ThemeToggle'
 
 export class Settings extends React.Component {

@@ -32,7 +32,7 @@ import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
-import { Notification, NotificationTrigger } from '@/models/notifications'
+import { Notification, NotificationTriggerOptions } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 
 export type TaskEditProps = WithNavigate & {
@@ -262,7 +262,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
-  private onNotificationOptionsChange = (notification: Record<NotificationTrigger, boolean>) => {
+  private onNotificationOptionsChange = (notification: NotificationTriggerOptions) => {
     if (!this.state.notification.enabled) {
       throw new Error('Notifications are disabled')
     }
