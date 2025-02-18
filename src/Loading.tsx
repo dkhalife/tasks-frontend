@@ -1,6 +1,5 @@
 import { Box, CircularProgress, Container } from '@mui/joy'
 import { Typography } from '@mui/joy'
-import { Logo } from './Logo'
 import React from 'react'
 
 type LoadingProps = object
@@ -58,10 +57,8 @@ export class Loading extends React.Component<LoadingProps, LoadingState> {
         >
           <CircularProgress
             color='success'
-            sx={{ '--CircularProgress-size': '200px' }}
-          >
-            <Logo />
-          </CircularProgress>
+            sx={{ '--CircularProgress-size': '50px' }}
+          />
           <Box
             sx={{
               display: 'flex',
