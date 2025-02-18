@@ -67,17 +67,17 @@ export class TaskHistory extends React.Component<
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, task) => {
-        if (task.dueDate && task.completedDate) {
+        if (task.due_date && task.completed_date) {
           // Only consider tasks with a due date
-          return acc + moment(task.completedDate).diff(task.dueDate, 'hours')
+          return acc + moment(task.completed_date).diff(task.due_date, 'hours')
         }
         return acc
-      }, 0) / histories.filter(task => task.dueDate).length
+      }, 0) / histories.filter(task => task.due_date).length
     const averageDelayMoment = moment.duration(averageDelay, 'hours')
     const maximumDelay = histories.reduce((acc, task) => {
-      if (task.dueDate) {
+      if (task.due_date) {
         // Only consider tasks with a due date
-        const delay = moment(task.completedDate).diff(task.dueDate, 'hours')
+        const delay = moment(task.completed_date).diff(task.due_date, 'hours')
         return delay > acc ? delay : acc
       }
       return acc
@@ -156,7 +156,7 @@ export class TaskHistory extends React.Component<
     return (
       <Container maxWidth='md'>
         <Typography
-          level='title-md'
+          level='h4'
           mb={1.5}
         >
           Summary:
@@ -197,7 +197,7 @@ export class TaskHistory extends React.Component<
         </Sheet>
 
         <Typography
-          level='title-md'
+          level='h4'
           my={1.5}
         >
           History:
@@ -206,11 +206,8 @@ export class TaskHistory extends React.Component<
           <List sx={{ p: 0 }}>
             {taskHistory.map((historyEntry, index) => (
               <HistoryCard
-                onClick={() => {}}
+                key={`history-${index}`}
                 historyEntry={historyEntry}
-                allHistory={taskHistory}
-                key={index}
-                index={index}
               />
             ))}
           </List>

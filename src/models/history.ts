@@ -1,4 +1,4 @@
 export interface HistoryEntry {
-  completedDate: Date | null
-  dueDate: Date | null
+  completed_date: Date | null
+  due_date: Date | null
 }

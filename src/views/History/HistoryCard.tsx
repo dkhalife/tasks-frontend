@@ -6,15 +6,12 @@ import React from 'react'
 import { CompletedChip } from './CompletedChip'
 
 interface HistoryCardProps {
-  allHistory: HistoryEntry[]
   historyEntry: HistoryEntry
-  index: number
-  onClick: () => void
 }
 
 export class HistoryCard extends React.Component<HistoryCardProps> {
   render(): React.ReactNode {
-    const { allHistory, historyEntry, index, onClick } = this.props
+    const { historyEntry } = this.props
 
     return (
       <>
@@ -23,7 +20,6 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
             gap: 1.5,
             alignItems: 'flex-start',
           }}
-          onClick={onClick}
         >
           <ListItemContent sx={{ my: 0 }}>
             <Box
@@ -34,40 +30,27 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
               }}
             >
               <Typography sx={{ fontWeight: 'md' }}>
-                {historyEntry.completedDate
-                  ? moment(historyEntry.completedDate).format(
-                      'ddd MM/DD/yyyy HH:mm',
-                    )
-                  : 'Skipped'}
+                {historyEntry.completed_date
+                  ? <strong title={moment(historyEntry.completed_date).format('ddd MM/DD/yyyy HH:mm')}>Completed</strong> :
+                  <strong>Skipped</strong>}
               </Typography>
               <CompletedChip
-                dueDate={historyEntry.dueDate}
-                completedDate={historyEntry.completedDate}
+                dueDate={historyEntry.due_date}
+                completedDate={historyEntry.completed_date}
               />
             </Box>
-            {historyEntry.dueDate && (
+            {historyEntry.due_date && (
               <Typography>
-                Due: {moment(historyEntry.dueDate).format('ddd MM/DD/yyyy')}
+                due on {moment(historyEntry.due_date).format('MMMM Do YYYY, h:mm a')}
               </Typography>
             )}
           </ListItemContent>
         </ListItem>
-        {index < allHistory.length - 1 && (
-          <>
-            <ListDivider component='li'>
-              {index < allHistory.length - 1 &&
-                allHistory[index + 1].completedDate && (
-                  <Typography>
-                    {/*TODO: formatTimeDifference(
-                      historyEntry.completedDate,
-                      allHistory[index + 1].completedDate,
-                    )*/}
-                    &nbsp;before
-                  </Typography>
-                )}
-            </ListDivider>
-          </>
-        )}
+        <ListDivider component='li'>
+          <Typography>
+            { historyEntry.completed_date ? moment(historyEntry.completed_date).fromNow() : '-'}
+          </Typography>
+        </ListDivider>
       </>
     )
   }
