@@ -156,7 +156,7 @@ export class TaskHistory extends React.Component<
     return (
       <Container maxWidth='md'>
         <Typography
-          level='title-md'
+          level='h4'
           mb={1.5}
         >
           Summary:
@@ -197,7 +197,7 @@ export class TaskHistory extends React.Component<
         </Sheet>
 
         <Typography
-          level='title-md'
+          level='h4'
           my={1.5}
         >
           History:

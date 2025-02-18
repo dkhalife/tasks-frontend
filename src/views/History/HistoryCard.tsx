@@ -31,10 +31,8 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
             >
               <Typography sx={{ fontWeight: 'md' }}>
                 {historyEntry.completed_date
-                  ? moment(historyEntry.completed_date).format(
-                      'ddd MM/DD/yyyy HH:mm',
-                    )
-                  : 'Skipped'}
+                  ? <strong title={moment(historyEntry.completed_date).format('ddd MM/DD/yyyy HH:mm')}>Completed</strong> :
+                  <strong>Skipped</strong>}
               </Typography>
               <CompletedChip
                 dueDate={historyEntry.due_date}
@@ -43,7 +41,7 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
             </Box>
             {historyEntry.due_date && (
               <Typography>
-                Due: {moment(historyEntry.due_date).format('ddd MM/DD/yyyy')}
+                due on {moment(historyEntry.due_date).format('MMMM Do YYYY, h:mm a')}
               </Typography>
             )}
           </ListItemContent>

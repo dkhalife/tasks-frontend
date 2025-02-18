@@ -2,11 +2,13 @@ import { Task } from '@/models/task'
 import { Request } from '../utils/TokenManager'
 import { HistoryEntry } from '@/models/history'
 
-type Marshalled<T> = Omit<T, 'next_due_date'> & {
-  next_due_date: number | null
+type MarshalledTask = Omit<Task, 'next_due_date'> & {
+  next_due_date: number | null,
 }
-
-type MarshalledTask = Marshalled<Task>
+type MarshalledHistoryEntry = Omit<Omit<HistoryEntry, 'due_date'>, 'completed_date'> & {
+  due_date: number | null,
+  completed_date: number | null,
+}
 
 type SingleTaskResponse = {
   task: Task
@@ -28,9 +30,11 @@ type TaskHistoryResponse = {
   history: HistoryEntry[]
 }
 
-function MarshallTask<T extends {
-  next_due_date: Date | null
-}>(task: T): Marshalled<T> {
+type MarshalledTaskHistoryResponse = {
+  history: MarshalledHistoryEntry[]
+}
+
+function MarshallTask(task: Task): MarshalledTask {
   return {
     ...task,
     next_due_date: task.next_due_date?.getTime() ?? null
@@ -44,10 +48,25 @@ const UnmarshallTask = (task: MarshalledTask): Task => {
   }
 }
 
+const UnmarshallHistoryEntry = (entry: MarshalledHistoryEntry): HistoryEntry => {
+  return {
+    ...entry,
+    completed_date: entry.completed_date ? new Date(entry.completed_date) : null,
+    due_date: entry.due_date ? new Date(entry.due_date) : null,
+  }
+}
+
 const UnmarshallSingleTaskResponse = (response: SingleMarshalledTaskResponse): SingleTaskResponse => {
   return {
     ...response,
     task: UnmarshallTask(response.task)
+  }
+}
+
+const UnmarshallTaskHistoryResponse = (response: MarshalledTaskHistoryResponse): TaskHistoryResponse => {
+  return {
+    ...response,
+    history: response.history.map(UnmarshallHistoryEntry)
   }
 }
 
@@ -83,7 +102,7 @@ export const SkipTask = async (id: string): Promise<SingleTaskResponse> =>
   await UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/skip`, 'POST'))
 
 export const CreateTask = async (task: Omit<Task, 'id'>) =>
-  await Request<void>(`/tasks/`, 'POST', MarshallTask(task),)
+  await Request<void>(`/tasks/`, 'POST', MarshallTask(task as Task))
 
 export const DeleteTask = async (id: string) =>
   await Request<void>(`/tasks/${id}`, 'DELETE')
@@ -91,8 +110,8 @@ export const DeleteTask = async (id: string) =>
 export const SaveTask = async (task: Task) =>
   await Request<void>(`/tasks/`, 'PUT', MarshallTask(task))
 
-export const GetTaskHistory = async (taskId: string) =>
-  await Request<TaskHistoryResponse>(`/tasks/${taskId}/history`)
+export const GetTaskHistory = async (taskId: string) => await UnmarshallTaskHistoryResponse(
+  await Request<MarshalledTaskHistoryResponse>(`/tasks/${taskId}/history`))
 
 export const UpdateDueDate = async (id: string, dueDate: Date | null): Promise<SingleTaskResponse> =>
   await UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/dueDate`, 'PUT', {
