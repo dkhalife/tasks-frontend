@@ -52,7 +52,7 @@ export const NotificationTriggerOptions: NotificationTriggerOption[] = [
     type: 'due_date',
   },
   {
-    title: 'Predued',
+    title: 'Pre-due',
     description: 'A few hours before the due date',
     type: 'pre_due',
   },
