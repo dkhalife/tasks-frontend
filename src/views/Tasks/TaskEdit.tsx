@@ -1,6 +1,6 @@
 import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
 import { Label } from '@/models/label'
-import { Frequency, Notification, NotificationTrigger, Task } from '@/models/task'
+import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import { Add } from '@mui/icons-material'
 import {
@@ -17,7 +17,6 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
-  Card,
   Select,
   Chip,
   MenuItem,
@@ -33,14 +32,16 @@ import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
+import { Notification, NotificationTriggerOptions } from '@/models/notifications'
+import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 
-type TaskEditProps = WithNavigate & {
+export type TaskEditProps = WithNavigate & {
   taskId: string | null
 }
 
 type Errors = { [key: string]: string }
 
-interface TaskEditState {
+export interface TaskEditState {
   title: string
   nextDueDate: Date | null
   labels: Label[]
@@ -51,12 +52,6 @@ interface TaskEditState {
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
   snackbarColor: ColorPaletteProp
-}
-
-type NotificationTriggerOption = {
-  type: NotificationTrigger
-  title: string
-  description: string
 }
 
 export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
@@ -205,29 +200,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     this.confirmModelRef.current?.open()
   }
 
-  private NotificationTriggerOptions: NotificationTriggerOption[] = [
-    {
-      title: 'Due Date/Time',
-      description: 'After the due date and time has passed',
-      type: 'due_date',
-    },
-    {
-      title: 'Predued',
-      description: 'A few hours before the due date',
-      type: 'pre_due',
-    },
-    {
-      title: 'Overdue',
-      description: 'When left uncompleted at least one day past its due date',
-      type: 'overdue',
-    },
-    {
-      title: 'Nagging',
-      description: 'Daily until completed',
-      type: 'nag',
-    },
-  ]
-
   private loadTask = async (taskId: string) => {
     try {
       const task = (await GetTaskByID(taskId)).task
@@ -290,6 +262,19 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
+  private onNotificationOptionsChange = (notification: NotificationTriggerOptions) => {
+    if (!this.state.notification.enabled) {
+      throw new Error('Notifications are disabled')
+    }
+
+    this.setState({
+      notification: {
+        ...this.state.notification,
+        ...notification,
+      },
+    })
+  }
+
   private onRescheduleFromDueDate = () => {
     this.setState({
       isRolling: false,
@@ -299,20 +284,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private onRescheduleFromCompletionDate = () => {
     this.setState({
       isRolling: true,
-    })
-  }
-
-  private onNotificationOptionChange = (item: NotificationTriggerOption) => {
-    const { notification } = this.state
-    if (!notification.enabled) {
-      throw new Error('Notifications are not enabled')
-    }
-
-    this.setState({
-      notification: {
-        ...notification,
-        [item.type]: !(notification as Record<NotificationTrigger, boolean>)[item.type],
-      },
     })
   }
 
@@ -555,35 +526,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         )}
 
         {notificationsEnabled && (
-          <Box
-            mt={1}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-
-              '& > div': { p: 2, borderRadius: 'md', display: 'flex' },
-            }}
-          >
-            <Card variant='outlined'>
-              <Typography>When should notifications trigger?</Typography>
-              {this.NotificationTriggerOptions.map(item => (
-                <FormControl
-                  sx={{ mb: 1 }}
-                  key={item.type}
-                >
-                  <Checkbox
-                    overlay
-                    onClick={() => this.onNotificationOptionChange(item)}
-                    checked={notification[item.type]}
-                    label={item.title}
-                    key={item.title}
-                  />
-                  <FormHelperText>{item.description}</FormHelperText>
-                </FormControl>
-              ))}
-            </Card>
-          </Box>
+          <NotificationOptions notification={notification} onChange={this.onNotificationOptionsChange} />
         )}
 
         <Sheet
