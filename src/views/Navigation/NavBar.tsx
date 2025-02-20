@@ -17,7 +17,7 @@ import {
   ListItemDecorator,
   ListItemContent,
 } from '@mui/joy'
-import React, { version } from 'react'
+import React from 'react'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import { getPathName, NavigationPaths, WithNavigate } from '@/utils/navigation'
@@ -36,6 +36,8 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
       drawerOpen: false,
     }
   }
+
+  private version = import.meta.env.PACKAGE_VERSION;
 
   private openDrawer = () => {
     this.setState({ drawerOpen: true })
@@ -170,7 +172,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                   bottom: 0,
                 }}
               >
-                V{version}
+                v{this.version}
               </Typography>
             </List>
           </div>
