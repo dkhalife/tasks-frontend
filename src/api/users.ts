@@ -23,13 +23,9 @@ export const UpdatePassword = async (newPassword: string) =>
 export const GetUserProfile = async () =>
   await Request<UserResponse>(`/users/profile`)
 
-export const UpdateNotificationProvider = async (provider: NotificationType) =>
-  await Request<void>(`/users/notifications/provider`, 'PUT', {
+export const UpdateNotificationSettings = async (provider: NotificationType, triggers: NotificationTriggerOptions) =>
+  await Request<void>(`/users/notifications`, 'PUT', {
     provider,
-  })
-
-export const UpdateNotificationTriggers = async (triggers: NotificationTriggerOptions) =>
-  await Request<void>(`/users/notifications/triggers`, 'PUT', {
     triggers,
   })
 

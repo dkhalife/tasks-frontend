@@ -1,8 +1,11 @@
-import { NotificationType } from "@/models/notifications"
+import { NotificationTriggerOptions, NotificationType } from "@/models/notifications"
 
 export interface User {
   display_name: string
-  notifications: NotificationType & Notification
+  notifications: {
+    provider: NotificationType
+    triggers: NotificationTriggerOptions
+  }
 }
 
 export const validateEmail = (email: string) => {

@@ -13,10 +13,11 @@ export type NotificationTypeNone = {
   provider: 'none'
 }
 
+export type WebhookMethod = 'GET' | 'POST'
 export type NotificationTypeWebhook = {
   provider: 'webhook'
   url: string
-  method: 'GET' | 'POST'
+  method: WebhookMethod
 }
 
 export type NotificationType = NotificationTypeNone | NotificationTypeWebhook
