@@ -45,21 +45,10 @@ function MarshallTask(task: Task): MarshalledTask {
 }
 
 const UnmarshallTask = (task: MarshalledTask): Task => {
-  // TODO: Cache labels and reuse here
-  const userLabels: Label[] = []
-
-  const taskLabels: Label[] = []
-  task.labels.forEach((id: string) => {
-    const label = userLabels.find(l => l.id === id)
-    if (label) {
-      taskLabels.push(label)
-    }
-  })
-
   return {
     ...task,
     next_due_date: task.next_due_date ? new Date(task.next_due_date) : null,
-    labels: taskLabels,
+    labels: task.labels as unknown as Label[], // TODO: Server should marshall into ids
   }
 }
 

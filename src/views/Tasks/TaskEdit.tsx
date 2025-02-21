@@ -205,6 +205,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private loadTask = async (taskId: string) => {
     try {
       const task = (await GetTaskByID(taskId)).task
+      const { userLabels } = this.state
 
       this.setState({
         title: task.title,
@@ -212,6 +213,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         frequency: task.frequency,
         isRolling: task.is_rolling,
         notification: task.notification,
+        taskLabels: task.labels.map(taskLabel => userLabels.find(userLabel => userLabel.id === taskLabel.id)).filter(Boolean) as Label[],
       })
 
       setTitle(task.title)
@@ -231,14 +233,14 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private init = async () => {
     const { taskId } = this.props
     
-    const [, data] = await Promise.all([
-      taskId != null ? this.loadTask(taskId) : Promise.resolve(),
-      GetLabels(),
-    ])
-
+    const data = await GetLabels()
     this.setState({
       userLabels: data.labels,
     })
+
+    if (taskId != null) {
+      await this.loadTask(taskId)
+    }
   }
 
   componentDidMount(): void {
@@ -346,7 +348,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       snackbarMessage,
       snackbarColor,
     } = this.state
-
     const frequencyType = frequency.type
     const isRecurring = frequencyType !== 'once'
     const notificationsEnabled = notification.enabled
@@ -383,7 +384,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                     <Chip
                       variant='soft'
                       color='primary'
-                      key={selectedOption.id}
+                      key={`label-${selectedOption.id}`}
                       size='lg'
                       sx={{
                         background: selectedOption.color,
