@@ -32,7 +32,7 @@ import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
-import { Notification, NotificationTrigger, NotificationTriggerOption, NotificationTriggerOptions } from '@/models/notifications'
+import { Notification, NotificationTriggerOptions } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { GetLabels } from '@/api/labels'
 
@@ -291,20 +291,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private onRescheduleFromCompletionDate = () => {
     this.setState({
       isRolling: true,
-    })
-  }
-
-  private onNotificationOptionChange = (item: NotificationTriggerOption) => {
-    const { notification } = this.state
-    if (!notification.enabled) {
-      throw new Error('Notifications are not enabled')
-    }
-
-    this.setState({
-      notification: {
-        ...notification,
-        [item.type]: !(notification as Record<NotificationTrigger, boolean>)[item.type],
-      },
     })
   }
 
