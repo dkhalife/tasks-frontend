@@ -28,7 +28,7 @@ This app is meant to be self-hosted by individuals and groups who wish to own th
 1. Download dependency `yarn install`
 1. Run locally `yarn start`. The output will contain instructions on how to browse the frontend.
 1. Separately run the backend using instructions from [tasks-backend](https://github.com/dkhalife/tasks-backend)
-1. (optionally) If using a different host for the backend, update `VITE_API_URL` in [.env](./.env)
+1. (optionally) If using a different host for the backend, update `VITE_APP_API_URL` in [.env](./.env)
 
 ## Contributing
 
