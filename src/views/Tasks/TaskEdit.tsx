@@ -35,6 +35,7 @@ import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Notification, NotificationTriggerOptions } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { GetLabels } from '@/api/labels'
+import { GetUserProfile } from '@/api/users'
 
 export type TaskEditProps = WithNavigate & {
   taskId: string | null
@@ -58,6 +59,11 @@ export interface TaskEditState {
 
 export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private confirmModelRef = React.createRef<ConfirmationModal>()
+  private defaultNotificationTriggers: NotificationTriggerOptions = {
+    due_date: true,
+    pre_due: false,
+    overdue: false,
+  }
 
   constructor(props: TaskEditProps) {
     super(props)
@@ -238,6 +244,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       userLabels: data.labels,
     })
 
+    const userProfile = (await GetUserProfile()).user
+    const defaultNotifications = userProfile.notifications
+    if (defaultNotifications.provider.provider !== 'none') {
+      this.defaultNotificationTriggers = defaultNotifications.triggers
+    }
+
     if (taskId != null) {
       await this.loadTask(taskId)
     }
@@ -261,9 +273,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     this.setState({
       notification: e.target.checked ? {
         enabled: true,
-        due_date: true,
-        pre_due: false,
-        overdue: false,
+        due_date: this.defaultNotificationTriggers.due_date,
+        pre_due: this.defaultNotificationTriggers.pre_due,
+        overdue: this.defaultNotificationTriggers.overdue,
       } : {
         enabled: false,
       },
