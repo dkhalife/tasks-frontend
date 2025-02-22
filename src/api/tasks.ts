@@ -1,9 +1,11 @@
 import { Task } from '@/models/task'
 import { Request } from '../utils/TokenManager'
 import { HistoryEntry } from '@/models/history'
+import { Label } from '@/models/label'
 
-type MarshalledTask = Omit<Task, 'next_due_date'> & {
+type MarshalledTask = Omit<Omit<Task, 'next_due_date'>, 'labels'> & {
   next_due_date: number | null,
+  labels: string[]
 }
 type MarshalledHistoryEntry = Omit<Omit<HistoryEntry, 'due_date'>, 'completed_date'> & {
   due_date: number | null,
@@ -37,14 +39,16 @@ type MarshalledTaskHistoryResponse = {
 function MarshallTask(task: Task): MarshalledTask {
   return {
     ...task,
-    next_due_date: task.next_due_date?.getTime() ?? null
+    next_due_date: task.next_due_date?.getTime() ?? null,
+    labels: task.labels.map(l => l.id),
   }
 }
 
 const UnmarshallTask = (task: MarshalledTask): Task => {
   return {
     ...task,
-    next_due_date: task.next_due_date ? new Date(task.next_due_date) : null
+    next_due_date: task.next_due_date ? new Date(task.next_due_date) : null,
+    labels: task.labels as unknown as Label[], // TODO: Server should marshall into ids
   }
 }
 

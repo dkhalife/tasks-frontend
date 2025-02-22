@@ -24,6 +24,7 @@ import React, { ChangeEvent } from 'react'
 import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
+import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -185,6 +186,7 @@ export class TasksOverview extends React.Component<
               <th>Due</th>
               <th>Task</th>
               <th>Due</th>
+              <th>Labels</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -217,7 +219,27 @@ export class TasksOverview extends React.Component<
                     </Typography>
                   </Tooltip>
                 </td>
-
+                <td>
+                  {task.labels.map((l, index) => {
+                    return (
+                      <Chip
+                        variant='solid'
+                        key={`taskcard-${task.id}-label-${l.id}`}
+                        color='primary'
+                        sx={{
+                          position: 'relative',
+                          ml: index === 0 ? 0 : 0.5,
+                          top: 2,
+                          zIndex: 1,
+                          backgroundColor: `${l.color} !important`,
+                          color: getTextColorFromBackgroundColor(l.color),
+                        }}
+                      >
+                        {l?.name}
+                      </Chip>
+                    )
+                  })}
+                </td>
                 <td>
                   <ButtonGroup>
                     <IconButton
