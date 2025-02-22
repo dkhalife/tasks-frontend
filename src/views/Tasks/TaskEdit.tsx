@@ -264,7 +264,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         due_date: true,
         pre_due: false,
         overdue: false,
-        nag: false,
       } : {
         enabled: false,
       },

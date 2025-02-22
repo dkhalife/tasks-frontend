@@ -40,7 +40,6 @@ export class NotificationSetting extends React.Component<
         pre_due: false,
         due_date: false,
         overdue: false,
-        nag: false,
       }
     }
   }

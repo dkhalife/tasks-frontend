@@ -2,7 +2,7 @@ export type NotificationDisabled = {
   enabled: false
 }
 export type NotificationMqtt = object
-export type NotificationTrigger = 'due_date' | 'pre_due' | 'overdue' | 'nag'
+export type NotificationTrigger = 'due_date' | 'pre_due' | 'overdue'
 export type NotificationTriggerOptions = Record<NotificationTrigger, boolean>
 export type NotificationEnabled = {
   enabled: true
@@ -60,10 +60,5 @@ export const NotificationTriggerOptions: NotificationTriggerOption[] = [
     title: 'Overdue',
     description: 'When left uncompleted at least one day past its due date',
     type: 'overdue',
-  },
-  {
-    title: 'Nagging',
-    description: 'Daily until completed',
-    type: 'nag',
   },
 ]

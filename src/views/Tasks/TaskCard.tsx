@@ -164,7 +164,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     }
 
     const notifications = task.notification
-    return notifications.due_date || notifications.overdue || notifications.pre_due || notifications.nag;
+    return notifications.due_date || notifications.overdue || notifications.pre_due
   }
 
   render(): React.ReactNode {
