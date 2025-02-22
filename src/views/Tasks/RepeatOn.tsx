@@ -1,6 +1,6 @@
 import { DayOfTheWeek, Month, RepeatCustom, RepeatDayOfTheMonths, RepeatDaysOfTheWeek, RepeatInterval, UniqueDaysOfWeek, UniqueMonths } from '@/models/task'
 import { dayOfMonthSuffix } from '@/utils/date'
-import { INTERVAL_UNITS, IntervalUnit } from '@/utils/recurrance'
+import { INTERVAL_UNITS, IntervalUnit } from '@/utils/recurrence'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import {
   Grid,

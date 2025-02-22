@@ -1,5 +1,5 @@
 import { Frequency, RepeatCustom } from '@/models/task'
-import { FrequencyType, FREQUENCY_TYPES, REPEAT_ON_TYPES, RepeatOnType } from '@/utils/recurrance'
+import { FrequencyType, FREQUENCY_TYPES, REPEAT_ON_TYPES, RepeatOnType } from '@/utils/recurrence'
 import {
   Box,
   Typography,

@@ -2,7 +2,7 @@ import moment from 'moment'
 import { Label } from './label'
 import { ColorPaletteProp } from '@mui/joy'
 import { dayOfMonthSuffix } from '../utils/date'
-import { IntervalUnit } from '@/utils/recurrance'
+import { IntervalUnit } from '@/utils/recurrence'
 import { Notification } from '@/models/notifications'
 
 export type RepeatOnce = {
