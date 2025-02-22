@@ -19,7 +19,6 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
-        persist-credentials: false
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
