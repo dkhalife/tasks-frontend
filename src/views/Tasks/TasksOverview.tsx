@@ -26,6 +26,7 @@ import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
 import { sortTasksByDueDate } from '@/utils/tasks'
+import { Loading } from '@/Loading'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -34,6 +35,7 @@ interface TasksOverviewState {
   filteredTasks: Task[]
   search: string
   taskId: string | null
+  isLoading: boolean
 }
 
 export class TasksOverview extends React.Component<
@@ -49,12 +51,17 @@ export class TasksOverview extends React.Component<
       filteredTasks: [],
       search: '',
       taskId: null,
+      isLoading: true,
     }
   }
 
   private loadTasks = async () => {
     const data = await GetTasks()
-    this.setState({ tasks: data.tasks, filteredTasks: data.tasks })
+    this.setState({
+      tasks: data.tasks,
+      filteredTasks: data.tasks,
+      isLoading: false,
+    })
   }
 
   componentDidMount(): void {
@@ -135,8 +142,12 @@ export class TasksOverview extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { filteredTasks, search, taskId } = this.state
+    const { filteredTasks, search, taskId, isLoading } = this.state
     const { navigate } = this.props
+
+    if (isLoading) {
+      return <Loading />
+    }
 
     return (
       <Container>
