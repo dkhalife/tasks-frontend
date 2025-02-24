@@ -25,6 +25,7 @@ import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { sortTasksByDueDate } from '@/utils/tasks'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -89,7 +90,14 @@ export class TasksOverview extends React.Component<
     const newTask = data.task
 
     const { tasks } = this.state
-    const newTasks = [...tasks]
+    let newTasks = tasks.filter(t => t.id !== task.id)
+
+    if (newTask.next_due_date !== null) {
+      newTasks.push(newTask)
+
+      newTasks = sortTasksByDueDate(newTasks)
+    }
+
     const index = newTasks.findIndex(
       c => c.id === task.id,
     )

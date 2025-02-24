@@ -121,3 +121,17 @@ export const groupTasksBy = (tasks: Task[]/*TODO:, groupBy: GROUP_BY*/): TaskGro
     return groupByDueDate(tasks)
   //}
 }
+
+export const sortTasksByDueDate = (tasks: Task[]): Task[] => {
+  return tasks.sort((a, b) => {
+    if (a.next_due_date === null) {
+      return 1
+    }
+
+    if (b.next_due_date === null) {
+      return -1
+    }
+
+    return a.next_due_date.getTime() - b.next_due_date.getTime()
+  })
+}
