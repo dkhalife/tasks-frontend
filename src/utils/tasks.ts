@@ -41,27 +41,27 @@ export const bucketIntoDueDateGroup = (
     return
   }
 
-  if (due_date > endOfNextWeek) {
-    groups['later'].content.push(task)
+  if (endOfToday > due_date) {
+    groups['today'].content.push(task)
     return
   }
 
-  if (due_date > endOfThisWeek) {
-    groups['next_week'].content.push(task)
-    return
-  }
-
-  if (due_date > endOfTomorrow) {
-    groups['this_week'].content.push(task)
-    return
-  }
-
-  if (due_date > endOfToday) {
+  if (endOfTomorrow > due_date) {
     groups['tomorrow'].content.push(task)
     return
   }
 
-  groups['today'].content.push(task)
+  if (endOfThisWeek > due_date) {
+    groups['this_week'].content.push(task)
+    return
+  }
+
+  if (endOfNextWeek > due_date) {
+    groups['next_week'].content.push(task)
+    return
+  }
+
+  groups['later'].content.push(task)
 }
 
 const groupByDueDate = (tasks: Task[]): DueDateGroups => {
