@@ -1,4 +1,4 @@
-import { GetTasks, MarkTaskComplete } from '@/api/tasks'
+import { GetTasks, MarkTaskComplete, UpdateDueDate } from '@/api/tasks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -70,7 +70,7 @@ export class TasksOverview extends React.Component<
     setTitle('Tasks Overview')
   }
 
-  private onCloseDateModal = async (date: Date | null) => {
+  private handleChangeDueDate = async (date: Date | null) => {
     if (!date) {
       return
     }
@@ -80,11 +80,14 @@ export class TasksOverview extends React.Component<
       return
     }
 
-    const data = await MarkTaskComplete(taskId, date)
+    const data = await UpdateDueDate(taskId, date)
     const newTask = data.task
-    const newTasks = [...tasks]
+    let newTasks = [...tasks]
+
     const index = newTasks.findIndex(c => c.id === newTask.id)
     newTasks[index] = newTask
+
+    newTasks = sortTasksByDueDate(newTasks)
 
     this.setState({
       tasks: newTasks,
@@ -93,7 +96,7 @@ export class TasksOverview extends React.Component<
   }
 
   private onCompleteTask = (task: Task) => async () => {
-    const data = await MarkTaskComplete(task.id, null)
+    const data = await MarkTaskComplete(task.id)
     const newTask = data.task
 
     const { tasks } = this.state
@@ -134,7 +137,7 @@ export class TasksOverview extends React.Component<
     this.setState({ search: '', filteredTasks: tasks })
   }
 
-  private onCompleteAtDate = async (task: Task) => {
+  private onReschedule = async (task: Task) => {
     await this.setState({
       taskId: task.id,
     })
@@ -272,7 +275,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.onCompleteAtDate(task)}
+                      onClick={() => this.onReschedule(task)}
                       aria-setsize={2}
                     >
                       <History />
@@ -295,7 +298,7 @@ export class TasksOverview extends React.Component<
           key={taskId}
           current={null}
           title={`Change due date`}
-          onClose={this.onCloseDateModal}
+          onClose={this.handleChangeDueDate}
         />
       </Container>
     )
