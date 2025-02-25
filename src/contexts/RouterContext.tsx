@@ -1,4 +1,5 @@
 import { App } from '@/App'
+import { isMobile } from '@/utils/dom'
 import { getPathName } from '@/utils/navigation'
 import { ForgotPasswordView } from '@/views/Authorization/ForgotPasswordView'
 import { LoginView } from '@/views/Authorization/LoginView'
@@ -44,7 +45,7 @@ export class RouterContext extends React.Component<object, RouterContextState> {
   }
 
   private getMainRoute = () => {
-    if (window.innerWidth <= 768) {
+    if (isMobile()) {
       return <MyTasks navigate={this.navigate} />
     }
 
