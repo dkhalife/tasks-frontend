@@ -12,7 +12,6 @@ export const NavigationPaths = {
   Labels: '/labels',
   TaskCreate: '/tasks/create',
   TaskEdit: (taskId: string) => `/tasks/${taskId}/edit`,
-  TaskView: (taskId: string) => `/tasks/${taskId}`,
   TaskHistory: (taskId: string) => `/tasks/${taskId}/history`,
 }
 

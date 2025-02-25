@@ -332,7 +332,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             </Grid>
             <Grid
               xs={9}
-              onClick={() => navigate(NavigationPaths.TaskView(task.id))}
+              onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
             >
               <Box
                 display='flex'
