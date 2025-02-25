@@ -325,7 +325,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onAddNewLabel = () => {
-    this.navigateAway()
+    this.props.navigate(NavigationPaths.Labels)
   }
 
   private onDeleteConfirmed = (isConfirmed: boolean) => {
