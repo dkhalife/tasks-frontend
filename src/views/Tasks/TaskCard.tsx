@@ -135,15 +135,6 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     }
   }
 
-  private getName = (name: string) => {
-    const split = Array.from<string>(this.props.task.title)
-    // if the first character is emoji then remove it from the name
-    if (/\p{Emoji}/u.test(split[0])) {
-      return split.slice(1).join('').trim()
-    }
-    return name
-  }
-
   private onSkipTask = async () => {
     this.dismissMoreMenu()
 
@@ -344,7 +335,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                   flexDirection='column'
                 >
                   <Typography level='title-md'>
-                    {this.getName(task.title)}
+                    {task.title}
                   </Typography>
                   <Box key={`${task.id}-labels`}>
                     {task.labels?.map((l, index) => {
