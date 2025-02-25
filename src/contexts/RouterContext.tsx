@@ -11,7 +11,6 @@ import { Settings } from '@/views/Settings/Settings'
 import { MyTasks } from '@/views/Tasks/MyTasks'
 import { TaskEdit } from '@/views/Tasks/TaskEdit'
 import { TasksOverview } from '@/views/Tasks/TasksOverview'
-import { TaskView } from '@/views/Tasks/TaskView'
 import React from 'react'
 import { BrowserRouter, matchPath, Navigate, Route, Routes } from 'react-router-dom'
 
@@ -92,10 +91,6 @@ export class RouterContext extends React.Component<object, RouterContextState> {
             <Route
               path='/tasks/:taskId/edit'
               element={<TaskEdit taskId={this.getTaskId()} navigate={this.navigate} />}
-            />
-            <Route
-              path='/tasks/:taskId'
-              element={<TaskView taskId={this.getTaskId()} navigate={this.navigate} />}
             />
             <Route
               path='/tasks/create'
