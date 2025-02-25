@@ -47,7 +47,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   public render(): React.ReactNode {
     const { title } = this.props
     const { isOpen } = this.state
-    const date = moment(this.state.date).format('yyyy-MM-DD[T]HH:mm')
+    const date = moment(this.state.date).format('yyyy-MM-DD')
 
     return (
       <Modal
