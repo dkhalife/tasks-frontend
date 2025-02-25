@@ -86,6 +86,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
+  private navigateAway = () => {
+    const { navigate } = this.props
+
+    navigate(NavigationPaths.DeviceAwareLoggedInLandingPage)
+  }
+
   private HandleValidateTask = () => {
     const { title, frequency, nextDueDate } = this.state
     const errors: Errors = {}
@@ -155,7 +161,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    const { taskId, navigate } = this.props
+    const { taskId } = this.props
     const {
       title,
       frequency,
@@ -181,7 +187,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       })
 
       await promise
-      navigate(NavigationPaths.MyTasks)
+      this.navigateAway()
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -194,7 +200,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private onTaskDelete = async (taskId: string) => {
     try {
       await DeleteTask(taskId)
-      this.props.navigate(NavigationPaths.MyTasks)
+      this.navigateAway()
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -231,7 +237,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       })
 
       setTimeout(() => {
-        this.props.navigate(NavigationPaths.MyTasks)
+        this.navigateAway()
       }, 3000)
     }
   }
@@ -341,7 +347,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onCancelClicked = () => {
-    this.props.navigate(NavigationPaths.MyTasks)
+    this.navigateAway()
   }
 
   render(): React.ReactNode {

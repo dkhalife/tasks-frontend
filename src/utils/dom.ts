@@ -13,3 +13,7 @@ export const useRoot = (): HTMLDivElement => {
 export const setTitle = (title: string): void => {
   document.title = `Task Wizard - ${title}`
 }
+
+export const isMobile = (): boolean => {
+  return window.innerWidth <= 768
+}

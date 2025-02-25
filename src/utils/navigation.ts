@@ -1,3 +1,5 @@
+import { isMobile } from "./dom"
+
 export const getPathName = () => document.location.pathname
 
 export const getQuery = (key: string): string => {
@@ -9,6 +11,8 @@ export const NavigationPaths = {
   Register: '/signup',
   ResetPassword: '/forgot-password',
   MyTasks: '/my/tasks',
+  TasksOverview: '/tasks',
+  DeviceAwareLoggedInLandingPage: isMobile() ? '/my/tasks' : '/tasks',
   Labels: '/labels',
   TaskCreate: '/tasks/create',
   TaskEdit: (taskId: string) => `/tasks/${taskId}/edit`,
