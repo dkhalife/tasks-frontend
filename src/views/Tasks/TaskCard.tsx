@@ -101,7 +101,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
-    const response = await MarkTaskComplete(task.id, null)
+    const response = await MarkTaskComplete(task.id)
     onTaskUpdate(response.task, 'completed')
   }
 
@@ -114,17 +114,6 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
     const response = await UpdateDueDate(task.id, newDate)
     onTaskUpdate(response.task, 'rescheduled')
-  }
-
-  private handleCompleteWithPastDate = async (newDate: Date | null) => {
-    if (newDate === null) {
-      return
-    }
-
-    const { task, onTaskUpdate } = this.props
-
-    const response = await MarkTaskComplete(task.id, newDate)
-    onTaskUpdate(response.task, 'completed')
   }
 
   private getFrequencyIcon = (task: Task) => {
@@ -362,18 +351,13 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
               </Box>
             </Grid>
           </Grid>
+
           <DateModal
             key={'changeDueDate' + task.id}
+            ref={this.dateModalRef}
             current={task.next_due_date}
             title={`Change due date`}
             onClose={this.handleChangeDueDate}
-          />
-          <DateModal
-            ref={this.dateModalRef}
-            key={'completedInPast' + task.id}
-            current={task.next_due_date}
-            title={`Save Task that you completed in the past`}
-            onClose={this.handleCompleteWithPastDate}
           />
 
           <ConfirmationModal

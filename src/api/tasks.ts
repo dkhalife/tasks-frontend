@@ -87,19 +87,8 @@ export const GetTasks = async (): Promise<TasksResponse> => UnmarshallTasksRespo
 
 export const GetTaskByID = async (id: string): Promise<SingleTaskResponse> => UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}`))
 
-export const MarkTaskComplete = async (
-  id: string,
-  completedDate: Date | null,
-): Promise<SingleTaskResponse> => {
-  const body: {
-    completed_date?: number
-  } = {}
-
-  if (completedDate) {
-    body.completed_date = completedDate.getTime() // TODO: generalize marshalling logic
-  }
-
-  return UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/do`, 'POST', body))
+export const MarkTaskComplete = async (id: string): Promise<SingleTaskResponse> => {
+  return UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/do`, 'POST'))
 }
 
 export const SkipTask = async (id: string): Promise<SingleTaskResponse> =>
