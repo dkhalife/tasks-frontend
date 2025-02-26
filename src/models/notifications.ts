@@ -8,7 +8,7 @@ export type NotificationEnabled = {
   enabled: true
 } & NotificationTriggerOptions & (NotificationMqtt)
 export type Notification = NotificationDisabled | NotificationEnabled
-export type NotificationProvider = 'none' | 'webhook'
+export type NotificationProvider = 'none' | 'webhook' | 'gotify'
 export type NotificationTypeNone = {
   provider: 'none'
 }
@@ -20,7 +20,13 @@ export type NotificationTypeWebhook = {
   method: WebhookMethod
 }
 
-export type NotificationType = NotificationTypeNone | NotificationTypeWebhook
+export type NotificationTypeGotify = {
+  provider: 'gotify'
+  url: string
+  token: string
+}
+
+export type NotificationType = NotificationTypeNone | NotificationTypeWebhook | NotificationTypeGotify
 
 export const getDefaultTypeForProvider = (provider: NotificationProvider): NotificationType => {
   switch (provider) {
@@ -35,6 +41,13 @@ export const getDefaultTypeForProvider = (provider: NotificationProvider): Notif
         provider: 'webhook',
         url: '',
         method: 'GET',
+      }
+
+    case 'gotify':
+      return {
+        provider: 'gotify',
+        url: '',
+        token: '',
       }
   }
 }
