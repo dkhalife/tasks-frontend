@@ -1,6 +1,7 @@
 import { Task } from '@/models/task'
-import { TASK_COLOR } from './Colors'
+import { COLORS, TASK_COLOR } from './Colors'
 import moment from 'moment'
+import { Label } from '@/models/label'
 
 export type GROUP_BY = 'due_date' | 'labels'
 
@@ -10,7 +11,7 @@ export type TaskGroup = {
   color: string
 }
 
-interface DueDateGroups {
+export interface DueDateGroups {
   'overdue': TaskGroup
   'today': TaskGroup
   'tomorrow': TaskGroup
@@ -19,7 +20,9 @@ interface DueDateGroups {
   'later': TaskGroup
   'any_time': TaskGroup
 }
-export type TaskGroups = DueDateGroups
+
+export type LabelGroups = Record<string, TaskGroup>
+export type TaskGroups = DueDateGroups | LabelGroups
 
 export const bucketIntoDueDateGroup = (
   task: Task,
@@ -62,6 +65,12 @@ export const bucketIntoDueDateGroup = (
   }
 
   groups['later'].content.push(task)
+}
+
+export const bucketIntoLabelGroups = (task: Task, groups: LabelGroups) => {
+  task.labels.forEach((label) => {
+    groups[label.id].content.push(task)
+  })
 }
 
 const groupByDueDate = (tasks: Task[]): DueDateGroups => {
@@ -116,10 +125,32 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   return groups
 }
 
-export const groupTasksBy = (tasks: Task[]/*TODO:, groupBy: GROUP_BY*/): TaskGroups => {
-  //if (groupBy === 'due_date') {
+const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups => {
+  const groups: LabelGroups = {}
+
+  userLabels.forEach((label) => {
+    groups[label.id] = {
+      name: label.name,
+      content: tasks.filter((task) => task.labels.findIndex((l) => l.id === label.id) !== -1),
+      color: label.color,
+    }
+  })
+
+  groups['none'] = {
+    name: 'None',
+    content: tasks.filter((task) => task.labels.length === 0),
+    color: COLORS.white,
+  }
+
+  return groups
+}
+
+export const groupTasksBy = (tasks: Task[], userLabels: Label[], groupBy: GROUP_BY): TaskGroups => {
+  if (groupBy === 'due_date') {
     return groupByDueDate(tasks)
-  //}
+  }
+
+  return groupByLabels(tasks, userLabels)
 }
 
 export const sortTasksByDueDate = (tasks: Task[]): Task[] => {

@@ -3,7 +3,7 @@ import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
 import {
   MenuRounded,
   HomeOutlined,
-  ListAlt,
+  LabelOutlined,
   SettingsOutlined,
   Logout,
 } from '@mui/icons-material'
@@ -117,18 +117,13 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
               sx={{ borderRadius: 4, width: '100%', padding: 1 }}
             >
               <NavBarLink
-                to='/my/tasks'
+                to={NavigationPaths.DeviceAwareLoggedInLandingPage}
                 icon={<HomeOutlined />}
                 label='Home'
               />
               <NavBarLink
-                to='/tasks'
-                icon={<ListAlt />}
-                label='Desktop View'
-              />
-              <NavBarLink
                 to='/labels'
-                icon={<ListAlt />}
+                icon={<LabelOutlined />}
                 label='Labels'
               />
               <NavBarLink
