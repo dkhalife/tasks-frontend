@@ -11,7 +11,7 @@ import {
 import React from 'react'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import { NotificationOptions } from './NotificationOptions'
-import { getDefaultTypeForProvider, NotificationProvider, NotificationTriggerOptions, NotificationType, NotificationTypeWebhook, WebhookMethod } from '@/models/notifications'
+import { getDefaultTypeForProvider, NotificationProvider, NotificationTriggerOptions, NotificationType, NotificationTypeGotify, NotificationTypeWebhook, WebhookMethod } from '@/models/notifications'
 import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 
 type NotificationSettingProps = object
@@ -63,6 +63,7 @@ export class NotificationSetting extends React.Component<
     const type = getDefaultTypeForProvider(provider)
 
     this.setState({
+      saved: false,
       type,
     })
   }
@@ -80,16 +81,30 @@ export class NotificationSetting extends React.Component<
     })
   }
 
-  private onWebhookURLChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  private onURLChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value
 
-    const type = this.state.type as NotificationTypeWebhook
+    const type = this.state.type as (NotificationTypeWebhook | NotificationTypeGotify)
 
     this.setState({
       saved: false,
       type: {
         ...type,
         url,
+      }
+    })
+  }
+
+  private onGotifyTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const token = e.target.value
+
+    const type = this.state.type as NotificationTypeGotify
+
+    this.setState({
+      saved: false,
+      type: {
+        ...type,
+        token,
       }
     })
   }
@@ -136,6 +151,8 @@ export class NotificationSetting extends React.Component<
   render(): React.ReactNode {
     const { error, type, options, saved } = this.state
 
+    const placeholderURL = type.provider === 'webhook' ? 'https://example.com/api/webhook/mmbd7gtpoxp' : 'https://mygotifyendpoint.com/'
+
     return (
       <Box sx={{ mt: 2 }}>
         <Typography level='h3'>Custom Notification</Typography>
@@ -158,28 +175,36 @@ export class NotificationSetting extends React.Component<
             >
               <Option value={'none'}>None</Option>
               <Option value={'webhook'}>Webhook</Option>
+              <Option value={'gotify'}>Gotify</Option>
             </Select>
           </Box>
 
           {type.provider === 'webhook' && (
-            <>
-              <Box>
-                <Typography>Method: </Typography>
-                <Select
-                  value={type.method}
-                  sx={{ maxWidth: '200px' }}
-                  onChange={this.onWebhookMethodChange}
-                  >
-                  <Option value={'GET'}>GET</Option>
-                  <Option value={'POST'}>POST</Option>
-                </Select>
-              </Box>
+            <Box>
+              <Typography>Method: </Typography>
+              <Select
+                value={type.method}
+                sx={{ maxWidth: '200px' }}
+                onChange={this.onWebhookMethodChange}
+                >
+                <Option value={'GET'}>GET</Option>
+                <Option value={'POST'}>POST</Option>
+              </Select>
+            </Box>
+          )}
 
-              <Box>
-                <Typography>Webhook URL: </Typography>
-                <Input placeholder='https://example.com/api/webhook/mmbd7gtpoxp' value={type.url} onChange={this.onWebhookURLChange} />
-              </Box>
-            </>
+          {(type.provider === 'webhook' || type.provider === 'gotify') && (
+            <Box>
+              <Typography>Webhook URL: </Typography>
+              <Input placeholder={placeholderURL} value={type.url} onChange={this.onURLChange} />
+            </Box>
+          )}
+
+          {type.provider === 'gotify' && (
+            <Box>
+              <Typography>Token: </Typography>
+              <Input type='password' placeholder='Your Gotify token' value={type.token} onChange={this.onGotifyTokenChange} />
+            </Box>
           )}
 
           {type.provider !== 'none' && (
