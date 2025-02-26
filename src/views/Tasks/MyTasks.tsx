@@ -1,7 +1,7 @@
 import { GetTasks } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { Task, TASK_UPDATE_EVENT } from '@/models/task'
-import { ExpandCircleDown, Add } from '@mui/icons-material'
+import { ExpandCircleDown, Add, Label as LabelIcon, CalendarMonth } from '@mui/icons-material'
 import {
   Container,
   Box,
@@ -16,11 +16,12 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { TaskCard } from '@/views/Tasks/TaskCard'
-import { TaskGroups, bucketIntoDueDateGroup, groupTasksBy } from '@/utils/tasks'
+import { DueDateGroups, GROUP_BY, LabelGroups, TaskGroups, bucketIntoDueDateGroup, bucketIntoLabelGroups, groupTasksBy } from '@/utils/tasks'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
+import { GetLabels } from '@/api/labels'
 
 type MyTasksProps = WithNavigate
 
@@ -29,6 +30,7 @@ interface MyTasksState {
   snackBarMessage: string | null
   tasks: Task[]
   labels: Label[]
+  groupBy: GROUP_BY
   groups: TaskGroups | null
   isExpanded: Record<keyof TaskGroups, boolean>
   isLoading: boolean
@@ -38,36 +40,64 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   constructor(props: MyTasksProps) {
     super(props)
 
+    const groupBy: GROUP_BY = 'due_date'
+
     this.state = {
       isSnackbarOpen: false,
       snackBarMessage: null,
       tasks: [],
       labels: [],
+      groupBy,
       groups: null,
-      isExpanded: {
-        overdue: true,
-        today: true,
-        tomorrow: false,
-        this_week: false,
-        next_week: false,
-        later: false,
-        any_time: false,
-      },
+      isExpanded: this.getDefaultExpandedState(groupBy, []),
       isLoading: true,
     }
   }
 
+  private getDefaultExpandedState = (groupBy: GROUP_BY, labels: Label[]): Record<keyof TaskGroups, boolean> => {
+    if (groupBy === 'due_date') {
+      return {
+        'overdue': false,
+        'today': false,
+        'tomorrow': false,
+        'this_week': false,
+        'next_week': false,
+        'later': false,
+        'any_time': false,
+      }
+    }
+
+    const expanded: Record<string, boolean> = {}
+
+    if (groupBy === 'labels') {
+      labels.forEach(label => {
+        expanded[label.id] = false
+      })
+    }
+
+    return expanded
+  }
+
   private loadTasks = async () => {
-    const data = await GetTasks()
+    const tasksData = await GetTasks()
+    const labelsData = await GetLabels()
+
+    const tasks = tasksData.tasks
+    const labels = labelsData.labels
+
+    const { groupBy } = this.state
+    
     this.setState({
-      tasks: data.tasks,
-      groups: groupTasksBy(data.tasks/*, 'due_date'*/),
+      tasks,
+      labels,
+      groups: groupTasksBy(tasks, labels, groupBy),
+      isExpanded: this.getDefaultExpandedState(groupBy, labels),
       isLoading: false,
     })
   }
 
   private addTask = async (task: Task) => {
-    const { groups } = this.state
+    const { groups, groupBy } = this.state
 
     if (!groups) {
       throw new Error('Groups not loaded')
@@ -79,7 +109,15 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
     const endOfNextWeek = moment().endOf('isoWeek').add(1, 'week').toDate().getTime()
 
-    bucketIntoDueDateGroup(task, groups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
+    if (groupBy === 'due_date') {
+      bucketIntoDueDateGroup(task, groups as DueDateGroups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
+    } else if (groupBy === 'labels') {
+      bucketIntoLabelGroups(task, groups as LabelGroups)
+    }
+
+    this.setState({
+      groups,
+    })
   }
 
   private updateTask = async (group: keyof TaskGroups, oldTask: Task, newTask: Task, event: TASK_UPDATE_EVENT) => {
@@ -145,6 +183,17 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
+  private toggleGroupBy = () => {
+    const { groupBy, tasks, labels } = this.state
+    const nextGroupBy = groupBy === 'due_date' ? 'labels' : 'due_date'
+
+    this.setState({
+      groupBy: nextGroupBy,
+      groups: groupTasksBy(tasks, labels, nextGroupBy),
+      isExpanded: this.getDefaultExpandedState(nextGroupBy, labels),
+    })
+  }
+
   private hasTasks = () => {
     const { groups } = this.state
 
@@ -156,7 +205,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   render(): React.ReactNode {
-    const { isSnackbarOpen, snackBarMessage, isLoading, groups } = this.state
+    const { isSnackbarOpen, snackBarMessage, isLoading, groups, groupBy } = this.state
 
     if (isLoading || groups === null) {
       return <Loading />
@@ -167,6 +216,37 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
     return (
       <Container maxWidth='md'>
+        <Box sx={{
+          textAlign: 'right',
+        }}>
+          <Typography sx={{
+            display: 'inline-block',
+            fontWeight: 600,
+            lineHeight: '25px',
+            verticalAlign: 'top',
+            mt: '5px',
+            mr: 2,
+          }}>
+            Group by :
+          </Typography>
+          <Box sx={{
+            display: 'inline-block',
+          }}>
+            <IconButton
+              color='primary'
+              variant='solid'
+              sx={{
+                borderRadius: '50%',
+                width: '25px',
+                height: '25px',
+              }}
+              onClick={this.toggleGroupBy}
+            >
+              {groupBy === 'due_date' ? <CalendarMonth /> : <LabelIcon />}
+            </IconButton>
+          </Box>
+        </Box>
+            
         {hasTasks && (
           <AccordionGroup
             transition='0.2s ease'
