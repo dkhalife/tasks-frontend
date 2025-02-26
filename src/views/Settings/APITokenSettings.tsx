@@ -17,6 +17,7 @@ import {
 import moment from 'moment'
 import React from 'react'
 import { TextModal } from '../Modals/Inputs/TextModal'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 
 type APITokenSettingsProps = object
 
@@ -30,6 +31,8 @@ export class APITokenSettings extends React.Component<
   APITokenSettingsState
 > {
   private modalRef = React.createRef<TextModal>()
+  private tokenToDelete: APIToken | null = null
+  private confirmModelRef = React.createRef<ConfirmationModal>()
 
   constructor(props: APITokenSettingsProps) {
     super(props)
@@ -64,13 +67,21 @@ export class APITokenSettings extends React.Component<
   }
 
   private onDeleteToken = async (token: APIToken) => {
-    const { tokens } = this.state
+    this.tokenToDelete = token
+    this.confirmModelRef.current?.open()
+  }
 
-    // TODO: Replace with a modern modal
-    if (!confirm(`Are you sure you want to remove ${token.name} ?`)) {
+  private onDeleteConfirmation = async (confirmed: boolean) => {
+    if (!confirmed) {
       return
     }
 
+    const token = this.tokenToDelete
+    if (!token) {
+      throw new Error('No token to delete')
+    }
+
+    const { tokens } = this.state
     await DeleteLongLiveToken(token.id)
 
     this.setState({
@@ -169,11 +180,21 @@ export class APITokenSettings extends React.Component<
         >
           Generate New Token
         </Button>
+
         <TextModal
           ref={this.modalRef}
           title='Give a name for your new token, something to remember it by.'
           onClose={this.handleSaveToken}
           okText={'Generate Token'}
+        />
+        
+        <ConfirmationModal
+          ref={this.confirmModelRef}
+          title='Delete Token'
+          confirmText='Delete'
+          cancelText='Cancel'
+          message='Are you sure you want to delete this token?'
+          onClose={this.onDeleteConfirmation}
         />
       </Box>
     )
