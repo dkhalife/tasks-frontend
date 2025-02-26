@@ -52,7 +52,8 @@ export async function Request<SuccessfulResponse>(
   } else if (requiresAuth) {
     localStorage.setItem('ca_redirect', window.location.pathname)
     window.location.href = '/login'
-    // TODO: Stop execution when better type safety is in place
+
+    throw new Error('User is not authenticated')
   }
 
   const fullURL = `${API_URL}/api/v1${url}`
