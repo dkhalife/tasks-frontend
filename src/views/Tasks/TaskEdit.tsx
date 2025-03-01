@@ -388,19 +388,18 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       }}>
         <Box>
           <FormControl error={Boolean(errors.title)}>
-            <Typography level='h4'>Description :</Typography>
+            <Typography level='h4'>Title :</Typography>
             <Typography>What is this task about?</Typography>
             <Input
               value={title}
               onChange={this.onTitleChange}
             />
-            <FormHelperText>{errors.title}</FormHelperText>
           </FormControl>
         </Box>
         <Box mt={2}>
           <Typography level='h4'>Labels :</Typography>
           <Typography>
-            Things to remember about this task or to tag it
+            How should this task be categorized?
           </Typography>
           <Select
             multiple
@@ -493,7 +492,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                 value={moment(nextDueDate).format('yyyy-MM-DD[T]HH:mm')}
                 onChange={this.handleDueDateChange}
               />
-              <FormHelperText>{errors.dueDate}</FormHelperText>
             </FormControl>
           )}
         </Box>
