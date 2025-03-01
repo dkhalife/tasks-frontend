@@ -184,7 +184,7 @@ export class TasksOverview extends React.Component<
                   </Button>
                 )
               }
-            ></Input>
+            />
           </Grid>
           <Grid
             sm={6}
