@@ -4,12 +4,12 @@ import { HistoryEntry } from '@/models/history'
 import { Label } from '@/models/label'
 
 type MarshalledTask = Omit<Omit<Task, 'next_due_date'>, 'labels'> & {
-  next_due_date: number | null,
+  next_due_date: string | null,
   labels: string[]
 }
 type MarshalledHistoryEntry = Omit<Omit<HistoryEntry, 'due_date'>, 'completed_date'> & {
-  due_date: number | null,
-  completed_date: number | null,
+  due_date: string | null,
+  completed_date: string | null,
 }
 
 type SingleTaskResponse = {
@@ -36,10 +36,19 @@ type MarshalledTaskHistoryResponse = {
   history: MarshalledHistoryEntry[]
 }
 
+function MarshallDate(d: Date | null): string | null {
+  return d?.toISOString() ?? null
+}
+
+function UnmarshallDate(d: string | null): Date | null {
+  // Date should be handled in UTC format
+  return d && d.length > 0 ? new Date(d) : null
+}
+
 function MarshallTask(task: Task): MarshalledTask {
   return {
     ...task,
-    next_due_date: task.next_due_date?.getTime() ?? null,
+    next_due_date: MarshallDate(task.next_due_date),
     labels: task.labels.map(l => l.id),
   }
 }
@@ -47,7 +56,7 @@ function MarshallTask(task: Task): MarshalledTask {
 const UnmarshallTask = (task: MarshalledTask): Task => {
   return {
     ...task,
-    next_due_date: task.next_due_date ? new Date(task.next_due_date) : null,
+    next_due_date: UnmarshallDate(task.next_due_date),
     labels: task.labels as unknown as Label[], // TODO: Server should marshall into ids
   }
 }
@@ -55,8 +64,8 @@ const UnmarshallTask = (task: MarshalledTask): Task => {
 const UnmarshallHistoryEntry = (entry: MarshalledHistoryEntry): HistoryEntry => {
   return {
     ...entry,
-    completed_date: entry.completed_date ? new Date(entry.completed_date) : null,
-    due_date: entry.due_date ? new Date(entry.due_date) : null,
+    completed_date: UnmarshallDate(entry.completed_date),
+    due_date: UnmarshallDate(entry.due_date),
   }
 }
 
@@ -108,5 +117,5 @@ export const GetTaskHistory = async (taskId: string) => await UnmarshallTaskHist
 
 export const UpdateDueDate = async (id: string, dueDate: Date | null): Promise<SingleTaskResponse> =>
   await UnmarshallSingleTaskResponse(await Request<SingleMarshalledTaskResponse>(`/tasks/${id}/dueDate`, 'PUT', {
-    due_date: dueDate ? dueDate.getTime() : null, // TODO: Generalize marshalling logic
+    due_date: MarshallDate(dueDate),
   }))
