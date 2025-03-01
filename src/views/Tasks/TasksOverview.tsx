@@ -218,6 +218,9 @@ export class TasksOverview extends React.Component<
                   </Chip>
                 </td>
                 <td
+                  style={{
+                    cursor: 'pointer',
+                  }}
                   onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
                 >
                   {task.title || '--'}
