@@ -1,4 +1,4 @@
-import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
+import { CreateTask, SaveTask, DeleteTask, GetTaskByID, SkipTask } from '@/api/tasks'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
@@ -214,6 +214,19 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     this.confirmModelRef.current?.open()
   }
 
+  private onSkipClicked = () => {
+    const { taskId } = this.props
+    const { frequency } = this.state
+
+    if (!taskId || frequency.type === 'once') {
+      throw new Error('Attempted to skip while not editing a recurring task')
+    }
+
+    SkipTask(taskId).then(() => {
+      this.navigateAway()
+    })
+  }
+
   private loadTask = async (taskId: string) => {
     try {
       const task = (await GetTaskByID(taskId)).task
@@ -370,22 +383,23 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     const notificationsEnabled = notification.enabled
 
     return (
-      <Container maxWidth='md'>
+      <Container maxWidth='md' sx={{
+        mb: '86px',
+      }}>
         <Box>
           <FormControl error={Boolean(errors.title)}>
-            <Typography level='h4'>Description :</Typography>
+            <Typography level='h4'>Title :</Typography>
             <Typography>What is this task about?</Typography>
             <Input
               value={title}
               onChange={this.onTitleChange}
             />
-            <FormHelperText>{errors.title}</FormHelperText>
           </FormControl>
         </Box>
         <Box mt={2}>
           <Typography level='h4'>Labels :</Typography>
           <Typography>
-            Things to remember about this task or to tag it
+            How should this task be categorized?
           </Typography>
           <Select
             multiple
@@ -478,7 +492,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                 value={moment(nextDueDate).format('yyyy-MM-DD[T]HH:mm')}
                 onChange={this.handleDueDateChange}
               />
-              <FormHelperText>{errors.dueDate}</FormHelperText>
             </FormControl>
           )}
         </Box>
@@ -580,6 +593,15 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               onClick={this.handleDelete}
             >
               Delete
+            </Button>
+          )}
+          {taskId != null && frequency.type !== "once" && (
+            <Button
+              color='warning'
+              variant='solid'
+              onClick={this.onSkipClicked}
+            >
+              Skip
             </Button>
           )}
           <Button

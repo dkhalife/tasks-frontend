@@ -24,7 +24,9 @@ export class Settings extends React.Component {
 
   render(): React.ReactNode {
     return (
-      <Container>
+      <Container sx={{
+        paddingBottom: '16px',
+      }}>
         <div
           style={{
             display: 'grid',

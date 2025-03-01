@@ -228,7 +228,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
         >
           <Grid container>
             <Grid
-              xs={2}
+              xs={4}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -311,7 +311,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
               </Box>
             </Grid>
             <Grid
-              xs={9}
+              xs={8}
               onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
             >
               <Box
@@ -332,13 +332,12 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                         <Chip
                           variant='solid'
                           key={`taskcard-${task.id}-label-${l.id}`}
-                          color='primary'
                           sx={{
                             position: 'relative',
                             ml: index === 0 ? 0 : 0.5,
                             top: 2,
                             zIndex: 1,
-                            backgroundColor: `${l?.color} !important`,
+                            backgroundColor: `${l?.color}`,
                             color: getTextColorFromBackgroundColor(l?.color),
                           }}
                         >

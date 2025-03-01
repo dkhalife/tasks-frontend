@@ -125,8 +125,7 @@ export class APITokenSettings extends React.Component<
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
                 <Typography level='body-xs'>
-                  {moment(token.createdAt).fromNow()}(
-                  {moment(token.createdAt).format('lll')})
+                  {moment(token.createdAt).fromNow()}<br />({moment(token.createdAt).format('lll')})
                 </Typography>
               </Box>
               <Box>
@@ -136,9 +135,8 @@ export class APITokenSettings extends React.Component<
                   sx={{ mr: 1 }}
                   onClick={() => this.toggleTokenVisibility(token)}
                 >
-                  {showTokenId === token?.id ? 'Hide' : 'Show'} Token
+                  {showTokenId === token?.id ? 'Hide' : 'Show'}
                 </Button>
-
                 <Button
                   variant='outlined'
                   color='danger'
@@ -152,7 +150,7 @@ export class APITokenSettings extends React.Component<
               <Box>
                 <Input
                   value={token.token}
-                  sx={{ width: '100%', mt: 2 }}
+                  sx={{ width: '100%'}}
                   readOnly
                   endDecorator={
                     <IconButton
@@ -183,7 +181,7 @@ export class APITokenSettings extends React.Component<
 
         <TextModal
           ref={this.modalRef}
-          title='Give a name for your new token, something to remember it by.'
+          title='Give a name for your new token:'
           onClose={this.handleSaveToken}
           okText={'Generate Token'}
         />
