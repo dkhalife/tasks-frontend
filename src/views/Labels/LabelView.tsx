@@ -146,7 +146,8 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '4px'
+            gap: '4px',
+            marginTop: '16px',
           }}
         >
           {userLabels.map(label => (
