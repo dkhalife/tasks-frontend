@@ -72,6 +72,10 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     }
 
     const { labelIdPendingDelete: id } = this
+    if (!id) {
+      throw new Error('Label ID is null')
+    }
+
     await DeleteLabel(id)
 
     const { userLabels } = this.state

@@ -347,8 +347,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private onDeleteConfirmed = (isConfirmed: boolean) => {
     if (this.props.taskId === null) {
-      console.error('Task ID is null')
-      return
+      throw new Error('Task ID is null')
     }
 
     if (isConfirmed === true) {
