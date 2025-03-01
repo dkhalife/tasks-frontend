@@ -1,4 +1,4 @@
-import { CreateTask, SaveTask, DeleteTask, GetTaskByID } from '@/api/tasks'
+import { CreateTask, SaveTask, DeleteTask, GetTaskByID, SkipTask } from '@/api/tasks'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/Colors'
@@ -212,6 +212,19 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private handleDelete = () => {
     this.confirmModelRef.current?.open()
+  }
+
+  private onSkipClicked = () => {
+    const { taskId } = this.props
+    const { frequency } = this.state
+
+    if (!taskId || frequency.type === 'once') {
+      throw new Error('Attempted to skip while not editing a recurring task')
+    }
+
+    SkipTask(taskId).then(() => {
+      this.navigateAway()
+    })
   }
 
   private loadTask = async (taskId: string) => {
@@ -580,6 +593,15 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               onClick={this.handleDelete}
             >
               Delete
+            </Button>
+          )}
+          {taskId != null && frequency.type !== "once" && (
+            <Button
+              color='warning'
+              variant='solid'
+              onClick={this.onSkipClicked}
+            >
+              Skip
             </Button>
           )}
           <Button
