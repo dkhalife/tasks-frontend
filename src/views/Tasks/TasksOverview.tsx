@@ -207,7 +207,6 @@ export class TasksOverview extends React.Component<
             <tr>
               <th>Due</th>
               <th>Task</th>
-              <th>Due</th>
               <th>Labels</th>
               <th>Action</th>
             </tr>
@@ -224,22 +223,6 @@ export class TasksOverview extends React.Component<
                   onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
                 >
                   {task.title || '--'}
-                </td>
-                <td>
-                  <Tooltip
-                    title={
-                      task.next_due_date === null
-                        ? 'no due date'
-                        : moment(task.next_due_date).format('YYYY-MM-DD')
-                    }
-                    size='sm'
-                  >
-                    <Typography>
-                      {task.next_due_date === null
-                        ? '--'
-                        : moment(task.next_due_date).fromNow()}
-                    </Typography>
-                  </Tooltip>
                 </td>
                 <td>
                   {task.labels.map((l, index) => {
