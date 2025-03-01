@@ -383,7 +383,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     const notificationsEnabled = notification.enabled
 
     return (
-      <Container maxWidth='md'>
+      <Container maxWidth='md' sx={{
+        mb: '86px',
+      }}>
         <Box>
           <FormControl error={Boolean(errors.title)}>
             <Typography level='h4'>Description :</Typography>
