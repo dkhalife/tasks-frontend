@@ -60,7 +60,7 @@ export interface TaskEditState {
 
 export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private titleInputRef = React.createRef<HTMLDivElement>()
-  private confirmModelRef = React.createRef<ConfirmationModal>()
+  private confirmModalRef = React.createRef<ConfirmationModal>()
   private defaultNotificationTriggers: NotificationTriggerOptions = {
     due_date: true,
     pre_due: false,
@@ -213,7 +213,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private handleDelete = () => {
-    this.confirmModelRef.current?.open()
+    this.confirmModalRef.current?.open()
   }
 
   private onSkipClicked = () => {
@@ -625,7 +625,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           </Button>
         </Sheet>
         <ConfirmationModal
-          ref={this.confirmModelRef}
+          ref={this.confirmModalRef}
           title='Delete Task'
           confirmText='Delete'
           cancelText='Cancel'
