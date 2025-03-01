@@ -332,7 +332,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
           sx={{
             position: 'fixed',
             bottom: 0,
-            left: 10,
+            right: 10,
             padding: 2,
             display: 'flex',
             justifyContent: 'flex-end',
