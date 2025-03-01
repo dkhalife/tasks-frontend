@@ -1,3 +1,4 @@
+import { moveFocusToJoyInput } from '@/utils/joy'
 import { Box, Button, Modal, ModalDialog, Textarea, Typography } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
@@ -16,6 +17,8 @@ interface TextModalState {
 }
 
 export class TextModal extends React.Component<TextModalProps, TextModalState> {
+  private inputRef = React.createRef<HTMLDivElement>()
+
   constructor(props: TextModalProps) {
     super(props)
     this.state = {
@@ -24,8 +27,12 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
     }
   }
 
-  public open = () => {
-    this.setState({ isOpen: true })
+  public open = async (): Promise<void> => {
+    await this.setState({
+      isOpen: true,
+    })
+
+    moveFocusToJoyInput(this.inputRef)
   }
 
   private onSave = () => {
@@ -61,6 +68,7 @@ export class TextModal extends React.Component<TextModalProps, TextModalState> {
             onChange={this.onTextChange}
             minRows={2}
             maxRows={4}
+            ref={this.inputRef}
             sx={{ minWidth: 300 }}
           />
 
