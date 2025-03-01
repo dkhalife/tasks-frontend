@@ -17,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { colorOptionFromColor } from '@/utils/labels'
 import { setTitle } from '@/utils/dom'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 
 type LabelViewProps = object
 
@@ -29,6 +30,8 @@ interface LabelViewState {
 
 export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
   private modalRef = React.createRef<LabelModal>()
+  private confirmModalRef = React.createRef<ConfirmationModal>()
+  private labelIdPendingDelete: string | null = null
 
   constructor(props: LabelViewProps) {
     super(props)
@@ -57,12 +60,31 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     this.modalRef.current?.open()
   }
 
-  private handleDeleteLabel = async (id: string) => {
+  private handleDeleteLabel = (id: string) => {
+    this.labelIdPendingDelete = id
+    this.confirmModalRef.current?.open()
+  }
+
+  private onDeleteConfirmed = async (isConfirmed: boolean) => {
+    if (!isConfirmed) {
+      this.labelIdPendingDelete = null
+      return
+    }
+
+    const { labelIdPendingDelete: id } = this
+    if (!id) {
+      throw new Error('Label ID is null')
+    }
+
     await DeleteLabel(id)
+
     const { userLabels } = this.state
     const updatedLabels = userLabels.filter(label => label.id !== id)
 
-    this.setState({ userLabels: updatedLabels })
+    this.labelIdPendingDelete = null
+    this.setState({
+      userLabels: updatedLabels,
+    })
   }
 
   private loadLabels = async() => {
@@ -224,6 +246,15 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
           id={currentLabel?.id}
           name={currentLabel?.name}
           color={currentColor}
+        />
+
+        <ConfirmationModal
+          ref={this.confirmModalRef}
+          title='Delete Label'
+          confirmText='Delete'
+          cancelText='Cancel'
+          message='Are you sure you want to delete this label?'
+          onClose={this.onDeleteConfirmed}
         />
 
         <Box

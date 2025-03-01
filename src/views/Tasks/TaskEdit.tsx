@@ -36,6 +36,7 @@ import { Notification, NotificationTriggerOptions } from '@/models/notifications
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { GetLabels } from '@/api/labels'
 import { GetUserProfile } from '@/api/users'
+import { moveFocusToJoyInput } from '@/utils/joy'
 
 export type TaskEditProps = WithNavigate & {
   taskId: string | null
@@ -58,7 +59,8 @@ export interface TaskEditState {
 }
 
 export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
-  private confirmModelRef = React.createRef<ConfirmationModal>()
+  private titleInputRef = React.createRef<HTMLDivElement>()
+  private confirmModalRef = React.createRef<ConfirmationModal>()
   private defaultNotificationTriggers: NotificationTriggerOptions = {
     due_date: true,
     pre_due: false,
@@ -211,7 +213,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private handleDelete = () => {
-    this.confirmModelRef.current?.open()
+    this.confirmModalRef.current?.open()
   }
 
   private onSkipClicked = () => {
@@ -276,6 +278,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   componentDidMount(): void {
     this.init()
+
+    moveFocusToJoyInput(this.titleInputRef)
   }
 
   private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -343,8 +347,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private onDeleteConfirmed = (isConfirmed: boolean) => {
     if (this.props.taskId === null) {
-      console.error('Task ID is null')
-      return
+      throw new Error('Task ID is null')
     }
 
     if (isConfirmed === true) {
@@ -391,6 +394,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             <Typography level='h4'>Title :</Typography>
             <Typography>What is this task about?</Typography>
             <Input
+              ref={this.titleInputRef}
               value={title}
               onChange={this.onTitleChange}
             />
@@ -620,7 +624,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           </Button>
         </Sheet>
         <ConfirmationModal
-          ref={this.confirmModelRef}
+          ref={this.confirmModalRef}
           title='Delete Task'
           confirmText='Delete'
           cancelText='Cancel'

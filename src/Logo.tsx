@@ -12,18 +12,16 @@ export class Logo extends React.Component<LogoProps> {
     const { level, sx } = this.props
 
     return (
-      <>
-        <Typography level={ level ?? 'h2' } sx={ sx }>
-          Task
-          <span
-            style={{
-              color: '#9b59b6',
-            }}
-          >
-            Wizard 🪄
-          </span>
-        </Typography>
-      </>
+      <Typography level={ level ?? 'h2' } sx={ sx }>
+        Task
+        <span
+          style={{
+            color: '#9b59b6',
+          }}
+        >
+          Wizard 🪄
+        </span>
+      </Typography>
     )
   }
 }

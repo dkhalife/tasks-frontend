@@ -214,7 +214,9 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
         )}
 
         <Card
-          style={viewOnly ? { pointerEvents: 'none' } : {}}
+          style={viewOnly ? {
+            pointerEvents: 'none',
+          } : {}}
           variant='plain'
           sx={{
             display: 'flex',
@@ -251,7 +253,10 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                     zIndex: 1,
                   }}
                 >
-                  <div style={{ position: 'relative', alignItems: 'center' }}>
+                  <div style={{
+                    position: 'relative',
+                    alignItems: 'center',
+                    }}>
                     <Check />
                   </div>
                 </IconButton>
@@ -312,6 +317,9 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             </Grid>
             <Grid
               xs={8}
+              style={{
+                cursor: 'pointer',
+              }}
               onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
             >
               <Box

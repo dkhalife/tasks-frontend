@@ -1,3 +1,4 @@
+import { moveFocusToJoyInput } from '@/utils/joy'
 import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
 import moment from 'moment'
 import React from 'react'
@@ -15,6 +16,7 @@ interface DateModalState {
 }
 
 export class DateModal extends React.Component<DateModalProps, DateModalState> {
+  private inputRef: React.RefObject<HTMLInputElement> = React.createRef()
   constructor(props: DateModalProps) {
     super(props)
 
@@ -24,8 +26,12 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
     }
   }
 
-  public open = () => {
-    this.setState({ isOpen: true })
+  public open = async (): Promise<void> => {
+    await this.setState({
+      isOpen: true,
+    })
+
+    moveFocusToJoyInput(this.inputRef)
   }
 
   private onSave = () => {
@@ -61,6 +67,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
             type='date'
             value={date}
             onChange={this.onDateChange}
+            ref={this.inputRef}
           />
           <Box
             display={'flex'}

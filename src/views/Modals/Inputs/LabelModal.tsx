@@ -15,6 +15,7 @@ import {
 import React, { ChangeEvent } from 'react'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import { ColorOption } from '@/utils/labels'
+import { moveFocusToJoyInput } from '@/utils/joy'
 
 interface LabelModalProps {
   id: string | undefined
@@ -35,6 +36,8 @@ export class LabelModal extends React.Component<
   LabelModalProps,
   LabelModalState
 > {
+  private inputRef = React.createRef<HTMLInputElement>()
+
   constructor(props: LabelModalProps) {
     super(props)
     this.state = {
@@ -55,8 +58,10 @@ export class LabelModal extends React.Component<
     }
   }
 
-  public open(): void {
-    this.setState({ isOpen: true })
+  public async open(): Promise<void> {
+    await this.setState({ isOpen: true })
+
+    moveFocusToJoyInput(this.inputRef)
   }
 
   private validateLabel = () => {
@@ -158,6 +163,7 @@ export class LabelModal extends React.Component<
             <Input
               fullWidth
               value={labelName}
+              ref={this.inputRef}
               onChange={this.onLabelNameChange}
             />
           </FormControl>

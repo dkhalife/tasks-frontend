@@ -32,7 +32,7 @@ export class APITokenSettings extends React.Component<
 > {
   private modalRef = React.createRef<TextModal>()
   private tokenToDelete: APIToken | null = null
-  private confirmModelRef = React.createRef<ConfirmationModal>()
+  private confirmModalRef = React.createRef<ConfirmationModal>()
 
   constructor(props: APITokenSettingsProps) {
     super(props)
@@ -68,7 +68,7 @@ export class APITokenSettings extends React.Component<
 
   private onDeleteToken = async (token: APIToken) => {
     this.tokenToDelete = token
-    this.confirmModelRef.current?.open()
+    this.confirmModalRef.current?.open()
   }
 
   private onDeleteConfirmation = async (confirmed: boolean) => {
@@ -187,7 +187,7 @@ export class APITokenSettings extends React.Component<
         />
         
         <ConfirmationModal
-          ref={this.confirmModelRef}
+          ref={this.confirmModalRef}
           title='Delete Token'
           confirmText='Delete'
           cancelText='Cancel'

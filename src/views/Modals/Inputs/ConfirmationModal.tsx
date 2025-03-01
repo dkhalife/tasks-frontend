@@ -26,6 +26,8 @@ export class ConfirmationModal extends React.Component<
   ConfirmationModalProps,
   ConfirmationModalState
 > {
+  private confirmButtonRef: React.RefObject<HTMLButtonElement> = React.createRef()
+
   constructor(props: ConfirmationModalProps) {
     super(props)
 
@@ -34,8 +36,12 @@ export class ConfirmationModal extends React.Component<
     }
   }
 
-  public open(): void {
-    this.setState({ isOpen: true })
+  public async open(): Promise<void> {
+    await this.setState({
+      isOpen: true,
+    })
+
+    this.confirmButtonRef.current?.focus()
   }
 
   private onConfirm = () => {
@@ -82,6 +88,7 @@ export class ConfirmationModal extends React.Component<
               fullWidth
               sx={{ mr: 1 }}
               color={color ?? 'primary'}
+              ref={this.confirmButtonRef}
             >
               {confirmText}
             </Button>

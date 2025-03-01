@@ -1,3 +1,4 @@
+import { moveFocusToJoyInput } from '@/utils/joy'
 import {
   Box,
   Button,
@@ -25,6 +26,8 @@ export class PassowrdChangeModal extends React.Component<
   PasswordChangeModalProps,
   PasswordChangeModalState
 > {
+  private inputRef = React.createRef<HTMLInputElement>()
+
   constructor(props: PasswordChangeModalProps) {
     super(props)
     this.state = {
@@ -35,8 +38,12 @@ export class PassowrdChangeModal extends React.Component<
     }
   }
 
-  public open(): void {
-    this.setState({ isOpen: true })
+  public async open(): Promise<void> {
+    await this.setState({
+      isOpen: true,
+    })
+
+    moveFocusToJoyInput(this.inputRef)
   }
 
   onSave = () => {
@@ -105,6 +112,7 @@ export class PassowrdChangeModal extends React.Component<
           >
             Please enter your new password.
           </Typography>
+
           <FormControl>
             <Typography alignSelf={'start'}>New Password</Typography>
             <Input
@@ -113,6 +121,7 @@ export class PassowrdChangeModal extends React.Component<
               name='password'
               type='password'
               value={password}
+              ref={this.inputRef}
               onChange={this.onPasswordChange}
             />
           </FormControl>

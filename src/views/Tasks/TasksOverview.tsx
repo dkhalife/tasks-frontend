@@ -184,7 +184,7 @@ export class TasksOverview extends React.Component<
                   </Button>
                 )
               }
-            ></Input>
+            />
           </Grid>
           <Grid
             sm={6}
@@ -218,6 +218,9 @@ export class TasksOverview extends React.Component<
                   </Chip>
                 </td>
                 <td
+                  style={{
+                    cursor: 'pointer',
+                  }}
                   onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
                 >
                   {task.title || '--'}
