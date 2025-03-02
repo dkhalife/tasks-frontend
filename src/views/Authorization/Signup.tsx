@@ -1,7 +1,6 @@
 import { SignUp } from '@/api/auth'
 import { Logo } from '@/Logo'
 import { validateEmail, validatePassword } from '@/models/user'
-import { doLogin } from '@/utils/auth'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import {
@@ -28,6 +27,7 @@ interface SignupViewState {
   emailError: string | null
   displayNameError: string | null
   error: string | null
+  accountCreated: boolean
 }
 
 export class SignupView extends React.Component<
@@ -45,6 +45,7 @@ export class SignupView extends React.Component<
       emailError: null,
       displayNameError: null,
       error: null,
+      accountCreated: false,
     }
   }
 
@@ -52,13 +53,6 @@ export class SignupView extends React.Component<
     setTitle('Sign Up')
   }
 
-  private handleLogin = async (email: string, password: string) => {
-    try {
-      doLogin(email, password, this.props.navigate)
-    } catch {
-      this.setState({ error: 'Login failed' })
-    }
-  }
   private handleSignUpValidation = () => {
     // Reset errors before validation
     const newState: SignupViewState = {
@@ -108,9 +102,13 @@ export class SignupView extends React.Component<
     const { password, displayName, email } = this.state
     try {
       await SignUp(password, displayName, email)
-      this.handleLogin(email, password)
+      this.setState({
+        accountCreated: true,
+      })
     } catch (error) {
-      this.setState({ error: (error as Error).message })
+      this.setState({
+        error: (error as Error).message,
+      })
     }
   }
 
@@ -137,6 +135,7 @@ export class SignupView extends React.Component<
 
   render(): React.ReactNode {
     const {
+      accountCreated,
       password,
       displayName,
       email,
@@ -240,6 +239,14 @@ export class SignupView extends React.Component<
           autoHideDuration={5000}
         >
           {error}
+        </Snackbar>
+        <Snackbar
+          color='success'
+          variant='solid'
+          open={accountCreated}
+          onClose={() => navigate(NavigationPaths.Login)}
+          autoHideDuration={3000}>
+          Please check your email to verify your account.
         </Snackbar>
       </Container>
     )
