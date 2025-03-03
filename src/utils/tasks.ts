@@ -2,8 +2,7 @@ import { Task } from '@/models/task'
 import { COLORS, TASK_COLOR } from './Colors'
 import moment from 'moment'
 import { Label } from '@/models/label'
-
-export type GROUP_BY = 'due_date' | 'labels'
+import { DueDateGroups, GROUP_BY, LabelGroups } from '@/utils/grouping'
 
 export type TaskGroup = {
   name: string
@@ -11,17 +10,6 @@ export type TaskGroup = {
   color: string
 }
 
-export interface DueDateGroups {
-  'overdue': TaskGroup
-  'today': TaskGroup
-  'tomorrow': TaskGroup
-  'this_week': TaskGroup
-  'next_week': TaskGroup
-  'later': TaskGroup
-  'any_time': TaskGroup
-}
-
-export type LabelGroups = Record<string, TaskGroup>
 export type TaskGroups = DueDateGroups | LabelGroups
 
 export const bucketIntoDueDateGroup = (

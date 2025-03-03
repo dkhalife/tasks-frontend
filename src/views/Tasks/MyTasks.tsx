@@ -16,12 +16,14 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { TaskCard } from '@/views/Tasks/TaskCard'
-import { DueDateGroups, GROUP_BY, LabelGroups, TaskGroups, bucketIntoDueDateGroup, bucketIntoLabelGroups, groupTasksBy } from '@/utils/tasks'
+import { TaskGroups, bucketIntoDueDateGroup, bucketIntoLabelGroups, groupTasksBy } from '@/utils/tasks'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
 import { GetLabels } from '@/api/labels'
+import { DueDateGroups, getDefaultExpandedState, GROUP_BY, LabelGroups } from '@/utils/grouping'
+import { retrieveValue, storeValue } from '@/utils/Storage'
 
 type MyTasksProps = WithNavigate
 
@@ -40,7 +42,8 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   constructor(props: MyTasksProps) {
     super(props)
 
-    const groupBy: GROUP_BY = 'due_date'
+    const groupBy: GROUP_BY = retrieveValue<GROUP_BY>('group_by', 'due_date') 
+    const isExpanded = retrieveValue<Record<keyof TaskGroups, boolean>>('expanded_groups', getDefaultExpandedState(groupBy, []))
 
     this.state = {
       isSnackbarOpen: false,
@@ -49,33 +52,9 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       labels: [],
       groupBy,
       groups: null,
-      isExpanded: this.getDefaultExpandedState(groupBy, []),
+      isExpanded,
       isLoading: true,
     }
-  }
-
-  private getDefaultExpandedState = (groupBy: GROUP_BY, labels: Label[]): Record<keyof TaskGroups, boolean> => {
-    if (groupBy === 'due_date') {
-      return {
-        'overdue': false,
-        'today': false,
-        'tomorrow': false,
-        'this_week': false,
-        'next_week': false,
-        'later': false,
-        'any_time': false,
-      }
-    }
-
-    const expanded: Record<string, boolean> = {}
-
-    if (groupBy === 'labels') {
-      labels.forEach(label => {
-        expanded[label.id] = false
-      })
-    }
-
-    return expanded
   }
 
   private loadTasks = async () => {
@@ -86,12 +65,17 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     const labels = labelsData.labels
 
     const { groupBy } = this.state
-    
+    const defaultExpanded = getDefaultExpandedState(groupBy, labels)
+    const isExpanded = {
+      ...defaultExpanded,
+      ...retrieveValue<Record<keyof TaskGroups, boolean>>('expanded_groups', defaultExpanded),
+    }
+
     this.setState({
       tasks,
       labels,
       groups: groupTasksBy(tasks, labels, groupBy),
-      isExpanded: this.getDefaultExpandedState(groupBy, labels),
+      isExpanded,
       isLoading: false,
     })
   }
@@ -174,24 +158,31 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
   private toggleGroup = (groupKey: keyof TaskGroups) => {
     const { isExpanded } = this.state
+    const nextExpanded = {
+      ...isExpanded,
+      [groupKey]: !isExpanded[groupKey],
+    }
 
     this.setState({
-      isExpanded: {
-        ...isExpanded,
-        [groupKey]: !isExpanded[groupKey],
-      },
+      isExpanded: nextExpanded,
     })
+
+    storeValue('expanded_groups', nextExpanded)
   }
 
   private toggleGroupBy = () => {
     const { groupBy, tasks, labels } = this.state
     const nextGroupBy = groupBy === 'due_date' ? 'labels' : 'due_date'
+    const nextExpanded = getDefaultExpandedState(nextGroupBy, labels)
 
     this.setState({
       groupBy: nextGroupBy,
       groups: groupTasksBy(tasks, labels, nextGroupBy),
-      isExpanded: this.getDefaultExpandedState(nextGroupBy, labels),
+      isExpanded: nextExpanded,
     })
+
+    storeValue('group_by', nextGroupBy)
+    storeValue('expanded_groups', nextExpanded)
   }
 
   private hasTasks = () => {
