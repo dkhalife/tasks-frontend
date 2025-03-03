@@ -6,6 +6,7 @@ import React from 'react'
 import { GetUserProfile } from './api/users'
 import { User } from './models/user'
 import { WithNavigate } from './utils/navigation'
+import { CssBaseline, CssVarsProvider } from '@mui/joy'
 
 type AppProps = WithNavigate
 
@@ -47,8 +48,11 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <div style={{ minHeight: '100vh' }}>
         <UserContext.Provider value={{ userProfile, setUserProfile }}>
-          <NavBar navigate={navigate} />
-          <Outlet />
+          <CssBaseline />
+          <CssVarsProvider modeStorageKey='themeMode'>
+            <NavBar navigate={navigate} />
+            <Outlet />
+          </CssVarsProvider>
         </UserContext.Provider>
       </div>
     )
