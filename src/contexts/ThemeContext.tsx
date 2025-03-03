@@ -1,24 +1,18 @@
-// import { COLORS } from '@/utils/Colors'
-import { CssBaseline } from '@mui/joy'
-import { CssVarsProvider, extendTheme } from '@mui/joy/styles'
+import { ThemeMode } from '@/constants/theme'
+import { retrieveValue, storeValue } from '@/utils/Storage'
+import { CssBaseline, CssVarsProvider, extendTheme } from '@mui/joy'
 import React from 'react'
 
-// const primaryColor = 'cyan'
+interface ThemeContextProps {
+  children: React.ReactNode
+}
 
-// const shades = [
-//   '50',
-//   ...Array.from({ length: 9 }, (_, i) => String((i + 1) * 100)),
-// ]
+export type ThemeContextState = {
+  themeMode: ThemeMode
+  setThemeMode: (themeMode: ThemeMode) => void
+}
 
-// TODO: Theming
-// const getPallete = (key = primaryColor) => {
-//   return shades.reduce((acc: any, shade) => {
-//     acc[shade] = COLORS[key][shade]
-//     return acc
-//   }, {})
-// }
-
-// const primaryPalette = getPallete(primaryColor)
+const initialThemeMode = retrieveValue<ThemeMode>('themeMode', 'system')
 
 const theme = extendTheme({
   colorSchemes: {
@@ -73,17 +67,38 @@ const theme = extendTheme({
   },
 })
 
-interface ThemeContextProps {
-  children: React.ReactNode
-}
+export const ThemeContext = React.createContext<ThemeContextState>({
+  themeMode: initialThemeMode,
+  setThemeMode: (themeMode: ThemeMode) => {
+    storeValue('themeMode', themeMode)
+  },
+})
 
-export class ThemeContext extends React.Component<ThemeContextProps> {
+export class ThemeContextProvider extends React.Component<
+  ThemeContextProps,
+  ThemeContextState
+> {
+  constructor(props: ThemeContextProps) {
+    super(props)
+    this.state = {
+      themeMode: initialThemeMode,
+      setThemeMode: this.setThemeMode,
+    }
+  }
+
+  private setThemeMode = (themeMode: ThemeMode) => {
+    storeValue('themeMode', themeMode)
+    this.setState({ themeMode })
+  }
+
   render() {
     return (
-      <CssVarsProvider theme={theme}>
+      <ThemeContext.Provider value={this.state}>
         <CssBaseline />
-        {this.props.children}
-      </CssVarsProvider>
+        <CssVarsProvider theme={theme}>
+          {this.props.children}
+        </CssVarsProvider>
+      </ThemeContext.Provider>
     )
   }
 }

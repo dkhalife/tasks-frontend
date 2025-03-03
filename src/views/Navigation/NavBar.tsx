@@ -1,5 +1,4 @@
 import { getNextThemeMode } from '@/constants/theme'
-import { StorageContext, StorageContextState } from '@/contexts/StorageContext'
 import {
   MenuRounded,
   HomeOutlined,
@@ -22,6 +21,7 @@ import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import { getPathName, NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Logo } from '@/Logo'
+import { ThemeContext, ThemeContextState } from '@/contexts/ThemeContext'
 
 type NavBarProps = WithNavigate
 
@@ -91,8 +91,8 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
               fontSize: 24,
             }}
           />
-          <StorageContext.Consumer>
-            {({ themeMode, setThemeMode }: StorageContextState) => (
+          <ThemeContext.Consumer>
+            {({themeMode, setThemeMode}: ThemeContextState) => (
               <ThemeToggleButton
                 themeMode={themeMode}
                 onThemeModeToggle={() => setThemeMode(getNextThemeMode(themeMode))}
@@ -102,7 +102,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                 }}
               />
             )}
-          </StorageContext.Consumer>
+          </ThemeContext.Consumer>
         </Box>
         <Drawer
           open={this.state.drawerOpen}
