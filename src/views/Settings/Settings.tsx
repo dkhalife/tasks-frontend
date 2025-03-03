@@ -1,11 +1,11 @@
 import { UpdatePassword } from '@/api/users'
-import { StorageContext } from '@/contexts/StorageContext'
 import { Container, Typography, Divider, Box, Button } from '@mui/joy'
 import React from 'react'
 import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
 import { NotificationSetting } from '../Notifications/NotificationSettings'
 import { ThemeToggle } from './ThemeToggle'
+import { ThemeContext } from '@/contexts/ThemeContext'
 
 export class Settings extends React.Component {
   private changePasswordModal = React.createRef<PassowrdChangeModal>()
@@ -60,14 +60,14 @@ export class Settings extends React.Component {
           <Typography level='h3'>Theme preferences</Typography>
           <Divider />
 
-          <StorageContext.Consumer>
+          <ThemeContext.Consumer>
             {storedState => (
               <ThemeToggle
                 themeMode={storedState.themeMode}
                 onThemeModeToggle={storedState.setThemeMode}
               />
             )}
-          </StorageContext.Consumer>
+          </ThemeContext.Consumer>
         </Box>
       </Container>
     )

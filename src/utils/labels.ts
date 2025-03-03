@@ -1,4 +1,4 @@
-import { LABEL_COLORS } from "./Colors"
+import { LABEL_COLORS } from "./colors"
 
 export type ColorOption = {
   name: string

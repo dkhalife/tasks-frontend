@@ -1,4 +1,4 @@
-import { Request } from '../utils/TokenManager'
+import { Request } from '../utils/api'
 
 type TokenResponse = {
   token: string

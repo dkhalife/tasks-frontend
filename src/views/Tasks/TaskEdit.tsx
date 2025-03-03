@@ -1,7 +1,7 @@
 import { CreateTask, SaveTask, DeleteTask, GetTaskByID, SkipTask } from '@/api/tasks'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
-import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { Add } from '@mui/icons-material'
 import {
   ColorPaletteProp,
