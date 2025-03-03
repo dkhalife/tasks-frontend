@@ -1,42 +1,55 @@
-import { ThemeMode } from '@/constants/theme'
+import { Mode } from '@mui/system/cssVars/useCurrentColorScheme'
 import {
   DarkModeOutlined,
   BrightnessAuto,
   LightModeOutlined,
 } from '@mui/icons-material'
-import { FormControl, IconButton } from '@mui/joy'
-import { SxProps } from '@mui/material'
+import { IconButton } from '@mui/joy'
 import React from 'react'
+import { getCurrentThemeMode, getNextThemeMode, setThemeMode } from '@/constants/theme'
 
 interface ThemeToggleButtonProps {
-  sx: SxProps
-  themeMode: ThemeMode
-  onThemeModeToggle: () => void
+  style: React.CSSProperties
 }
 
-export class ThemeToggleButton extends React.Component<ThemeToggleButtonProps> {
-  private onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+interface ThemeToggleButtonState {
+  mode: Mode
+}
 
-    this.props.onThemeModeToggle()
+export class ThemeToggleButton extends React.Component<ThemeToggleButtonProps, ThemeToggleButtonState> {
+  constructor(props: ThemeToggleButtonProps) {
+    super(props)
+
+    this.state = {
+      mode: getCurrentThemeMode(),
+    }
+  }
+
+  private onClick = () => {
+    const nextMode = getNextThemeMode(this.state.mode)
+    setThemeMode(nextMode)
+
+    this.setState({
+      mode: nextMode,
+    })
   }
 
   render(): React.ReactNode {
-    const { themeMode } = this.props
+    const { style } = this.props
+    const { mode } = this.state
 
     return (
-      <FormControl sx={this.props.sx}>
+      <div style={style}>
         <IconButton onClick={this.onClick}>
-          {themeMode === 'light' ? (
+          {mode === 'light' ? (
             <DarkModeOutlined />
-          ) : themeMode === 'dark' ? (
+          ) : mode === 'dark' ? (
             <BrightnessAuto />
           ) : (
             <LightModeOutlined />
           )}
         </IconButton>
-      </FormControl>
+      </div>
     )
   }
 }

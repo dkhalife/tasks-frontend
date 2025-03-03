@@ -1,14 +1,12 @@
 import { NavBar } from './views/Navigation/NavBar'
-import { useColorScheme } from '@mui/joy'
 import { Outlet } from 'react-router-dom'
 import { UserContext } from './contexts/UserContext'
 import { isTokenValid } from './utils/api'
 import React from 'react'
-import { ThemeMode } from './constants/theme'
 import { GetUserProfile } from './api/users'
 import { User } from './models/user'
-import { useRoot } from './utils/dom'
 import { WithNavigate } from './utils/navigation'
+import { CssBaseline, CssVarsProvider } from '@mui/joy'
 
 type AppProps = WithNavigate
 
@@ -32,35 +30,8 @@ export class App extends React.Component<AppProps, AppState> {
     })
   }
 
-  private applyTheme = (className: string) => {
-    useRoot().classList.add(className)
-  }
-
   private setUserProfile = (userProfile: User | null) => {
     this.setState({ userProfile })
-  }
-
-  private loadTheme = () => {
-    const { mode, systemMode } = useColorScheme()
-    const value: ThemeMode =
-      JSON.parse(localStorage.getItem('themeMode') ?? '') || mode
-
-    switch (value) {
-      default:
-      case 'system':
-        if (systemMode === 'dark') {
-          this.applyTheme('dark')
-        }
-        break
-
-      case 'light':
-        this.applyTheme('light')
-        break
-
-      case 'dark':
-        this.applyTheme('dark')
-        break
-    }
   }
 
   componentDidMount(): void {
@@ -77,8 +48,11 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <div style={{ minHeight: '100vh' }}>
         <UserContext.Provider value={{ userProfile, setUserProfile }}>
-          <NavBar navigate={navigate} />
-          <Outlet />
+          <CssBaseline />
+          <CssVarsProvider modeStorageKey='themeMode' attribute='data-theme' defaultMode='system' colorSchemeNode={document.body}>
+            <NavBar navigate={navigate} />
+            <Outlet />
+          </CssVarsProvider>
         </UserContext.Provider>
       </div>
     )
