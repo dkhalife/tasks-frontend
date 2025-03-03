@@ -1,4 +1,4 @@
-import { ThemeMode } from '@/constants/theme'
+import { Mode } from '@mui/system/cssVars/useCurrentColorScheme'
 import {
   DarkModeOutlined,
   BrightnessAuto,
@@ -10,7 +10,7 @@ import React from 'react'
 
 interface ThemeToggleButtonProps {
   sx: SxProps
-  themeMode: ThemeMode
+  themeMode: Mode
   onThemeModeToggle: () => void
 }
 

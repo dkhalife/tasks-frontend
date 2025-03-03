@@ -1,4 +1,4 @@
-import { ThemeMode } from '@/constants/theme'
+import { Mode } from '@mui/system/cssVars/useCurrentColorScheme'
 import {
   LightModeOutlined,
   DarkModeOutlined,
@@ -8,12 +8,12 @@ import { ToggleButtonGroup, Button, Box } from '@mui/joy'
 import React from 'react'
 
 interface ThemeToggleProps {
-  themeMode: ThemeMode
-  onThemeModeToggle: (newTheme: ThemeMode) => void
+  themeMode: Mode
+  onThemeModeToggle: (newTheme: Mode) => void
 }
 
 export class ThemeToggle extends React.Component<ThemeToggleProps> {
-  private onChange = (_: React.MouseEvent, newThemeMode: ThemeMode | null) => {
+  private onChange = (_: React.MouseEvent, newThemeMode: Mode | null) => {
     if (!newThemeMode) {
       return
     }

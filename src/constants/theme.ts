@@ -1,6 +1,6 @@
-export type ThemeMode = 'light' | 'dark' | 'system'
+import { Mode } from '@mui/system/cssVars/useCurrentColorScheme'
 
-export const getNextThemeMode = (currentThemeMode: ThemeMode): ThemeMode => {
+export const getNextThemeMode = (currentThemeMode: Mode): Mode => {
   switch (currentThemeMode) {
     case 'light':
       return 'dark'
