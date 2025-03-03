@@ -1,5 +1,5 @@
 import { APIToken } from '@/models/token'
-import { Request } from '../utils/TokenManager'
+import { Request } from '../utils/api'
 import { User } from '@/models/user'
 import { NotificationTriggerOptions, NotificationType } from '@/models/notifications'
 

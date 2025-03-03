@@ -1,5 +1,5 @@
 import { Label } from '@/models/label'
-import { Request } from '../utils/TokenManager'
+import { Request } from '../utils/api'
 
 type LabelsResponse = {
   labels: Label[]

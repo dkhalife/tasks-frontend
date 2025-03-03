@@ -1,5 +1,5 @@
 import { Task } from '@/models/task'
-import { Request } from '../utils/TokenManager'
+import { Request } from '../utils/api'
 import { HistoryEntry } from '@/models/history'
 import { Label } from '@/models/label'
 
