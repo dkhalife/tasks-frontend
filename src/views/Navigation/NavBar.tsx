@@ -90,9 +90,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
             }}
           />
           <ThemeToggleButton
-            themeMode={'light'}
-            onThemeModeToggle={() => {}}
-            sx={{
+            style={{
               position: 'absolute',
               right: 10,
             }}
