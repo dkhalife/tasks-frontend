@@ -22,7 +22,7 @@ import React, { ChangeEvent } from 'react'
 import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
-import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { sortTasksByDueDate } from '@/utils/tasks'
 import { Loading } from '@/Loading'
 

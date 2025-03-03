@@ -1,5 +1,5 @@
 import { Task } from '@/models/task'
-import { COLORS, TASK_COLOR } from './Colors'
+import { COLORS, TASK_COLOR } from './colors'
 import moment from 'moment'
 import { Label } from '@/models/label'
 import { DueDateGroups, GROUP_BY, LabelGroups } from '@/utils/grouping'

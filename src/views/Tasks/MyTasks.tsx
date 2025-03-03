@@ -23,7 +23,7 @@ import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
 import { GetLabels } from '@/api/labels'
 import { DueDateGroups, getDefaultExpandedState, GROUP_BY, LabelGroups } from '@/utils/grouping'
-import { retrieveValue, storeValue } from '@/utils/Storage'
+import { retrieveValue, storeValue } from '@/utils/storage'
 
 type MyTasksProps = WithNavigate
 

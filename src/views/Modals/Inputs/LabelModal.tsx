@@ -1,6 +1,6 @@
 import { UpdateLabel, CreateLabel } from '@/api/labels'
 import { Label } from '@/models/label'
-import { LABEL_COLORS } from '@/utils/Colors'
+import { LABEL_COLORS } from '@/utils/colors'
 import { ModalDialog } from '@mui/joy'
 import {
   Modal,

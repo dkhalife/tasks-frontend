@@ -1,6 +1,6 @@
 import { DeleteLabel, GetLabels } from '@/api/labels'
 import { Label } from '@/models/label'
-import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { Add } from '@mui/icons-material'
 import {
   Box,

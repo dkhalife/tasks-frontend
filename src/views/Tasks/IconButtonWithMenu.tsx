@@ -1,4 +1,4 @@
-import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { IconButton, Menu, MenuItem, Typography, Chip } from '@mui/joy'
 import React from 'react'
 

@@ -1,5 +1,5 @@
 import { ThemeMode } from '@/constants/theme'
-import { retrieveValue, storeValue } from '@/utils/Storage'
+import { retrieveValue, storeValue } from '@/utils/storage'
 import React from 'react'
 
 export type ThemeContextState = {

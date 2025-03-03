@@ -11,7 +11,7 @@ import {
   getDueDateChipText,
   getRecurrentChipText,
 } from '@/models/task'
-import { getTextColorFromBackgroundColor } from '@/utils/Colors'
+import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import {
   TimesOneMobiledata,
   Repeat,
