@@ -1,3 +1,5 @@
+import { Theme } from '@/constants/theme';
+
 let root: HTMLDivElement | null = null
 
 export const useRoot = (): HTMLDivElement => {
@@ -16,4 +18,8 @@ export const setTitle = (title: string): void => {
 
 export const isMobile = (): boolean => {
   return window.innerWidth <= 768
+}
+
+export const applyTheme = (theme: Theme): void => {
+  document.body.dataset.theme = theme
 }
