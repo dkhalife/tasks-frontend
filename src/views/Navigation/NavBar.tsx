@@ -1,9 +1,10 @@
 import {
   MenuRounded,
-  HomeOutlined,
-  LabelOutlined,
-  SettingsOutlined,
   Logout,
+  FormatListBulleted,
+  LocalLibrary,
+  Label,
+  Settings,
 } from '@mui/icons-material'
 import {
   IconButton,
@@ -109,18 +110,23 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
               sx={{ borderRadius: 4, width: '100%', padding: 1 }}
             >
               <NavBarLink
-                to={NavigationPaths.DeviceAwareLoggedInLandingPage}
-                icon={<HomeOutlined />}
-                label='Home'
+                to={NavigationPaths.MyTasks}
+                icon={<LocalLibrary />}
+                label='My tasks'
               />
               <NavBarLink
-                to='/labels'
-                icon={<LabelOutlined />}
+                to={NavigationPaths.MyTasks}
+                icon={<FormatListBulleted />}
+                label='Tasks Overview'
+              />
+              <NavBarLink
+                to={NavigationPaths.Labels}
+                icon={<Label />}
                 label='Labels'
               />
               <NavBarLink
-                to='/settings'
-                icon={<SettingsOutlined />}
+                to={NavigationPaths.Settings}
+                icon={<Settings />}
                 label='Settings'
               />
             </List>

@@ -91,7 +91,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private navigateAway = () => {
     const { navigate } = this.props
 
-    navigate(NavigationPaths.DeviceAwareLoggedInLandingPage)
+    navigate(NavigationPaths.HomeView())
   }
 
   private HandleValidateTask = () => {

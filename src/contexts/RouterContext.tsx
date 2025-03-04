@@ -1,6 +1,5 @@
 import { App } from '@/App'
-import { isMobile } from '@/utils/dom'
-import { getPathName } from '@/utils/navigation'
+import { getHomeView, getPathName } from '@/utils/navigation'
 import { ForgotPasswordView } from '@/views/Authorization/ForgotPasswordView'
 import { LoginView } from '@/views/Authorization/LoginView'
 import { SignupView } from '@/views/Authorization/Signup'
@@ -45,7 +44,9 @@ export class RouterContext extends React.Component<object, RouterContextState> {
   }
 
   private getMainRoute = () => {
-    if (isMobile()) {
+    const home_view = getHomeView()
+
+    if (home_view === 'my_tasks') {
       return <MyTasks navigate={this.navigate} />
     }
 
