@@ -11,6 +11,6 @@ export const doLogin = async (email: string, password: string, navigate: (path: 
     localStorage.removeItem('ca_redirect')
     navigate(redirectUrl)
   } else {
-    navigate(NavigationPaths.DeviceAwareLoggedInLandingPage)
+    navigate(NavigationPaths.HomeView())
   }
 }
