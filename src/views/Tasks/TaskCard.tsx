@@ -134,7 +134,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
 
   private onChangeDueDate = () => {
     this.dismissMoreMenu()
-    this.dateModalRef.current?.open()
+    this.dateModalRef.current?.open(this.props.task.next_due_date)
   }
 
   private hasAnyNotificationsActive = () => {
@@ -362,7 +362,6 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
           <DateModal
             key={'changeDueDate' + task.id}
             ref={this.dateModalRef}
-            current={task.next_due_date}
             title={`Change due date`}
             onClose={this.handleChangeDueDate}
           />
