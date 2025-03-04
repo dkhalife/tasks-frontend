@@ -4,7 +4,6 @@ import moment from 'moment'
 import React from 'react'
 
 interface DateModalProps {
-  current: Date | null
   title: string
 
   onClose: (newDate: Date | null) => void
@@ -21,13 +20,14 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
     super(props)
 
     this.state = {
-      date: props.current,
+      date: null,
       isOpen: false,
     }
   }
 
-  public open = async (): Promise<void> => {
+  public open = async (current: Date | null): Promise<void> => {
     await this.setState({
+      date: current,
       isOpen: true,
     })
 
@@ -53,7 +53,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   public render(): React.ReactNode {
     const { title } = this.props
     const { isOpen } = this.state
-    const date = moment(this.state.date).format('yyyy-MM-DD')
+    const date = moment(this.state.date).format('yyyy-MM-DD[T]HH:mm')
 
     return (
       <Modal
@@ -64,7 +64,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
           <Typography>{title}</Typography>
           <Input
             sx={{ mt: 3 }}
-            type='date'
+            type='datetime-local'
             value={date}
             onChange={this.onDateChange}
             ref={this.inputRef}

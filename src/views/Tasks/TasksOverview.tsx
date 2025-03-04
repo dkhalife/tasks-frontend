@@ -1,4 +1,4 @@
-import { GetTasks, MarkTaskComplete, UpdateDueDate } from '@/api/tasks'
+import { DeleteTask, GetTasks, MarkTaskComplete, UpdateDueDate } from '@/api/tasks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -6,6 +6,8 @@ import {
   CheckBox,
   Edit,
   History,
+  CalendarMonth,
+  Delete,
 } from '@mui/icons-material'
 import {
   Container,
@@ -25,6 +27,7 @@ import { setTitle } from '@/utils/dom'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { sortTasksByDueDate } from '@/utils/tasks'
 import { Loading } from '@/Loading'
+import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -41,6 +44,8 @@ export class TasksOverview extends React.Component<
   TasksOverviewState
 > {
   private dateModalRef = React.createRef<DateModal>()
+  private confirmationModalRef = React.createRef<ConfirmationModal>()
+  private taskBeingDeleted: Task | null = null
 
   constructor(props: TasksOverviewProps) {
     super(props)
@@ -139,7 +144,39 @@ export class TasksOverview extends React.Component<
     await this.setState({
       taskId: task.id,
     })
-    this.dateModalRef.current?.open()
+    this.dateModalRef.current?.open(task.next_due_date)
+  }
+
+  private onViewHistory = (task: Task) => {
+    const { navigate } = this.props
+    navigate(NavigationPaths.TaskHistory(task.id))
+  }
+
+  private onDeleteTask = async (task: Task) => {
+    this.taskBeingDeleted = task
+    this.confirmationModalRef.current?.open()
+  }
+
+  private onDeleteConfirm = async (isConfirmed: boolean) => {
+    const task = this.taskBeingDeleted
+    this.taskBeingDeleted = null
+
+    if (!isConfirmed) {
+      return
+    }
+
+    const { tasks } = this.state
+    if (!task) {
+      throw new Error('Task to delete is not set')
+    }
+
+    await DeleteTask(task.id)
+    const newTasks = tasks.filter(t => t.id !== task.id)
+
+    this.setState({
+      tasks: newTasks,
+      filteredTasks: newTasks,
+    })
   }
 
   render(): React.ReactNode {
@@ -204,9 +241,9 @@ export class TasksOverview extends React.Component<
           <thead>
             <tr>
               <th>Due</th>
-              <th>Task</th>
+              <th>Title</th>
               <th>Labels</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -262,6 +299,14 @@ export class TasksOverview extends React.Component<
                       onClick={() => this.onReschedule(task)}
                       aria-setsize={2}
                     >
+                      <CalendarMonth />
+                    </IconButton>
+                    <IconButton
+                      variant='outlined'
+                      size='sm'
+                      onClick={() => this.onViewHistory(task)}
+                      aria-setsize={2}
+                    >
                       <History />
                     </IconButton>
                     <IconButton
@@ -270,6 +315,14 @@ export class TasksOverview extends React.Component<
                       onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
                     >
                       <Edit />
+                    </IconButton>
+                    <IconButton
+                      variant='outlined'
+                      size='sm'
+                      onClick={() => this.onDeleteTask(task)}
+                      aria-setsize={2}
+                    >
+                      <Delete />
                     </IconButton>
                   </ButtonGroup>
                 </td>
@@ -280,10 +333,17 @@ export class TasksOverview extends React.Component<
         <DateModal
           ref={this.dateModalRef}
           key={taskId}
-          current={null}
           title={`Change due date`}
           onClose={this.handleChangeDueDate}
         />
+        <ConfirmationModal
+            ref={this.confirmationModalRef}
+            title='Delete Task'
+            confirmText='Delete'
+            cancelText='Cancel'
+            message='Are you sure you want to delete this task?'
+            onClose={this.onDeleteConfirm}
+          />
       </Container>
     )
   }
