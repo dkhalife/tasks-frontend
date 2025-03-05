@@ -1,4 +1,7 @@
-import { NotificationTriggerOptions, NotificationType } from "@/models/notifications"
+import {
+  NotificationTriggerOptions,
+  NotificationType,
+} from '@/models/notifications'
 
 export interface User {
   display_name: string

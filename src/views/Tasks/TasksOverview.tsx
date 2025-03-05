@@ -1,4 +1,9 @@
-import { DeleteTask, GetTasks, MarkTaskComplete, UpdateDueDate } from '@/api/tasks'
+import {
+  DeleteTask,
+  GetTasks,
+  MarkTaskComplete,
+  UpdateDueDate,
+} from '@/api/tasks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -95,7 +100,10 @@ export class TasksOverview extends React.Component<
       event.preventDefault()
     }
 
-    if (event.key === '+' && document.activeElement?.tagName.toLowerCase() !== 'input') {
+    if (
+      event.key === '+' &&
+      document.activeElement?.tagName.toLowerCase() !== 'input'
+    ) {
       this.onAddTask()
       event.preventDefault()
       event.stopPropagation()
@@ -140,9 +148,7 @@ export class TasksOverview extends React.Component<
       newTasks = sortTasksByDueDate(newTasks)
     }
 
-    const index = newTasks.findIndex(
-      c => c.id === task.id,
-    )
+    const index = newTasks.findIndex(c => c.id === task.id)
     newTasks[index] = newTask
 
     this.setState({
@@ -248,9 +254,7 @@ export class TasksOverview extends React.Component<
               onChange={this.onSearchChange}
               endDecorator={
                 search !== '' ? (
-                  <Button
-                    onClick={this.onClearSearch}
-                  >
+                  <Button onClick={this.onClearSearch}>
                     <CancelRounded />
                   </Button>
                 ) : (
@@ -267,11 +271,7 @@ export class TasksOverview extends React.Component<
             display={'flex'}
             gap={2}
           >
-            <Button
-              onClick={this.onAddTask}
-            >
-              New Task
-            </Button>
+            <Button onClick={this.onAddTask}>New Task</Button>
           </Grid>
         </Grid>
 
@@ -350,7 +350,9 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
+                      onClick={() =>
+                        navigate(NavigationPaths.TaskEdit(task.id))
+                      }
                     >
                       <Edit />
                     </IconButton>
@@ -375,13 +377,13 @@ export class TasksOverview extends React.Component<
           onClose={this.handleChangeDueDate}
         />
         <ConfirmationModal
-            ref={this.confirmationModalRef}
-            title='Delete Task'
-            confirmText='Delete'
-            cancelText='Cancel'
-            message='Are you sure you want to delete this task?'
-            onClose={this.onDeleteConfirm}
-          />
+          ref={this.confirmationModalRef}
+          title='Delete Task'
+          confirmText='Delete'
+          cancelText='Cancel'
+          message='Are you sure you want to delete this task?'
+          onClose={this.onDeleteConfirm}
+        />
       </Container>
     )
   }

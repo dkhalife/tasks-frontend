@@ -52,7 +52,7 @@ export class UpdatePasswordView extends React.Component<
   private onCancel = () => {
     this.setState({
       updateStatusOk: null,
-     })
+    })
   }
 
   private handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {

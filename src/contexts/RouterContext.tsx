@@ -12,7 +12,13 @@ import { MyTasks } from '@/views/Tasks/MyTasks'
 import { TaskEdit } from '@/views/Tasks/TaskEdit'
 import { TasksOverview } from '@/views/Tasks/TasksOverview'
 import React from 'react'
-import { BrowserRouter, matchPath, Navigate, Route, Routes } from 'react-router-dom'
+import {
+  BrowserRouter,
+  matchPath,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom'
 
 type RouterContextState = {
   navigateTo: string | null
@@ -23,7 +29,7 @@ export class RouterContext extends React.Component<object, RouterContextState> {
     super(props)
 
     this.state = {
-      navigateTo: null
+      navigateTo: null,
     }
   }
   private getTaskId = (): string => {
@@ -62,7 +68,7 @@ export class RouterContext extends React.Component<object, RouterContextState> {
   componentDidUpdate(): void {
     if (this.state.navigateTo !== null) {
       this.setState({
-        navigateTo: null
+        navigateTo: null,
       })
     }
   }
@@ -92,11 +98,21 @@ export class RouterContext extends React.Component<object, RouterContextState> {
             />
             <Route
               path='/tasks/:taskId/edit'
-              element={<TaskEdit taskId={this.getTaskId()} navigate={this.navigate} />}
+              element={
+                <TaskEdit
+                  taskId={this.getTaskId()}
+                  navigate={this.navigate}
+                />
+              }
             />
             <Route
               path='/tasks/create'
-              element={<TaskEdit taskId={null} navigate={this.navigate} />}
+              element={
+                <TaskEdit
+                  taskId={null}
+                  navigate={this.navigate}
+                />
+              }
             />
             <Route
               path='/tasks/:taskId/history'
@@ -129,9 +145,7 @@ export class RouterContext extends React.Component<object, RouterContextState> {
           </Route>
         </Routes>
 
-        {navigateTo && (
-          <Navigate to={navigateTo} />
-        )}
+        {navigateTo && <Navigate to={navigateTo} />}
       </BrowserRouter>
     )
   }

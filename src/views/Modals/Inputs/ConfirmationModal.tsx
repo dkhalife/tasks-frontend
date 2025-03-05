@@ -26,7 +26,8 @@ export class ConfirmationModal extends React.Component<
   ConfirmationModalProps,
   ConfirmationModalState
 > {
-  private confirmButtonRef: React.RefObject<HTMLButtonElement> = React.createRef()
+  private confirmButtonRef: React.RefObject<HTMLButtonElement> =
+    React.createRef()
 
   constructor(props: ConfirmationModalProps) {
     super(props)

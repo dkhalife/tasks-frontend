@@ -73,12 +73,11 @@ export class PassowrdChangeModal extends React.Component<
       return
     }
 
-    if (password === "") {
+    if (password === '') {
       this.setState({
         passwordError: 'New password is required',
       })
-    }
-    else if (password !== confirmPassword) {
+    } else if (password !== confirmPassword) {
       this.setState({
         passwordError: 'Passwords do not match',
       })

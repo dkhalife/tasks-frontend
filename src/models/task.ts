@@ -33,7 +33,7 @@ export type RepeatInterval = {
 }
 
 export type DayOfTheWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6
-export type UniqueDaysOfWeek = [DayOfTheWeek, ...(DayOfTheWeek)[]]
+export type UniqueDaysOfWeek = [DayOfTheWeek, ...DayOfTheWeek[]]
 export type RepeatDaysOfTheWeek = {
   type: 'custom'
   on: 'days_of_the_week'
@@ -41,7 +41,7 @@ export type RepeatDaysOfTheWeek = {
 }
 
 export type Month = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
-export type UniqueMonths = [Month, ...(Month)[]]
+export type UniqueMonths = [Month, ...Month[]]
 
 export type RepeatDayOfTheMonths = {
   type: 'custom'
@@ -49,8 +49,17 @@ export type RepeatDayOfTheMonths = {
   months: UniqueMonths
 }
 
-export type RepeatCustom = RepeatInterval | RepeatDaysOfTheWeek | RepeatDayOfTheMonths
-export type Frequency = RepeatOnce | RepeatDaily | RepeatWeekly | RepeatMonthly | RepeatYearly | RepeatCustom
+export type RepeatCustom =
+  | RepeatInterval
+  | RepeatDaysOfTheWeek
+  | RepeatDayOfTheMonths
+export type Frequency =
+  | RepeatOnce
+  | RepeatDaily
+  | RepeatWeekly
+  | RepeatMonthly
+  | RepeatYearly
+  | RepeatCustom
 
 export interface Task {
   id: string
@@ -78,7 +87,9 @@ export const getDueDateChipText = (nextDueDate: Date | null): string => {
   return moment(nextDueDate).fromNow()
 }
 
-export const getDueDateChipColor = (nextDueDate: Date | null): ColorPaletteProp => {
+export const getDueDateChipColor = (
+  nextDueDate: Date | null,
+): ColorPaletteProp => {
   if (nextDueDate === null) {
     return 'neutral'
   }
@@ -98,7 +109,10 @@ export const getDueDateChipColor = (nextDueDate: Date | null): ColorPaletteProp 
   return 'neutral'
 }
 
-export const getRecurrentChipText = (nextDueDate: Date | null, frequency: Frequency) => {
+export const getRecurrentChipText = (
+  nextDueDate: Date | null,
+  frequency: Frequency,
+) => {
   if (frequency.type === 'once') {
     return 'Once'
   } else if (frequency.type === 'daily') {
@@ -128,7 +142,9 @@ export const getRecurrentChipText = (nextDueDate: Date | null, frequency: Freque
         return `Every ${frequency.every} ${frequency.unit}`
       }
     } else if (frequency.on === 'days_of_the_week') {
-      return frequency.days.map((d: number) => moment().day(d).format('ddd')).join(', ')
+      return frequency.days
+        .map((d: number) => moment().day(d).format('ddd'))
+        .join(', ')
     } else if (frequency.on === 'day_of_the_months') {
       const months = frequency.months.map((m: number) =>
         moment().month(m).format('MMM'),

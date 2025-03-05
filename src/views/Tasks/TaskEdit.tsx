@@ -1,4 +1,10 @@
-import { CreateTask, SaveTask, DeleteTask, GetTaskByID, SkipTask } from '@/api/tasks'
+import {
+  CreateTask,
+  SaveTask,
+  DeleteTask,
+  GetTaskByID,
+  SkipTask,
+} from '@/api/tasks'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
@@ -32,7 +38,10 @@ import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
-import { Notification, NotificationTriggerOptions } from '@/models/notifications'
+import {
+  Notification,
+  NotificationTriggerOptions,
+} from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { GetLabels } from '@/api/labels'
 import { GetUserProfile } from '@/api/users'
@@ -110,14 +119,18 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
     if (frequencyType === 'custom') {
       if (frequency.on === 'interval' && frequency.every <= 0) {
-        errors.frequency = 'Invalid frequency, the value should be greater than 0'
+        errors.frequency =
+          'Invalid frequency, the value should be greater than 0'
       }
 
       if (frequency.on === 'days_of_the_week' && frequency.days.length === 0) {
         errors.frequency = 'At least 1 day is required'
       }
 
-      if (frequency.on === 'day_of_the_months' && frequency.months.length === 0) {
+      if (
+        frequency.on === 'day_of_the_months' &&
+        frequency.months.length === 0
+      ) {
         errors.frequency = 'At least 1 month is required'
       }
     }
@@ -183,10 +196,13 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     }
 
     try {
-      const promise = (taskId === null) ? CreateTask(task) : SaveTask({
-        ...task,
-        id: taskId
-      })
+      const promise =
+        taskId === null
+          ? CreateTask(task)
+          : SaveTask({
+              ...task,
+              id: taskId,
+            })
 
       await promise
       this.navigateAway()
@@ -240,7 +256,11 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         frequency: task.frequency,
         isRolling: task.is_rolling,
         notification: task.notification,
-        taskLabels: task.labels.map(taskLabel => userLabels.find(userLabel => userLabel.id === taskLabel.id)).filter(Boolean) as Label[],
+        taskLabels: task.labels
+          .map(taskLabel =>
+            userLabels.find(userLabel => userLabel.id === taskLabel.id),
+          )
+          .filter(Boolean) as Label[],
       })
 
       setTitle(task.title)
@@ -259,7 +279,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private init = async () => {
     const { taskId } = this.props
-    
+
     const data = await GetLabels()
     this.setState({
       userLabels: data.labels,
@@ -302,18 +322,22 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      notification: e.target.checked ? {
-        enabled: true,
-        due_date: this.defaultNotificationTriggers.due_date,
-        pre_due: this.defaultNotificationTriggers.pre_due,
-        overdue: this.defaultNotificationTriggers.overdue,
-      } : {
-        enabled: false,
-      },
+      notification: e.target.checked
+        ? {
+            enabled: true,
+            due_date: this.defaultNotificationTriggers.due_date,
+            pre_due: this.defaultNotificationTriggers.pre_due,
+            overdue: this.defaultNotificationTriggers.overdue,
+          }
+        : {
+            enabled: false,
+          },
     })
   }
 
-  private onNotificationOptionsChange = (notification: NotificationTriggerOptions) => {
+  private onNotificationOptionsChange = (
+    notification: NotificationTriggerOptions,
+  ) => {
     if (!this.state.notification.enabled) {
       throw new Error('Notifications are disabled')
     }
@@ -338,14 +362,20 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
-  private onLabelsChange = (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<Label[], false>) => {
+  private onLabelsChange = (
+    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: SelectValue<Label[], false>,
+  ) => {
     if (!value) {
       return
     }
 
     const { userLabels } = this.state
     this.setState({
-      taskLabels: userLabels.filter(userLabel => value.findIndex((selected) => selected.id === userLabel.id) !== -1),
+      taskLabels: userLabels.filter(
+        userLabel =>
+          value.findIndex(selected => selected.id === userLabel.id) !== -1,
+      ),
     })
   }
 
@@ -394,9 +424,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     const notificationsEnabled = notification.enabled
 
     return (
-      <Container maxWidth='md' sx={{
-        mb: '86px',
-      }}>
+      <Container
+        maxWidth='md'
+        sx={{
+          mb: '86px',
+        }}
+      >
         <Box>
           <FormControl error={Boolean(errors.title)}>
             <Typography level='h4'>Title :</Typography>
@@ -411,18 +444,18 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         </Box>
         <Box mt={2}>
           <Typography level='h4'>Labels :</Typography>
-          <Typography>
-            How should this task be categorized?
-          </Typography>
+          <Typography>How should this task be categorized?</Typography>
           <Select
             multiple
             onChange={this.onLabelsChange}
             value={taskLabels}
             renderValue={() => (
-              <Box sx={{
+              <Box
+                sx={{
                   display: 'flex',
                   gap: '0.25rem',
-                }}>
+                }}
+              >
                 {taskLabels.map(selectedOption => {
                   return (
                     <Chip
@@ -452,7 +485,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               },
             }}
           >
-            { userLabels &&
+            {userLabels &&
               userLabels.map(label => (
                 <Option
                   key={`label-${label.id}`}
@@ -525,7 +558,9 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         {isRecurring && (
           <Box mt={2}>
             <Typography level='h4'>Scheduling Preferences :</Typography>
-            <Typography>How should the next occurrence be calculated?</Typography>
+            <Typography>
+              How should the next occurrence be calculated?
+            </Typography>
 
             <RadioGroup
               name='tiers'
@@ -533,7 +568,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
                 gap: 1,
                 '& > div': {
                   p: 1,
-                }
+                },
               }}
             >
               <FormControl>
@@ -580,7 +615,10 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         )}
 
         {notificationsEnabled && (
-          <NotificationOptions notification={notification} onChange={this.onNotificationOptionsChange} />
+          <NotificationOptions
+            notification={notification}
+            onChange={this.onNotificationOptionsChange}
+          />
         )}
 
         <Sheet
@@ -606,7 +644,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           >
             {taskId != null ? 'Save' : 'Create'}
           </Button>
-          {taskId != null && frequency.type !== "once" && (
+          {taskId != null && frequency.type !== 'once' && (
             <Button
               color='warning'
               variant='solid'

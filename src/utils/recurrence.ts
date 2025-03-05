@@ -25,10 +25,7 @@ export const FREQUENCY_TYPES: FrequencyType[] = [
   'custom',
 ]
 
-export type RepeatOnType =
-  | 'interval'
-  | 'days_of_the_week'
-  | 'day_of_the_months'
+export type RepeatOnType = 'interval' | 'days_of_the_week' | 'day_of_the_months'
 
 export const REPEAT_ON_TYPES: RepeatOnType[] = [
   'interval',

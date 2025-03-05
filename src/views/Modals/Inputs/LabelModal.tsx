@@ -49,7 +49,11 @@ export class LabelModal extends React.Component<
   }
 
   componentDidUpdate(prevProps: Readonly<LabelModalProps>): void {
-    if (this.props.name !== prevProps.name || this.props.color !== prevProps.color || this.props.id !== prevProps.id) {
+    if (
+      this.props.name !== prevProps.name ||
+      this.props.color !== prevProps.color ||
+      this.props.id !== prevProps.id
+    ) {
       this.setState({
         labelName: this.props.name ?? '',
         color: this.props.color,
@@ -97,20 +101,24 @@ export class LabelModal extends React.Component<
     let newLabel: Label | null = null
     if (id) {
       try {
-        newLabel = (await UpdateLabel({
-          id: id,
-          name: labelName,
-          color: color.value,
-        })).label
+        newLabel = (
+          await UpdateLabel({
+            id: id,
+            name: labelName,
+            color: color.value,
+          })
+        ).label
       } catch {
         this.setState({ error: 'Failed to save label. Please try again.' })
       }
     } else {
       try {
-        newLabel = (await CreateLabel({
-          name: labelName,
-          color: color.value,
-        })).label
+        newLabel = (
+          await CreateLabel({
+            name: labelName,
+            color: color.value,
+          })
+        ).label
       } catch {
         this.setState({ error: 'Failed to create label. Please try again.' })
       }
@@ -129,10 +137,13 @@ export class LabelModal extends React.Component<
     this.setState({ labelName: e.target.value })
   }
 
-  private onColorChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<ColorOption, false>) => {
+  private onColorChange = (
+    e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: SelectValue<ColorOption, false>,
+  ) => {
     if (value) {
       this.setState({ color: value })
-    } 
+    }
   }
 
   public render(): React.ReactNode {

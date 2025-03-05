@@ -1,10 +1,10 @@
-import { Theme } from '@/constants/theme';
+import { Theme } from '@/constants/theme'
 
 let root: HTMLDivElement | null = null
 
 export const useRoot = (): HTMLDivElement => {
   if (root) {
-    return root;
+    return root
   }
 
   root = document.createElement('div')

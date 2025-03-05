@@ -1,4 +1,13 @@
-import { DayOfTheWeek, Month, RepeatCustom, RepeatDayOfTheMonths, RepeatDaysOfTheWeek, RepeatInterval, UniqueDaysOfWeek, UniqueMonths } from '@/models/task'
+import {
+  DayOfTheWeek,
+  Month,
+  RepeatCustom,
+  RepeatDayOfTheMonths,
+  RepeatDaysOfTheWeek,
+  RepeatInterval,
+  UniqueDaysOfWeek,
+  UniqueMonths,
+} from '@/models/task'
 import { dayOfMonthSuffix } from '@/utils/date'
 import { INTERVAL_UNITS, IntervalUnit } from '@/utils/recurrence'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
@@ -23,25 +32,28 @@ interface RepeatOnProps {
   onUpdate: (options: RepeatCustom) => void
 }
 
-type RepeatOnState = {
-  every: number
-  unit: IntervalUnit
-} | {
-  days: UniqueDaysOfWeek
-} | {
-  months: UniqueMonths
-}
+type RepeatOnState =
+  | {
+      every: number
+      unit: IntervalUnit
+    }
+  | {
+      days: UniqueDaysOfWeek
+    }
+  | {
+      months: UniqueMonths
+    }
 
 export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
   constructor(props: RepeatOnProps) {
     super(props)
-    
+
     this.state = this.initWith(props.frequency as any)
   }
 
-  private initWith(frequency: RepeatInterval): RepeatOnState;
-  private initWith(frequency: RepeatDaysOfTheWeek): RepeatOnState;
-  private initWith(frequency: RepeatDayOfTheMonths): RepeatOnState;
+  private initWith(frequency: RepeatInterval): RepeatOnState
+  private initWith(frequency: RepeatDaysOfTheWeek): RepeatOnState
+  private initWith(frequency: RepeatDayOfTheMonths): RepeatOnState
   private initWith(frequency: any): RepeatOnState {
     if (frequency.type != 'custom') {
       throw new Error('Invalid frequency')
@@ -76,7 +88,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
   }
 
   private onIntervalChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    if (this.props.frequency.type != 'custom' && this.props.frequency.on != 'interval') {
+    if (
+      this.props.frequency.type != 'custom' &&
+      this.props.frequency.on != 'interval'
+    ) {
       throw new Error('Invalid frequency')
     }
 
@@ -90,12 +105,18 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
       type: 'custom',
       on: 'interval',
       unit: currentState.unit,
-      ...newState
+      ...newState,
     })
   }
 
-  private onIntervalUnitChange = (evt: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: SelectValue<IntervalUnit, false>) => {
-    if (this.props.frequency.type != 'custom' && this.props.frequency.on != 'interval') {
+  private onIntervalUnitChange = (
+    evt: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: SelectValue<IntervalUnit, false>,
+  ) => {
+    if (
+      this.props.frequency.type != 'custom' &&
+      this.props.frequency.on != 'interval'
+    ) {
       throw new Error('Invalid frequency')
     }
 
@@ -109,7 +130,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
       type: 'custom',
       on: 'interval',
       every: currentState.every,
-      ...newState
+      ...newState,
     })
   }
 
@@ -123,7 +144,9 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     const days = currentState.days
 
     const day = parseInt(evt.target.value) as DayOfTheWeek
-    const newDays = days.includes(day) ? days.filter(d => d !== day) : [...days, day].sort()
+    const newDays = days.includes(day)
+      ? days.filter(d => d !== day)
+      : [...days, day].sort()
     if (newDays.length == 0) {
       const defaultDay = moment(nextDueDate).weekday() as DayOfTheWeek
       newDays.push(defaultDay)
@@ -151,7 +174,9 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     const months = currentState.months
 
     const month = parseInt(evt.target.value) as Month
-    const newMonths = months.includes(month) ? months.filter(m => m !== month) : [...months, month].sort()
+    const newMonths = months.includes(month)
+      ? months.filter(m => m !== month)
+      : [...months, month].sort()
     if (newMonths.length == 0) {
       const defaultMonth = moment(nextDueDate).month() as Month
       newMonths.push(defaultMonth)
@@ -230,7 +255,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                     '--ListItem-radius': '20px',
                   }}
                 >
-                    {[...Array(7).keys()].map(item => (
+                  {[...Array(7).keys()].map(item => (
                     <ListItem key={item}>
                       <Checkbox
                         checked={
@@ -244,7 +269,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                         label={moment().weekday(item).format('dd')}
                       />
                     </ListItem>
-                    ))}
+                  ))}
                 </List>
               </Card>
             </Grid>
@@ -261,7 +286,6 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
               justifyContent: 'space-between',
             }}
           >
-            
             <Box
               sx={{
                 display: 'flex',
@@ -269,7 +293,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                 mb: 1.5,
               }}
             >
-              <Typography>on the {day}{dayOfMonthSuffix(day)} of the following month(s)</Typography>
+              <Typography>
+                on the {day}
+                {dayOfMonthSuffix(day)} of the following month(s)
+              </Typography>
             </Box>
             <Card>
               <List

@@ -144,7 +144,9 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     }
 
     const notifications = task.notification
-    return notifications.due_date || notifications.overdue || notifications.pre_due
+    return (
+      notifications.due_date || notifications.overdue || notifications.pre_due
+    )
   }
 
   render(): React.ReactNode {
@@ -214,9 +216,13 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
         )}
 
         <Card
-          style={viewOnly ? {
-            pointerEvents: 'none',
-          } : {}}
+          style={
+            viewOnly
+              ? {
+                  pointerEvents: 'none',
+                }
+              : {}
+          }
           variant='plain'
           sx={{
             display: 'flex',
@@ -253,10 +259,12 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                     zIndex: 1,
                   }}
                 >
-                  <div style={{
-                    position: 'relative',
-                    alignItems: 'center',
-                    }}>
+                  <div
+                    style={{
+                      position: 'relative',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Check />
                   </div>
                 </IconButton>
@@ -287,9 +295,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                       Skip to next due date
                     </MenuItem>
                   )}
-                  <MenuItem
-                    onClick={this.onChangeDueDate}
-                  >
+                  <MenuItem onClick={this.onChangeDueDate}>
                     <MoreTime />
                     Change due date
                   </MenuItem>
@@ -298,9 +304,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                     Edit
                   </MenuItem>
                   <Divider />
-                  <MenuItem
-                    onClick={() => this.handleHistory(task.id)}
-                  >
+                  <MenuItem onClick={() => this.handleHistory(task.id)}>
                     <ManageSearch />
                     History
                   </MenuItem>
@@ -331,9 +335,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                   display='flex'
                   flexDirection='column'
                 >
-                  <Typography level='title-md'>
-                    {task.title}
-                  </Typography>
+                  <Typography level='title-md'>{task.title}</Typography>
                   <Box key={`${task.id}-labels`}>
                     {task.labels?.map((l, index) => {
                       return (

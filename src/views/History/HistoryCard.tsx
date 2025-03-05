@@ -39,14 +39,19 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
             </Box>
             {historyEntry.completed_date && (
               <Typography>
-                on {moment(historyEntry.completed_date).format('MMMM Do YYYY, h:mm a')}
+                on{' '}
+                {moment(historyEntry.completed_date).format(
+                  'MMMM Do YYYY, h:mm a',
+                )}
               </Typography>
             )}
           </ListItemContent>
         </ListItem>
         <ListDivider component='li'>
           <Typography>
-            { historyEntry.due_date ? `due ${moment(historyEntry.due_date).fromNow()}` : '-'}
+            {historyEntry.due_date
+              ? `due ${moment(historyEntry.due_date).fromNow()}`
+              : '-'}
           </Typography>
         </ListDivider>
       </>

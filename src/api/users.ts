@@ -1,7 +1,10 @@
 import { APIToken } from '@/models/token'
 import { ApiTokenScope, Request } from '../utils/api'
 import { User } from '@/models/user'
-import { NotificationTriggerOptions, NotificationType } from '@/models/notifications'
+import {
+  NotificationTriggerOptions,
+  NotificationType,
+} from '@/models/notifications'
 
 type SingleTokenResponse = {
   token: APIToken
@@ -23,13 +26,19 @@ export const UpdatePassword = async (newPassword: string) =>
 export const GetUserProfile = async () =>
   await Request<UserResponse>(`/users/profile`)
 
-export const UpdateNotificationSettings = async (provider: NotificationType, triggers: NotificationTriggerOptions) =>
+export const UpdateNotificationSettings = async (
+  provider: NotificationType,
+  triggers: NotificationTriggerOptions,
+) =>
   await Request<void>(`/users/notifications`, 'PUT', {
     provider,
     triggers,
   })
 
-export const CreateLongLiveToken = async (name: string, scopes: ApiTokenScope[]) =>
+export const CreateLongLiveToken = async (
+  name: string,
+  scopes: ApiTokenScope[],
+) =>
   await Request<SingleTokenResponse>(`/users/tokens`, 'POST', {
     name,
     scopes,
