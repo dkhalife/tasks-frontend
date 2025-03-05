@@ -85,7 +85,6 @@ export class TokenModal extends React.Component<TokenModalProps, TokenModalState
     const { name, isOpen, errorName, scopes } = this.state
 
     const validState = name.length > 0 && scopes.length > 0
-    console.log('scopes', scopes)
 
     return (
       <Modal
