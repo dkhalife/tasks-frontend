@@ -1,7 +1,5 @@
 import {
-  DeleteTask,
   MarkTaskComplete,
-  UpdateDueDate,
 } from '@/api/tasks'
 import {
   TASK_UPDATE_EVENT,
@@ -26,48 +24,15 @@ import {
   IconButton,
 } from '@mui/joy'
 import React from 'react'
-import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
-import { DateModal } from '../Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 
 type TaskCardProps = WithNavigate & {
   task: Task
   onTaskUpdate: (updatedTask: Task, event: TASK_UPDATE_EVENT) => void
-  onTaskRemove: () => void
+  onContextMenu: (event: React.MouseEvent<HTMLDivElement>, task: Task) => void
 }
 
 export class TaskCard extends React.Component<TaskCardProps> {
-  private confirmationModalRef = React.createRef<ConfirmationModal>()
-  private dateModalRef = React.createRef<DateModal>()
-
-  private handleDeleteConfirm = async (isConfirmed: boolean) => {
-    const { task, onTaskRemove } = this.props
-    if (isConfirmed === true) {
-      await DeleteTask(task.id)
-      onTaskRemove()
-    }
-  }
-
-
-
-
-  private handleTaskCompletion = async () => {
-    const { task, onTaskUpdate } = this.props
-    const response = await MarkTaskComplete(task.id)
-    onTaskUpdate(response.task, 'completed')
-  }
-
-  private handleChangeDueDate = async (newDate: Date | null) => {
-    if (newDate === null) {
-      return
-    }
-
-    const { task, onTaskUpdate } = this.props
-
-    const response = await UpdateDueDate(task.id, newDate)
-    onTaskUpdate(response.task, 'rescheduled')
-  }
-
   private getFrequencyIcon = (task: Task) => {
     if (task.frequency.type === 'once') {
       return <TimesOneMobiledata />
@@ -76,7 +41,11 @@ export class TaskCard extends React.Component<TaskCardProps> {
     }
   }
 
-
+  private handleTaskCompletion = async () => {
+    const { task, onTaskUpdate } = this.props
+    const response = await MarkTaskComplete(task.id)
+    onTaskUpdate(response.task, 'completed')
+  }
 
   private hasAnyNotificationsActive = () => {
     const { task } = this.props
@@ -210,6 +179,7 @@ export class TaskCard extends React.Component<TaskCardProps> {
                 cursor: 'pointer',
                 flex: 1,
               }}
+              onContextMenu={(e) => this.props.onContextMenu(e, task)}
               onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
             >
               <Box
@@ -250,22 +220,6 @@ export class TaskCard extends React.Component<TaskCardProps> {
               </Box>
             </Grid>
           </Grid>
-
-          <DateModal
-            key={'changeDueDate' + task.id}
-            ref={this.dateModalRef}
-            title={`Change due date`}
-            onClose={this.handleChangeDueDate}
-          />
-
-          <ConfirmationModal
-            ref={this.confirmationModalRef}
-            title='Delete Task'
-            confirmText='Delete'
-            cancelText='Cancel'
-            message='Are you sure you want to delete this task?'
-            onClose={this.handleDeleteConfirm}
-          />
         </Card>
       </Box>
     )
