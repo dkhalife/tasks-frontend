@@ -261,8 +261,8 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
           sx={{
             position: 'fixed',
             bottom: 0,
-            left: 10,
-            p: 2,
+            right: 10,
+            padding: 2,
             display: 'flex',
             justifyContent: 'flex-end',
             gap: 2,
