@@ -289,6 +289,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private onTitleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       this.HandleSaveTask()
+      e.preventDefault()
+      e.stopPropagation()
     }
   }
 
