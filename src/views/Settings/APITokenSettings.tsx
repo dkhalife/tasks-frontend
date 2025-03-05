@@ -16,8 +16,9 @@ import {
 } from '@mui/joy'
 import moment from 'moment'
 import React from 'react'
-import { TextModal } from '../Modals/Inputs/TextModal'
+import { TokenModal } from '../Modals/Inputs/TokenModal'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { ApiTokenScope } from '@/utils/api'
 
 type APITokenSettingsProps = object
 
@@ -30,7 +31,7 @@ export class APITokenSettings extends React.Component<
   APITokenSettingsProps,
   APITokenSettingsState
 > {
-  private modalRef = React.createRef<TextModal>()
+  private modalRef = React.createRef<TokenModal>()
   private tokenToDelete: APIToken | null = null
   private confirmModalRef = React.createRef<ConfirmationModal>()
 
@@ -52,12 +53,12 @@ export class APITokenSettings extends React.Component<
     this.loadTokens()
   }
 
-  private handleSaveToken = async (name: string | null) => {
+  private handleSaveToken = async (name: string | null, scopes: ApiTokenScope[]) => {
     if (!name) {
       return
     }
 
-    const data = await CreateLongLiveToken(name)
+    const data = await CreateLongLiveToken(name, scopes)
     const newTokens = [...this.state.tokens]
     newTokens.push(data.token)
 
@@ -125,7 +126,7 @@ export class APITokenSettings extends React.Component<
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
                 <Typography level='body-xs'>
-                  {moment(token.createdAt).fromNow()}<br />({moment(token.createdAt).format('lll')})
+                  {moment(token.createdAt).fromNow()}<br />
                 </Typography>
               </Box>
               <Box>
@@ -179,7 +180,7 @@ export class APITokenSettings extends React.Component<
           Generate New Token
         </Button>
 
-        <TextModal
+        <TokenModal
           ref={this.modalRef}
           title='Give a name for your new token:'
           onClose={this.handleSaveToken}
