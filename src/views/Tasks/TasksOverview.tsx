@@ -94,6 +94,12 @@ export class TasksOverview extends React.Component<
       moveFocusToJoyInput(this.searchInputRef)
       event.preventDefault()
     }
+
+    if (event.key === '+' && document.activeElement?.tagName.toLowerCase() !== 'input') {
+      this.onAddTask()
+      event.preventDefault()
+      event.stopPropagation()
+    }
   }
 
   private handleChangeDueDate = async (date: Date | null) => {
@@ -178,6 +184,11 @@ export class TasksOverview extends React.Component<
     navigate(NavigationPaths.TaskHistory(task.id))
   }
 
+  private onAddTask = () => {
+    const { navigate } = this.props
+    navigate(NavigationPaths.TaskCreate)
+  }
+
   private onDeleteTask = async (task: Task) => {
     this.taskBeingDeleted = task
     this.confirmationModalRef.current?.open()
@@ -257,7 +268,7 @@ export class TasksOverview extends React.Component<
             gap={2}
           >
             <Button
-              onClick={() => navigate(NavigationPaths.TaskCreate)}
+              onClick={this.onAddTask}
             >
               New Task
             </Button>

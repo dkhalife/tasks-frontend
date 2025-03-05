@@ -47,12 +47,16 @@ export class PassowrdChangeModal extends React.Component<
   }
 
   onSave = () => {
-    this.setState({ isOpen: false })
+    this.setState({
+      isOpen: false,
+    })
     this.props.onClose(this.state.password)
   }
 
   onCancel = () => {
-    this.setState({ isOpen: false })
+    this.setState({
+      isOpen: false,
+    })
     this.props.onClose(null)
   }
 
@@ -69,25 +73,48 @@ export class PassowrdChangeModal extends React.Component<
       return
     }
 
-    if (password !== confirmPassword) {
-      this.setState({ passwordError: 'Passwords do not match' })
+    if (password === "") {
+      this.setState({
+        passwordError: 'New password is required',
+      })
+    }
+    else if (password !== confirmPassword) {
+      this.setState({
+        passwordError: 'Passwords do not match',
+      })
     } else if (password.length < 8) {
-      this.setState({ passwordError: 'Password must be at least 8 characters' })
+      this.setState({
+        passwordError: 'Password must be at least 8 characters',
+      })
     } else if (password.length > 50) {
       this.setState({
         passwordError: 'Password must be less than 50 characters',
       })
     } else {
-      this.setState({ passwordError: null })
+      this.setState({
+        passwordError: null,
+      })
     }
   }
 
   private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ password: e.target.value })
+    this.setState({
+      password: e.target.value,
+    })
   }
 
   private onConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ confirmPassword: e.target.value })
+    this.setState({
+      confirmPassword: e.target.value,
+    })
+  }
+
+  private onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !this.state.passwordError) {
+      this.onSave()
+      e.preventDefault()
+      e.stopPropagation()
+    }
   }
 
   public render(): React.ReactNode {
@@ -122,6 +149,7 @@ export class PassowrdChangeModal extends React.Component<
               type='password'
               value={password}
               ref={this.inputRef}
+              onKeyDown={this.onKeyDown}
               onChange={this.onPasswordChange}
             />
           </FormControl>
@@ -133,6 +161,7 @@ export class PassowrdChangeModal extends React.Component<
               fullWidth
               type='password'
               value={confirmPassword}
+              onKeyDown={this.onKeyDown}
               onChange={this.onConfirmPasswordChange}
             />
 
@@ -144,7 +173,7 @@ export class PassowrdChangeModal extends React.Component<
             mt={1}
           >
             <Button
-              disabled={passwordError != null}
+              disabled={passwordError != null || password === ''}
               onClick={this.onSave}
               fullWidth
               sx={{ mr: 1 }}
