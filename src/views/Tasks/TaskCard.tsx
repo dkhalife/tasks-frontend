@@ -2,7 +2,6 @@ import {
   DeleteTask,
   MarkTaskComplete,
   UpdateDueDate,
-  SkipTask,
 } from '@/api/tasks'
 import {
   TASK_UPDATE_EVENT,
@@ -16,12 +15,6 @@ import {
   TimesOneMobiledata,
   Repeat,
   Check,
-  MoreVert,
-  SwitchAccessShortcut,
-  MoreTime,
-  Edit,
-  ManageSearch,
-  Delete,
   NotificationsActive,
 } from '@mui/icons-material'
 import {
@@ -31,9 +24,6 @@ import {
   Grid,
   Typography,
   IconButton,
-  Menu,
-  MenuItem,
-  Divider,
 } from '@mui/joy'
 import React from 'react'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
@@ -44,37 +34,11 @@ type TaskCardProps = WithNavigate & {
   task: Task
   onTaskUpdate: (updatedTask: Task, event: TASK_UPDATE_EVENT) => void
   onTaskRemove: () => void
-  viewOnly: boolean
 }
 
-interface TaskCardState {
-  isMoreMenuOpen: boolean
-}
-
-export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
-  private menuRef = React.createRef<HTMLDivElement>()
-  private moreMenuRef = React.createRef<HTMLAnchorElement>()
+export class TaskCard extends React.Component<TaskCardProps> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
-
-  constructor(props: TaskCardProps) {
-    super(props)
-    this.state = {
-      isMoreMenuOpen: false,
-    }
-  }
-
-  private handleMoreMenu = () => {
-    this.setState({
-      isMoreMenuOpen: !this.state.isMoreMenuOpen,
-    })
-  }
-
-  private dismissMoreMenu = () => {
-    this.setState({
-      isMoreMenuOpen: false,
-    })
-  }
 
   private handleDeleteConfirm = async (isConfirmed: boolean) => {
     const { task, onTaskRemove } = this.props
@@ -84,20 +48,8 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     }
   }
 
-  private handleEdit = (taskId: string) => {
-    this.dismissMoreMenu()
-    this.props.navigate(NavigationPaths.TaskEdit(taskId))
-  }
 
-  private handleHistory = (taskId: string) => {
-    this.dismissMoreMenu()
-    this.props.navigate(NavigationPaths.TaskHistory(taskId))
-  }
 
-  private handleDelete = () => {
-    this.dismissMoreMenu()
-    this.confirmationModalRef.current?.open()
-  }
 
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
@@ -124,18 +76,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
     }
   }
 
-  private onSkipTask = async () => {
-    this.dismissMoreMenu()
 
-    const { task, onTaskUpdate } = this.props
-    const response = await SkipTask(task.id)
-    onTaskUpdate(response.task, 'skipped')
-  }
-
-  private onChangeDueDate = () => {
-    this.dismissMoreMenu()
-    this.dateModalRef.current?.open(this.props.task.next_due_date)
-  }
 
   private hasAnyNotificationsActive = () => {
     const { task } = this.props
@@ -150,8 +91,7 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
   }
 
   render(): React.ReactNode {
-    const { task, viewOnly, navigate } = this.props
-    const { isMoreMenuOpen } = this.state
+    const { task, navigate } = this.props
 
     const notificationsActive = this.hasAnyNotificationsActive()
 
@@ -216,13 +156,6 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
         )}
 
         <Card
-          style={
-            viewOnly
-              ? {
-                  pointerEvents: 'none',
-                }
-              : {}
-          }
           variant='plain'
           sx={{
             display: 'flex',
@@ -234,9 +167,11 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
             key: `${task.id}-card`,
           }}
         >
-          <Grid container>
+          <Grid container sx={{
+            display: 'flex',
+            flexDirection: 'row',
+          }}>
             <Grid
-              xs={4}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -268,61 +203,12 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                     <Check />
                   </div>
                 </IconButton>
-                <IconButton
-                  variant='soft'
-                  color='success'
-                  ref={this.moreMenuRef}
-                  onClick={this.handleMoreMenu}
-                  sx={{
-                    borderRadius: '50%',
-                    width: 25,
-                    height: 25,
-                    position: 'relative',
-                    left: -10,
-                  }}
-                >
-                  <MoreVert />
-                </IconButton>
-                <Menu
-                  size='lg'
-                  anchorEl={this.moreMenuRef.current}
-                  open={isMoreMenuOpen}
-                  ref={this.menuRef}
-                >
-                  {task.frequency.type !== 'once' && (
-                    <MenuItem onClick={this.onSkipTask}>
-                      <SwitchAccessShortcut />
-                      Skip to next due date
-                    </MenuItem>
-                  )}
-                  <MenuItem onClick={this.onChangeDueDate}>
-                    <MoreTime />
-                    Change due date
-                  </MenuItem>
-                  <MenuItem onClick={() => this.handleEdit(task.id)}>
-                    <Edit />
-                    Edit
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={() => this.handleHistory(task.id)}>
-                    <ManageSearch />
-                    History
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem
-                    onClick={this.handleDelete}
-                    color='danger'
-                  >
-                    <Delete />
-                    Delete
-                  </MenuItem>
-                </Menu>
               </Box>
             </Grid>
             <Grid
-              xs={8}
               style={{
                 cursor: 'pointer',
+                flex: 1,
               }}
               onClick={() => navigate(NavigationPaths.TaskEdit(task.id))}
             >
@@ -332,8 +218,12 @@ export class TaskCard extends React.Component<TaskCardProps, TaskCardState> {
                 alignItems='center'
               >
                 <Box
-                  display='flex'
-                  flexDirection='column'
+                  sx={{
+                    display: 'flex',
+                    flex: 1,
+                    flexDirection: 'column',
+                    ml: 2,
+                  }}
                 >
                   <Typography level='title-md'>{task.title}</Typography>
                   <Box key={`${task.id}-labels`}>

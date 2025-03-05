@@ -348,7 +348,6 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                           this.updateTask(groupKey, task, updatedTask, event)
                         }
                         onTaskRemove={() => this.removeTask(groupKey, task)}
-                        viewOnly={false}
                         navigate={navigate}
                       />
                     ))}
