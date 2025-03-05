@@ -115,7 +115,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                 label='My tasks'
               />
               <NavBarLink
-                to={NavigationPaths.MyTasks}
+                to={NavigationPaths.TasksOverview}
                 icon={<FormatListBulleted />}
                 label='Tasks Overview'
               />
