@@ -286,6 +286,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     this.setState({ title: e.target.value })
   }
 
+  private onTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      this.HandleSaveTask()
+    }
+  }
+
   private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       nextDueDate: e.target.checked ? new Date() : null,
@@ -397,6 +403,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               ref={this.titleInputRef}
               value={title}
               onChange={this.onTitleChange}
+              onKeyDown={this.onTitleKeyDown}
             />
           </FormControl>
         </Box>

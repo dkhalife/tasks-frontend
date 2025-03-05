@@ -35,12 +35,16 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   }
 
   private onSave = () => {
-    this.setState({ isOpen: false })
+    this.setState({
+      isOpen: false,
+    })
     this.props.onClose(this.state.date)
   }
 
   private onCancel = () => {
-    this.setState({ isOpen: false })
+    this.setState({
+      isOpen: false,
+    })
     this.props.onClose(null)
   }
 
@@ -48,6 +52,14 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
     this.setState({
       date: moment(e.target.value).toDate(),
     })
+  }
+
+  private onDateKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter') {
+      this.onSave()
+      e.preventDefault()
+      e.stopPropagation()
+    }
   }
 
   public render(): React.ReactNode {
@@ -67,6 +79,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
             type='datetime-local'
             value={date}
             onChange={this.onDateChange}
+            onKeyDown={this.onDateKeyDown}
             ref={this.inputRef}
           />
           <Box
