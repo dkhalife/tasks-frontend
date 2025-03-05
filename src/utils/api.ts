@@ -8,6 +8,15 @@ type FailureResponse = {
   error: string
 }
 
+export type ApiTokenScope = |
+  'task:read' |
+  'task:write' |
+  'label:read' |
+  'label:write' |
+  'user:read' |
+  'user:write' |
+  'token:write';
+
 let isRefreshingAccessToken = false
 const isTokenNearExpiration = () => {
   const now = new Date()

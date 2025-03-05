@@ -1,0 +1,105 @@
+import { ApiTokenScope } from "@/utils/api";
+import { Box, Checkbox } from "@mui/joy";
+import React from "react";
+
+interface TokenScopesProps {
+  onChange: (scopes: ApiTokenScope[]) => void;
+}
+
+interface TokenScopesState {
+  scopes: ApiTokenScope[]
+  automaticScopes: ApiTokenScope[]
+}
+
+type AllowedScope = "task:read" | "task:write" | "label:read" | "label:write"
+
+export class TokenScopes extends React.Component<TokenScopesProps, TokenScopesState> {
+  constructor(props: TokenScopesProps) {
+    super(props);
+    this.state = {
+      scopes: [],
+      automaticScopes: [],
+    };
+  }
+
+  private ALLOWED_SCOPES: AllowedScope[] = [
+    "task:read",
+    "task:write",
+    "label:read",
+    "label:write",
+  ]
+
+  private LABELS: Record<AllowedScope, string> = {
+    "task:read": "Read tasks",
+    "task:write": "Write tasks",
+    "label:read": "Read labels",
+    "label:write": "Write labels",
+  }
+
+  private handleScopeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { scopes, automaticScopes } = this.state
+    const { value } = event.target
+
+    const newScopes = [...scopes]
+    const selectedScope = value as ApiTokenScope
+    const [apiset, mode] = selectedScope.split(":") as [string, string];
+
+    if (scopes.includes(selectedScope)) {
+      newScopes.splice(newScopes.indexOf(selectedScope), 1);
+
+      let newAutomaticScopes = [...automaticScopes]
+
+      if (mode === "write") {
+        const readScope = `${apiset}:read` as ApiTokenScope;
+        newAutomaticScopes = automaticScopes.filter((scope) => scope !== readScope);
+      }
+
+      this.setState({
+        scopes: newScopes,
+        automaticScopes: newAutomaticScopes,
+      });
+    } else {
+      newScopes.push(selectedScope);
+      const newAutomaticScopes = [...automaticScopes]
+
+      if (mode === "write") {
+        const readScope = `${apiset}:read` as ApiTokenScope;
+        if (!newScopes.includes(readScope)) {
+          newScopes.push(readScope);
+        }
+
+        newAutomaticScopes.push(readScope);
+      }
+
+      this.setState({
+        scopes: newScopes,
+        automaticScopes: newAutomaticScopes,
+      });
+    }
+
+    this.props.onChange(newScopes);
+  }
+
+  public render() {
+    const { ALLOWED_SCOPES, LABELS } = this
+    const { scopes, automaticScopes } = this.state
+
+    return (
+      <Box>
+        {ALLOWED_SCOPES.map((scope: AllowedScope) => (
+          <Checkbox
+            key={scope}
+            label={LABELS[scope]}
+            value={scope}
+            disabled={automaticScopes.includes(scope)}
+            sx={{
+              mr: 2,
+              lineHeight: 1,
+            }}
+            checked={scopes.includes(scope)}
+            onChange={this.handleScopeChange} />
+        ))}
+      </Box>
+    );
+  }
+}
