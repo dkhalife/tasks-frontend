@@ -28,6 +28,7 @@ import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { sortTasksByDueDate } from '@/utils/tasks'
 import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { moveFocusToJoyInput } from '@/utils/joy'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -45,6 +46,7 @@ export class TasksOverview extends React.Component<
 > {
   private dateModalRef = React.createRef<DateModal>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
+  private searchInputRef = React.createRef<HTMLInputElement>()
   private taskBeingDeleted: Task | null = null
 
   constructor(props: TasksOverviewProps) {
@@ -71,6 +73,27 @@ export class TasksOverview extends React.Component<
     this.loadTasks()
 
     setTitle('Tasks Overview')
+    this.registerKeyboardShortcuts()
+  }
+
+  componentWillUnmount(): void {
+    this.unregisterKeyboardShortcuts()
+  }
+
+  private registerKeyboardShortcuts = () => {
+    document.addEventListener('keydown', this.onKeyDown)
+  }
+
+  private unregisterKeyboardShortcuts = () => {
+    document.removeEventListener('keydown', this.onKeyDown)
+  }
+
+  private onKeyDown = (event: KeyboardEvent) => {
+    // Ctrl + F => Search
+    if (event.key === 'f' && event.ctrlKey) {
+      moveFocusToJoyInput(this.searchInputRef)
+      event.preventDefault()
+    }
   }
 
   private handleChangeDueDate = async (date: Date | null) => {
@@ -137,7 +160,10 @@ export class TasksOverview extends React.Component<
 
   private onClearSearch = () => {
     const { tasks } = this.state
-    this.setState({ search: '', filteredTasks: tasks })
+    this.setState({
+      search: '',
+      filteredTasks: tasks,
+    })
   }
 
   private onReschedule = async (task: Task) => {
@@ -205,6 +231,7 @@ export class TasksOverview extends React.Component<
             gap={2}
           >
             <Input
+              ref={this.searchInputRef}
               placeholder='Search'
               value={search}
               onChange={this.onSearchChange}
