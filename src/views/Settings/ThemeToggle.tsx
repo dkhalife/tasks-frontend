@@ -13,7 +13,10 @@ interface ThemeToggleState {
   mode: Mode
 }
 
-export class ThemeToggle extends React.Component<ThemeToggleProps, ThemeToggleState> {
+export class ThemeToggle extends React.Component<
+  ThemeToggleProps,
+  ThemeToggleState
+> {
   constructor(props: ThemeToggleProps) {
     super(props)
 
@@ -39,9 +42,11 @@ export class ThemeToggle extends React.Component<ThemeToggleProps, ThemeToggleSt
     const { mode } = this.state
 
     return (
-      <Box sx={{
-        mt: 1,
-      }}>
+      <Box
+        sx={{
+          mt: 1,
+        }}
+      >
         <ToggleButtonGroup
           id={ELEMENTID}
           variant='outlined'

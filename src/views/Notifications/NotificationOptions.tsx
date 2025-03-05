@@ -1,6 +1,16 @@
-import React from "react";
-import { Box, Card, Checkbox, FormControl, FormHelperText, Typography } from "@mui/joy";
-import { NotificationTriggerOption, NotificationTriggerOptions } from "@/models/notifications";
+import React from 'react'
+import {
+  Box,
+  Card,
+  Checkbox,
+  FormControl,
+  FormHelperText,
+  Typography,
+} from '@mui/joy'
+import {
+  NotificationTriggerOption,
+  NotificationTriggerOptions,
+} from '@/models/notifications'
 
 type NotificationOptionsProps = {
   notification: NotificationTriggerOptions
@@ -11,11 +21,14 @@ type NotificationOptionsState = {
   notification: NotificationTriggerOptions
 }
 
-export class NotificationOptions extends React.Component<NotificationOptionsProps, NotificationOptionsState> {
+export class NotificationOptions extends React.Component<
+  NotificationOptionsProps,
+  NotificationOptionsState
+> {
   constructor(props: NotificationOptionsProps) {
     super(props)
     this.state = {
-      notification: props.notification
+      notification: props.notification,
     }
   }
 
@@ -58,7 +71,7 @@ export class NotificationOptions extends React.Component<NotificationOptionsProp
               <Checkbox
                 overlay
                 onClick={() => this.onNotificationOptionChange(item)}
-                checked={notification[item.type ]}
+                checked={notification[item.type]}
                 label={item.title}
                 key={item.title}
               />

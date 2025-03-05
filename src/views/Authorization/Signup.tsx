@@ -122,7 +122,7 @@ export class SignupView extends React.Component<
   private onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       passwordError: null,
-      password: e.target.value
+      password: e.target.value,
     })
   }
 
@@ -130,7 +130,7 @@ export class SignupView extends React.Component<
     this.setState({
       displayNameError: null,
       displayName: e.target.value.trim(),
-    })  
+    })
   }
 
   render(): React.ReactNode {
@@ -245,7 +245,8 @@ export class SignupView extends React.Component<
           variant='solid'
           open={accountCreated}
           onClose={() => navigate(NavigationPaths.Login)}
-          autoHideDuration={3000}>
+          autoHideDuration={3000}
+        >
           Please check your email to verify your account.
         </Snackbar>
       </Container>

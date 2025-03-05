@@ -19,8 +19,8 @@ export class CompletedChip extends React.Component<CompletedChipProps> {
     let icon: ReactElement = <CalendarViewDay />
 
     if (dueAt) {
-      const oneHour = 1 * 60 * 60 * 1000;
-      const onTime = (completedAtOrNow - dueAt) <= oneHour;
+      const oneHour = 1 * 60 * 60 * 1000
+      const onTime = completedAtOrNow - dueAt <= oneHour
 
       if (onTime) {
         text = 'On Time'
@@ -30,7 +30,7 @@ export class CompletedChip extends React.Component<CompletedChipProps> {
         text = 'Late'
         color = 'warning'
         icon = <Timelapse />
-      }          
+      }
     }
 
     return (

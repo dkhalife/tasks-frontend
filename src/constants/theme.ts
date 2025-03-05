@@ -25,7 +25,10 @@ export const getNextThemeMode = (currentThemeMode: Mode): Mode => {
 }
 
 function prefersDarkMode() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return (
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
 }
 
 function themeForMode(mode: Mode): Theme {

@@ -87,7 +87,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     })
   }
 
-  private loadLabels = async() => {
+  private loadLabels = async () => {
     try {
       const data = await GetLabels()
       this.setState({
@@ -102,9 +102,14 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     }
   }
 
-  private isUniqueLabelName = (id: string | undefined, labelName: string): boolean => {
+  private isUniqueLabelName = (
+    id: string | undefined,
+    labelName: string,
+  ): boolean => {
     const { userLabels } = this.state
-    return !userLabels.some(label => label.name === labelName && label.id !== id)
+    return !userLabels.some(
+      label => label.name === labelName && label.id !== id,
+    )
   }
 
   private onLabelModalClose = (newLabel: Label | null) => {
@@ -121,7 +126,9 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
       return
     }
 
-    const updatedLabels = userLabels.map(label => label.id === currentLabel.id ? newLabel : label)
+    const updatedLabels = userLabels.map(label =>
+      label.id === currentLabel.id ? newLabel : label,
+    )
     this.setState({
       userLabels: updatedLabels,
     })
@@ -135,7 +142,9 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
 
   render(): React.ReactNode {
     const { isLabelsLoading, userLabels, currentLabel, isError } = this.state
-    const currentColor = currentLabel ? colorOptionFromColor(currentLabel.color) : undefined
+    const currentColor = currentLabel
+      ? colorOptionFromColor(currentLabel.color)
+      : undefined
 
     if (isLabelsLoading) {
       return (

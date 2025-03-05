@@ -1,5 +1,5 @@
-import { isMobile } from "./dom"
-import { retrieveValue } from "./storage"
+import { isMobile } from './dom'
+import { retrieveValue } from './storage'
 
 export const getPathName = () => document.location.pathname
 
@@ -13,7 +13,7 @@ export const NavigationPaths = {
   ResetPassword: '/forgot-password',
   MyTasks: '/my/tasks',
   TasksOverview: '/tasks',
-  HomeView: () => getHomeView() === 'my_tasks' ? '/my/tasks' : '/tasks',
+  HomeView: () => (getHomeView() === 'my_tasks' ? '/my/tasks' : '/tasks'),
   Labels: '/labels',
   Settings: '/settings',
   TaskCreate: '/tasks/create',
@@ -28,5 +28,8 @@ export interface WithNavigate {
 export type HomeView = 'my_tasks' | 'tasks_overview'
 
 export const getHomeView = (): HomeView => {
-  return retrieveValue<HomeView>('home_view', isMobile() ? 'my_tasks' : 'tasks_overview')
+  return retrieveValue<HomeView>(
+    'home_view',
+    isMobile() ? 'my_tasks' : 'tasks_overview',
+  )
 }

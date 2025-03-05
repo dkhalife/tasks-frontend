@@ -1,7 +1,15 @@
 import { ApiTokenScope } from '@/utils/api'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { TokenScopes } from '@/views/Tokens/TokenScopes'
-import { Box, Button, FormControl, Input, Modal, ModalDialog, Typography } from '@mui/joy'
+import {
+  Box,
+  Button,
+  FormControl,
+  Input,
+  Modal,
+  ModalDialog,
+  Typography,
+} from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
 interface TokenModalProps {
@@ -20,7 +28,10 @@ interface TokenModalState {
   scopes: ApiTokenScope[]
 }
 
-export class TokenModal extends React.Component<TokenModalProps, TokenModalState> {
+export class TokenModal extends React.Component<
+  TokenModalProps,
+  TokenModalState
+> {
   private inputRef = React.createRef<HTMLDivElement>()
 
   constructor(props: TokenModalProps) {

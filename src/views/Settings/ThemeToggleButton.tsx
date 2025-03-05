@@ -6,7 +6,11 @@ import {
 } from '@mui/icons-material'
 import { IconButton } from '@mui/joy'
 import React from 'react'
-import { getCurrentThemeMode, getNextThemeMode, setThemeMode } from '@/constants/theme'
+import {
+  getCurrentThemeMode,
+  getNextThemeMode,
+  setThemeMode,
+} from '@/constants/theme'
 
 interface ThemeToggleButtonProps {
   style: React.CSSProperties
@@ -16,7 +20,10 @@ interface ThemeToggleButtonState {
   mode: Mode
 }
 
-export class ThemeToggleButton extends React.Component<ThemeToggleButtonProps, ThemeToggleButtonState> {
+export class ThemeToggleButton extends React.Component<
+  ThemeToggleButtonProps,
+  ThemeToggleButtonState
+> {
   constructor(props: ThemeToggleButtonProps) {
     super(props)
 

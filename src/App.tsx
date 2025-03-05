@@ -49,7 +49,12 @@ export class App extends React.Component<AppProps, AppState> {
       <div style={{ minHeight: '100vh' }}>
         <UserContext.Provider value={{ userProfile, setUserProfile }}>
           <CssBaseline />
-          <CssVarsProvider modeStorageKey='themeMode' attribute='data-theme' defaultMode='system' colorSchemeNode={document.body}>
+          <CssVarsProvider
+            modeStorageKey='themeMode'
+            attribute='data-theme'
+            defaultMode='system'
+            colorSchemeNode={document.body}
+          >
             <NavBar navigate={navigate} />
             <Outlet />
           </CssVarsProvider>

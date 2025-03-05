@@ -53,7 +53,10 @@ export class APITokenSettings extends React.Component<
     this.loadTokens()
   }
 
-  private handleSaveToken = async (name: string | null, scopes: ApiTokenScope[]) => {
+  private handleSaveToken = async (
+    name: string | null,
+    scopes: ApiTokenScope[],
+  ) => {
     if (!name) {
       return
     }
@@ -126,7 +129,8 @@ export class APITokenSettings extends React.Component<
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
                 <Typography level='body-xs'>
-                  {moment(token.createdAt).fromNow()}<br />
+                  {moment(token.createdAt).fromNow()}
+                  <br />
                 </Typography>
               </Box>
               <Box>
@@ -151,7 +155,7 @@ export class APITokenSettings extends React.Component<
               <Box>
                 <Input
                   value={token.token}
-                  sx={{ width: '100%'}}
+                  sx={{ width: '100%' }}
                   readOnly
                   endDecorator={
                     <IconButton
@@ -186,7 +190,7 @@ export class APITokenSettings extends React.Component<
           onClose={this.handleSaveToken}
           okText={'Generate Token'}
         />
-        
+
         <ConfirmationModal
           ref={this.confirmModalRef}
           title='Delete Token'

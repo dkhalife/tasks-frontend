@@ -1,6 +1,6 @@
 import { RefreshToken } from '@/api/auth'
 
-const API_URL = import.meta.env.VITE_APP_API_URL;
+const API_URL = import.meta.env.VITE_APP_API_URL
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -8,14 +8,14 @@ type FailureResponse = {
   error: string
 }
 
-export type ApiTokenScope = |
-  'task:read' |
-  'task:write' |
-  'label:read' |
-  'label:write' |
-  'user:read' |
-  'user:write' |
-  'token:write';
+export type ApiTokenScope =
+  | 'task:read'
+  | 'task:write'
+  | 'label:read'
+  | 'label:write'
+  | 'user:read'
+  | 'user:write'
+  | 'token:write'
 
 let isRefreshingAccessToken = false
 const isTokenNearExpiration = () => {

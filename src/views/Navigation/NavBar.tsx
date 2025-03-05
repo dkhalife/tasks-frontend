@@ -36,7 +36,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
     }
   }
 
-  private version = import.meta.env.PACKAGE_VERSION;
+  private version = import.meta.env.PACKAGE_VERSION
 
   private openDrawer = () => {
     this.setState({ drawerOpen: true })
@@ -53,11 +53,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
   }
 
   render(): React.ReactNode {
-    if (
-      ['/signup', '/login', '/forgot-password'].includes(
-        getPathName(),
-      )
-    ) {
+    if (['/signup', '/login', '/forgot-password'].includes(getPathName())) {
       return null
     }
 

@@ -1,7 +1,12 @@
 import { GetTasks } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { Task, TASK_UPDATE_EVENT } from '@/models/task'
-import { ExpandCircleDown, Add, Label as LabelIcon, CalendarMonth } from '@mui/icons-material'
+import {
+  ExpandCircleDown,
+  Add,
+  Label as LabelIcon,
+  CalendarMonth,
+} from '@mui/icons-material'
 import {
   Container,
   Box,
@@ -16,13 +21,23 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { TaskCard } from '@/views/Tasks/TaskCard'
-import { TaskGroups, bucketIntoDueDateGroup, bucketIntoLabelGroups, groupTasksBy } from '@/utils/tasks'
+import {
+  TaskGroups,
+  bucketIntoDueDateGroup,
+  bucketIntoLabelGroups,
+  groupTasksBy,
+} from '@/utils/tasks'
 import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
 import { GetLabels } from '@/api/labels'
-import { DueDateGroups, getDefaultExpandedState, GROUP_BY, LabelGroups } from '@/utils/grouping'
+import {
+  DueDateGroups,
+  getDefaultExpandedState,
+  GROUP_BY,
+  LabelGroups,
+} from '@/utils/grouping'
 import { retrieveValue, storeValue } from '@/utils/storage'
 
 type MyTasksProps = WithNavigate
@@ -42,8 +57,11 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   constructor(props: MyTasksProps) {
     super(props)
 
-    const groupBy: GROUP_BY = retrieveValue<GROUP_BY>('group_by', 'due_date') 
-    const isExpanded = retrieveValue<Record<keyof TaskGroups, boolean>>('expanded_groups', getDefaultExpandedState(groupBy, []))
+    const groupBy: GROUP_BY = retrieveValue<GROUP_BY>('group_by', 'due_date')
+    const isExpanded = retrieveValue<Record<keyof TaskGroups, boolean>>(
+      'expanded_groups',
+      getDefaultExpandedState(groupBy, []),
+    )
 
     this.state = {
       isSnackbarOpen: false,
@@ -68,7 +86,10 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     const defaultExpanded = getDefaultExpandedState(groupBy, labels)
     const isExpanded = {
       ...defaultExpanded,
-      ...retrieveValue<Record<keyof TaskGroups, boolean>>('expanded_groups', defaultExpanded),
+      ...retrieveValue<Record<keyof TaskGroups, boolean>>(
+        'expanded_groups',
+        defaultExpanded,
+      ),
     }
 
     this.setState({
@@ -91,10 +112,22 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     const endOfToday = moment().endOf('day').toDate().getTime()
     const endOfTomorrow = moment().endOf('day').add(1, 'day').toDate().getTime()
     const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
-    const endOfNextWeek = moment().endOf('isoWeek').add(1, 'week').toDate().getTime()
+    const endOfNextWeek = moment()
+      .endOf('isoWeek')
+      .add(1, 'week')
+      .toDate()
+      .getTime()
 
     if (groupBy === 'due_date') {
-      bucketIntoDueDateGroup(task, groups as DueDateGroups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
+      bucketIntoDueDateGroup(
+        task,
+        groups as DueDateGroups,
+        now,
+        endOfToday,
+        endOfTomorrow,
+        endOfThisWeek,
+        endOfNextWeek,
+      )
     } else if (groupBy === 'labels') {
       bucketIntoLabelGroups(task, groups as LabelGroups)
     }
@@ -104,7 +137,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private updateTask = async (group: keyof TaskGroups, oldTask: Task, newTask: Task, event: TASK_UPDATE_EVENT) => {
+  private updateTask = async (
+    group: keyof TaskGroups,
+    oldTask: Task,
+    newTask: Task,
+    event: TASK_UPDATE_EVENT,
+  ) => {
     this.removeTask(group, oldTask)
 
     if (newTask.next_due_date != null) {
@@ -115,13 +153,13 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     switch (event) {
       default:
       case 'completed':
-        message = "Task completed"
+        message = 'Task completed'
         break
       case 'rescheduled':
-        message = "Task rescheduled"
+        message = 'Task rescheduled'
         break
       case 'skipped':
-        message = "Task skipped"
+        message = 'Task skipped'
         break
     }
 
@@ -196,7 +234,8 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   render(): React.ReactNode {
-    const { isSnackbarOpen, snackBarMessage, isLoading, groups, groupBy } = this.state
+    const { isSnackbarOpen, snackBarMessage, isLoading, groups, groupBy } =
+      this.state
 
     if (isLoading || groups === null) {
       return <Loading />
@@ -207,22 +246,28 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
     return (
       <Container maxWidth='md'>
-        <Box sx={{
-          textAlign: 'right',
-        }}>
-          <Typography sx={{
-            display: 'inline-block',
-            fontWeight: 600,
-            lineHeight: '25px',
-            verticalAlign: 'top',
-            mt: '5px',
-            mr: 2,
-          }}>
+        <Box
+          sx={{
+            textAlign: 'right',
+          }}
+        >
+          <Typography
+            sx={{
+              display: 'inline-block',
+              fontWeight: 600,
+              lineHeight: '25px',
+              verticalAlign: 'top',
+              mt: '5px',
+              mr: 2,
+            }}
+          >
             Group by :
           </Typography>
-          <Box sx={{
-            display: 'inline-block',
-          }}>
+          <Box
+            sx={{
+              display: 'inline-block',
+            }}
+          >
             <IconButton
               color='primary'
               variant='solid'
@@ -237,14 +282,14 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
             </IconButton>
           </Box>
         </Box>
-            
+
         {hasTasks && (
           <AccordionGroup
             transition='0.2s ease'
             disableDivider
           >
-            {Object.keys(groups).map((key) => {
-              const groupKey = key as keyof(TaskGroups)
+            {Object.keys(groups).map(key => {
+              const groupKey = key as keyof TaskGroups
               const group = groups[groupKey]
               if (group.content.length === 0) {
                 return null
@@ -270,7 +315,9 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                         <ExpandCircleDown
                           color='primary'
                           sx={{
-                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transform: isExpanded
+                              ? 'rotate(180deg)'
+                              : 'rotate(0deg)',
                           }}
                         />
                       }
@@ -280,11 +327,11 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                           size='sm'
                           variant='soft'
                         >
-                          { group.content.length }
+                          {group.content.length}
                         </Chip>
                       }
                     >
-                      { group.name }
+                      {group.name}
                     </Chip>
                   </Divider>
                   <AccordionDetails
@@ -297,7 +344,9 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                       <TaskCard
                         key={task.id}
                         task={task}
-                        onTaskUpdate={(updatedTask, event) => this.updateTask(groupKey, task, updatedTask, event)}
+                        onTaskUpdate={(updatedTask, event) =>
+                          this.updateTask(groupKey, task, updatedTask, event)
+                        }
                         onTaskRemove={() => this.removeTask(groupKey, task)}
                         viewOnly={false}
                         navigate={navigate}

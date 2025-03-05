@@ -11,7 +11,15 @@ import {
 import React from 'react'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import { NotificationOptions } from './NotificationOptions'
-import { getDefaultTypeForProvider, NotificationProvider, NotificationTriggerOptions, NotificationType, NotificationTypeGotify, NotificationTypeWebhook, WebhookMethod } from '@/models/notifications'
+import {
+  getDefaultTypeForProvider,
+  NotificationProvider,
+  NotificationTriggerOptions,
+  NotificationType,
+  NotificationTypeGotify,
+  NotificationTypeWebhook,
+  WebhookMethod,
+} from '@/models/notifications'
 import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 
 type NotificationSettingProps = object
@@ -40,7 +48,7 @@ export class NotificationSetting extends React.Component<
         pre_due: false,
         due_date: false,
         overdue: false,
-      }
+      },
     }
   }
 
@@ -51,14 +59,17 @@ export class NotificationSetting extends React.Component<
   private loadSettings = async () => {
     const response = await GetUserProfile()
     const notifications = response.user.notifications
-      
+
     this.setState({
       type: notifications.provider,
       options: notifications.triggers,
     })
   }
 
-  private onNotificationProviderChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<NotificationProvider, false>) => {
+  private onNotificationProviderChange = (
+    e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    option: SelectValue<NotificationProvider, false>,
+  ) => {
     const provider = option as NotificationProvider
     const type = getDefaultTypeForProvider(provider)
 
@@ -68,7 +79,10 @@ export class NotificationSetting extends React.Component<
     })
   }
 
-  private onWebhookMethodChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<string, false>) => {
+  private onWebhookMethodChange = (
+    e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    option: SelectValue<string, false>,
+  ) => {
     const method = option as WebhookMethod
     const type = this.state.type as NotificationTypeWebhook
 
@@ -77,21 +91,23 @@ export class NotificationSetting extends React.Component<
       type: {
         ...type,
         method,
-      }
+      },
     })
   }
 
   private onURLChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value
 
-    const type = this.state.type as (NotificationTypeWebhook | NotificationTypeGotify)
+    const type = this.state.type as
+      | NotificationTypeWebhook
+      | NotificationTypeGotify
 
     this.setState({
       saved: false,
       type: {
         ...type,
         url,
-      }
+      },
     })
   }
 
@@ -105,7 +121,7 @@ export class NotificationSetting extends React.Component<
       type: {
         ...type,
         token,
-      }
+      },
     })
   }
 
@@ -122,7 +138,7 @@ export class NotificationSetting extends React.Component<
       const isValidURL = type.url.match(/^https?:\/\/[^\s/$.?#].[^\s]*$/i)
       if (!isValidURL) {
         this.setState({
-          error: 'Webhook URL must be a valid URL'
+          error: 'Webhook URL must be a valid URL',
         })
 
         return
@@ -131,11 +147,11 @@ export class NotificationSetting extends React.Component<
 
     this.setState({
       error: '',
-      saved: true
+      saved: true,
     })
 
     try {
-      await UpdateNotificationSettings(type, options) 
+      await UpdateNotificationSettings(type, options)
     } catch {
       this.setState({
         saved: false,
@@ -151,7 +167,10 @@ export class NotificationSetting extends React.Component<
   render(): React.ReactNode {
     const { error, type, options, saved } = this.state
 
-    const placeholderURL = type.provider === 'webhook' ? 'https://example.com/api/webhook/mmbd7gtpoxp' : 'https://mygotifyendpoint.com/'
+    const placeholderURL =
+      type.provider === 'webhook'
+        ? 'https://example.com/api/webhook/mmbd7gtpoxp'
+        : 'https://mygotifyendpoint.com/'
 
     return (
       <Box sx={{ mt: 2 }}>
@@ -186,7 +205,7 @@ export class NotificationSetting extends React.Component<
                 value={type.method}
                 sx={{ maxWidth: '200px' }}
                 onChange={this.onWebhookMethodChange}
-                >
+              >
                 <Option value={'GET'}>GET</Option>
                 <Option value={'POST'}>POST</Option>
               </Select>
@@ -196,26 +215,40 @@ export class NotificationSetting extends React.Component<
           {(type.provider === 'webhook' || type.provider === 'gotify') && (
             <Box>
               <Typography>Webhook URL: </Typography>
-              <Input placeholder={placeholderURL} value={type.url} onChange={this.onURLChange} />
+              <Input
+                placeholder={placeholderURL}
+                value={type.url}
+                onChange={this.onURLChange}
+              />
             </Box>
           )}
 
           {type.provider === 'gotify' && (
             <Box>
               <Typography>Token: </Typography>
-              <Input type='password' placeholder='Your Gotify token' value={type.token} onChange={this.onGotifyTokenChange} />
+              <Input
+                type='password'
+                placeholder='Your Gotify token'
+                value={type.token}
+                onChange={this.onGotifyTokenChange}
+              />
             </Box>
           )}
 
           {type.provider !== 'none' && (
-            <NotificationOptions notification={options} onChange={this.onTriggersChange} />
+            <NotificationOptions
+              notification={options}
+              onChange={this.onTriggersChange}
+            />
           )}
 
           {!saved && !error && (
-            <Box sx={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+              }}
+            >
               <Button onClick={this.save}>Save</Button>
             </Box>
           )}

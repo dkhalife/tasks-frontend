@@ -56,58 +56,70 @@ export const bucketIntoDueDateGroup = (
 }
 
 export const bucketIntoLabelGroups = (task: Task, groups: LabelGroups) => {
-  task.labels.forEach((label) => {
+  task.labels.forEach(label => {
     groups[label.id].content.push(task)
   })
 }
 
 const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   const groups: DueDateGroups = {
-    'overdue': {
+    overdue: {
       name: 'Overdue',
       content: [],
       color: TASK_COLOR.OVERDUE,
     },
-    'today': {
+    today: {
       name: 'Today',
       content: [],
       color: TASK_COLOR.TODAY,
     },
-    'tomorrow': {
+    tomorrow: {
       name: 'Tomorrow',
       content: [],
       color: TASK_COLOR.TOMORROW,
     },
-    'this_week': {
+    this_week: {
       name: 'This week',
       content: [],
       color: TASK_COLOR.THIS_WEEK,
     },
-    'next_week': {
+    next_week: {
       name: 'Next week',
       content: [],
       color: TASK_COLOR.NEXT_WEEK,
     },
-    'later': {
+    later: {
       name: 'Later',
       content: [],
       color: TASK_COLOR.LATER,
     },
-    'any_time': {
+    any_time: {
       name: 'Any time',
       content: [],
       color: TASK_COLOR.ANY_TIME,
-    }
+    },
   }
 
   const now = new Date().getTime()
   const endOfToday = moment().endOf('day').toDate().getTime()
   const endOfTomorrow = moment().endOf('day').add(1, 'day').toDate().getTime()
   const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
-  const endOfNextWeek = moment().endOf('isoWeek').add(1, 'week').toDate().getTime()
+  const endOfNextWeek = moment()
+    .endOf('isoWeek')
+    .add(1, 'week')
+    .toDate()
+    .getTime()
 
-  tasks.forEach((task) => {
-    bucketIntoDueDateGroup(task, groups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
+  tasks.forEach(task => {
+    bucketIntoDueDateGroup(
+      task,
+      groups,
+      now,
+      endOfToday,
+      endOfTomorrow,
+      endOfThisWeek,
+      endOfNextWeek,
+    )
   })
 
   return groups
@@ -116,24 +128,30 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
 const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups => {
   const groups: LabelGroups = {}
 
-  userLabels.forEach((label) => {
+  userLabels.forEach(label => {
     groups[label.id] = {
       name: label.name,
-      content: tasks.filter((task) => task.labels.findIndex((l) => l.id === label.id) !== -1),
+      content: tasks.filter(
+        task => task.labels.findIndex(l => l.id === label.id) !== -1,
+      ),
       color: label.color,
     }
   })
 
   groups['none'] = {
     name: 'None',
-    content: tasks.filter((task) => task.labels.length === 0),
+    content: tasks.filter(task => task.labels.length === 0),
     color: COLORS.white,
   }
 
   return groups
 }
 
-export const groupTasksBy = (tasks: Task[], userLabels: Label[], groupBy: GROUP_BY): TaskGroups => {
+export const groupTasksBy = (
+  tasks: Task[],
+  userLabels: Label[],
+  groupBy: GROUP_BY,
+): TaskGroups => {
   if (groupBy === 'due_date') {
     return groupByDueDate(tasks)
   }

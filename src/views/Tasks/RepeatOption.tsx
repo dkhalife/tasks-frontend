@@ -1,5 +1,10 @@
 import { Frequency, RepeatCustom } from '@/models/task'
-import { FrequencyType, FREQUENCY_TYPES, REPEAT_ON_TYPES, RepeatOnType } from '@/utils/recurrence'
+import {
+  FrequencyType,
+  FREQUENCY_TYPES,
+  REPEAT_ON_TYPES,
+  RepeatOnType,
+} from '@/utils/recurrence'
 import {
   Box,
   Typography,
@@ -69,7 +74,10 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
     }
   }
 
-  private onFrequencyTypeChange = (evt: React.ChangeEvent<HTMLInputElement>, type: FrequencyType): void => {
+  private onFrequencyTypeChange = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+    type: FrequencyType,
+  ): void => {
     if (evt.target.checked) {
       this.props.onFrequencyUpdate(this.defaultFrequencyForType(type))
     } else {
@@ -77,8 +85,10 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
     }
   }
 
-
-  private onRepeatOnTypeUpdate = (evt: React.ChangeEvent<HTMLInputElement>, type: RepeatOnType): void => {
+  private onRepeatOnTypeUpdate = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+    type: RepeatOnType,
+  ): void => {
     if (evt.target.checked) {
       this.props.onFrequencyUpdate(this.defaultRepeatOnForType(type))
     } else {
@@ -93,9 +103,11 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
     return (
       <Box mt={2}>
         <Typography level='h4'>Repeat :</Typography>
-        <FormControl sx={{
+        <FormControl
+          sx={{
             mt: 1,
-          }}>
+          }}
+        >
           <Checkbox
             onChange={this.onRepeatToggle}
             checked={isRepeating}
@@ -104,10 +116,12 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
           />
         </FormControl>
         {isRepeating && (
-          <Card sx={{
+          <Card
+            sx={{
               mt: 1,
               alignItems: 'center',
-            }}>
+            }}
+          >
             <Typography>How often should it be repeated?</Typography>
 
             <List
@@ -127,20 +141,17 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                   <ListItem key={item}>
                     <Checkbox
                       checked={item === frequency.type}
-                      onChange={(evt) => this.onFrequencyTypeChange(evt, item)}
+                      onChange={evt => this.onFrequencyTypeChange(evt, item)}
                       overlay
                       disableIcon
                       variant='soft'
-                      label={
-                        item.charAt(0).toUpperCase() +
-                        item.slice(1)
-                      }
+                      label={item.charAt(0).toUpperCase() + item.slice(1)}
                     />
                   </ListItem>
-                )}
-              )}
+                )
+              })}
             </List>
-            { frequency.type === 'custom' && (
+            {frequency.type === 'custom' && (
               <>
                 <List
                   orientation='horizontal'
@@ -155,7 +166,7 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                       <ListItem key={item}>
                         <Checkbox
                           checked={item === frequency.on}
-                          onChange={(evt) => this.onRepeatOnTypeUpdate(evt, item)}
+                          onChange={evt => this.onRepeatOnTypeUpdate(evt, item)}
                           overlay
                           disableIcon
                           variant='soft'
@@ -165,10 +176,14 @@ export class RepeatOption extends React.Component<RepeatOptionProps> {
                           }
                         />
                       </ListItem>
-                    )}
-                  )}
+                    )
+                  })}
                 </List>
-                <RepeatOn frequency={frequency} nextDueDate={nextDueDate} onUpdate={this.props.onFrequencyUpdate} />
+                <RepeatOn
+                  frequency={frequency}
+                  nextDueDate={nextDueDate}
+                  onUpdate={this.props.onFrequencyUpdate}
+                />
               </>
             )}
             <FormControl error={Boolean(frequencyError)}>

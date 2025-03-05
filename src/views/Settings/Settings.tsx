@@ -1,5 +1,13 @@
 import { UpdatePassword } from '@/api/users'
-import { Container, Typography, Divider, Box, Button, Select, Option } from '@mui/joy'
+import {
+  Container,
+  Typography,
+  Divider,
+  Box,
+  Button,
+  Select,
+  Option,
+} from '@mui/joy'
 import React from 'react'
 import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
@@ -37,7 +45,10 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     this.changePasswordModal.current?.open()
   }
 
-  private onHomeViewChange = async (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<HomeView, false>) => {
+  private onHomeViewChange = async (
+    e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    option: SelectValue<HomeView, false>,
+  ) => {
     const homeView = option as HomeView
     await this.setState({
       homeView,
@@ -50,9 +61,11 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     const { homeView } = this.state
 
     return (
-      <Container sx={{
-        paddingBottom: '16px',
-      }}>
+      <Container
+        sx={{
+          paddingBottom: '16px',
+        }}
+      >
         <div
           style={{
             display: 'grid',
@@ -70,17 +83,24 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
               maxWidth: '200px',
             }}
             onChange={this.onHomeViewChange}
-            >
+          >
             <Option value='my_tasks'>My Tasks</Option>
             <Option value='tasks_overview'>Tasks Overview</Option>
           </Select>
-          <Typography level='h3' sx={{
-            mt: 2,
-          }}>Password</Typography>
+          <Typography
+            level='h3'
+            sx={{
+              mt: 2,
+            }}
+          >
+            Password
+          </Typography>
           <Divider />
-          <Box sx={{
-            mt: 1,
-          }}>
+          <Box
+            sx={{
+              mt: 1,
+            }}
+          >
             <Button
               variant='soft'
               onClick={this.onChangePassword}
@@ -95,9 +115,11 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
         </div>
         <NotificationSetting />
         <APITokenSettings />
-        <Box sx={{
-          mt: 2,
-        }}>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
           <Typography level='h3'>Theme preferences</Typography>
           <Divider />
 
