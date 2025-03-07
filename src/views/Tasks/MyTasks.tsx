@@ -54,7 +54,6 @@ type MyTasksProps = WithNavigate
 interface MyTasksState {
   isSnackbarOpen: boolean
   isMoreMenuOpen: boolean
-  menuPosition: { x: number; y: number }
   snackBarMessage: string | null
   tasks: Task[]
   labels: Label[]
@@ -67,12 +66,18 @@ interface MyTasksState {
 
 export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   private menuRef = React.createRef<HTMLDivElement>()
-  private menuAnchorRef = React.createRef<HTMLDivElement>()
+  private menuAnchorRef: HTMLDivElement
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
 
   constructor(props: MyTasksProps) {
     super(props)
+
+    this.menuAnchorRef = document.createElement('div')
+    this.menuAnchorRef.style.position = 'absolute'
+    this.setMenuAnchorPos(0, 0)
+
+    document.body.appendChild(this.menuAnchorRef)
 
     const groupBy: GROUP_BY = retrieveValue<GROUP_BY>('group_by', 'due_date')
     const isExpanded = retrieveValue<Record<keyof TaskGroups, boolean>>(
@@ -83,7 +88,6 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     this.state = {
       isSnackbarOpen: false,
       isMoreMenuOpen: false,
-      menuPosition: { x: 0, y: 0 },
       snackBarMessage: null,
       tasks: [],
       labels: [],
@@ -262,15 +266,20 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     return Object.values(groups).some(group => group.content.length > 0)
   }
 
+  private setMenuAnchorPos = (x: number, y: number) => {
+    this.menuAnchorRef.style.left = `${x}px`
+    this.menuAnchorRef.style.top = `${y}px`
+  }
+
   private showContextMenu = (event: React.MouseEvent, task: Task) => {
     const { clientX, clientY } = event
+    this.setMenuAnchorPos(clientX, clientY);
 
     event.preventDefault()
     event.stopPropagation()
 
     this.setState({
       isMoreMenuOpen: true,
-      menuPosition: { x: clientX, y: clientY },
       contextMenuTask: task,
     })
   }
@@ -367,7 +376,6 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
     const { navigate } = this.props
     const hasTasks = this.hasTasks()
-    const { menuPosition } = this.state
 
     return (
       <Container maxWidth='md'>
@@ -483,19 +491,9 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
           </AccordionGroup>
         )}
 
-        <div
-          ref={this.menuAnchorRef}
-          style={{
-            position: 'absolute',
-            backgroundColor: 'red',
-            top: menuPosition.y,
-            left: menuPosition.x,
-          }}
-          />
-
         <Menu
           size='lg'
-          anchorEl={this.menuAnchorRef.current}
+          anchorEl={this.menuAnchorRef}
           popperOptions={
             {
               placement: 'bottom-start',
