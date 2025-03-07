@@ -630,7 +630,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
             right: 0,
             padding: 2,
             display: 'flex',
-            justifyContent: 'flex-start',
+            justifyContent: 'flex-end',
             gap: 2,
             'z-index': 1000,
             bgcolor: 'background.body',
@@ -638,21 +638,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           }}
         >
           <Button
-            color='primary'
-            variant='solid'
-            onClick={this.HandleSaveTask}
+            color='neutral'
+            variant='outlined'
+            onClick={this.onCancelClicked}
           >
-            {taskId != null ? 'Save' : 'Create'}
+            Cancel
           </Button>
-          {taskId != null && frequency.type !== 'once' && (
-            <Button
-              color='warning'
-              variant='solid'
-              onClick={this.onSkipClicked}
-            >
-              Skip
-            </Button>
-          )}
           {taskId != null && (
             <Button
               color='danger'
@@ -662,12 +653,21 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
               Delete
             </Button>
           )}
+          {taskId != null && frequency.type !== 'once' && (
+            <Button
+              color='warning'
+              variant='solid'
+              onClick={this.onSkipClicked}
+            >
+              Skip
+            </Button>
+          )}
           <Button
-            color='neutral'
-            variant='outlined'
-            onClick={this.onCancelClicked}
+            color='primary'
+            variant='solid'
+            onClick={this.HandleSaveTask}
           >
-            Cancel
+            {taskId != null ? 'Save' : 'Create'}
           </Button>
         </Sheet>
         <ConfirmationModal
