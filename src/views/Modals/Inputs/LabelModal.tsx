@@ -157,7 +157,7 @@ export class LabelModal extends React.Component<
       >
         <ModalDialog>
           <Typography
-            level='title-md'
+            level='h4'
             mb={1}
           >
             {id ? 'Edit Label' : 'Add Label'}

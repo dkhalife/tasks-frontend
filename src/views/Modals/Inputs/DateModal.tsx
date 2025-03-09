@@ -73,9 +73,9 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
         onClose={this.onCancel}
       >
         <ModalDialog>
-          <Typography>{title}</Typography>
+          <Typography
+            level='h4'>{title}</Typography>
           <Input
-            sx={{ mt: 3 }}
             type='datetime-local'
             value={date}
             onChange={this.onDateChange}

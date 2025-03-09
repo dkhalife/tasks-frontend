@@ -1,5 +1,5 @@
 import { ApiTokenScope } from '@/utils/api'
-import { Box, Checkbox } from '@mui/joy'
+import { Box, Checkbox, FormControl, Typography } from '@mui/joy'
 import React from 'react'
 
 interface TokenScopesProps {
@@ -9,6 +9,7 @@ interface TokenScopesProps {
 interface TokenScopesState {
   scopes: ApiTokenScope[]
   automaticScopes: ApiTokenScope[]
+  initialState: boolean
 }
 
 type AllowedScope = 'task:read' | 'task:write' | 'label:read' | 'label:write'
@@ -22,6 +23,7 @@ export class TokenScopes extends React.Component<
     this.state = {
       scopes: [],
       automaticScopes: [],
+      initialState: true,
     }
   }
 
@@ -62,6 +64,7 @@ export class TokenScopes extends React.Component<
       this.setState({
         scopes: newScopes,
         automaticScopes: newAutomaticScopes,
+        initialState: false,
       })
     } else {
       newScopes.push(selectedScope)
@@ -79,6 +82,7 @@ export class TokenScopes extends React.Component<
       this.setState({
         scopes: newScopes,
         automaticScopes: newAutomaticScopes,
+        initialState: false,
       })
     }
 
@@ -87,25 +91,29 @@ export class TokenScopes extends React.Component<
 
   public render() {
     const { ALLOWED_SCOPES, LABELS } = this
-    const { scopes, automaticScopes } = this.state
+    const { scopes, automaticScopes, initialState } = this.state
+    const validSelection = initialState || scopes.length !== 0
 
     return (
-      <Box>
-        {ALLOWED_SCOPES.map((scope: AllowedScope) => (
-          <Checkbox
-            key={scope}
-            label={LABELS[scope]}
-            value={scope}
-            disabled={automaticScopes.includes(scope)}
-            sx={{
-              mr: 2,
-              lineHeight: 1,
-            }}
-            checked={scopes.includes(scope)}
-            onChange={this.handleScopeChange}
-          />
-        ))}
-      </Box>
+      <FormControl error={!validSelection}>
+        <Typography>Scopes:</Typography>
+        <Box>
+          {ALLOWED_SCOPES.map((scope: AllowedScope) => (
+            <Checkbox
+              key={scope}
+              label={LABELS[scope]}
+              value={scope}
+              disabled={automaticScopes.includes(scope)}
+              sx={{
+                mr: 2,
+                lineHeight: 1,
+              }}
+              checked={scopes.includes(scope)}
+              onChange={this.handleScopeChange}
+            />
+          ))}
+        </Box>
+      </FormControl>
     )
   }
 }
