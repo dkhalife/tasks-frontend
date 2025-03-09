@@ -2,7 +2,7 @@ export interface APIToken {
   id: string
   name: string
   token: string
-  expiration: Date
+  expires_at: Date
 }
 
 export type ApiTokenScope =

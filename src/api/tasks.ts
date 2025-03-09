@@ -97,7 +97,7 @@ const UnmarshallTasksResponse = (
 ): TasksResponse => {
   return {
     ...response,
-    tasks: [...response.tasks.map(UnmarshallTask)],
+    tasks: response.tasks.map(UnmarshallTask),
   }
 }
 

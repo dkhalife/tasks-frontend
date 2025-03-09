@@ -95,25 +95,28 @@ export class TokenScopes extends React.Component<
     const validSelection = initialState || scopes.length !== 0
 
     return (
-      <FormControl error={!validSelection}>
+      <>
         <Typography>Scopes:</Typography>
         <Box>
           {ALLOWED_SCOPES.map((scope: AllowedScope) => (
-            <Checkbox
+            <FormControl
               key={scope}
-              label={LABELS[scope]}
-              value={scope}
-              disabled={automaticScopes.includes(scope)}
-              sx={{
-                mr: 2,
-                lineHeight: 1,
-              }}
-              checked={scopes.includes(scope)}
-              onChange={this.handleScopeChange}
-            />
+              error={!validSelection}>
+              <Checkbox
+                label={LABELS[scope]}
+                value={scope}
+                disabled={automaticScopes.includes(scope)}
+                sx={{
+                  mr: 2,
+                  lineHeight: 1,
+                }}
+                checked={scopes.includes(scope)}
+                onChange={this.handleScopeChange}
+              />
+            </FormControl>
           ))}
         </Box>
-      </FormControl>
+      </>
     )
   }
 }

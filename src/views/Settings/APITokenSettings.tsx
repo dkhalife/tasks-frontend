@@ -45,7 +45,9 @@ export class APITokenSettings extends React.Component<
 
   private loadTokens = async () => {
     const data = await GetLongLiveTokens()
-    this.setState({ tokens: data.tokens })
+    this.setState({
+      tokens: data.tokens,
+    })
   }
 
   componentDidMount(): void {
@@ -67,6 +69,7 @@ export class APITokenSettings extends React.Component<
 
     this.setState({
       tokens: newTokens,
+      showTokenId: data.token.id,
     })
   }
 
@@ -122,23 +125,25 @@ export class APITokenSettings extends React.Component<
 
         {tokens.map((token: APIToken) => (
           <Card
-            key={token.token}
+            key={`token-${token.id}`}
             style={{ padding: '4px' }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
-                <Typography level='body-xs'>Expiration: {moment(token.expiration).fromNow()}</Typography>
+                <Typography level='body-xs'>Expiration: {moment(token.expires_at).fromNow()}</Typography>
               </Box>
               <Box>
-                <Button
-                  variant='outlined'
-                  color='primary'
-                  sx={{ mr: 1 }}
-                  onClick={() => this.toggleTokenVisibility(token)}
-                >
-                  {showTokenId === token?.id ? 'Hide' : 'Show'}
-                </Button>
+                {token.token && (
+                  <Button
+                    variant='outlined'
+                    color='primary'
+                    sx={{ mr: 1 }}
+                    onClick={() => this.toggleTokenVisibility(token)}
+                  >
+                    {showTokenId === token?.id ? 'Hide' : 'Show'}
+                  </Button>
+                )}
                 <Button
                   variant='outlined'
                   color='danger'
