@@ -5,7 +5,7 @@
 
 This repo is a frontend for [tasks-backend](https://github.com/dkhalife/tasks-backend), a free and open source solution for task management. It started as a fork of [DoneTick](https://github.com/donetick/frontend) but has since diverged from the original source code in order to accomplish different goals. Kudos to the contributors of [DoneTick](https://github.com/donetick/frontend) for helping kickstart this project.
 
-## Goals and principles
+## 🎯 Goals and principles
 
 Task Wizard's primary goal is to allow users to own and protect their data and the following principles are ways to accomplish that:
 
@@ -16,32 +16,35 @@ Task Wizard's primary goal is to allow users to own and protect their data and t
 * Dependencies are kept to a minimum
 * When vulnerabilities are detected in dependencies they are auto updated with Dependabot
 
-## Installation
+## 🚀 Installation
 
 This app is meant to be self-hosted by individuals and groups who wish to own their data and those who prioritize their data privacy. For setup instructions check out the [tasks-backend](https://github.com/dkhalife/tasks-backend) README.
 
-## Development
+## 🛠️ Development
 
-1. Ensure you have [NodeJS](https://nodejs.org) 20+ installed
-1. Clone the repository:
-1. Navigate to the project directory: `cd path/to/cloned/repo`
-1. Download dependency `yarn install`
-1. Run locally `yarn start`. The output will contain instructions on how to browse the frontend.
-1. Separately run the backend using instructions from [tasks-backend](https://github.com/dkhalife/tasks-backend)
+### 🖥️ Devcontainer
+
+A [devcontainer](./.devcontainer/devcontainer.json) configuration is set up in this repo to help jumpstart development with all the required dependencies available for both the frontend and backend. You can use this configuration alongside
+GitHub codespaces to jump into a remote development environment without installing anything on your local machine. For the best experience make sure your codespace has both repos cloned in it. Ports can be forwarded from within the container so that you are able to test changes locally through the VS Code tunnel.
+
+### 📃 Requirements
+
+* NodeJS 20+
+* `yarn`
+
+### 🔁 Inner loop
+
+1. Navigate to the root of the repo
+1. Ensure you have the latest packages installed with `yarn install`
+1. Run `yarn start`. The output will contain instructions on how to browse the frontend.
+1. Separately follow instructions from [tasks-backend](https://github.com/dkhalife/tasks-backend)
 1. (optionally) If using a different host for the backend, update `VITE_APP_API_URL` in [.env](./.env)
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! If you would like to contribute to this repo, please follow these steps:
-
-1. Fork the repository
-1. Create a new branch: `git checkout -b feature/your-feature-name`
-1. Make your changes and commit them: `git commit -m 'Add some feature'`
-1. Push to the branch: `git push origin feature/your-feature-name`
-1. Submit a pull request
-
+Contributions are welcome! If you would like to contribute to this repo, feel free to fork the repo and submit pull requests.
 If you have ideas but aren't familiar with code, you can also [open issues](https://github.com/dkhalife/tasks-frontend/issues).
 
-## License
+## 🔒 License
 
 See the [LICENSE](LICENSE) file for more details.
