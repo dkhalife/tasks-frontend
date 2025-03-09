@@ -1,6 +1,7 @@
-import { ApiTokenScope } from '@/utils/api'
+import { ApiTokenScope } from '@/models/token'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { TokenScopes } from '@/views/Tokens/TokenScopes'
+import { SelectValue } from '@mui/base'
 import {
   Box,
   Button,
@@ -8,17 +9,18 @@ import {
   Input,
   Modal,
   ModalDialog,
+  Option,
+  Select,
   Typography,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 
 interface TokenModalProps {
-  title: string
   current?: string
   okText?: string
   cancelText?: string
 
-  onClose: (newName: string | null, scopes: ApiTokenScope[]) => void
+  onClose: (newName: string | null, scopes: ApiTokenScope[], expiration: number) => void
 }
 
 interface TokenModalState {
@@ -26,6 +28,7 @@ interface TokenModalState {
   name: string
   errorName: boolean
   scopes: ApiTokenScope[]
+  expiration: number
 }
 
 export class TokenModal extends React.Component<
@@ -41,6 +44,7 @@ export class TokenModal extends React.Component<
       name: props.current ?? '',
       errorName: false,
       scopes: [],
+      expiration: 7,
     }
   }
 
@@ -53,7 +57,7 @@ export class TokenModal extends React.Component<
   }
 
   private onSave = () => {
-    const { name, scopes, errorName } = this.state
+    const { name, scopes, errorName, expiration } = this.state
 
     if (errorName) {
       return
@@ -63,9 +67,10 @@ export class TokenModal extends React.Component<
       isOpen: false,
       name: '',
       scopes: [],
+      expiration: 7,
     })
 
-    this.props.onClose(name, scopes)
+    this.props.onClose(name, scopes, expiration)
   }
 
   private onCancel = () => {
@@ -75,7 +80,7 @@ export class TokenModal extends React.Component<
       scopes: [],
     })
 
-    this.props.onClose(null, [])
+    this.props.onClose(null, [], -1)
   }
 
   private onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -91,9 +96,15 @@ export class TokenModal extends React.Component<
     })
   }
 
+  private onExpirationChange = (e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, option: SelectValue<number, false>) => {
+    this.setState({
+      expiration: option || 7,
+    })
+  }
+
   render(): React.ReactNode {
-    const { title, okText, cancelText } = this.props
-    const { name, isOpen, errorName, scopes } = this.state
+    const { okText, cancelText } = this.props
+    const { name, isOpen, errorName, scopes, expiration } = this.state
 
     const validState = name.length > 0 && scopes.length > 0
 
@@ -103,8 +114,15 @@ export class TokenModal extends React.Component<
         onClose={this.onCancel}
       >
         <ModalDialog>
+          <Typography
+            level='h4'
+            mb={1}
+          >
+            Generate a new token
+          </Typography>
+
           <FormControl error>
-            <Typography>{title}</Typography>
+            <Typography>Give a name for your new token:</Typography>
             <Input
               placeholder='Name your token'
               value={name}
@@ -113,6 +131,22 @@ export class TokenModal extends React.Component<
               ref={this.inputRef}
               sx={{ minWidth: 300 }}
             />
+          </FormControl>
+
+          <FormControl>
+            <Typography>Expiration:</Typography>
+            <Select
+              value={expiration}
+              sx={{
+                maxWidth: '200px',
+              }}
+              onChange={this.onExpirationChange}
+            >
+              <Option value={7}>7 days</Option>
+              <Option value={30}>30 days</Option>
+              <Option value={60}>60 days</Option>
+              <Option value={90}>90 days</Option>
+            </Select>
           </FormControl>
 
           <TokenScopes onChange={this.onScopesChange} />

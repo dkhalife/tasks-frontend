@@ -2,8 +2,8 @@ import {
   GetLongLiveTokens,
   CreateLongLiveToken,
   DeleteLongLiveToken,
-} from '@/api/users'
-import { APIToken } from '@/models/token'
+} from '@/api/tokens'
+import { APIToken, ApiTokenScope } from '@/models/token'
 import { CopyAll } from '@mui/icons-material'
 import {
   Typography,
@@ -18,7 +18,6 @@ import moment from 'moment'
 import React from 'react'
 import { TokenModal } from '../Modals/Inputs/TokenModal'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
-import { ApiTokenScope } from '@/utils/api'
 
 type APITokenSettingsProps = object
 
@@ -56,12 +55,13 @@ export class APITokenSettings extends React.Component<
   private handleSaveToken = async (
     name: string | null,
     scopes: ApiTokenScope[],
+    expiration: number,
   ) => {
     if (!name) {
       return
     }
 
-    const data = await CreateLongLiveToken(name, scopes)
+    const data = await CreateLongLiveToken(name, scopes, expiration)
     const newTokens = [...this.state.tokens]
     newTokens.push(data.token)
 
@@ -128,10 +128,7 @@ export class APITokenSettings extends React.Component<
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
-                <Typography level='body-xs'>
-                  {moment(token.createdAt).fromNow()}
-                  <br />
-                </Typography>
+                <Typography level='body-xs'>Expiration: {moment(token.expiration).fromNow()}</Typography>
               </Box>
               <Box>
                 <Button
@@ -186,7 +183,6 @@ export class APITokenSettings extends React.Component<
 
         <TokenModal
           ref={this.modalRef}
-          title='Give a name for your new token:'
           onClose={this.handleSaveToken}
           okText={'Generate Token'}
         />

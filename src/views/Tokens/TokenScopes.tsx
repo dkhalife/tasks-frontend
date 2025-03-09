@@ -1,4 +1,4 @@
-import { ApiTokenScope } from '@/utils/api'
+import { ApiTokenScope } from '@/models/token'
 import { Box, Checkbox, FormControl, Typography } from '@mui/joy'
 import React from 'react'
 
