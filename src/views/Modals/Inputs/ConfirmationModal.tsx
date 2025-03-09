@@ -67,7 +67,6 @@ export class ConfirmationModal extends React.Component<
         <ModalDialog>
           <Typography
             level='h4'
-            mb={1}
           >
             {title}
           </Typography>

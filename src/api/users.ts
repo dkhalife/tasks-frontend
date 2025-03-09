@@ -1,18 +1,9 @@
-import { APIToken } from '@/models/token'
-import { ApiTokenScope, Request } from '../utils/api'
+import { Request } from '../utils/api'
 import { User } from '@/models/user'
 import {
   NotificationTriggerOptions,
   NotificationType,
 } from '@/models/notifications'
-
-type SingleTokenResponse = {
-  token: APIToken
-}
-
-type TokensResponse = {
-  tokens: APIToken[]
-}
 
 type UserResponse = {
   user: User
@@ -34,18 +25,3 @@ export const UpdateNotificationSettings = async (
     provider,
     triggers,
   })
-
-export const CreateLongLiveToken = async (
-  name: string,
-  scopes: ApiTokenScope[],
-) =>
-  await Request<SingleTokenResponse>(`/users/tokens`, 'POST', {
-    name,
-    scopes,
-  })
-
-export const DeleteLongLiveToken = async (id: string) =>
-  await Request<void>(`/users/tokens/${id}`, 'DELETE')
-
-export const GetLongLiveTokens = async () =>
-  await Request<TokensResponse>(`/users/tokens`)

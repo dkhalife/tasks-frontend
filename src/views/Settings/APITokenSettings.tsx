@@ -2,8 +2,8 @@ import {
   GetLongLiveTokens,
   CreateLongLiveToken,
   DeleteLongLiveToken,
-} from '@/api/users'
-import { APIToken } from '@/models/token'
+} from '@/api/tokens'
+import { APIToken, ApiTokenScope } from '@/models/token'
 import { CopyAll } from '@mui/icons-material'
 import {
   Typography,
@@ -18,7 +18,6 @@ import moment from 'moment'
 import React from 'react'
 import { TokenModal } from '../Modals/Inputs/TokenModal'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
-import { ApiTokenScope } from '@/utils/api'
 
 type APITokenSettingsProps = object
 
@@ -46,7 +45,9 @@ export class APITokenSettings extends React.Component<
 
   private loadTokens = async () => {
     const data = await GetLongLiveTokens()
-    this.setState({ tokens: data.tokens })
+    this.setState({
+      tokens: data.tokens,
+    })
   }
 
   componentDidMount(): void {
@@ -56,17 +57,19 @@ export class APITokenSettings extends React.Component<
   private handleSaveToken = async (
     name: string | null,
     scopes: ApiTokenScope[],
+    expiration: number,
   ) => {
     if (!name) {
       return
     }
 
-    const data = await CreateLongLiveToken(name, scopes)
+    const data = await CreateLongLiveToken(name, scopes, expiration)
     const newTokens = [...this.state.tokens]
     newTokens.push(data.token)
 
     this.setState({
       tokens: newTokens,
+      showTokenId: data.token.id,
     })
   }
 
@@ -122,26 +125,25 @@ export class APITokenSettings extends React.Component<
 
         {tokens.map((token: APIToken) => (
           <Card
-            key={token.token}
+            key={`token-${token.id}`}
             style={{ padding: '4px' }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
-                <Typography level='body-xs'>
-                  {moment(token.createdAt).fromNow()}
-                  <br />
-                </Typography>
+                <Typography level='body-xs'>Expiration: {moment(token.expires_at).fromNow()}</Typography>
               </Box>
               <Box>
-                <Button
-                  variant='outlined'
-                  color='primary'
-                  sx={{ mr: 1 }}
-                  onClick={() => this.toggleTokenVisibility(token)}
-                >
-                  {showTokenId === token?.id ? 'Hide' : 'Show'}
-                </Button>
+                {token.token && (
+                  <Button
+                    variant='outlined'
+                    color='primary'
+                    sx={{ mr: 1 }}
+                    onClick={() => this.toggleTokenVisibility(token)}
+                  >
+                    {showTokenId === token?.id ? 'Hide' : 'Show'}
+                  </Button>
+                )}
                 <Button
                   variant='outlined'
                   color='danger'
@@ -186,7 +188,6 @@ export class APITokenSettings extends React.Component<
 
         <TokenModal
           ref={this.modalRef}
-          title='Give a name for your new token:'
           onClose={this.handleSaveToken}
           okText={'Generate Token'}
         />
