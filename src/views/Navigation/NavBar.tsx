@@ -36,7 +36,8 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
     }
   }
 
-  private version = import.meta.env.PACKAGE_VERSION
+  private frontend_version = import.meta.env.PACKAGE_VERSION
+  private backend_version = import.meta.env.VITE_BACKEND_VERSION
 
   private openDrawer = () => {
     this.setState({ drawerOpen: true })
@@ -161,7 +162,8 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                   bottom: 0,
                 }}
               >
-                v{this.version}
+                Frontend: v{this.frontend_version}<br />
+                Backend: v{this.backend_version}
               </Typography>
             </List>
           </div>
