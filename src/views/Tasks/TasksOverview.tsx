@@ -160,7 +160,7 @@ export class TasksOverview extends React.Component<
   private onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { tasks } = this.state
     const newTasks = tasks.filter(task => {
-      return task.title.includes(e.target.value)
+      return task.title.toLowerCase().includes(e.target.value.toLowerCase())
     })
 
     const newState = {
