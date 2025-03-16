@@ -272,8 +272,8 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private showContextMenu = (event: React.MouseEvent, task: Task) => {
-    const { clientX, clientY } = event
-    this.setMenuAnchorPos(clientX, clientY);
+    const { pageX, pageY } = event
+    this.setMenuAnchorPos(pageX, pageY);
 
     event.preventDefault()
     event.stopPropagation()
