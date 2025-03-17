@@ -47,7 +47,7 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
         <ListDivider component='li'>
           <Typography>
             {historyEntry.due_date
-              ? `due ${formatDistanceToNow(historyEntry.due_date)}}`
+              ? `due ${formatDistanceToNow(historyEntry.due_date)}`
               : '-'}
           </Typography>
         </ListDivider>
