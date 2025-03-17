@@ -34,7 +34,6 @@ import {
   bucketIntoLabelGroups,
   groupTasksBy,
 } from '@/utils/tasks'
-import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
@@ -48,6 +47,7 @@ import {
 import { retrieveValue, storeValue } from '@/utils/storage'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
+import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 
 type MyTasksProps = WithNavigate
 
@@ -133,14 +133,10 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     }
 
     const now = new Date().getTime()
-    const endOfToday = moment().endOf('day').toDate().getTime()
-    const endOfTomorrow = moment().endOf('day').add(1, 'day').toDate().getTime()
-    const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
-    const endOfNextWeek = moment()
-      .endOf('isoWeek')
-      .add(1, 'week')
-      .toDate()
-      .getTime()
+    const endOfToday = endOfDay(new Date()).getTime()
+    const endOfTomorrow = endOfDay(addDays(new Date(), 1)).getTime()
+    const endOfThisWeek = endOfWeek(new Date(), { weekStartsOn: 1 }).getTime()
+    const endOfNextWeek = endOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime()
 
     if (groupBy === 'due_date') {
       bucketIntoDueDateGroup(

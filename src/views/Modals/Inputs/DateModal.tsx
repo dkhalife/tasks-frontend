@@ -1,6 +1,6 @@
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
-import moment from 'moment'
+import { format, parseISO } from 'date-fns'
 import React from 'react'
 
 interface DateModalProps {
@@ -50,7 +50,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
 
   private onDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({
-      date: moment(e.target.value).toDate(),
+      date: parseISO(e.target.value),
     })
   }
 
@@ -65,7 +65,7 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   public render(): React.ReactNode {
     const { title } = this.props
     const { isOpen } = this.state
-    const date = moment(this.state.date).format('yyyy-MM-DD[T]HH:mm')
+    const date = format(this.state.date ?? new Date(), "yyyy-MM-dd'T'HH:mm")
 
     return (
       <Modal

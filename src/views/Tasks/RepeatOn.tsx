@@ -23,7 +23,7 @@ import {
   Box,
   Option,
 } from '@mui/joy'
-import moment from 'moment'
+import { format, getDate, getDay, getMonth, setDay, setMonth } from 'date-fns'
 import React from 'react'
 
 interface RepeatOnProps {
@@ -148,7 +148,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
       ? days.filter(d => d !== day)
       : [...days, day].sort()
     if (newDays.length == 0) {
-      const defaultDay = moment(nextDueDate).weekday() as DayOfTheWeek
+      const defaultDay = getDay(nextDueDate ?? new Date()) as DayOfTheWeek
       newDays.push(defaultDay)
     }
 
@@ -178,7 +178,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
       ? months.filter(m => m !== month)
       : [...months, month].sort()
     if (newMonths.length == 0) {
-      const defaultMonth = moment(nextDueDate).month() as Month
+      const defaultMonth = getMonth(nextDueDate ?? new Date()) as Month
       newMonths.push(defaultMonth)
     }
 
@@ -196,7 +196,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
 
   render(): React.ReactNode {
     const { frequency, nextDueDate } = this.props
-    const day = nextDueDate ? moment(nextDueDate).date() : 0
+    const day = nextDueDate ? getDate(nextDueDate) : 1
 
     switch (frequency.on) {
       case 'interval':
@@ -266,7 +266,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                         overlay
                         disableIcon
                         variant='soft'
-                        label={moment().weekday(item).format('dd')}
+                        label={format(setDay(new Date(), item), 'EEE')}
                       />
                     </ListItem>
                   ))}
@@ -316,7 +316,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
                       overlay
                       disableIcon
                       variant='soft'
-                      label={moment().month(item).format('MMM')}
+                      label={format(setMonth(new Date(), item), 'MMM')}
                     />
                   </ListItem>
                 ))}

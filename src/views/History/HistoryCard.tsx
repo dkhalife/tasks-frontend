@@ -1,9 +1,9 @@
 import { HistoryEntry } from '@/models/history'
 import { ListItemContent, ListDivider } from '@mui/joy'
 import { ListItem, Box, Typography } from '@mui/joy'
-import moment from 'moment'
 import React from 'react'
 import { CompletedChip } from './CompletedChip'
+import { format, formatDistanceToNow } from 'date-fns'
 
 interface HistoryCardProps {
   historyEntry: HistoryEntry
@@ -39,10 +39,7 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
             </Box>
             {historyEntry.completed_date && (
               <Typography>
-                on{' '}
-                {moment(historyEntry.completed_date).format(
-                  'MMMM Do YYYY, h:mm a',
-                )}
+                {`on ${format(historyEntry.completed_date, 'MMMM do yyyy, h:mm a')}`}
               </Typography>
             )}
           </ListItemContent>
@@ -50,7 +47,7 @@ export class HistoryCard extends React.Component<HistoryCardProps> {
         <ListDivider component='li'>
           <Typography>
             {historyEntry.due_date
-              ? `due ${moment(historyEntry.due_date).fromNow()}`
+              ? `due ${formatDistanceToNow(historyEntry.due_date)}`
               : '-'}
           </Typography>
         </ListDivider>

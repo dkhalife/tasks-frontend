@@ -4,11 +4,11 @@ import { HistoryEntry } from '@/models/history'
 import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
 import { Sheet, ListItemContent, Grid } from '@mui/joy'
 import { Container, Typography, Button, ListItem, Chip, List } from '@mui/joy'
-import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { HistoryCard } from './HistoryCard'
 import { setTitle } from '@/utils/dom'
+import { differenceInHours, formatDuration, intervalToDuration } from 'date-fns'
 
 interface TaskHistoryProps {
   taskId: string
@@ -66,22 +66,29 @@ export class TaskHistory extends React.Component<
     const averageDelay =
       histories.reduce((acc, task) => {
         if (task.due_date && task.completed_date) {
-          // Only consider tasks with a due date
-          return acc + moment(task.completed_date).diff(task.due_date, 'hours')
+          return acc + differenceInHours(task.completed_date, task.due_date)
         }
+
         return acc
       }, 0) / histories.filter(task => task.due_date).length
-    const averageDelayMoment = moment.duration(averageDelay, 'hours')
+
     const maximumDelay = histories.reduce((acc, task) => {
-      if (task.due_date) {
-        // Only consider tasks with a due date
-        const delay = moment(task.completed_date).diff(task.due_date, 'hours')
+      if (task.due_date && task.completed_date) {
+        const delay = differenceInHours(task.completed_date, task.due_date)
         return delay > acc ? delay : acc
       }
       return acc
     }, 0)
 
-    const maxDelayMoment = moment.duration(maximumDelay, 'hours')
+    const averageDelayDuration = intervalToDuration({
+      start: 0,
+      end: averageDelay * 3600 * 1000,
+    })
+
+    const maxDelayDuration = intervalToDuration({
+      start: 0,
+      end: maximumDelay * 3600 * 1000,
+    })
 
     this.setState({
       historyInfo: [
@@ -93,12 +100,12 @@ export class TaskHistory extends React.Component<
         {
           icon: <Timelapse />,
           text: 'Usually Within',
-          subtext: moment.duration(averageDelayMoment).humanize(),
+          subtext: formatDuration(averageDelayDuration),
         },
         {
           icon: <Timelapse />,
           text: 'Maximum Delay',
-          subtext: moment.duration(maxDelayMoment).humanize(),
+          subtext: formatDuration(maxDelayDuration),
         },
       ],
     })
