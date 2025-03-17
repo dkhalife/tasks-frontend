@@ -35,7 +35,6 @@ import React, { ChangeEvent } from 'react'
 import { ConfirmationModal } from '@/views/Modals/Inputs/ConfirmationModal'
 import { RepeatOption } from './RepeatOption'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
-import moment from 'moment'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import {
@@ -46,6 +45,7 @@ import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { GetLabels } from '@/api/labels'
 import { GetUserProfile } from '@/api/users'
 import { moveFocusToJoyInput } from '@/utils/joy'
+import { format, parseISO } from 'date-fns'
 
 export type TaskEditProps = WithNavigate & {
   taskId: string | null
@@ -167,7 +167,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      nextDueDate: moment(e.target.value).toDate(),
+      nextDueDate: parseISO(e.target.value),
     })
   }
 
@@ -529,14 +529,14 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
           {nextDueDate && (
             <FormControl error={Boolean(errors.dueDate)}>
               <Typography>
-                {isRecurring
-                  ? 'When is the next first time this task is due?'
-                  : 'When is this task due?'}
+              {isRecurring
+                ? 'When is the next first time this task is due?'
+                : 'When is this task due?'}
               </Typography>
               <Input
-                type='datetime-local'
-                value={moment(nextDueDate).format('yyyy-MM-DD[T]HH:mm')}
-                onChange={this.handleDueDateChange}
+              type='datetime-local'
+              value={format(nextDueDate, "yyyy-MM-dd'T'HH:mm")}
+              onChange={this.handleDueDateChange}
               />
             </FormControl>
           )}

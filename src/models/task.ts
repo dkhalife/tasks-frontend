@@ -1,9 +1,9 @@
-import moment from 'moment'
 import { Label } from './label'
 import { ColorPaletteProp } from '@mui/joy'
 import { dayOfMonthSuffix } from '../utils/date'
 import { IntervalUnit } from '@/utils/recurrence'
 import { Notification } from '@/models/notifications'
+import { differenceInHours, format, formatDistanceToNow, setDay, setMonth } from 'date-fns'
 
 export type RepeatOnce = {
   type: 'once'
@@ -79,12 +79,12 @@ export const getDueDateChipText = (nextDueDate: Date | null): string => {
   }
 
   // if due in next 48 hours, we should it in this format : Tomorrow 11:00 AM
-  const diff = moment(nextDueDate).diff(moment(), 'hours')
+  const diff = differenceInHours(nextDueDate, new Date())
   if (diff < 48 && diff > 0) {
-    return moment(nextDueDate).calendar().replace(' at', '')
+    return formatDistanceToNow(nextDueDate, { addSuffix: true })
   }
 
-  return moment(nextDueDate).fromNow()
+  return formatDistanceToNow(nextDueDate)
 }
 
 export const getDueDateChipColor = (
@@ -96,7 +96,7 @@ export const getDueDateChipColor = (
 
   const due = nextDueDate.getTime()
   const now = new Date().getTime()
-  const warnThreshold = moment().add(4, 'hours').toDate().getTime()
+  const warnThreshold = new Date().getTime() + 4 * 3600 * 1000
 
   if (due < now) {
     return 'danger'
@@ -143,11 +143,11 @@ export const getRecurrentChipText = (
       }
     } else if (frequency.on === 'days_of_the_week') {
       return frequency.days
-        .map((d: number) => moment().day(d).format('ddd'))
+        .map((d: number) => format(setDay(new Date(), d), 'EEE'))
         .join(', ')
     } else if (frequency.on === 'day_of_the_months') {
       const months = frequency.months.map((m: number) =>
-        moment().month(m).format('MMM'),
+        format(setMonth(new Date(), m), 'MMM')
       )
       const day = nextDueDate ? nextDueDate.getDate() : 0
       return `${day}${dayOfMonthSuffix(day)} of ${months.join(', ')}`

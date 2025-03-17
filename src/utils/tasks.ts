@@ -1,8 +1,8 @@
 import { Task } from '@/models/task'
 import { COLORS, TASK_COLOR } from './colors'
-import moment from 'moment'
 import { Label } from '@/models/label'
 import { DueDateGroups, GROUP_BY, LabelGroups } from '@/utils/grouping'
+import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 
 export type TaskGroup = {
   name: string
@@ -101,14 +101,10 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   }
 
   const now = new Date().getTime()
-  const endOfToday = moment().endOf('day').toDate().getTime()
-  const endOfTomorrow = moment().endOf('day').add(1, 'day').toDate().getTime()
-  const endOfThisWeek = moment().endOf('isoWeek').toDate().getTime()
-  const endOfNextWeek = moment()
-    .endOf('isoWeek')
-    .add(1, 'week')
-    .toDate()
-    .getTime()
+  const endOfToday = endOfDay(new Date()).getTime()
+  const endOfTomorrow = endOfDay(addDays(new Date(), 1)).getTime()
+  const endOfThisWeek = endOfWeek(new Date(), { weekStartsOn: 1 }).getTime()
+  const endOfNextWeek = endOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime()
 
   tasks.forEach(task => {
     bucketIntoDueDateGroup(

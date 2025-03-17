@@ -14,10 +14,10 @@ import {
   Input,
   IconButton,
 } from '@mui/joy'
-import moment from 'moment'
 import React from 'react'
 import { TokenModal } from '../Modals/Inputs/TokenModal'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
+import { formatDistanceToNow } from 'date-fns'
 
 type APITokenSettingsProps = object
 
@@ -131,7 +131,7 @@ export class APITokenSettings extends React.Component<
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
                 <Typography level='body-md'>{token.name}</Typography>
-                <Typography level='body-xs'>Expiration: {moment(token.expires_at).fromNow()}</Typography>
+                <Typography level='body-xs'>Expiration: {formatDistanceToNow(token.expires_at)}</Typography>
               </Box>
               <Box>
                 {token.token && (
