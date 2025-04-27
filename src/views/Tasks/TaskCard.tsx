@@ -9,6 +9,7 @@ import {
   getRecurrentChipText,
 } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
+import { playSound, SoundEffect } from '@/utils/sound'
 import {
   TimesOneMobiledata,
   Repeat,
@@ -44,6 +45,10 @@ export class TaskCard extends React.Component<TaskCardProps> {
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
     const response = await MarkTaskComplete(task.id)
+    
+    // Play the task completion sound
+    playSound(SoundEffect.TaskComplete)
+    
     onTaskUpdate(response.task, 'completed')
   }
 
