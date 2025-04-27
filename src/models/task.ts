@@ -3,7 +3,7 @@ import { ColorPaletteProp } from '@mui/joy'
 import { dayOfMonthSuffix } from '../utils/date'
 import { IntervalUnit } from '@/utils/recurrence'
 import { Notification } from '@/models/notifications'
-import { differenceInHours, format, formatDistanceToNow, setDay, setMonth } from 'date-fns'
+import { format, formatDistanceToNow, isPast, isToday, isTomorrow, setDay, setMonth } from 'date-fns'
 
 export type RepeatOnce = {
   type: 'once'
@@ -78,13 +78,19 @@ export const getDueDateChipText = (nextDueDate: Date | null): string => {
     return 'No Due Date'
   }
 
-  // if due in next 48 hours, we should it in this format : Tomorrow 11:00 AM
-  const diff = differenceInHours(nextDueDate, new Date())
-  if (diff < 48 && diff > 0) {
-    return formatDistanceToNow(nextDueDate, { addSuffix: true })
+  if (isPast(nextDueDate)) {
+    return `${formatDistanceToNow(nextDueDate)} ago`
   }
 
-  return formatDistanceToNow(nextDueDate)
+  if (isToday(nextDueDate)) {
+    return `Today at ${format(nextDueDate, 'hh:mm a')}`
+  }
+
+  if (isTomorrow(nextDueDate)) {
+    return `Tomorrow at ${format(nextDueDate, 'hh:mm a')}`
+  }
+
+  return `in ${formatDistanceToNow(nextDueDate)}`
 }
 
 export const getDueDateChipColor = (
