@@ -34,6 +34,7 @@ import { sortTasksByDueDate } from '@/utils/tasks'
 import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
+import { playSound, SoundEffect } from '@/utils/sound'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -155,6 +156,8 @@ export class TasksOverview extends React.Component<
       tasks: newTasks,
       filteredTasks: newTasks,
     })
+
+    playSound(SoundEffect.TaskComplete)
   }
 
   private onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -7,6 +7,7 @@ import { GetUserProfile } from './api/users'
 import { User } from './models/user'
 import { WithNavigate } from './utils/navigation'
 import { CssBaseline, CssVarsProvider } from '@mui/joy'
+import { preloadSounds } from './utils/sound'
 
 type AppProps = WithNavigate
 
@@ -37,6 +38,7 @@ export class App extends React.Component<AppProps, AppState> {
   componentDidMount(): void {
     if (isTokenValid()) {
       this.loadUserProfile()
+      preloadSounds();
     }
   }
 
