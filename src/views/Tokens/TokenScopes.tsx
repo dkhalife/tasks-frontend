@@ -12,7 +12,7 @@ interface TokenScopesState {
   initialState: boolean
 }
 
-type AllowedScope = 'task:read' | 'task:write' | 'label:read' | 'label:write'
+type AllowedScope = 'task:read' | 'task:write' | 'label:read' | 'label:write' | 'dav:read' | 'dav:write'
 
 export class TokenScopes extends React.Component<
   TokenScopesProps,
@@ -32,6 +32,8 @@ export class TokenScopes extends React.Component<
     'task:write',
     'label:read',
     'label:write',
+    'dav:read',
+    'dav:write',
   ]
 
   private LABELS: Record<AllowedScope, string> = {
@@ -39,6 +41,8 @@ export class TokenScopes extends React.Component<
     'task:write': 'Write tasks',
     'label:read': 'Read labels',
     'label:write': 'Write labels',
+    'dav:read': 'Read (DAV)',
+    'dav:write': 'Write (DAV)',
   }
 
   private handleScopeChange = (event: React.ChangeEvent<HTMLInputElement>) => {

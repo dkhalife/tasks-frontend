@@ -13,3 +13,5 @@ export type ApiTokenScope =
   | 'user:read'
   | 'user:write'
   | 'token:write'
+  | 'dav:read'
+  | 'dav:write'
