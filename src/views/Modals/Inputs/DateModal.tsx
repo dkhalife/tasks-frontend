@@ -49,8 +49,25 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   }
 
   private onDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newDateTime = parseISO(e.target.value)
+    const currentDate = this.state.date
+
+    // If we have a current date and a new date, preserve the time if only the date changed
+    if (currentDate && newDateTime) {
+      // Check if only the date part is changed (not time) by comparing hours and minutes
+      const onlyDateChanged = 
+        newDateTime.getHours() === 0 && 
+        newDateTime.getMinutes() === 0 && 
+        (currentDate.getHours() !== 0 || currentDate.getMinutes() !== 0)
+
+      if (onlyDateChanged) {
+        // Create a new date with the date part from the new date but time from the current date
+        newDateTime.setHours(currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds())
+      }
+    }
+
     this.setState({
-      date: parseISO(e.target.value),
+      date: newDateTime,
     })
   }
 
