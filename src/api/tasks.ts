@@ -3,7 +3,7 @@ import { Request } from '../utils/api'
 import { HistoryEntry } from '@/models/history'
 import { Label } from '@/models/label'
 
-type MarshalledTask = Omit<Omit<Omit<Task, 'next_due_date'>, 'end_date'>, 'labels'> & {
+type MarshalledTask = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
   next_due_date: string | null
   end_date: string | null
   labels: string[]
