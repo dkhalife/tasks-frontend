@@ -69,6 +69,7 @@ export interface Task {
   notification: Notification
   is_rolling: boolean
   labels: Label[]
+  end_date: Date | null
 }
 
 export type TASK_UPDATE_EVENT = 'completed' | 'rescheduled' | 'skipped'
