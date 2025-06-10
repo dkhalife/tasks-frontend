@@ -63,7 +63,7 @@ const UnmarshallTask = (task: MarshalledTask): Task => {
     ...task,
     next_due_date: UnmarshallDate(task.next_due_date),
     end_date: UnmarshallDate(task.end_date),
-    labels: task.labels.map(id => ({ id } as Label)),
+    labels: task.labels as unknown as Label[],
   }
 }
 
