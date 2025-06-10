@@ -4,9 +4,15 @@ import { useRoot } from './utils/dom'
 import { RouterContext } from './contexts/RouterContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { LogError, LogWarning } from './api/log'
+import { isTokenValid } from './utils/api'
 
 window.onerror = (message, source, lineno, colno) => {
-  try {
+  // Telemetry APIs are behind auth wall, if the user isn't authenticated, we can't do anything
+  if (!isTokenValid()) {
+    return
+  }
+
+  try {  
     LogError(`${source}:${lineno}:${colno} ${message}`, window.location.pathname)
   } catch {
     console.debug('Fatal error: ', message, source, lineno, colno)
@@ -18,6 +24,11 @@ window.onerror = (message, source, lineno, colno) => {
 window.onunhandledrejection = async (event) => {
   event.preventDefault()
   event.stopImmediatePropagation()
+
+  // Telemetry APIs are behind auth wall, if the user isn't authenticated, we can't do anything
+  if (!isTokenValid()) {
+    return
+  }
 
   try {
     await LogWarning(event.reason, window.location.pathname)
