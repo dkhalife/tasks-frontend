@@ -166,6 +166,10 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      return
+    }
+
     this.setState({
       nextDueDate: parseISO(e.target.value),
     })
