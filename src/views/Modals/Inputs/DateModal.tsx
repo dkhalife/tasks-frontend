@@ -49,6 +49,10 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
   }
 
   private onDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (e.target.value === '') {
+      return
+    }
+
     this.setState({
       date: parseISO(e.target.value),
     })
