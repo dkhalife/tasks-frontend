@@ -37,7 +37,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
     setTitle('Login')
   }
 
-  private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  private handleSubmit = async (e: React.MouseEvent<HTMLAnchorElement> | React.FormEvent) => {
     e.preventDefault()
 
     try {
@@ -79,6 +79,7 @@ export class LoginView extends React.Component<LoginViewProps, LoginViewState> {
         >
           <Sheet
             component='form'
+            onSubmit={this.handleSubmit}
             sx={{
               mt: 1,
               width: '100%',
