@@ -3,8 +3,9 @@ import { Request } from '../utils/api'
 import { HistoryEntry } from '@/models/history'
 import { Label } from '@/models/label'
 
-type MarshalledTask = Omit<Omit<Task, 'next_due_date'>, 'labels'> & {
+type MarshalledTask = Omit<Omit<Omit<Task, 'next_due_date'>, 'end_date'>, 'labels'> & {
   next_due_date: string | null
+  end_date: string | null
   labels: string[]
 }
 type MarshalledHistoryEntry = Omit<
@@ -52,6 +53,7 @@ function MarshallTask(task: Task): MarshalledTask {
   return {
     ...task,
     next_due_date: MarshallDate(task.next_due_date),
+    end_date: MarshallDate(task.end_date),
     labels: task.labels.map(l => l.id),
   }
 }
@@ -60,7 +62,8 @@ const UnmarshallTask = (task: MarshalledTask): Task => {
   return {
     ...task,
     next_due_date: UnmarshallDate(task.next_due_date),
-    labels: task.labels as unknown as Label[], // TODO: Server should marshall into ids
+    end_date: UnmarshallDate(task.end_date),
+    labels: task.labels.map(id => ({ id } as Label)),
   }
 }
 

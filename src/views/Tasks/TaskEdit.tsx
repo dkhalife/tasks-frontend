@@ -56,6 +56,7 @@ type Errors = { [key: string]: string }
 export interface TaskEditState {
   title: string
   nextDueDate: Date | null
+  endDate: Date | null
   taskLabels: Label[]
   userLabels: Label[]
   frequency: Frequency
@@ -81,6 +82,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     this.state = {
       title: '',
       nextDueDate: null,
+      endDate: null,
       taskLabels: [],
       userLabels: [],
       frequency: {
@@ -175,6 +177,16 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
+  private handleEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      return
+    }
+
+    this.setState({
+      endDate: parseISO(e.target.value),
+    })
+  }
+
   private HandleSaveTask = async () => {
     if (!this.HandleValidateTask()) {
       return
@@ -185,6 +197,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       title,
       frequency,
       nextDueDate,
+      endDate,
       isRolling,
       taskLabels,
       notification,
@@ -194,6 +207,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       title,
       labels: taskLabels,
       next_due_date: nextDueDate,
+      end_date: endDate,
       is_rolling: isRolling,
       frequency,
       notification,
@@ -257,6 +271,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       this.setState({
         title: task.title,
         nextDueDate: task.next_due_date,
+        endDate: task.end_date,
         frequency: task.frequency,
         isRolling: task.is_rolling,
         notification: task.notification,
@@ -321,6 +336,12 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       nextDueDate: e.target.checked ? new Date() : null,
+    })
+  }
+
+  private onEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      endDate: e.target.checked ? new Date() : null,
     })
   }
 
@@ -414,6 +435,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       title,
       frequency,
       nextDueDate,
+      endDate,
       isRolling,
       notification,
       taskLabels,
@@ -560,47 +582,70 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
         )}
 
         {isRecurring && (
-          <Box mt={2}>
-            <Typography level='h4'>Scheduling Preferences :</Typography>
-            <Typography>
-              How should the next occurrence be calculated?
-            </Typography>
+          <>
+            <Box mt={2}>
+              <Typography level='h4'>Scheduling Preferences :</Typography>
+              <Typography>
+                How should the next occurrence be calculated?
+              </Typography>
 
-            <RadioGroup
-              name='tiers'
-              sx={{
-                gap: 1,
-                '& > div': {
-                  p: 1,
-                },
-              }}
-            >
-              <FormControl>
-                <Radio
+              <RadioGroup
+                name='tiers'
+                sx={{
+                  gap: 1,
+                  '& > div': {
+                    p: 1,
+                  },
+                }}
+              >
+                <FormControl>
+                  <Radio
+                    overlay
+                    checked={!isRolling}
+                    onClick={this.onRescheduleFromDueDate}
+                    label='Reschedule from due date'
+                  />
+                  <FormHelperText>
+                    the next task will be scheduled from the original due date,
+                    even if the previous task was completed late
+                  </FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <Radio
+                    overlay
+                    checked={isRolling}
+                    onClick={this.onRescheduleFromCompletionDate}
+                    label='Reschedule from completion date'
+                  />
+                  <FormHelperText>
+                    the next task will be scheduled from the actual completion
+                    date of the previous task
+                  </FormHelperText>
+                </FormControl>
+              </RadioGroup>
+            </Box>
+            <Box mt={2}>
+              <FormControl sx={{ mt: 1 }}>
+                <Checkbox
+                  onChange={this.onEndDateChange}
+                  checked={endDate !== null}
                   overlay
-                  checked={!isRolling}
-                  onClick={this.onRescheduleFromDueDate}
-                  label='Reschedule from due date'
+                  label='Give this task an end date'
                 />
-                <FormHelperText>
-                  the next task will be scheduled from the original due date,
-                  even if the previous task was completed late
-                </FormHelperText>
               </FormControl>
-              <FormControl>
-                <Radio
-                  overlay
-                  checked={isRolling}
-                  onClick={this.onRescheduleFromCompletionDate}
-                  label='Reschedule from completion date'
-                />
-                <FormHelperText>
-                  the next task will be scheduled from the actual completion
-                  date of the previous task
-                </FormHelperText>
-              </FormControl>
-            </RadioGroup>
-          </Box>
+
+              { endDate && (
+                <FormControl>
+                  <FormHelperText>When should the recurrence end?</FormHelperText>
+                  <Input
+                    type='datetime-local'
+                    value={format(endDate, "yyyy-MM-dd'T'HH:mm")}
+                    onChange={this.handleEndDateChange}
+                    />
+                </FormControl>
+              )}
+            </Box>
+          </>
         )}
 
         {nextDueDate && (
