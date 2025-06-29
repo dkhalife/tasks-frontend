@@ -48,13 +48,10 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
   constructor(props: RepeatOnProps) {
     super(props)
 
-    this.state = this.initWith(props.frequency as any)
+    this.state = this.initWith(props.frequency)
   }
 
-  private initWith(frequency: RepeatInterval): RepeatOnState
-  private initWith(frequency: RepeatDaysOfTheWeek): RepeatOnState
-  private initWith(frequency: RepeatDayOfTheMonths): RepeatOnState
-  private initWith(frequency: any): RepeatOnState {
+  private initWith(frequency: RepeatCustom): RepeatOnState {
     if (frequency.type != 'custom') {
       throw new Error('Invalid frequency')
     }
@@ -83,7 +80,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
 
   public componentDidUpdate(prevProps: Readonly<RepeatOnProps>): void {
     if (prevProps.frequency.on != this.props.frequency.on) {
-      this.setState(this.initWith(this.props.frequency as any))
+      this.setState(this.initWith(this.props.frequency))
     }
   }
 
