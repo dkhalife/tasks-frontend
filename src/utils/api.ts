@@ -17,7 +17,8 @@ const isTokenNearExpiration = () => {
 }
 
 export const isTokenValid = (): boolean => {
-  if (localStorage.getItem('ca_token')) {
+  const token = localStorage.getItem('ca_token')
+  if (token) {
     const now = new Date()
     const expiration = localStorage.getItem('ca_expiration') || ''
     const expire = new Date(expiration)
