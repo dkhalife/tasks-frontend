@@ -16,19 +16,20 @@ const isTokenNearExpiration = () => {
   return now.getTime() + 24 * 60 * 60 * 1000 > expire.getTime()
 }
 
-export const isTokenValid = () => {
-  if (localStorage.getItem('ca_token')) {
+export const isTokenValid = (): boolean => {
+  const token = localStorage.getItem('ca_token')
+  if (token) {
     const now = new Date()
     const expiration = localStorage.getItem('ca_expiration') || ''
     const expire = new Date(expiration)
     if (now < expire) {
       return true
-    } else {
-      localStorage.removeItem('ca_token')
-      localStorage.removeItem('ca_expiration')
     }
+    localStorage.removeItem('ca_token')
+    localStorage.removeItem('ca_expiration')
     return false
   }
+  return false
 }
 
 export const refreshAccessToken = async () => {
