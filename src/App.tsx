@@ -8,6 +8,7 @@ import { User } from './models/user'
 import { WithNavigate } from './utils/navigation'
 import { CssBaseline, CssVarsProvider } from '@mui/joy'
 import { preloadSounds } from './utils/sound'
+import WebSocketManager from './utils/websocket'
 
 type AppProps = WithNavigate
 
@@ -39,6 +40,7 @@ export class App extends React.Component<AppProps, AppState> {
     if (isTokenValid()) {
       this.loadUserProfile()
       preloadSounds();
+      WebSocketManager.getInstance().connect();
     }
   }
 
