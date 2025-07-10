@@ -21,6 +21,7 @@ import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import { getPathName, NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Logo } from '@/Logo'
+import WebSocketManager from '@/utils/websocket'
 
 type NavBarProps = WithNavigate
 
@@ -50,6 +51,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
   private logout = () => {
     localStorage.removeItem('ca_token')
     localStorage.removeItem('ca_expiration')
+    WebSocketManager.getInstance().disconnect()
     this.props.navigate(NavigationPaths.Login)
   }
 
