@@ -33,12 +33,11 @@ export class WebSocketManager {
 
     const wsProtocol = API_URL.startsWith('https') ? 'wss' : 'ws'
     const baseUrl = API_URL.replace(/^https?/, wsProtocol)
-    const url = `${baseUrl}/api/ws?token=${encodeURIComponent(token)}`
+    const url = `${baseUrl}/ws`
 
     try {
-      this.socket = new WebSocket(url)
-    } catch (err) {
-      console.error('WebSocket creation failed', err)
+      this.socket = new WebSocket(url, [wsProtocol, token])
+    } catch {
       this.scheduleReconnect()
       return
     }
