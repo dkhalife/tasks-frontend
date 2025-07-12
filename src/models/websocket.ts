@@ -9,8 +9,13 @@ export interface WSRequest {
   data?: unknown
 }
 
+export type WSEvent =
+  | 'label_created'
+  | 'label_updated'
+  | 'label_deleted'
+
 export interface WSResponse {
-  action: WSAction
+  action: WSEvent
   status: number
-  data?: unknown
+  data?: any
 }
