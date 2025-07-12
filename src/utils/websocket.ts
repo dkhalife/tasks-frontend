@@ -1,3 +1,5 @@
+import { getFeatureFlag } from '@/constants/featureFlags'
+
 const API_URL = import.meta.env.VITE_APP_API_URL
 
 export class WebSocketManager {
@@ -5,8 +7,11 @@ export class WebSocketManager {
   private socket: WebSocket | null = null
   private retryCount = 0
   private manualClose = false
+  private enabled: boolean
 
-  private constructor() {}
+  private constructor() {
+    this.enabled = getFeatureFlag('useWebsockets', false)
+  }
 
   static getInstance(): WebSocketManager {
     if (!WebSocketManager.instance) {
@@ -16,6 +21,9 @@ export class WebSocketManager {
   }
 
   connect() {
+    if (!this.enabled) {
+      return
+    }
     const token = localStorage.getItem('ca_token')
     if (!token) {
       return
@@ -70,7 +78,7 @@ export class WebSocketManager {
   }
 
   private scheduleReconnect() {
-    if (this.manualClose) {
+    if (this.manualClose || !this.enabled) {
       return
     }
 
