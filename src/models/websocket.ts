@@ -5,6 +5,12 @@ export type WSAction =
   | 'delete_label'
 
 export interface WSRequest {
-  Action: WSAction
-  Data?: unknown
+  action: WSAction
+  data?: unknown
+}
+
+export interface WSResponse {
+  action: WSAction
+  status: number
+  data?: unknown
 }
