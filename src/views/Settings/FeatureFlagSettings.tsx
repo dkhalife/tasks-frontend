@@ -6,15 +6,17 @@ import {
   setFeatureFlag,
 } from '@/constants/featureFlags'
 
+interface FeatureFlagSettingsProps {}
+
 interface FeatureFlagSettingsState {
   flags: Record<string, boolean>
 }
 
 export class FeatureFlagSettings extends React.Component<
-  object,
+  FeatureFlagSettingsProps,
   FeatureFlagSettingsState
 > {
-  constructor(props: object) {
+  constructor(props: FeatureFlagSettingsProps) {
     super(props)
 
     const flags: Record<string, boolean> = {}
