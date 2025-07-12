@@ -6,7 +6,7 @@ import {
   setFeatureFlag,
 } from '@/constants/featureFlags'
 
-interface FeatureFlagSettingsProps {}
+type FeatureFlagSettingsProps = object
 
 interface FeatureFlagSettingsState {
   flags: Record<string, boolean>
