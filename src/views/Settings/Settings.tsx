@@ -13,6 +13,7 @@ import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
 import { NotificationSetting } from '../Notifications/NotificationSettings'
 import { ThemeToggle } from './ThemeToggle'
+import { FeatureFlagSettings } from './FeatureFlagSettings'
 import { storeValue } from '@/utils/storage'
 import { getHomeView, HomeView } from '@/utils/navigation'
 import { SelectValue } from '@mui/base'
@@ -115,6 +116,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
         </div>
         <NotificationSetting />
         <APITokenSettings />
+        <FeatureFlagSettings />
         <Box
           sx={{
             mt: 2,
