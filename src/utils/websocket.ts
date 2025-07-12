@@ -82,11 +82,12 @@ export class WebSocketManager {
     return this.socket !== null && this.socket.readyState === WebSocket.OPEN
   }
 
-  send(request: WSRequest) {
-    if (!this.isConnected() || !this.socket) {
-      return
+  send(request: WSRequest): void {
+    if (!this.isConnected()) {
+      throw new Error('WebSocket is not connected')
     }
-    this.socket.send(JSON.stringify(request))
+
+    this.socket!.send(JSON.stringify(request))
   }
 
   private scheduleReconnect() {
