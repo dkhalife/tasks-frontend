@@ -1,5 +1,5 @@
 import { getFeatureFlag } from '@/constants/featureFlags'
-import { WSRequest, WSResponse } from '@/models/websocket'
+import { WSEvent, WSRequest, WSResponse } from '@/models/websocket'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -9,7 +9,7 @@ export class WebSocketManager {
   private retryCount = 0
   private manualClose = false
   private enabled: boolean
-  private listeners: Map<string, Set<(data: unknown) => void>> = new Map()
+  private listeners: Map<WSEvent, Set<(data: unknown) => void>> = new Map()
 
   private constructor() {
     this.enabled = getFeatureFlag('useWebsockets', false)
@@ -79,7 +79,7 @@ export class WebSocketManager {
     }
   }
 
-  on(action: string, handler: (data: unknown) => void) {
+  on(action: WSEvent, handler: (data: unknown) => void) {
     if (!this.listeners.has(action)) {
       this.listeners.set(action, new Set())
     }
@@ -87,7 +87,7 @@ export class WebSocketManager {
     this.listeners.get(action)?.add(handler)
   }
 
-  off(action: string, handler: (data: unknown) => void) {
+  off(action: WSEvent, handler: (data: unknown) => void) {
     const handlers = this.listeners.get(action)
     if (!handlers) {
       return
@@ -99,8 +99,8 @@ export class WebSocketManager {
     }
   }
 
-  private emit(action: string, data: unknown) {
-    const handlers = this.listeners.get(action)
+  private emit(event: WSEvent, data: unknown) {
+    const handlers = this.listeners.get(event)
     if (!handlers) {
       return
     }
