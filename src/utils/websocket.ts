@@ -1,4 +1,5 @@
 import { getFeatureFlag } from '@/constants/featureFlags'
+import { WSRequest } from '@/models/websocket'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -75,6 +76,17 @@ export class WebSocketManager {
       this.socket = null
     }
     this.retryCount = 0
+  }
+
+  isConnected(): boolean {
+    return this.socket !== null && this.socket.readyState === WebSocket.OPEN
+  }
+
+  send(request: WSRequest) {
+    if (!this.isConnected() || !this.socket) {
+      return
+    }
+    this.socket.send(JSON.stringify(request))
   }
 
   private scheduleReconnect() {
