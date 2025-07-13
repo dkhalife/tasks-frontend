@@ -1,5 +1,3 @@
-import { generateGUID } from '@/utils/guid'
-
 export type WSAction =
   | 'get_user_labels'
   | 'create_label'
@@ -7,7 +5,7 @@ export type WSAction =
   | 'delete_label'
 
 export interface WSRequest {
-  requestId?: string
+  requestId: string
   action: WSAction
   data?: unknown
 }
@@ -23,12 +21,3 @@ export interface WSResponse {
   requestId?: string
   data?: any
 }
-
-export const newWSRequest = (
-  action: WSAction,
-  data?: unknown,
-): WSRequest => ({
-  action,
-  data,
-  requestId: generateGUID(),
-})

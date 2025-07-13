@@ -1,6 +1,5 @@
 import { getFeatureFlag } from '@/constants/featureFlags'
 import { WSEvent, WSRequest, WSResponse } from '@/models/websocket'
-import { generateGUID } from '@/utils/guid'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -133,11 +132,7 @@ export class WebSocketManager {
       throw new Error('WebSocket is not connected')
     }
 
-    const reqWithId = request.requestId
-      ? request
-      : { ...request, requestId: generateGUID() }
-
-    this.socket!.send(JSON.stringify(reqWithId))
+    this.socket!.send(JSON.stringify(request))
   }
 
   private scheduleReconnect() {
