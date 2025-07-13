@@ -61,7 +61,7 @@ export class WebSocketManager {
       try {
         message = JSON.parse(event.data)
       } catch {
-        console.log('Unexpected WebSocket message type:', event.data)
+        console.debug('Unexpected WebSocket message type:', event.data)
       }
 
       if (message && message.action) {
@@ -75,7 +75,7 @@ export class WebSocketManager {
     }
 
     this.socket.onerror = (event) => {
-      console.error('WebSocket error:', event)
+      console.debug('WebSocket error:', event)
     }
   }
 
@@ -109,7 +109,7 @@ export class WebSocketManager {
         try {
           result = condition(data)
         } catch (e) {
-          console.error('WebSocket waitFor condition error', e)
+          console.debug('WebSocket waitFor condition error', e)
         }
 
         if (result) {
@@ -138,7 +138,7 @@ export class WebSocketManager {
       try {
         h(data)
       } catch (e) {
-        console.error('WebSocket listener error', e)
+        console.debug('WebSocket listener error', e)
       }
     })
   }

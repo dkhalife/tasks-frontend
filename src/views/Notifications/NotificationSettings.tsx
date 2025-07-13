@@ -21,6 +21,7 @@ import {
   WebhookMethod,
 } from '@/models/notifications'
 import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
+import WebSocketManager from '@/utils/websocket'
 
 type NotificationSettingProps = object
 
@@ -35,8 +36,12 @@ export class NotificationSetting extends React.Component<
   NotificationSettingProps,
   NotificationSettingState
 > {
+  private ws: WebSocketManager
+
   constructor(props: NotificationSettingProps) {
     super(props)
+
+    this.ws = WebSocketManager.getInstance()
 
     this.state = {
       saved: true,
@@ -54,6 +59,29 @@ export class NotificationSetting extends React.Component<
 
   componentDidMount(): void {
     this.loadSettings()
+    this.registerWebSocketListeners()
+  }
+
+  componentWillUnmount(): void {
+    this.unregisterWebSocketListeners()
+  }
+
+  private registerWebSocketListeners = () => {
+    this.ws.on('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
+  }
+
+  private unregisterWebSocketListeners = () => {
+    this.ws.off('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
+  }
+
+  private onNotificationSettingsUpdatedWS = (data: any) => {
+    this.setState({
+      type: data.provider,
+      options: {
+        ...data.triggers,
+      },
+      saved: true,
+    })
   }
 
   private loadSettings = async () => {
@@ -79,7 +107,7 @@ export class NotificationSetting extends React.Component<
     })
   }
 
-  private onWebhookMethodChange = (
+  private onWebhookMethodChanged = (
     e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
     option: SelectValue<string, false>,
   ) => {
@@ -95,7 +123,7 @@ export class NotificationSetting extends React.Component<
     })
   }
 
-  private onURLChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  private onURLChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value
 
     const type = this.state.type as
@@ -111,7 +139,7 @@ export class NotificationSetting extends React.Component<
     })
   }
 
-  private onGotifyTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  private onGotifyTokenChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const token = e.target.value
 
     const type = this.state.type as NotificationTypeGotify
@@ -125,14 +153,14 @@ export class NotificationSetting extends React.Component<
     })
   }
 
-  private onTriggersChange = (options: NotificationTriggerOptions) => {
+  private onTriggersChanged = (options: NotificationTriggerOptions) => {
     this.setState({
       saved: false,
       options,
     })
   }
 
-  private save = async () => {
+  private onSaveClicked = async () => {
     const { type, options } = this.state
     if (type.provider === 'webhook') {
       const isValidURL = type.url.match(/^https?:\/\/[^\s/$.?#].[^\s]*$/i)
@@ -160,7 +188,7 @@ export class NotificationSetting extends React.Component<
     }
   }
 
-  private onSnackbarClose = () => {
+  private onSnackbarCloseClicked = () => {
     this.setState({ error: '' })
   }
 
@@ -204,7 +232,7 @@ export class NotificationSetting extends React.Component<
               <Select
                 value={type.method}
                 sx={{ maxWidth: '200px' }}
-                onChange={this.onWebhookMethodChange}
+                onChange={this.onWebhookMethodChanged}
               >
                 <Option value={'GET'}>GET</Option>
                 <Option value={'POST'}>POST</Option>
@@ -218,7 +246,7 @@ export class NotificationSetting extends React.Component<
               <Input
                 placeholder={placeholderURL}
                 value={type.url}
-                onChange={this.onURLChange}
+                onChange={this.onURLChanged}
               />
             </Box>
           )}
@@ -230,7 +258,7 @@ export class NotificationSetting extends React.Component<
                 type='password'
                 placeholder='Your Gotify token'
                 value={type.token}
-                onChange={this.onGotifyTokenChange}
+                onChange={this.onGotifyTokenChanged}
               />
             </Box>
           )}
@@ -238,7 +266,7 @@ export class NotificationSetting extends React.Component<
           {type.provider !== 'none' && (
             <NotificationOptions
               notification={options}
-              onChange={this.onTriggersChange}
+              onChange={this.onTriggersChanged}
             />
           )}
 
@@ -249,13 +277,13 @@ export class NotificationSetting extends React.Component<
                 justifyContent: 'flex-start',
               }}
             >
-              <Button onClick={this.save}>Save</Button>
+              <Button onClick={this.onSaveClicked}>Save</Button>
             </Box>
           )}
 
           <Snackbar
             open={error !== ''}
-            onClose={this.onSnackbarClose}
+            onClose={this.onSnackbarCloseClicked}
             autoHideDuration={3000}
           >
             {error}

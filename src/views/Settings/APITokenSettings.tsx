@@ -18,6 +18,7 @@ import React from 'react'
 import { TokenModal } from '../Modals/Inputs/TokenModal'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { formatDistanceToNow } from 'date-fns'
+import WebSocketManager from '@/utils/websocket'
 
 type APITokenSettingsProps = object
 
@@ -34,8 +35,12 @@ export class APITokenSettings extends React.Component<
   private tokenToDelete: APIToken | null = null
   private confirmModalRef = React.createRef<ConfirmationModal>()
 
+  private ws: WebSocketManager
+
   constructor(props: APITokenSettingsProps) {
     super(props)
+
+    this.ws = WebSocketManager.getInstance()
 
     this.state = {
       tokens: [],
@@ -52,9 +57,34 @@ export class APITokenSettings extends React.Component<
 
   componentDidMount(): void {
     this.loadTokens()
+    this.registerWebSocketListeners()
   }
 
-  private handleSaveToken = async (
+  componentWillUnmount(): void {
+    this.unregisterWebSocketListeners()
+  }
+  
+  private onTokenCreatedWS = (data: unknown) => {
+    const createdToken = data as APIToken
+    this.onTokenCreated(createdToken)
+  }
+
+  private onTokenDeletedWS = (data: unknown) => {
+    const deletedTokenId = (data as APIToken).id
+    this.onTokenDeleted(deletedTokenId)
+  }
+
+  private registerWebSocketListeners = () => {
+    this.ws.on('app_token_created', this.onTokenCreatedWS);
+    this.ws.on('app_token_deleted', this.onTokenDeletedWS);
+  }
+
+  private unregisterWebSocketListeners = () => {
+    this.ws.off('app_token_created', this.onTokenCreatedWS);
+    this.ws.off('app_token_deleted', this.onTokenDeletedWS);
+  }
+
+  private onSaveTokenClicked = async (
     name: string | null,
     scopes: ApiTokenScope[],
     expiration: number,
@@ -64,21 +94,29 @@ export class APITokenSettings extends React.Component<
     }
 
     const data = await CreateLongLiveToken(name, scopes, expiration)
-    const newTokens = [...this.state.tokens]
-    newTokens.push(data.token)
-
     this.setState({
-      tokens: newTokens,
       showTokenId: data.token.id,
     })
+
+    if (this.ws.isConnected()) {
+      return
+    }
+
+    this.onTokenCreated(data.token)
   }
 
-  private onDeleteToken = async (token: APIToken) => {
+  private onTokenCreated = (token: APIToken) => {
+    this.setState((prevState) => ({
+      tokens: [...prevState.tokens, token],
+    }))
+  }
+
+  private onDeleteTokenClicked = async (token: APIToken) => {
     this.tokenToDelete = token
     this.confirmModalRef.current?.open()
   }
 
-  private onDeleteConfirmation = async (confirmed: boolean) => {
+  private onDeleteTokenConfirmed = async (confirmed: boolean) => {
     if (!confirmed) {
       return
     }
@@ -88,15 +126,23 @@ export class APITokenSettings extends React.Component<
       throw new Error('No token to delete')
     }
 
-    const { tokens } = this.state
     await DeleteLongLiveToken(token.id)
 
+    if (this.ws.isConnected()) {
+      return
+    }
+
+    this.onTokenDeleted(token.id)
+  }
+
+  private onTokenDeleted = (tokenId: string) => {
+    const { tokens } = this.state
     this.setState({
-      tokens: tokens.filter((t: APIToken) => t.id !== token.id),
+      tokens: tokens.filter((t: APIToken) => t.id !== tokenId),
     })
   }
 
-  private toggleTokenVisibility = (token: APIToken) => {
+  private onToggleTokenVisibilityClicked = (token: APIToken) => {
     const { showTokenId } = this.state
     if (showTokenId === token.id) {
       this.setState({ showTokenId: null })
@@ -106,12 +152,12 @@ export class APITokenSettings extends React.Component<
     this.setState({ showTokenId: token.id })
   }
 
-  private onCopyToken = (token: APIToken) => {
+  private onCopyTokenClicked = (token: APIToken) => {
     navigator.clipboard.writeText(token.token)
     this.setState({ showTokenId: null })
   }
 
-  private onGenerateToken = () => {
+  private onGenerateTokenClicked = () => {
     this.modalRef.current?.open()
   }
 
@@ -139,7 +185,7 @@ export class APITokenSettings extends React.Component<
                     variant='outlined'
                     color='primary'
                     sx={{ mr: 1 }}
-                    onClick={() => this.toggleTokenVisibility(token)}
+                    onClick={() => this.onToggleTokenVisibilityClicked(token)}
                   >
                     {showTokenId === token?.id ? 'Hide' : 'Show'}
                   </Button>
@@ -147,7 +193,7 @@ export class APITokenSettings extends React.Component<
                 <Button
                   variant='outlined'
                   color='danger'
-                  onClick={() => this.onDeleteToken(token)}
+                  onClick={() => this.onDeleteTokenClicked(token)}
                 >
                   Remove
                 </Button>
@@ -163,7 +209,7 @@ export class APITokenSettings extends React.Component<
                     <IconButton
                       variant='outlined'
                       color='primary'
-                      onClick={() => this.onCopyToken(token)}
+                      onClick={() => this.onCopyTokenClicked(token)}
                     >
                       <CopyAll />
                     </IconButton>
@@ -181,14 +227,14 @@ export class APITokenSettings extends React.Component<
             width: '210px',
             mt: 1,
           }}
-          onClick={this.onGenerateToken}
+          onClick={this.onGenerateTokenClicked}
         >
           Generate New Token
         </Button>
 
         <TokenModal
           ref={this.modalRef}
-          onClose={this.handleSaveToken}
+          onClose={this.onSaveTokenClicked}
           okText={'Generate Token'}
         />
 
@@ -198,7 +244,7 @@ export class APITokenSettings extends React.Component<
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this token?'
-          onClose={this.onDeleteConfirmation}
+          onClose={this.onDeleteTokenConfirmed}
         />
       </Box>
     )
