@@ -3,7 +3,7 @@ import { Request } from '../utils/api'
 import { HistoryEntry } from '@/models/history'
 import { Label } from '@/models/label'
 
-type MarshalledTask = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
+export type MarshalledTask = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
   next_due_date: string | null
   end_date: string | null
   labels: string[]
@@ -58,7 +58,7 @@ function MarshallTask(task: Task): MarshalledTask {
   }
 }
 
-const UnmarshallTask = (task: MarshalledTask): Task => {
+export const UnmarshallTask = (task: MarshalledTask): Task => {
   return {
     ...task,
     next_due_date: UnmarshallDate(task.next_due_date),
