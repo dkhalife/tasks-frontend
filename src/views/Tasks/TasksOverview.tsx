@@ -2,6 +2,8 @@ import {
   DeleteTask,
   GetTasks,
   MarkTaskComplete,
+  MarshalledTask,
+  UnmarshallTask,
   UpdateDueDate,
 } from '@/api/tasks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
@@ -106,18 +108,18 @@ export class TasksOverview extends React.Component<
     this.ws.on('task_created', this.onTaskCreatedWS);
     this.ws.on('task_updated', this.onTaskUpdatedWS);
     this.ws.on('task_deleted', this.onTaskDeletedWS);
+    this.ws.on('task_completed', this.onTaskCompletedWS);
     this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
     this.ws.on('task_skipped', this.onTaskSkippedWS);
-    this.ws.on('task_notification', this.onTaskNotificationWS);
   }
 
   private unregisterWebSocketListeners = () => {
     this.ws.off('task_created', this.onTaskCreatedWS);
     this.ws.off('task_updated', this.onTaskUpdatedWS);
     this.ws.off('task_deleted', this.onTaskDeletedWS);
+    this.ws.off('task_completed', this.onTaskCompletedWS);
     this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
     this.ws.off('task_skipped', this.onTaskSkippedWS);
-    this.ws.off('task_notification', this.onTaskNotificationWS);
   }
   
   private onTaskCreated = (newTask: Task) => {
@@ -144,13 +146,13 @@ export class TasksOverview extends React.Component<
   }
 
   private onTaskCreatedWS = (data: unknown) => {
-    const newTask = data as Task
-    this.onTaskCreated(newTask)
+    const newTask = data as MarshalledTask
+    this.onTaskCreated(UnmarshallTask(newTask))
   }
 
   private onTaskUpdatedWS = (data: unknown) => {
-    const updatedTask = data as Task
-    this.onTaskUpdated(updatedTask)
+    const updatedTask = data as MarshalledTask
+    this.onTaskUpdated(UnmarshallTask(updatedTask))
   }
 
   private onTaskDeletedWS = (data: unknown) => {
@@ -159,18 +161,18 @@ export class TasksOverview extends React.Component<
   }
 
   private onTaskCompletedWS = (data: unknown) => {
-    const task = data as Task
-    this.onTaskCompleted(task)
+    const task = data as MarshalledTask
+    this.onTaskCompleted(UnmarshallTask(task))
   }
 
   private onTaskUncompletedWS = (data: unknown) => {
-    const uncompletedTask = data as Task
-    this.onTaskCreated(uncompletedTask)
+    const uncompletedTask = data as MarshalledTask
+    this.onTaskCreated(UnmarshallTask(uncompletedTask))
   }
 
   private onTaskSkippedWS = (data: unknown) => {
-    const skippedTask = data as Task
-    this.onTaskUpdated(skippedTask)
+    const skippedTask = data as MarshalledTask
+    this.onTaskUpdated(UnmarshallTask(skippedTask))
   }
 
   private onKeyDown = (event: KeyboardEvent) => {

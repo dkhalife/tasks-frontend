@@ -1,4 +1,4 @@
-import { DeleteTask, GetTasks, SkipTask, UpdateDueDate } from '@/api/tasks'
+import { DeleteTask, GetTasks, MarshalledTask, SkipTask, UnmarshallTask, UpdateDueDate } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { Task, TASK_UPDATE_EVENT } from '@/models/task'
 import {
@@ -246,12 +246,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onTaskCreatedWS = (data: unknown) => {
-    const newTask = data as Task
-    this.addTask(newTask)
+    const newTask = data as MarshalledTask
+    this.addTask(UnmarshallTask(newTask))
   }
 
   private onTaskUpdatedWS = (data: unknown) => {
-    const updatedTask = data as Task
+    const updatedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(updatedTask, updatedTask, 'updated')
   }
 
@@ -261,17 +261,17 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onTaskCompletedWS = (data: unknown) => {
-    const completedTask = data as Task
+    const completedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(completedTask, completedTask, 'completed')
   }
 
   private onTaskUncompletedWS = (data: unknown) => {
-    const uncompletedTask = data as Task
+    const uncompletedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(uncompletedTask, uncompletedTask, 'updated')
   }
 
   private onTaskSkippedWS = (data: unknown) => {
-    const skippedTask = data as Task
+    const skippedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(skippedTask, skippedTask, 'skipped')
   }
 
