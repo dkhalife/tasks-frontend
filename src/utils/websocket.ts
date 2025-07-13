@@ -99,6 +99,35 @@ export class WebSocketManager {
     }
   }
 
+  async waitFor(
+    event: WSEvent,
+    condition: (data: unknown) => boolean,
+  ): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      const handler = (data: unknown) => {
+        let result = false
+        try {
+          result = condition(data)
+        } catch (e) {
+          console.error('WebSocket waitFor condition error', e)
+        }
+
+        if (result) {
+          clearTimeout(timeoutId)
+          this.off(event, handler)
+          resolve(data)
+        }
+      }
+
+      const timeoutId = setTimeout(() => {
+        this.off(event, handler)
+        reject(new Error('Timed out waiting for condition'))
+      }, 5000)
+
+      this.on(event, handler)
+    })
+  }
+
   private emit(event: WSEvent, data: unknown) {
     const handlers = this.listeners.get(event)
     if (!handlers) {
