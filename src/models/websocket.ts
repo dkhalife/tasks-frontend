@@ -17,6 +17,12 @@ export type WSEvent =
   | 'app_token_created'
   | 'app_token_deleted'
   | 'notification_settings_updated'
+  | 'task_created'
+  | 'task_updated'
+  | 'task_deleted'
+  | 'task_completed'
+  | 'task_uncompleted'
+  | 'task_skipped'
 
 export interface WSResponse {
   action: WSEvent

@@ -48,6 +48,7 @@ import { retrieveValue, storeValue } from '@/utils/storage'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
+import WebSocketManager from '@/utils/websocket'
 
 type MyTasksProps = WithNavigate
 
@@ -70,8 +71,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
 
+  private ws: WebSocketManager
+
   constructor(props: MyTasksProps) {
     super(props)
+
+    this.ws = WebSocketManager.getInstance()
 
     this.menuAnchorRef = document.createElement('div')
     this.menuAnchorRef.style.position = 'absolute'
@@ -157,12 +162,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private updateTask = async (
+  private onTaskUpdated = async (
     oldTask: Task,
     newTask: Task,
     event: TASK_UPDATE_EVENT,
   ) => {
-    this.removeTask(oldTask)
+    this.removeTask(oldTask.id)
 
     if (newTask.next_due_date != null) {
       this.addTask(newTask)
@@ -170,7 +175,6 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
     let message
     switch (event) {
-      default:
       case 'completed':
         message = 'Task completed'
         break
@@ -180,6 +184,9 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       case 'skipped':
         message = 'Task skipped'
         break
+
+      default:
+        return
     }
 
     this.setState({
@@ -188,7 +195,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private removeTask = async (task: Task) => {
+  private removeTask = async (taskId: string) => {
     const { groups } = this.state
 
     if (!groups) {
@@ -197,7 +204,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
     for (const groupKey in groups) {
       const group = groupKey as keyof TaskGroups
-      groups[group].content = groups[group].content.filter(t => t.id !== task.id)
+      groups[group].content = groups[group].content.filter(t => t.id !== taskId)
     }
 
     this.setState({
@@ -207,6 +214,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
   componentDidMount(): void {
     this.loadTasks()
+    this.registerWebSocketListeners()
 
     setTitle('My Tasks')
 
@@ -215,15 +223,65 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
   componentWillUnmount(): void {
     document.removeEventListener('click', this.dismissMoreMenu)
+
+    this.unregisterWebSocketListeners()
   }
 
-  private onSnackbarClose = () => {
+  private registerWebSocketListeners = () => {
+    this.ws.on('task_created', this.onTaskCreatedWS);
+    this.ws.on('task_updated', this.onTaskUpdatedWS);
+    this.ws.on('task_deleted', this.onTaskDeletedWS);
+    this.ws.on('task_completed', this.onTaskCompletedWS);
+    this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
+    this.ws.on('task_skipped', this.onTaskSkippedWS);
+  }
+
+  private unregisterWebSocketListeners = () => {
+    this.ws.off('task_created', this.onTaskCreatedWS);
+    this.ws.off('task_updated', this.onTaskUpdatedWS);
+    this.ws.off('task_deleted', this.onTaskDeletedWS);
+    this.ws.off('task_completed', this.onTaskCompletedWS);
+    this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
+    this.ws.off('task_skipped', this.onTaskSkippedWS);
+  }
+
+  private onTaskCreatedWS = (data: unknown) => {
+    const newTask = data as Task
+    this.addTask(newTask)
+  }
+
+  private onTaskUpdatedWS = (data: unknown) => {
+    const updatedTask = data as Task
+    this.onTaskUpdated(updatedTask, updatedTask, 'updated')
+  }
+
+  private onTaskDeletedWS = (data: unknown) => {
+    const deletedTaskId = (data as any).id as string
+    this.removeTask(deletedTaskId)
+  }
+
+  private onTaskCompletedWS = (data: unknown) => {
+    const completedTask = data as Task
+    this.onTaskUpdated(completedTask, completedTask, 'completed')
+  }
+
+  private onTaskUncompletedWS = (data: unknown) => {
+    const uncompletedTask = data as Task
+    this.onTaskUpdated(uncompletedTask, uncompletedTask, 'updated')
+  }
+
+  private onTaskSkippedWS = (data: unknown) => {
+    const skippedTask = data as Task
+    this.onTaskUpdated(skippedTask, skippedTask, 'skipped')
+  }
+
+  private onSnackbarClosed = () => {
     this.setState({
       isSnackbarOpen: false,
     })
   }
 
-  private toggleGroup = (groupKey: keyof TaskGroups) => {
+  private onToggleGroupClicked = (groupKey: keyof TaskGroups) => {
     const { isExpanded } = this.state
     const nextExpanded = {
       ...isExpanded,
@@ -237,7 +295,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     storeValue('expanded_groups', nextExpanded)
   }
 
-  private toggleGroupBy = () => {
+  private onToggleGroupByClicked = () => {
     const { groupBy, tasks, labels } = this.state
     const nextGroupBy = groupBy === 'due_date' ? 'labels' : 'due_date'
     const nextExpanded = getDefaultExpandedState(nextGroupBy, labels)
@@ -287,7 +345,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private handleEdit = () =>{
+  private onEditClicked = () =>{
     const { contextMenuTask: task } = this.state
     if (task === null) {
       throw new Error('Attempted to delete without task reference')
@@ -297,7 +355,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     this.props.navigate(NavigationPaths.TaskEdit(task.id))
   }
 
-  private handleHistory = () => {
+  private onViewHistoryClicked = () => {
     const { contextMenuTask: task } = this.state
     if (task === null) {
       throw new Error('Attempted to view history without task reference')
@@ -307,7 +365,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     this.props.navigate(NavigationPaths.TaskHistory(task.id))
   }
 
-  private onSkipTask = async () => {
+  private onSkipTaskClicked = async () => {
     const { contextMenuTask: task } = this.state
     if (task === null) {
       throw new Error('Attempted to skip a task without a reference')
@@ -316,10 +374,10 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     const response = await SkipTask(task.id)
 
     this.dismissMoreMenu()
-    this.updateTask(task, response.task, 'skipped')
+    this.onTaskUpdated(task, response.task, 'skipped')
   }
 
-  private onChangeDueDate = () => {
+  private onChangeDueDateClicked = () => {
     const { contextMenuTask: task } = this.state
     if (task === null) {
       throw new Error('Attempted to change due date without task reference')
@@ -329,12 +387,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     this.dateModalRef.current?.open(task.next_due_date)
   }
 
-  private handleDelete = () => {
+  private onDeleteClicked = () => {
     this.dismissMoreMenu()
     this.confirmationModalRef.current?.open()
   }
 
-  private handleDeleteConfirm = async (isConfirmed: boolean) => {
+  private onDeleteConfirmed = async (isConfirmed: boolean) => {
     const { contextMenuTask: task } = this.state
 
     if (task === null) {
@@ -344,11 +402,11 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     if (isConfirmed === true) {
       await DeleteTask(task.id)
 
-      this.removeTask(task)
+      this.removeTask(task.id)
     }
   }
 
-  private handleChangeDueDate = async (newDate: Date | null) => {
+  private onDueDateModalClosed = async (newDate: Date | null) => {
     if (newDate === null) {
       return
     }
@@ -359,7 +417,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     }
 
     const response = await UpdateDueDate(task.id, newDate)
-    this.updateTask(task, response.task, 'rescheduled')
+    this.onTaskUpdated(task, response.task, 'rescheduled')
   }
 
   render(): React.ReactNode {
@@ -405,7 +463,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                 width: '25px',
                 height: '25px',
               }}
-              onClick={this.toggleGroupBy}
+              onClick={this.onToggleGroupByClicked}
             >
               {groupBy === 'due_date' ? <CalendarMonth /> : <LabelIcon />}
             </IconButton>
@@ -439,7 +497,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                       variant='soft'
                       color='neutral'
                       size='md'
-                      onClick={() => this.toggleGroup(groupKey)}
+                      onClick={() => this.onToggleGroupClicked(groupKey)}
                       endDecorator={
                         <ExpandCircleDown
                           color='primary'
@@ -474,7 +532,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
                         key={task.id}
                         task={task}
                         onTaskUpdate={(updatedTask, event) =>
-                          this.updateTask(task, updatedTask, event)
+                          this.onTaskUpdated(task, updatedTask, event)
                         }
                         onContextMenu={this.showContextMenu}
                         navigate={navigate}
@@ -499,27 +557,27 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
           ref={this.menuRef}
         >
           {contextMenuTask && contextMenuTask.frequency.type !== 'once' && (
-            <MenuItem onClick={this.onSkipTask}>
+            <MenuItem onClick={this.onSkipTaskClicked}>
               <SwitchAccessShortcut />
               Skip to next due date
             </MenuItem>
           )}
-          <MenuItem onClick={this.onChangeDueDate}>
+          <MenuItem onClick={this.onChangeDueDateClicked}>
             <MoreTime />
             Change due date
           </MenuItem>
-          <MenuItem onClick={this.handleEdit}>
+          <MenuItem onClick={this.onEditClicked}>
             <Edit />
             Edit
           </MenuItem>
           <Divider />
-          <MenuItem onClick={this.handleHistory}>
+          <MenuItem onClick={this.onViewHistoryClicked}>
             <ManageSearch />
             History
           </MenuItem>
           <Divider />
           <MenuItem
-            onClick={this.handleDelete}
+            onClick={this.onDeleteClicked}
             color='danger'
           >
             <Delete />
@@ -564,7 +622,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
           <DateModal
             ref={this.dateModalRef}
             title={`Change due date`}
-            onClose={this.handleChangeDueDate}
+            onClose={this.onDueDateModalClosed}
           />
 
           <ConfirmationModal
@@ -573,12 +631,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
             confirmText='Delete'
             cancelText='Cancel'
             message='Are you sure you want to delete this task?'
-            onClose={this.handleDeleteConfirm}
+            onClose={this.onDeleteConfirmed}
           />
         </Box>
         <Snackbar
           open={isSnackbarOpen}
-          onClose={this.onSnackbarClose}
+          onClose={this.onSnackbarClosed}
           autoHideDuration={3000}
           variant='soft'
           color='success'

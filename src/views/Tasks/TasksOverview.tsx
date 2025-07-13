@@ -35,6 +35,7 @@ import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
+import WebSocketManager from '@/utils/websocket'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -55,8 +56,13 @@ export class TasksOverview extends React.Component<
   private searchInputRef = React.createRef<HTMLInputElement>()
   private taskBeingDeleted: Task | null = null
 
+  private ws: WebSocketManager
+
   constructor(props: TasksOverviewProps) {
     super(props)
+
+    this.ws = WebSocketManager.getInstance()
+
     this.state = {
       tasks: [],
       filteredTasks: [],
@@ -80,10 +86,12 @@ export class TasksOverview extends React.Component<
 
     setTitle('Tasks Overview')
     this.registerKeyboardShortcuts()
+    this.registerWebSocketListeners()
   }
 
   componentWillUnmount(): void {
     this.unregisterKeyboardShortcuts()
+    this.unregisterWebSocketListeners()
   }
 
   private registerKeyboardShortcuts = () => {
@@ -92,6 +100,77 @@ export class TasksOverview extends React.Component<
 
   private unregisterKeyboardShortcuts = () => {
     document.removeEventListener('keydown', this.onKeyDown)
+  }
+
+  private registerWebSocketListeners = () => {
+    this.ws.on('task_created', this.onTaskCreatedWS);
+    this.ws.on('task_updated', this.onTaskUpdatedWS);
+    this.ws.on('task_deleted', this.onTaskDeletedWS);
+    this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
+    this.ws.on('task_skipped', this.onTaskSkippedWS);
+    this.ws.on('task_notification', this.onTaskNotificationWS);
+  }
+
+  private unregisterWebSocketListeners = () => {
+    this.ws.off('task_created', this.onTaskCreatedWS);
+    this.ws.off('task_updated', this.onTaskUpdatedWS);
+    this.ws.off('task_deleted', this.onTaskDeletedWS);
+    this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
+    this.ws.off('task_skipped', this.onTaskSkippedWS);
+    this.ws.off('task_notification', this.onTaskNotificationWS);
+  }
+  
+  private onTaskCreated = (newTask: Task) => {
+    this.setState(prevState => {
+      const newTasks = sortTasksByDueDate([...prevState.tasks, newTask])
+      return {
+        tasks: newTasks,
+        filteredTasks: newTasks,
+      }
+    })
+  }
+
+  private onTaskUpdated = (updatedTask: Task) => {
+    this.setState(prevState => {
+      const newTasks = sortTasksByDueDate((prevState.tasks.map(task =>
+        task.id === updatedTask.id ? updatedTask : task
+      )))
+
+      return {
+        tasks: newTasks,
+        filteredTasks: newTasks,
+      }
+    })
+  }
+
+  private onTaskCreatedWS = (data: unknown) => {
+    const newTask = data as Task
+    this.onTaskCreated(newTask)
+  }
+
+  private onTaskUpdatedWS = (data: unknown) => {
+    const updatedTask = data as Task
+    this.onTaskUpdated(updatedTask)
+  }
+
+  private onTaskDeletedWS = (data: unknown) => {
+    const deletedTaskId = (data as any).id as string
+    this.onTaskDeleted(deletedTaskId)
+  }
+
+  private onTaskCompletedWS = (data: unknown) => {
+    const task = data as Task
+    this.onTaskCompleted(task)
+  }
+
+  private onTaskUncompletedWS = (data: unknown) => {
+    const uncompletedTask = data as Task
+    this.onTaskCreated(uncompletedTask)
+  }
+
+  private onTaskSkippedWS = (data: unknown) => {
+    const skippedTask = data as Task
+    this.onTaskUpdated(skippedTask)
   }
 
   private onKeyDown = (event: KeyboardEvent) => {
@@ -105,13 +184,13 @@ export class TasksOverview extends React.Component<
       event.key === '+' &&
       document.activeElement?.tagName.toLowerCase() !== 'input'
     ) {
-      this.onAddTask()
+      this.onAddTaskClicked()
       event.preventDefault()
       event.stopPropagation()
     }
   }
 
-  private handleChangeDueDate = async (date: Date | null) => {
+  private onDueDateModalClosed = async (date: Date | null) => {
     if (!date) {
       return
     }
@@ -136,31 +215,39 @@ export class TasksOverview extends React.Component<
     })
   }
 
-  private onCompleteTask = (task: Task) => async () => {
+  private onCompleteTaskClicked = (task: Task) => async () => {
     const data = await MarkTaskComplete(task.id)
-    const newTask = data.task
 
+    if (this.ws.isConnected()) {
+      return
+    }
+
+    const newTask = data.task
+    this.onTaskCompleted(newTask)
+
+    playSound(SoundEffect.TaskComplete)
+  }
+
+  private onTaskCompleted = (task: Task) => {
     const { tasks } = this.state
     let newTasks = tasks.filter(t => t.id !== task.id)
 
-    if (newTask.next_due_date !== null) {
-      newTasks.push(newTask)
+    if (task.next_due_date !== null) {
+      newTasks.push(task)
 
       newTasks = sortTasksByDueDate(newTasks)
     }
 
     const index = newTasks.findIndex(c => c.id === task.id)
-    newTasks[index] = newTask
+    newTasks[index] = task
 
     this.setState({
       tasks: newTasks,
       filteredTasks: newTasks,
     })
-
-    playSound(SoundEffect.TaskComplete)
   }
 
-  private onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+  private onSearchTermsChanged = (e: ChangeEvent<HTMLInputElement>) => {
     const { tasks } = this.state
     const newTasks = tasks.filter(task => {
       return task.title.toLowerCase().includes(e.target.value.toLowerCase())
@@ -173,7 +260,7 @@ export class TasksOverview extends React.Component<
     this.setState(newState)
   }
 
-  private onClearSearch = () => {
+  private onClearSearchClicked = () => {
     const { tasks } = this.state
     this.setState({
       search: '',
@@ -181,29 +268,39 @@ export class TasksOverview extends React.Component<
     })
   }
 
-  private onReschedule = async (task: Task) => {
+  private onRescheduleClicked = async (task: Task) => {
     await this.setState({
       taskId: task.id,
     })
     this.dateModalRef.current?.open(task.next_due_date)
   }
 
-  private onViewHistory = (task: Task) => {
+  private onViewHistoryClicked = (task: Task) => {
     const { navigate } = this.props
     navigate(NavigationPaths.TaskHistory(task.id))
   }
 
-  private onAddTask = () => {
+  private onAddTaskClicked = () => {
     const { navigate } = this.props
     navigate(NavigationPaths.TaskCreate)
   }
 
-  private onDeleteTask = async (task: Task) => {
+  private onDeleteTaskClicked = async (task: Task) => {
     this.taskBeingDeleted = task
     this.confirmationModalRef.current?.open()
   }
 
-  private onDeleteConfirm = async (isConfirmed: boolean) => {
+  private onTaskDeleted = (taskId: string) => {
+    const { tasks } = this.state
+    const newTasks = tasks.filter(t => t.id !== taskId)
+
+    this.setState({
+      tasks: newTasks,
+      filteredTasks: newTasks,
+    })
+  }
+
+  private onDeleteConfirmed = async (isConfirmed: boolean) => {
     const task = this.taskBeingDeleted
     this.taskBeingDeleted = null
 
@@ -211,18 +308,12 @@ export class TasksOverview extends React.Component<
       return
     }
 
-    const { tasks } = this.state
     if (!task) {
       throw new Error('Task to delete is not set')
     }
 
     await DeleteTask(task.id)
-    const newTasks = tasks.filter(t => t.id !== task.id)
-
-    this.setState({
-      tasks: newTasks,
-      filteredTasks: newTasks,
-    })
+    this.onTaskDeletedWS(task.id)
   }
 
   render(): React.ReactNode {
@@ -254,10 +345,10 @@ export class TasksOverview extends React.Component<
               ref={this.searchInputRef}
               placeholder='Search'
               value={search}
-              onChange={this.onSearchChange}
+              onChange={this.onSearchTermsChanged}
               endDecorator={
                 search !== '' ? (
-                  <Button onClick={this.onClearSearch}>
+                  <Button onClick={this.onClearSearchClicked}>
                     <CancelRounded />
                   </Button>
                 ) : (
@@ -274,7 +365,7 @@ export class TasksOverview extends React.Component<
             display={'flex'}
             gap={2}
           >
-            <Button onClick={this.onAddTask}>New Task</Button>
+            <Button onClick={this.onAddTaskClicked}>New Task</Button>
           </Grid>
         </Grid>
 
@@ -329,7 +420,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={this.onCompleteTask(task)}
+                      onClick={this.onCompleteTaskClicked(task)}
                       aria-setsize={2}
                     >
                       <CheckBox />
@@ -337,7 +428,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.onReschedule(task)}
+                      onClick={() => this.onRescheduleClicked(task)}
                       aria-setsize={2}
                     >
                       <CalendarMonth />
@@ -345,7 +436,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.onViewHistory(task)}
+                      onClick={() => this.onViewHistoryClicked(task)}
                       aria-setsize={2}
                     >
                       <History />
@@ -362,7 +453,7 @@ export class TasksOverview extends React.Component<
                     <IconButton
                       variant='outlined'
                       size='sm'
-                      onClick={() => this.onDeleteTask(task)}
+                      onClick={() => this.onDeleteTaskClicked(task)}
                       aria-setsize={2}
                     >
                       <Delete />
@@ -377,7 +468,7 @@ export class TasksOverview extends React.Component<
           ref={this.dateModalRef}
           key={taskId}
           title={`Change due date`}
-          onClose={this.handleChangeDueDate}
+          onClose={this.onDueDateModalClosed}
         />
         <ConfirmationModal
           ref={this.confirmationModalRef}
@@ -385,7 +476,7 @@ export class TasksOverview extends React.Component<
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this task?'
-          onClose={this.onDeleteConfirm}
+          onClose={this.onDeleteConfirmed}
         />
       </Container>
     )

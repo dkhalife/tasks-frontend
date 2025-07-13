@@ -72,7 +72,7 @@ export interface Task {
   end_date: Date | null
 }
 
-export type TASK_UPDATE_EVENT = 'completed' | 'rescheduled' | 'skipped'
+export type TASK_UPDATE_EVENT = 'updated' | 'completed' | 'rescheduled' | 'skipped'
 
 export const getDueDateChipText = (nextDueDate: Date | null): string => {
   if (nextDueDate === null) {
