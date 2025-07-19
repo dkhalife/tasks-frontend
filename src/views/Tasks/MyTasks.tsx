@@ -50,7 +50,7 @@ import { DateModal } from '../Modals/Inputs/DateModal'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import WebSocketManager from '@/utils/websocket'
 import { store } from '@/store/store'
-import { taskAdded, taskUpdated, taskDeleted } from '@/store/tasksSlice'
+import { taskUpserted, taskDeleted } from '@/store/tasksSlice'
 
 type MyTasksProps = WithNavigate
 
@@ -250,13 +250,13 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   private onTaskCreatedWS = (data: unknown) => {
     const newTask = UnmarshallTask(data as MarshalledTask)
     this.addTask(newTask)
-    store.dispatch(taskAdded(newTask))
+    store.dispatch(taskUpserted(newTask))
   }
 
   private onTaskUpdatedWS = (data: unknown) => {
     const updatedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(updatedTask, updatedTask, 'updated')
-    store.dispatch(taskUpdated(updatedTask))
+    store.dispatch(taskUpserted(updatedTask))
   }
 
   private onTaskDeletedWS = (data: unknown) => {
@@ -268,19 +268,19 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   private onTaskCompletedWS = (data: unknown) => {
     const completedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(completedTask, completedTask, 'completed')
-    store.dispatch(taskUpdated(completedTask))
+    store.dispatch(taskUpserted(completedTask))
   }
 
   private onTaskUncompletedWS = (data: unknown) => {
     const uncompletedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(uncompletedTask, uncompletedTask, 'updated')
-    store.dispatch(taskUpdated(uncompletedTask))
+    store.dispatch(taskUpserted(uncompletedTask))
   }
 
   private onTaskSkippedWS = (data: unknown) => {
     const skippedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(skippedTask, skippedTask, 'skipped')
-    store.dispatch(taskUpdated(skippedTask))
+    store.dispatch(taskUpserted(skippedTask))
   }
 
   private onSnackbarClosed = () => {

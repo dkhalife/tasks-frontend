@@ -38,7 +38,7 @@ import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
 import WebSocketManager from '@/utils/websocket'
 import { store } from '@/store/store'
-import { taskAdded, taskUpdated, taskDeleted } from '@/store/tasksSlice'
+import { taskUpserted, taskDeleted } from '@/store/tasksSlice'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -149,13 +149,13 @@ export class TasksOverview extends React.Component<
   private onTaskCreatedWS = (data: unknown) => {
     const newTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskCreated(newTask)
-    store.dispatch(taskAdded(newTask))
+    store.dispatch(taskUpserted(newTask))
   }
 
   private onTaskUpdatedWS = (data: unknown) => {
     const updatedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(updatedTask)
-    store.dispatch(taskUpdated(updatedTask))
+    store.dispatch(taskUpserted(updatedTask))
   }
 
   private onTaskDeletedWS = (data: unknown) => {
@@ -167,19 +167,19 @@ export class TasksOverview extends React.Component<
   private onTaskCompletedWS = (data: unknown) => {
     const task = UnmarshallTask(data as MarshalledTask)
     this.onTaskCompleted(task)
-    store.dispatch(taskUpdated(task))
+    store.dispatch(taskUpserted(task))
   }
 
   private onTaskUncompletedWS = (data: unknown) => {
     const uncompletedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskCreated(uncompletedTask)
-    store.dispatch(taskUpdated(uncompletedTask))
+    store.dispatch(taskUpserted(uncompletedTask))
   }
 
   private onTaskSkippedWS = (data: unknown) => {
     const skippedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(skippedTask)
-    store.dispatch(taskUpdated(skippedTask))
+    store.dispatch(taskUpserted(skippedTask))
   }
 
   private onKeyDown = (event: KeyboardEvent) => {

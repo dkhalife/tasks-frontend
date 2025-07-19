@@ -33,15 +33,7 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    taskAdded: (state, action: PayloadAction<Task>) => {
-      const index = state.tasks.findIndex(t => t.id === action.payload.id)
-      if (index >= 0) {
-        state.tasks[index] = action.payload
-      } else {
-        state.tasks.push(action.payload)
-      }
-    },
-    taskUpdated: (state, action: PayloadAction<Task>) => {
+    taskUpserted: (state, action: PayloadAction<Task>) => {
       const index = state.tasks.findIndex(t => t.id === action.payload.id)
       if (index >= 0) {
         state.tasks[index] = action.payload
@@ -91,6 +83,6 @@ const tasksSlice = createSlice({
   },
 })
 
-export const { taskAdded, taskUpdated, taskDeleted } = tasksSlice.actions
+export const { taskUpserted, taskDeleted } = tasksSlice.actions
 
 export default tasksSlice.reducer
