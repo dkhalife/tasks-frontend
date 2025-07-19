@@ -17,6 +17,7 @@ import { FeatureFlagSettings } from './FeatureFlagSettings'
 import { storeValue } from '@/utils/storage'
 import { getHomeView, HomeView } from '@/utils/navigation'
 import { SelectValue } from '@mui/base'
+import { isMobile } from '@/utils/dom'
 
 type SettingsProps = object
 type SettingsState = {
@@ -75,19 +76,23 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
             paddingBottom: '4',
           }}
         >
-          <Typography level='h3'>Preferred view</Typography>
-          <Divider />
-          <Typography>Choose your default view:</Typography>
-          <Select
-            value={homeView}
-            sx={{
-              maxWidth: '200px',
-            }}
-            onChange={this.onHomeViewChange}
-          >
-            <Option value='my_tasks'>My Tasks</Option>
-            <Option value='tasks_overview'>Tasks Overview</Option>
-          </Select>
+          {!isMobile() && (
+            <>
+              <Typography level='h3'>Preferred view</Typography>
+              <Divider />
+              <Typography>Choose your default view:</Typography>
+              <Select
+                value={homeView}
+                sx={{
+                  maxWidth: '200px',
+                }}
+                onChange={this.onHomeViewChange}
+              >
+                <Option value='my_tasks'>My Tasks</Option>
+                <Option value='tasks_overview'>Tasks Overview</Option>
+              </Select>
+            </>
+          )}
           <Typography
             level='h3'
             sx={{

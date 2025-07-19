@@ -20,6 +20,7 @@ import React from 'react'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
 import { NavBarLink } from './NavBarLink'
 import { getPathName, NavigationPaths, WithNavigate } from '@/utils/navigation'
+import { isMobile } from '@/utils/dom'
 import { Logo } from '@/Logo'
 import WebSocketManager from '@/utils/websocket'
 
@@ -113,11 +114,13 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                 icon={<LocalLibrary />}
                 label='My tasks'
               />
-              <NavBarLink
-                to={NavigationPaths.TasksOverview}
-                icon={<FormatListBulleted />}
-                label='Tasks Overview'
-              />
+              {!isMobile() && (
+                <NavBarLink
+                  to={NavigationPaths.TasksOverview}
+                  icon={<FormatListBulleted />}
+                  label='Tasks Overview'
+                />
+              )}
               <NavBarLink
                 to={NavigationPaths.Labels}
                 icon={<Label />}
