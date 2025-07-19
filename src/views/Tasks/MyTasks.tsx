@@ -49,6 +49,8 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import WebSocketManager from '@/utils/websocket'
+import { store } from '@/store/store'
+import { taskUpserted, taskDeleted } from '@/store/tasksSlice'
 
 type MyTasksProps = WithNavigate
 
@@ -246,33 +248,39 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onTaskCreatedWS = (data: unknown) => {
-    const newTask = data as MarshalledTask
-    this.addTask(UnmarshallTask(newTask))
+    const newTask = UnmarshallTask(data as MarshalledTask)
+    this.addTask(newTask)
+    store.dispatch(taskUpserted(newTask))
   }
 
   private onTaskUpdatedWS = (data: unknown) => {
     const updatedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(updatedTask, updatedTask, 'updated')
+    store.dispatch(taskUpserted(updatedTask))
   }
 
   private onTaskDeletedWS = (data: unknown) => {
     const deletedTaskId = (data as any).id as string
     this.removeTask(deletedTaskId)
+    store.dispatch(taskDeleted(deletedTaskId))
   }
 
   private onTaskCompletedWS = (data: unknown) => {
     const completedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(completedTask, completedTask, 'completed')
+    store.dispatch(taskUpserted(completedTask))
   }
 
   private onTaskUncompletedWS = (data: unknown) => {
     const uncompletedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(uncompletedTask, uncompletedTask, 'updated')
+    store.dispatch(taskUpserted(uncompletedTask))
   }
 
   private onTaskSkippedWS = (data: unknown) => {
     const skippedTask = UnmarshallTask(data as MarshalledTask)
     this.onTaskUpdated(skippedTask, skippedTask, 'skipped')
+    store.dispatch(taskUpserted(skippedTask))
   }
 
   private onSnackbarClosed = () => {

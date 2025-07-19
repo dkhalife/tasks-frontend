@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { GetTasks, GetTaskByID } from '@/api/tasks'
 import { Task } from '@/models/task'
 
@@ -32,7 +32,19 @@ export const fetchTaskById = createAsyncThunk(
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
-  reducers: {},
+  reducers: {
+    taskUpserted: (state, action: PayloadAction<Task>) => {
+      const index = state.tasks.findIndex(t => t.id === action.payload.id)
+      if (index >= 0) {
+        state.tasks[index] = action.payload
+      } else {
+        state.tasks.push(action.payload)
+      }
+    },
+    taskDeleted: (state, action: PayloadAction<string>) => {
+      state.tasks = state.tasks.filter(t => t.id !== action.payload)
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(fetchTasks.pending, state => {
@@ -70,5 +82,7 @@ const tasksSlice = createSlice({
       })
   },
 })
+
+export const { taskUpserted, taskDeleted } = tasksSlice.actions
 
 export default tasksSlice.reducer
