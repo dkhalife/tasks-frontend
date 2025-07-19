@@ -6,12 +6,14 @@ export interface TasksState {
   tasks: Task[]
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   lastFetched: number | null
+  error: string | null
 }
 
 const initialState: TasksState = {
   tasks: [],
   status: 'idle',
   lastFetched: null,
+  error: null,
 }
 
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
@@ -35,14 +37,21 @@ const tasksSlice = createSlice({
     builder
       .addCase(fetchTasks.pending, state => {
         state.status = 'loading'
+        state.error = null
       })
       .addCase(fetchTasks.fulfilled, (state, action) => {
         state.status = 'succeeded'
         state.tasks = action.payload
         state.lastFetched = Date.now()
+        state.error = null
       })
-      .addCase(fetchTasks.rejected, state => {
+      .addCase(fetchTasks.rejected, (state, action) => {
         state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      .addCase(fetchTaskById.pending, state => {
+        state.status = 'loading'
+        state.error = null
       })
       .addCase(fetchTaskById.fulfilled, (state, action) => {
         const task = action.payload
@@ -52,6 +61,12 @@ const tasksSlice = createSlice({
         } else {
           state.tasks.push(task)
         }
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(fetchTaskById.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
       })
   },
 })
