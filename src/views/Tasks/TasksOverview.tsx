@@ -37,6 +37,8 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
 import WebSocketManager from '@/utils/websocket'
+import { store } from '@/store/store'
+import { taskAdded, taskUpdated, taskDeleted } from '@/store/tasksSlice'
 
 type TasksOverviewProps = object & WithNavigate
 
@@ -145,33 +147,39 @@ export class TasksOverview extends React.Component<
   }
 
   private onTaskCreatedWS = (data: unknown) => {
-    const newTask = data as MarshalledTask
-    this.onTaskCreated(UnmarshallTask(newTask))
+    const newTask = UnmarshallTask(data as MarshalledTask)
+    this.onTaskCreated(newTask)
+    store.dispatch(taskAdded(newTask))
   }
 
   private onTaskUpdatedWS = (data: unknown) => {
-    const updatedTask = data as MarshalledTask
-    this.onTaskUpdated(UnmarshallTask(updatedTask))
+    const updatedTask = UnmarshallTask(data as MarshalledTask)
+    this.onTaskUpdated(updatedTask)
+    store.dispatch(taskUpdated(updatedTask))
   }
 
   private onTaskDeletedWS = (data: unknown) => {
     const deletedTaskId = (data as any).id as string
     this.onTaskDeleted(deletedTaskId)
+    store.dispatch(taskDeleted(deletedTaskId))
   }
 
   private onTaskCompletedWS = (data: unknown) => {
-    const task = data as MarshalledTask
-    this.onTaskCompleted(UnmarshallTask(task))
+    const task = UnmarshallTask(data as MarshalledTask)
+    this.onTaskCompleted(task)
+    store.dispatch(taskUpdated(task))
   }
 
   private onTaskUncompletedWS = (data: unknown) => {
-    const uncompletedTask = data as MarshalledTask
-    this.onTaskCreated(UnmarshallTask(uncompletedTask))
+    const uncompletedTask = UnmarshallTask(data as MarshalledTask)
+    this.onTaskCreated(uncompletedTask)
+    store.dispatch(taskUpdated(uncompletedTask))
   }
 
   private onTaskSkippedWS = (data: unknown) => {
-    const skippedTask = data as MarshalledTask
-    this.onTaskUpdated(UnmarshallTask(skippedTask))
+    const skippedTask = UnmarshallTask(data as MarshalledTask)
+    this.onTaskUpdated(skippedTask)
+    store.dispatch(taskUpdated(skippedTask))
   }
 
   private onKeyDown = (event: KeyboardEvent) => {
