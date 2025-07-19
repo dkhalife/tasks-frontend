@@ -18,7 +18,6 @@ import {
 } from '@mui/icons-material'
 import {
   Container,
-  Typography,
   Grid,
   Input,
   Button,
@@ -328,13 +327,6 @@ export class TasksOverview extends React.Component<
 
     return (
       <Container>
-        <Typography
-          level='h4'
-          mb={1.5}
-        >
-          Tasks Overview
-        </Typography>
-
         <Grid container>
           <Grid
             sm={6}
