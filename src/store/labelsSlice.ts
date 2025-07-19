@@ -39,7 +39,7 @@ const labelsSlice = createSlice({
       })
       .addCase(fetchLabels.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.error.message ?? null
+        state.error = action.error.message ?? "An unknown error occurred while fetching labels."
       })
   },
 })
