@@ -33,7 +33,6 @@ interface LabelViewState {
 }
 
 class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
-  private modalRef = React.createRef<typeof LabelModal>()
   private confirmModalRef = React.createRef<ConfirmationModal>()
   private labelIdPendingDelete: string | null = null
 

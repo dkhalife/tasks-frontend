@@ -47,7 +47,6 @@ class TaskCardImpl extends React.Component<TaskCardProps> {
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
     const response = await this.props.completeTask(task.id)
-    console.log(response)
 
     // Play the task completion sound
     playSound(SoundEffect.TaskComplete)
