@@ -20,10 +20,17 @@ import {
   NotificationTypeWebhook,
   WebhookMethod,
 } from '@/models/notifications'
-import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 import WebSocketManager from '@/utils/websocket'
+import { RootState, AppDispatch } from '@/store/store'
+import { connect } from 'react-redux'
+import { updateNotificationSettings } from '@/store/userSlice'
 
-type NotificationSettingProps = object
+type NotificationSettingProps = {
+  initialType: NotificationType
+  initialOptions: NotificationTriggerOptions
+
+  updateNotificationSettings: (type: NotificationType, options: NotificationTriggerOptions) => Promise<any>
+}
 
 interface NotificationSettingState {
   saved: boolean
@@ -32,7 +39,7 @@ interface NotificationSettingState {
   options: NotificationTriggerOptions
 }
 
-export class NotificationSetting extends React.Component<
+class NotificationSettingsImpl extends React.Component<
   NotificationSettingProps,
   NotificationSettingState
 > {
@@ -45,54 +52,37 @@ export class NotificationSetting extends React.Component<
 
     this.state = {
       saved: true,
-      type: {
-        provider: 'none',
-      },
       error: '',
-      options: {
-        pre_due: false,
-        due_date: false,
-        overdue: false,
-      },
+      type: props.initialType,
+      options: props.initialOptions,
     }
   }
 
-  componentDidMount(): void {
-    this.loadSettings()
-    this.registerWebSocketListeners()
-  }
+  // componentDidMount(): void {
+  //   this.registerWebSocketListeners()
+  // }
 
-  componentWillUnmount(): void {
-    this.unregisterWebSocketListeners()
-  }
+  // componentWillUnmount(): void {
+  //   this.unregisterWebSocketListeners()
+  // }
 
-  private registerWebSocketListeners = () => {
-    this.ws.on('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
-  }
+  // private registerWebSocketListeners = () => {
+  //   this.ws.on('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
+  // }
 
-  private unregisterWebSocketListeners = () => {
-    this.ws.off('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
-  }
+  // private unregisterWebSocketListeners = () => {
+  //   this.ws.off('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
+  // }
 
-  private onNotificationSettingsUpdatedWS = (data: any) => {
-    this.setState({
-      type: data.provider,
-      options: {
-        ...data.triggers,
-      },
-      saved: true,
-    })
-  }
-
-  private loadSettings = async () => {
-    const response = await GetUserProfile()
-    const notifications = response.user.notifications
-
-    this.setState({
-      type: notifications.provider,
-      options: notifications.triggers,
-    })
-  }
+  // private onNotificationSettingsUpdatedWS = (data: any) => {
+  //   this.setState({
+  //     type: data.provider,
+  //     options: {
+  //       ...data.triggers,
+  //     },
+  //     saved: true,
+  //   })
+  // }
 
   private onNotificationProviderChange = (
     e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
@@ -179,7 +169,7 @@ export class NotificationSetting extends React.Component<
     })
 
     try {
-      await UpdateNotificationSettings(type, options)
+      await this.props.updateNotificationSettings(type, options)
     } catch {
       this.setState({
         saved: false,
@@ -293,3 +283,22 @@ export class NotificationSetting extends React.Component<
     )
   }
 }
+
+const mapStateToProps = (state: RootState) => {
+  const userNotifications = state.user.profile.notifications
+
+  return {
+    initialType: userNotifications.provider,
+    initialOptions: userNotifications.triggers,
+  }
+}
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  updateNotificationSettings: (type: NotificationType, options: NotificationTriggerOptions) =>
+    dispatch(updateNotificationSettings({ type, options })),
+})
+
+export const NotificationSettings = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(NotificationSettingsImpl)

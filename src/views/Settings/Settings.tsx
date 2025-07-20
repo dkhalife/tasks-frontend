@@ -11,7 +11,7 @@ import {
 import React from 'react'
 import { PassowrdChangeModal } from '../Modals/Inputs/PasswordChangeModal'
 import { APITokenSettings } from './APITokenSettings'
-import { NotificationSetting } from '../Notifications/NotificationSettings'
+import { NotificationSettings } from '../Notifications/NotificationSettings'
 import { ThemeToggle } from './ThemeToggle'
 import { FeatureFlagSettings } from './FeatureFlagSettings'
 import { storeValue } from '@/utils/storage'
@@ -119,7 +119,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
             />
           </Box>
         </div>
-        <NotificationSetting />
+        <NotificationSettings />
         <APITokenSettings />
         <FeatureFlagSettings />
         <Box

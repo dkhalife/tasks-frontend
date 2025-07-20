@@ -4,14 +4,14 @@ import { Task } from '@/models/task'
 
 export interface TasksState {
   tasks: Task[]
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'loading' | 'succeeded' | 'failed'
   lastFetched: number | null
   error: string | null
 }
 
 const initialState: TasksState = {
   tasks: [],
-  status: 'idle',
+  status: 'loading',
   lastFetched: null,
   error: null,
 }

@@ -735,8 +735,8 @@ const mapStateToProps = (state: RootState) => {
     overdue: false,
   }
 
-  const userNotificationSettings = state.user.profile?.notifications
-  if (userNotificationSettings && userNotificationSettings.provider.provider !== 'none') {
+  const userNotificationSettings = state.user.profile.notifications
+  if (userNotificationSettings.provider.provider !== 'none') {
       defaultNotificationTriggers = userNotificationSettings.triggers
   }
 

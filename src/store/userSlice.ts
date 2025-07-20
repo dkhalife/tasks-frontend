@@ -1,16 +1,29 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { GetUserProfile } from '@/api/users'
+import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 import { User } from '@/models/user'
+import { NotificationTriggerOptions, NotificationType } from '@/models/notifications'
 
 export interface UserState {
-  profile: User | null
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  profile: User
+  status: 'loading' | 'succeeded' | 'failed'
   error: string | null
 }
 
 const initialState: UserState = {
-  profile: null,
-  status: 'idle',
+  profile: {
+    display_name: '',
+    notifications: {
+      provider: {
+        provider: 'none'
+      },
+      triggers: {
+        pre_due: false,
+        due_date: false,
+        overdue: false,
+      },
+    },
+  },
+  status: 'loading',
   error: null,
 }
 
@@ -18,6 +31,10 @@ export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
   const data = await GetUserProfile()
   return data.user
 })
+
+export const updateNotificationSettings = createAsyncThunk(
+  'user/updateNotificationSettings',
+  async (settings: { type: NotificationType, options: NotificationTriggerOptions}) => await UpdateNotificationSettings(settings.type, settings.options))
 
 const userSlice = createSlice({
   name: 'user',

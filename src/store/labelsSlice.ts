@@ -5,7 +5,7 @@ import { CreateLabel, DeleteLabel, GetLabels, UpdateLabel } from '@/api/labels'
 export interface LabelsState {
   items: Label[]
   isEditing: boolean
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'loading' | 'succeeded' | 'failed'
   lastFetched: number | null
   error: string | null
 }
@@ -13,7 +13,7 @@ export interface LabelsState {
 const initialState: LabelsState = {
   items: [],
   isEditing: false,
-  status: 'idle',
+  status: 'loading',
   lastFetched: null,
   error: null,
 }
