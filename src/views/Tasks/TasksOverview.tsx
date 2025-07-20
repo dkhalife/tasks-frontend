@@ -1,7 +1,5 @@
-import {
-  DeleteTask,
-  UpdateDueDate,
-} from '@/api/tasks'
+import { UpdateDueDate } from '@/api/tasks'
+import { deleteTask } from '@/store/tasksSlice'
 import { getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -44,6 +42,7 @@ type TasksOverviewProps = {
   userLabels: Label[]
 
   completeTask: (taskId: string) => Promise<any>
+  deleteTask: (taskId: string) => Promise<any>
 } & WithNavigate
 
 interface TasksOverviewState {
@@ -289,7 +288,7 @@ class TasksOverviewImpl extends React.Component<
       throw new Error('Task to delete is not set')
     }
 
-    await DeleteTask(task.id)
+    await this.props.deleteTask(task.id)
   }
 
   render(): React.ReactNode {
@@ -463,6 +462,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   completeTask: (taskId: string) => dispatch(completeTask(taskId)),
+  deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
 })
 
 export const TasksOverview = connect(
