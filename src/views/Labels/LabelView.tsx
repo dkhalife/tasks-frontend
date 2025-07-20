@@ -34,7 +34,6 @@ interface LabelViewState {
 
 class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
   private confirmModalRef = React.createRef<ConfirmationModal>()
-  private labelIdPendingDelete: string | null = null
 
   constructor(props: LabelViewProps) {
     super(props)
@@ -62,22 +61,9 @@ class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
   }
 
   private onDeleteLabelClicked = (id: string) => {
-    this.labelIdPendingDelete = id
-    this.confirmModalRef.current?.open()
-  }
-
-  private onDeleteConfirmed = async (isConfirmed: boolean) => {
-    if (!isConfirmed) {
-      this.labelIdPendingDelete = null
-      return
-    }
-
-    const { labelIdPendingDelete: id } = this
-    if (!id) {
-      throw new Error('Label ID is null')
-    }
-
-    await this.props.deleteLabel(id)
+    this.confirmModalRef.current?.open(async () => {
+      await this.props.deleteLabel(id)
+    })
   }
 
   private isUniqueLabelName = (
@@ -91,41 +77,8 @@ class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
   }
 
   componentDidMount(): void {
-    // this.registerWebSocketListeners()
-
     setTitle('Labels')
   }
-
-  // componentWillUnmount(): void {
-  //   this.unregisterWebSocketListeners()
-  // }
-
-  // private onLabelCreatedWS = (data: unknown) => {
-  //   const newLabel = (data as any).label as Label
-  //   this.onLabelCreated(newLabel)
-  // }
-
-  // private onLabelUpdatedWS = (data: unknown) => {
-  //   const updatedLabel = (data as any).label as Label
-  //   this.onLabelUpdated(updatedLabel)
-  // }
-
-  // private onLabelDeletedWS = (data: unknown) => {
-  //   const deletedLabelId = (data as any).id as string
-  //   this.onLabelDeleted(deletedLabelId)
-  // }
-
-  // private registerWebSocketListeners = () => {
-  //   this.ws.on('label_created', this.onLabelCreatedWS);
-  //   this.ws.on('label_updated', this.onLabelUpdatedWS);
-  //   this.ws.on('label_deleted', this.onLabelDeletedWS);
-  // }
-
-  // private unregisterWebSocketListeners = () => {
-  //   this.ws.off('label_created', this.onLabelCreatedWS);
-  //   this.ws.off('label_updated', this.onLabelUpdatedWS);
-  //   this.ws.off('label_deleted', this.onLabelDeletedWS);
-  // }
 
   render(): React.ReactNode {
     const { labels, isLoading } = this.props
@@ -249,7 +202,6 @@ class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this label?'
-          onClose={this.onDeleteConfirmed}
         />
 
         <Box
