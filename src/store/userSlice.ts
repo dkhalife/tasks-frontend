@@ -3,13 +3,13 @@ import { GetUserProfile } from '@/api/users'
 import { User } from '@/models/user'
 
 export interface UserState {
-  user: User | null
+  profile: User | null
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: string | null
 }
 
 const initialState: UserState = {
-  user: null,
+  profile: null,
   status: 'idle',
   error: null,
 }
@@ -31,7 +31,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.user = action.payload
+        state.profile = action.payload
         state.error = null
       })
       .addCase(fetchUser.rejected, (state, action) => {

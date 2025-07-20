@@ -42,7 +42,6 @@ import {
   NotificationTriggerOptions,
 } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
-import { GetUserProfile } from '@/api/users'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { format, parseISO } from 'date-fns'
 import { RootState } from '@/store/store'
@@ -51,6 +50,7 @@ import { connect } from 'react-redux'
 export type TaskEditProps = WithNavigate & {
   taskId: string | null
   userLabels: Label[]
+  defaultNotificationTriggers: NotificationTriggerOptions
 }
 
 type Errors = { [key: string]: string }
@@ -72,11 +72,6 @@ export interface TaskEditState {
 class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   private titleInputRef = React.createRef<HTMLDivElement>()
   private confirmModalRef = React.createRef<ConfirmationModal>()
-  private defaultNotificationTriggers: NotificationTriggerOptions = {
-    due_date: true,
-    pre_due: false,
-    overdue: false,
-  }
 
   constructor(props: TaskEditProps) {
     super(props)
@@ -299,12 +294,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   private init = async () => {
     const { taskId } = this.props
 
-    const userProfile = (await GetUserProfile()).user
-    const defaultNotifications = userProfile.notifications
-    if (defaultNotifications.provider.provider !== 'none') {
-      this.defaultNotificationTriggers = defaultNotifications.triggers
-    }
-
     if (taskId != null) {
       await this.loadTask(taskId)
     }
@@ -341,13 +330,15 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { defaultNotificationTriggers: defaults } = this.props
+
     this.setState({
       notification: e.target.checked
         ? {
             enabled: true,
-            due_date: this.defaultNotificationTriggers.due_date,
-            pre_due: this.defaultNotificationTriggers.pre_due,
-            overdue: this.defaultNotificationTriggers.overdue,
+            due_date: defaults.due_date,
+            pre_due: defaults.pre_due,
+            overdue: defaults.overdue,
           }
         : {
             enabled: false,
@@ -737,9 +728,23 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  userLabels: state.labels.items,
-})
+const mapStateToProps = (state: RootState) => {  
+  let defaultNotificationTriggers: NotificationTriggerOptions = {
+    due_date: true,
+    pre_due: false,
+    overdue: false,
+  }
+
+  const userNotificationSettings = state.user.profile?.notifications
+  if (userNotificationSettings && userNotificationSettings.provider.provider !== 'none') {
+      defaultNotificationTriggers = userNotificationSettings.triggers
+  }
+
+  return {
+    userLabels: state.labels.items,
+    defaultNotificationTriggers,
+  }
+}
 
 export const TaskEdit = connect(
   mapStateToProps,
