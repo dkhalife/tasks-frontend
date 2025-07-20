@@ -9,6 +9,7 @@ import { WithNavigate } from './utils/navigation'
 import { CssBaseline, CssVarsProvider } from '@mui/joy'
 import { preloadSounds } from './utils/sound'
 import WebSocketManager from './utils/websocket'
+import { fetchLabels } from './store/labelsSlice'
 
 type AppProps = WithNavigate
 
@@ -41,6 +42,8 @@ export class App extends React.Component<AppProps, AppState> {
       this.loadUserProfile()
       preloadSounds();
       WebSocketManager.getInstance().connect();
+
+      fetchLabels()
     }
   }
 

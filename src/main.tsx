@@ -4,6 +4,8 @@ import { useRoot } from './utils/dom'
 import { RouterContext } from './contexts/RouterContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { LogError, LogWarning } from './api/log'
+import { Provider } from 'react-redux'
+import { store } from './store/store'
 import { isTokenValid } from './utils/api'
 
 window.onerror = (message, source, lineno, colno) => {
@@ -40,7 +42,9 @@ window.onunhandledrejection = async (event) => {
 ReactDOM.createRoot(useRoot()).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <RouterContext />
+      <Provider store={store}>
+        <RouterContext />
+      </Provider>
     </ErrorBoundary>
   </React.StrictMode>,
 )
