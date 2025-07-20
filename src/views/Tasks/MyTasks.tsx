@@ -280,7 +280,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   private onDeleteClicked = () => {
     const { contextMenuTask: task } = this.state
     if (task === null) {
-      throw new Error('Attempted to change due date without task reference')
+      throw new Error('Attempted to delete a task without task reference')
     }
 
     this.dismissMoreMenu()

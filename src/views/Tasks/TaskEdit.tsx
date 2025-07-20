@@ -266,7 +266,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    this.taskBeingEdited = await this.props.fetchTaskById(taskId)
+    this.taskBeingEdited = (await this.props.fetchTaskById(taskId)).payload
 
     if (this.taskBeingEdited != null) {
       setTitle(`Edit Task: ${this.taskBeingEdited.title}`)

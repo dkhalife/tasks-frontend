@@ -59,6 +59,7 @@ export class ConfirmationModal extends React.Component<
 
     this.setState({
       isOpen: false,
+      onClose: null,
     })
 
     onClose()
@@ -67,6 +68,7 @@ export class ConfirmationModal extends React.Component<
   private onCancel = () => {
     this.setState({
       isOpen: false,
+      onClose: null,
     })
   }
 

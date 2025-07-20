@@ -127,7 +127,10 @@ const tasksSlice = createSlice({
         }
       } else {
         state.items.push(action.payload)
-        state.filteredItems.push(action.payload)
+
+        if (state.searchQuery === '' || taskMatchesQuery(action.payload, state.searchQuery.toLowerCase())) {
+          state.filteredItems.push(action.payload)
+        }
       }
     },
     taskDeleted: (state, action: PayloadAction<string>) => {
@@ -174,7 +177,10 @@ const tasksSlice = createSlice({
           }
         } else {
           state.items.push(task)
-          state.filteredItems.push(task)
+
+          if (state.searchQuery === '' || taskMatchesQuery(task, state.searchQuery.toLowerCase())) {
+            state.filteredItems.push(task)
+          }
         }
         state.status = 'succeeded'
         state.error = null
