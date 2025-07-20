@@ -15,6 +15,8 @@ import { SyncState } from '@/models/sync'
 
 export interface TasksState {
   items: Task[]
+  searchQuery: string
+  filteredItems: Task[]
   status: SyncState
   lastFetched: number | null
   error: string | null
@@ -22,6 +24,8 @@ export interface TasksState {
 
 const initialState: TasksState = {
   items: [],
+  searchQuery: '',
+  filteredItems: [],
   status: 'loading',
   lastFetched: null,
   error: null,
@@ -87,20 +91,48 @@ export const updateDueDate = createAsyncThunk(
   },
 )
 
+function taskMatchesQuery(task: Task, query: string): boolean {
+  return task.title.toLowerCase().includes(query)
+}
+
+function filterItems(items: Task[], query: string): Task[] {
+  if (query === '') {
+    return items
+  }
+
+  const lowerQuery = query.toLowerCase()
+  return items.filter(task => taskMatchesQuery(task, lowerQuery))
+}
+
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    filterTasks: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload
+      state.filteredItems = filterItems(state.items, action.payload)
+    },
     taskUpserted: (state, action: PayloadAction<Task>) => {
       const index = state.items.findIndex(t => t.id === action.payload.id)
       if (index >= 0) {
         state.items[index] = action.payload
+
+        if (state.searchQuery === '') {
+          state.filteredItems[index] = action.payload
+        } else {
+          const filteredIndex = state.filteredItems.findIndex(t => t.id === action.payload.id)
+          if (filteredIndex >= 0) {
+            state.filteredItems[filteredIndex] = action.payload
+          }
+        }
       } else {
         state.items.push(action.payload)
+        state.filteredItems.push(action.payload)
       }
     },
     taskDeleted: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(t => t.id !== action.payload)
+      state.filteredItems = state.filteredItems.filter(t => t.id !== action.payload)
     },
   },
   extraReducers: builder => {
@@ -113,6 +145,7 @@ const tasksSlice = createSlice({
       .addCase(fetchTasks.fulfilled, (state, action) => {
         state.status = 'succeeded'
         state.items = action.payload
+        state.filteredItems = filterItems(action.payload, state.searchQuery)
         state.lastFetched = Date.now()
         state.error = null
       })
@@ -130,8 +163,18 @@ const tasksSlice = createSlice({
         const index = state.items.findIndex(t => t.id === task.id)
         if (index >= 0) {
           state.items[index] = task
+
+          if (state.searchQuery === '') {
+            state.filteredItems[index] = task
+          } else {
+            const filteredIndex = state.filteredItems.findIndex(t => t.id === task.id)
+            if (filteredIndex >= 0) {
+              state.filteredItems[filteredIndex] = task
+            }
+          }
         } else {
           state.items.push(task)
+          state.filteredItems.push(task)
         }
         state.status = 'succeeded'
         state.error = null
@@ -146,6 +189,7 @@ const tasksSlice = createSlice({
       })
       .addCase(createTask.fulfilled, state => {
         state.status = 'succeeded'
+        // TODO: Update both items and filteredItems with the new task
         state.error = null
       })
       .addCase(createTask.rejected, (state, action) => {
@@ -158,6 +202,7 @@ const tasksSlice = createSlice({
       })
       .addCase(saveTask.fulfilled, state => {
         state.status = 'succeeded'
+        // TODO: Update both items and filteredItems with the saved task
         state.error = null
       })
       .addCase(saveTask.rejected, (state, action) => {
@@ -173,11 +218,18 @@ const tasksSlice = createSlice({
         const taskId = action.meta.arg
         // Remove the old entry with taskId
         state.items = state.items.filter(t => t.id !== taskId)
+        state.filteredItems = state.filteredItems.filter(t => t.id !== taskId)
 
         // For recurring tasks, we might have a new task with the same ID but updated details
         const newTask = action.payload
         if (newTask.next_due_date) {
           state.items.push(newTask)
+
+          if (state.searchQuery === '') {
+            state.filteredItems.push(newTask)
+          } else if (taskMatchesQuery(newTask, state.searchQuery.toLowerCase())) {
+            state.filteredItems.push(newTask)
+          }
         }
 
         state.status = 'succeeded'
@@ -195,10 +247,17 @@ const tasksSlice = createSlice({
       .addCase(skipTask.fulfilled, (state, action) => {
         const taskId = action.meta.arg
         state.items = state.items.filter(t => t.id !== taskId)
+        state.filteredItems = state.filteredItems.filter(t => t.id !== taskId)
 
         const newTask = action.payload
         if (newTask.next_due_date) {
           state.items.push(newTask)
+
+          if (state.searchQuery === '') {
+            state.filteredItems.push(newTask)
+          } else if (taskMatchesQuery(newTask, state.searchQuery)) {
+            state.filteredItems.push(newTask)
+          }
         }
 
         state.status = 'succeeded'
@@ -216,10 +275,26 @@ const tasksSlice = createSlice({
       .addCase(updateDueDate.fulfilled, (state, action) => {
         const updatedTask = action.payload
         const index = state.items.findIndex(t => t.id === updatedTask.id)
+
         if (index >= 0) {
           state.items[index] = updatedTask
+
+          if (state.searchQuery === '') {
+            state.filteredItems[index] = updatedTask
+          } else {
+            const filteredIndex = state.filteredItems.findIndex(t => t.id === updatedTask.id)
+            if (filteredIndex >= 0) {
+              state.filteredItems[filteredIndex] = updatedTask
+            }
+          }
         } else {
           state.items.push(updatedTask)
+
+          if (state.searchQuery === '') {
+            state.filteredItems.push(updatedTask)
+          } else if (taskMatchesQuery(updatedTask, state.searchQuery)) {
+            state.filteredItems.push(updatedTask)
+          }
         }
         state.status = 'succeeded'
         state.error = null
@@ -235,6 +310,7 @@ const tasksSlice = createSlice({
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.status = 'succeeded'
         state.items = state.items.filter(t => t.id !== action.meta.arg)
+        state.filteredItems = state.filteredItems.filter(t => t.id !== action.meta.arg)
         state.error = null
       })
       .addCase(deleteTask.rejected, (state, action) => {
@@ -244,6 +320,6 @@ const tasksSlice = createSlice({
   },
 })
 
-export const { taskUpserted, taskDeleted } = tasksSlice.actions
+export const { taskUpserted, taskDeleted, filterTasks } = tasksSlice.actions
 
 export const tasksReducer = tasksSlice.reducer
