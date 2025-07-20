@@ -1,5 +1,4 @@
 import { moveFocusToJoyInput } from '@/utils/joy'
-import { TaskUI } from '@/utils/marshalling'
 import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
 import { format, parseISO } from 'date-fns'
 import React from 'react'
@@ -8,18 +7,16 @@ interface DateModalProps {
   title: string
 }
 
-type DateModalClosedHandler = (task: TaskUI, newDate: Date | null) => void
+type DateModalClosedHandler = (newDate: Date | null) => void
 
 type ClosedDateModalState = {
   isOpen: false
   date: null
-  taskBeingEdited: null
   onClose: null
 }
 
 type OpenDateModalState = {
   isOpen: true
-  taskBeingEdited: TaskUI
   date: Date | null
   onClose: DateModalClosedHandler
 }
@@ -33,17 +30,15 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
 
     this.state = {
       date: null,
-      taskBeingEdited: null,
       isOpen: false,
       onClose: null
     }
   }
 
-  public open = async (taskBeingEdited: TaskUI, date: Date | null, onClose: DateModalClosedHandler): Promise<void> => {
+  public open = async (date: Date | null, onClose: DateModalClosedHandler): Promise<void> => {
     await this.setState({
       isOpen: true,
       date: date,
-      taskBeingEdited,
       onClose,
     })
 
@@ -52,23 +47,21 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
 
   private onSave = () => {
     const state = this.state as OpenDateModalState
-    const { taskBeingEdited: task, date, onClose } = state
+    const { date, onClose } = state
 
     this.setState({
       isOpen: false,
       date: null,
-      taskBeingEdited: null,
       onClose: null,
     })
 
-    onClose(task, date)
+    onClose(date)
   }
 
   private onCancel = () => {
     this.setState({
       isOpen: false,
       date: null,
-      taskBeingEdited: null,
       onClose: null,
     })
   }

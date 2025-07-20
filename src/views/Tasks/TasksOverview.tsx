@@ -101,7 +101,7 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   }
 
   private onRescheduleClicked = async (task: TaskUI) => {
-    this.dateModalRef.current?.open(task, task.next_due_date, (task: TaskUI, newDate: Date | null) => {
+    this.dateModalRef.current?.open(task.next_due_date, (newDate: Date | null) => {
       if (newDate === null) {
         return
       }

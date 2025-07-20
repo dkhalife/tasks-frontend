@@ -1,6 +1,6 @@
 import { skipTask, deleteTask, updateDueDate } from '@/store/tasksSlice'
 import { Loading } from '@/Loading'
-import { TASK_UPDATE_EVENT, Task } from '@/models/task'
+import { TASK_UPDATE_EVENT } from '@/models/task'
 import {
   ExpandCircleDown,
   Add,
@@ -32,19 +32,14 @@ import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
 import {
-  bucketIntoDueDateGroup,
-  bucketIntoLabelGroups,
-  DueDateGroups,
   getDefaultExpandedState,
   GROUP_BY,
   groupTasksBy,
-  LabelGroups,
   TaskGroups,
 } from '@/utils/grouping'
 import { retrieveValue, storeValue } from '@/utils/storage'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
-import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import WebSocketManager from '@/utils/websocket'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
@@ -126,49 +121,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private addTask = async (task: TaskUI) => {
-    const { groups, groupBy } = this.state
-
-    if (!groups) {
-      throw new Error('Groups not loaded')
-    }
-
-    const now = new Date().getTime()
-    const endOfToday = endOfDay(new Date()).getTime()
-    const endOfTomorrow = endOfDay(addDays(new Date(), 1)).getTime()
-    const endOfThisWeek = endOfWeek(new Date(), { weekStartsOn: 1 }).getTime()
-    const endOfNextWeek = endOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime()
-
-    if (groupBy === 'due_date') {
-      bucketIntoDueDateGroup(
-        task,
-        groups as DueDateGroups,
-        now,
-        endOfToday,
-        endOfTomorrow,
-        endOfThisWeek,
-        endOfNextWeek,
-      )
-    } else if (groupBy === 'labels') {
-      bucketIntoLabelGroups(task, groups as LabelGroups)
-    }
-
-    this.setState({
-      groups,
-    })
-  }
-
-  private onTaskUpdated = async (
-    oldTask: TaskUI,
-    newTask: TaskUI,
-    event: TASK_UPDATE_EVENT,
-  ) => {
-    this.removeTask(oldTask.id)
-
-    if (newTask.next_due_date != null) {
-      this.addTask(newTask)
-    }
-
+  private onEvent = (event: TASK_UPDATE_EVENT) => {
     let message
     switch (event) {
       case 'completed':
@@ -191,26 +144,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private removeTask = async (taskId: string) => {
-    const { groups } = this.state
-
-    if (!groups) {
-      throw new Error('Groups not loaded')
-    }
-
-    for (const groupKey in groups) {
-      const group = groupKey as keyof TaskGroups
-      groups[group].content = groups[group].content.filter(t => t.id !== taskId)
-    }
-
-    this.setState({
-      groups,
-    })
-  }
-
   componentDidMount(): void {
     this.loadTasks()
-    // this.registerWebSocketListeners()
 
     setTitle('My Tasks')
 
@@ -219,63 +154,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 
   componentWillUnmount(): void {
     document.removeEventListener('click', this.dismissMoreMenu)
-
-    // this.unregisterWebSocketListeners()
   }
-
-  // private registerWebSocketListeners = () => {
-  //   this.ws.on('task_created', this.onTaskCreatedWS);
-  //   this.ws.on('task_updated', this.onTaskUpdatedWS);
-  //   this.ws.on('task_deleted', this.onTaskDeletedWS);
-  //   this.ws.on('task_completed', this.onTaskCompletedWS);
-  //   this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
-  //   this.ws.on('task_skipped', this.onTaskSkippedWS);
-  // }
-
-  // private unregisterWebSocketListeners = () => {
-  //   this.ws.off('task_created', this.onTaskCreatedWS);
-  //   this.ws.off('task_updated', this.onTaskUpdatedWS);
-  //   this.ws.off('task_deleted', this.onTaskDeletedWS);
-  //   this.ws.off('task_completed', this.onTaskCompletedWS);
-  //   this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
-  //   this.ws.off('task_skipped', this.onTaskSkippedWS);
-  // }
-
-  // private onTaskCreatedWS = (data: unknown) => {
-  //   const newTask = UnmarshallTask(data as MarshalledTask)
-  //   this.addTask(newTask)
-  //   store.dispatch(taskUpserted(newTask))
-  // }
-
-  // private onTaskUpdatedWS = (data: unknown) => {
-  //   const updatedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskUpdated(updatedTask, updatedTask, 'updated')
-  //   store.dispatch(taskUpserted(updatedTask))
-  // }
-
-  // private onTaskDeletedWS = (data: unknown) => {
-  //   const deletedTaskId = (data as any).id as string
-  //   this.removeTask(deletedTaskId)
-  //   store.dispatch(taskDeleted(deletedTaskId))
-  // }
-
-  // private onTaskCompletedWS = (data: unknown) => {
-  //   const completedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskUpdated(completedTask, completedTask, 'completed')
-  //   store.dispatch(taskUpserted(completedTask))
-  // }
-
-  // private onTaskUncompletedWS = (data: unknown) => {
-  //   const uncompletedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskUpdated(uncompletedTask, uncompletedTask, 'updated')
-  //   store.dispatch(taskUpserted(uncompletedTask))
-  // }
-
-  // private onTaskSkippedWS = (data: unknown) => {
-  //   const skippedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskUpdated(skippedTask, skippedTask, 'skipped')
-  //   store.dispatch(taskUpserted(skippedTask))
-  // }
 
   private onSnackbarClosed = () => {
     this.setState({
@@ -374,11 +253,10 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       throw new Error('Attempted to skip a task without a reference')
     }
 
-    const response = await this.props.skipTask(task.id)
-    const taskUI = MakeTaskUI(response.payload as Task, this.props.userLabels)
+    await this.props.skipTask(task.id)
 
     this.dismissMoreMenu()
-    this.onTaskUpdated(task, taskUI, 'skipped')
+    this.onEvent('skipped')
   }
 
   private onChangeDueDateClicked = () => {
@@ -388,45 +266,27 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     }
 
     this.dismissMoreMenu()
-    this.dateModalRef.current?.open(task.next_due_date)
+    this.dateModalRef.current?.open(task.next_due_date, async (newDate: Date | null) => {
+      if (newDate === null) {
+        return
+      }
+
+      await this.props.updateDueDate(task.id, MarshallDate(newDate))
+
+      this.onEvent('rescheduled')
+    })
   }
 
   private onDeleteClicked = () => {
+    const { contextMenuTask: task } = this.state
+    if (task === null) {
+      throw new Error('Attempted to change due date without task reference')
+    }
+
     this.dismissMoreMenu()
-    this.confirmationModalRef.current?.open()
-  }
-
-  private onDeleteConfirmed = async (isConfirmed: boolean) => {
-    const { contextMenuTask: task } = this.state
-
-    if (task === null) {
-      throw new Error('Attempted to delete without task reference')
-    }
-
-    if (isConfirmed === true) {
+    this.confirmationModalRef.current?.open(async () => {
       await this.props.deleteTask(task.id)
-
-      this.removeTask(task.id)
-    }
-  }
-
-  private onDueDateModalClosed = async (newDate: Date | null) => {
-    if (newDate === null) {
-      return
-    }
-
-    const { contextMenuTask: task } = this.state
-    if (task === null) {
-      throw new Error('Attempted to delete without task reference')
-    }
-
-    const response = await this.props.updateDueDate(
-      task.id,
-      MarshallDate(newDate),
-    )
-    const newTaskUI = MakeTaskUI(response.task, this.props.userLabels)
-
-    this.onTaskUpdated(task, newTaskUI, 'rescheduled')
+    })
   }
 
   render(): React.ReactNode {
@@ -540,9 +400,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
                       <TaskCard
                         key={task.id}
                         task={task}
-                        onTaskUpdate={(updatedTask, event) =>
-                          this.onTaskUpdated(task, updatedTask, event)
-                        }
+                        onTaskUpdate={this.onEvent}
                         onContextMenu={this.showContextMenu}
                         navigate={navigate}
                       />
@@ -631,7 +489,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
           <DateModal
             ref={this.dateModalRef}
             title={`Change due date`}
-            onClose={this.onDueDateModalClosed}
           />
 
           <ConfirmationModal
@@ -640,7 +497,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
             confirmText='Delete'
             cancelText='Cancel'
             message='Are you sure you want to delete this task?'
-            onClose={this.onDeleteConfirmed}
           />
         </Box>
         <Snackbar

@@ -37,7 +37,6 @@ class APITokenSettingsImpl extends React.Component<
   APITokenSettingsState
 > {
   private modalRef = React.createRef<TokenModal>()
-  private tokenToDelete: APIToken | null = null
   private confirmModalRef = React.createRef<ConfirmationModal>()
 
   constructor(props: APITokenSettingsProps) {
@@ -47,34 +46,6 @@ class APITokenSettingsImpl extends React.Component<
       showTokenId: null,
     }
   }
-
-  // componentDidMount(): void {
-  //   this.registerWebSocketListeners()
-  // }
-
-  // componentWillUnmount(): void {
-  //   this.unregisterWebSocketListeners()
-  // }
-  
-  // private onTokenCreatedWS = (data: unknown) => {
-  //   const createdToken = data as APIToken
-  //   this.onTokenCreated(createdToken)
-  // }
-
-  // private onTokenDeletedWS = (data: unknown) => {
-  //   const deletedTokenId = (data as APIToken).id
-  //   this.onTokenDeleted(deletedTokenId)
-  // }
-
-  // private registerWebSocketListeners = () => {
-  //   this.ws.on('app_token_created', this.onTokenCreatedWS);
-  //   this.ws.on('app_token_deleted', this.onTokenDeletedWS);
-  // }
-
-  // private unregisterWebSocketListeners = () => {
-  //   this.ws.off('app_token_created', this.onTokenCreatedWS);
-  //   this.ws.off('app_token_deleted', this.onTokenDeletedWS);
-  // }
 
   private onSaveTokenClicked = async (
     name: string | null,
@@ -97,21 +68,9 @@ class APITokenSettingsImpl extends React.Component<
   }
 
   private onDeleteTokenClicked = async (token: APIToken) => {
-    this.tokenToDelete = token
-    this.confirmModalRef.current?.open()
-  }
-
-  private onDeleteTokenConfirmed = async (confirmed: boolean) => {
-    if (!confirmed) {
-      return
-    }
-
-    const token = this.tokenToDelete
-    if (!token) {
-      throw new Error('No token to delete')
-    }
-
-    await this.props.deleteToken(token.id)
+    this.confirmModalRef.current?.open(async () => {
+      await this.props.deleteToken(token.id)
+    })
   }
 
   private onToggleTokenVisibilityClicked = (token: APIToken) => {
@@ -217,13 +176,11 @@ class APITokenSettingsImpl extends React.Component<
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this token?'
-          onClose={this.onDeleteTokenConfirmed}
         />
       </Box>
     )
   }
 }
-
 
 const mapStateToProps = (state: RootState) => ({
   tokens: state.tokens.items,
