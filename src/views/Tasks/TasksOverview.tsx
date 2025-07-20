@@ -32,7 +32,7 @@ import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { Label } from '@/models/label'
 import { sortTasksByDueDate } from '@/utils/grouping'
-import { TaskUI, MarshallDate, MakeTaskUI } from '@/utils/marshalling'
+import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
 
 type TasksOverviewProps = {
   tasks: TaskUI[]
@@ -46,26 +46,11 @@ type TasksOverviewProps = {
   updateDueDate: (taskId: string, dueDate: string) => Promise<any>
 } & WithNavigate
 
-interface TasksOverviewState {
-  taskId: string | null
-}
-
-class TasksOverviewImpl extends React.Component<
-  TasksOverviewProps,
-  TasksOverviewState
-> {
+class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   private dateModalRef = React.createRef<DateModal>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private searchInputRef = React.createRef<HTMLInputElement>()
   private taskBeingDeleted: TaskUI | null = null
-
-  constructor(props: TasksOverviewProps) {
-    super(props)
-
-    this.state = {
-      taskId: null
-    }
-  }
 
   componentDidMount(): void {
     setTitle('Tasks Overview')
@@ -102,32 +87,6 @@ class TasksOverviewImpl extends React.Component<
     }
   }
 
-  private onDueDateModalClosed = async (date: Date | null) => {
-    if (!date) {
-      return
-    }
-
-    const { tasks } = this.props
-    const { taskId } = this.state
-    if (!taskId) {
-      return
-    }
-
-    const { userLabels } = this.props
-    const data = await this.props.updateDueDate(
-      taskId,
-      MarshallDate(date),
-    )
-    const newTaskUI = MakeTaskUI(data.task, userLabels)
-
-    let newTasks = [...tasks]
-
-    const index = newTasks.findIndex(c => c.id === newTaskUI.id)
-    newTasks[index] = newTaskUI
-
-    newTasks = sortTasksByDueDate(newTasks)
-  }
-
   private onCompleteTaskClicked = (task: TaskUI) => async () => {
     const data = await this.props.completeTask(task.id)
 
@@ -160,10 +119,13 @@ class TasksOverviewImpl extends React.Component<
   }
 
   private onRescheduleClicked = async (task: TaskUI) => {
-    await this.setState({
-      taskId: task.id,
+    this.dateModalRef.current?.open(task, task.next_due_date, (task: TaskUI, newDate: Date | null) => {
+      if (newDate === null) {
+        return
+      }
+
+      this.props.updateDueDate(task.id, MarshallDate(newDate))
     })
-    this.dateModalRef.current?.open(task.next_due_date)
   }
 
   private onViewHistoryClicked = (task: TaskUI) => {
@@ -197,7 +159,6 @@ class TasksOverviewImpl extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { taskId } = this.state
     const { isLoading, search, tasks, navigate } = this.props
 
     if (isLoading) {
@@ -339,9 +300,7 @@ class TasksOverviewImpl extends React.Component<
         </Table>
         <DateModal
           ref={this.dateModalRef}
-          key={taskId}
           title={`Change due date`}
-          onClose={this.onDueDateModalClosed}
         />
         <ConfirmationModal
           ref={this.confirmationModalRef}
@@ -357,13 +316,16 @@ class TasksOverviewImpl extends React.Component<
 }
 
 const mapStateToProps = (state: RootState) => {
+  const isLoading = state.tasks.status === 'loading' || state.labels.status === 'loading'
   const userLabels = state.labels.items
+  const search = state.tasks.searchQuery
+  const tasks = sortTasksByDueDate(state.tasks.filteredItems.map(task => MakeTaskUI(task, userLabels)))
 
   return {
     userLabels,
-    isLoading: state.tasks.status === 'loading' || state.labels.status === 'loading',
-    search: state.tasks.searchQuery,
-    tasks: state.tasks.filteredItems.map(task => MakeTaskUI(task, userLabels)),
+    isLoading,
+    search,
+    tasks,
   }
 }
 

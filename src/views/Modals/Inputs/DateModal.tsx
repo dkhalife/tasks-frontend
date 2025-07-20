@@ -1,18 +1,30 @@
 import { moveFocusToJoyInput } from '@/utils/joy'
+import { TaskUI } from '@/utils/marshalling'
 import { Modal, Button, Input, ModalDialog, Box, Typography } from '@mui/joy'
 import { format, parseISO } from 'date-fns'
 import React from 'react'
 
 interface DateModalProps {
   title: string
-
-  onClose: (newDate: Date | null) => void
 }
 
-interface DateModalState {
+type DateModalClosedHandler = (task: TaskUI, newDate: Date | null) => void
+
+type ClosedDateModalState = {
+  isOpen: false
+  date: null
+  taskBeingEdited: null
+  onClose: null
+}
+
+type OpenDateModalState = {
+  isOpen: true
+  taskBeingEdited: TaskUI
   date: Date | null
-  isOpen: boolean
+  onClose: DateModalClosedHandler
 }
+
+type DateModalState = ClosedDateModalState | OpenDateModalState
 
 export class DateModal extends React.Component<DateModalProps, DateModalState> {
   private inputRef: React.RefObject<HTMLInputElement> = React.createRef()
@@ -21,31 +33,44 @@ export class DateModal extends React.Component<DateModalProps, DateModalState> {
 
     this.state = {
       date: null,
+      taskBeingEdited: null,
       isOpen: false,
+      onClose: null
     }
   }
 
-  public open = async (current: Date | null): Promise<void> => {
+  public open = async (taskBeingEdited: TaskUI, date: Date | null, onClose: DateModalClosedHandler): Promise<void> => {
     await this.setState({
-      date: current,
       isOpen: true,
+      date: date,
+      taskBeingEdited,
+      onClose,
     })
 
     moveFocusToJoyInput(this.inputRef)
   }
 
   private onSave = () => {
+    const state = this.state as OpenDateModalState
+    const { taskBeingEdited: task, date, onClose } = state
+
     this.setState({
       isOpen: false,
+      date: null,
+      taskBeingEdited: null,
+      onClose: null,
     })
-    this.props.onClose(this.state.date)
+
+    onClose(task, date)
   }
 
   private onCancel = () => {
     this.setState({
       isOpen: false,
+      date: null,
+      taskBeingEdited: null,
+      onClose: null,
     })
-    this.props.onClose(null)
   }
 
   private onDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
