@@ -7,6 +7,7 @@ import {
   SkipTask,
   CreateTask,
   SaveTask,
+  UpdateDueDate,
 } from '@/api/tasks'
 import { Task } from '@/models/task'
 import { RootState } from './store'
@@ -75,6 +76,14 @@ export const createTask = createAsyncThunk(
 export const saveTask = createAsyncThunk(
   'tasks/saveTask',
   async (task: Task) => await SaveTask(task),
+)
+
+export const updateDueDate = createAsyncThunk(
+  'tasks/updateDueDate',
+  async ({ taskId, dueDate }: { taskId: string; dueDate: string }) => {
+    const response = await UpdateDueDate(taskId, dueDate)
+    return response.task
+  },
 )
 
 const tasksSlice = createSlice({
@@ -193,6 +202,30 @@ const tasksSlice = createSlice({
 
         state.status = 'succeeded'
         state.error = null
+      })
+      .addCase(skipTask.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Update due date
+      .addCase(updateDueDate.pending, state => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(updateDueDate.fulfilled, (state, action) => {
+        const updatedTask = action.payload
+        const index = state.items.findIndex(t => t.id === updatedTask.id)
+        if (index >= 0) {
+          state.items[index] = updatedTask
+        } else {
+          state.items.push(updatedTask)
+        }
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(updateDueDate.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
       })
       // Deleting tasks
       .addCase(deleteTask.pending, state => {

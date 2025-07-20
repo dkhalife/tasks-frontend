@@ -1,5 +1,4 @@
-import { UpdateDueDate } from '@/api/tasks'
-import { skipTask, deleteTask } from '@/store/tasksSlice'
+import { skipTask, deleteTask, updateDueDate } from '@/store/tasksSlice'
 import { Loading } from '@/Loading'
 import { TASK_UPDATE_EVENT, Task } from '@/models/task'
 import {
@@ -56,6 +55,7 @@ type MyTasksProps = {
   tasks: TaskUI[]
   deleteTask: (taskId: string) => Promise<any>
   skipTask: (taskId: string) => Promise<any>
+  updateDueDate: (taskId: string, dueDate: string) => Promise<any>
 } & WithNavigate
 
 interface MyTasksState {
@@ -420,7 +420,10 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       throw new Error('Attempted to delete without task reference')
     }
 
-    const response = await UpdateDueDate(task.id, MarshallDate(newDate))
+    const response = await this.props.updateDueDate(
+      task.id,
+      MarshallDate(newDate),
+    )
     const newTaskUI = MakeTaskUI(response.task, this.props.userLabels)
 
     this.onTaskUpdated(task, newTaskUI, 'rescheduled')
@@ -668,6 +671,8 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
   skipTask: (taskId: string) => dispatch(skipTask(taskId)),
+  updateDueDate: (taskId: string, dueDate: string) =>
+    dispatch(updateDueDate({ taskId, dueDate })),
 })
 
 export const MyTasks = connect(

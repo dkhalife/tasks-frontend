@@ -1,5 +1,4 @@
-import { UpdateDueDate } from '@/api/tasks'
-import { deleteTask } from '@/store/tasksSlice'
+import { deleteTask, completeTask, updateDueDate } from '@/store/tasksSlice'
 import { getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -31,7 +30,6 @@ import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
 import WebSocketManager from '@/utils/websocket'
 import { AppDispatch, RootState } from '@/store/store'
-import { completeTask } from '@/store/tasksSlice'
 import { connect } from 'react-redux'
 import { Label } from '@/models/label'
 import { sortTasksByDueDate } from '@/utils/grouping'
@@ -43,6 +41,7 @@ type TasksOverviewProps = {
 
   completeTask: (taskId: string) => Promise<any>
   deleteTask: (taskId: string) => Promise<any>
+  updateDueDate: (taskId: string, dueDate: string) => Promise<any>
 } & WithNavigate
 
 interface TasksOverviewState {
@@ -187,7 +186,10 @@ class TasksOverviewImpl extends React.Component<
     }
 
     const { userLabels } = this.props
-    const data = await UpdateDueDate(taskId, MarshallDate(date))
+    const data = await this.props.updateDueDate(
+      taskId,
+      MarshallDate(date),
+    )
     const newTaskUI = MakeTaskUI(data.task, userLabels)
 
     let newTasks = [...tasks]
@@ -463,6 +465,8 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   completeTask: (taskId: string) => dispatch(completeTask(taskId)),
   deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
+  updateDueDate: (taskId: string, dueDate: string) =>
+    dispatch(updateDueDate({ taskId, dueDate })),
 })
 
 export const TasksOverview = connect(
