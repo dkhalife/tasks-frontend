@@ -10,10 +10,12 @@ import { fetchLabels } from './store/labelsSlice'
 import { AppDispatch } from './store/store'
 import { connect } from 'react-redux'
 import { fetchUser } from './store/userSlice'
+import { fetchTokens } from './store/tokensSlice'
 
 type AppProps = {
   fetchLabels: () => Promise<any>
   fetchUser: () => Promise<any>
+  fetchTokens: () => Promise<any>
 } & WithNavigate
 
 class AppImpl extends React.Component<AppProps> {
@@ -24,6 +26,7 @@ class AppImpl extends React.Component<AppProps> {
 
       this.props.fetchUser()
       this.props.fetchLabels()
+      this.props.fetchTokens()
     }
   }
 
@@ -53,6 +56,7 @@ const mapStateToProps = () => ({
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   fetchUser: () => dispatch(fetchUser()),
   fetchLabels: () => dispatch(fetchLabels()),
+  fetchTokens: () => dispatch(fetchTokens()),
 })
 
 export const App = connect(
