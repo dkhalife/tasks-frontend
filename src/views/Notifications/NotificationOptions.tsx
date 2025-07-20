@@ -11,7 +11,6 @@ import {
   NotificationTriggerOption,
   NotificationTriggerOptions,
 } from '@/models/notifications'
-import WebSocketManager from '@/utils/websocket'
 
 type NotificationOptionsProps = {
   notification: NotificationTriggerOptions
@@ -26,32 +25,12 @@ export class NotificationOptions extends React.Component<
   NotificationOptionsProps,
   NotificationOptionsState
 > {
-  private ws: WebSocketManager
-
   constructor(props: NotificationOptionsProps) {
     super(props)
-
-    this.ws = WebSocketManager.getInstance()
 
     this.state = {
       notification: props.notification,
     }
-  }
-
-  componentDidMount(): void {
-    this.registerWebSocketListeners()
-  }
-
-  componentWillUnmount(): void {
-    this.unregisterWebSocketListeners()
-  }
-
-  private registerWebSocketListeners = () => {
-    this.ws.on('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
-  }
-
-  private unregisterWebSocketListeners = () => {
-    this.ws.off('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
   }
 
   private onNotificationSettingsUpdatedWS = (data: any) => {

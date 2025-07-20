@@ -40,7 +40,6 @@ import {
 import { retrieveValue, storeValue } from '@/utils/storage'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
-import WebSocketManager from '@/utils/websocket'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
@@ -70,12 +69,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
 
-  private ws: WebSocketManager
-
   constructor(props: MyTasksProps) {
     super(props)
-
-    this.ws = WebSocketManager.getInstance()
 
     this.menuAnchorRef = document.createElement('div')
     this.menuAnchorRef.style.position = 'absolute'
