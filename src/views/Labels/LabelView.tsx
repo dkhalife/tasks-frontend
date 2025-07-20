@@ -1,4 +1,3 @@
-import { DeleteLabel, GetLabels } from '@/api/labels'
 import { Label } from '@/models/label'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { Add } from '@mui/icons-material'
@@ -18,31 +17,31 @@ import EditIcon from '@mui/icons-material/Edit'
 import { colorOptionFromColor } from '@/utils/labels'
 import { setTitle } from '@/utils/dom'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
-import WebSocketManager from '@/utils/websocket'
+import { AppDispatch, RootState } from '@/store/store'
+import { connect } from 'react-redux'
+import { deleteLabel, enterEditMode } from '@/store/labelsSlice'
 
-type LabelViewProps = object
+type LabelViewProps = {
+  isLoading: boolean
+  labels: Label[]
+  deleteLabel: (id: string) => Promise<any>
+  enterEditMode: () => void
+}
 
 interface LabelViewState {
-  isLabelsLoading: boolean
-  userLabels: Label[]
   currentLabel: Label | null
   isError: boolean
 }
 
-export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
-  private modalRef = React.createRef<LabelModal>()
+class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
+  private modalRef = React.createRef<typeof LabelModal>()
   private confirmModalRef = React.createRef<ConfirmationModal>()
   private labelIdPendingDelete: string | null = null
-  private ws: WebSocketManager
 
   constructor(props: LabelViewProps) {
     super(props)
 
-    this.ws = WebSocketManager.getInstance()
-
     this.state = {
-      isLabelsLoading: true,
-      userLabels: [],
       currentLabel: null,
       isError: false,
     }
@@ -53,7 +52,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
       currentLabel: null,
     })
 
-    this.modalRef.current?.open()
+    this.props.enterEditMode()
   }
 
   private onEditLabelClicked = async (label: Label) => {
@@ -61,7 +60,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
       currentLabel: label,
     })
 
-    this.modalRef.current?.open()
+    this.props.enterEditMode()
   }
 
   private onDeleteLabelClicked = (id: string) => {
@@ -80,130 +79,64 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
       throw new Error('Label ID is null')
     }
 
-    await DeleteLabel(id)
-
-    // When ws is connected, let the message handler trigger the update
-    if (this.ws.isConnected()) {
-      return
-    }
-
-    this.onLabelDeleted(id)   
-  }
-
-  private onLabelDeleted = (id: string) => {
-    const { userLabels } = this.state
-    const updatedLabels = userLabels.filter(label => label.id !== id)
-
-    this.labelIdPendingDelete = null
-    this.setState({
-      userLabels: updatedLabels,
-    })
-  }
-
-  private onLabelCreated = (newLabel: Label) => {
-    this.setState(prevState => ({
-      userLabels: [...prevState.userLabels, newLabel],
-    }))
-  }
-
-  private onLabelUpdated = (updatedLabel: Label) => {
-    this.setState(prevState => ({
-      userLabels: prevState.userLabels.map(label =>
-        label.id === updatedLabel.id ? updatedLabel : label,
-      ),
-    }))
-  }
-
-  private loadLabels = async () => {
-    try {
-      const data = await GetLabels()
-      this.setState({
-        userLabels: data.labels,
-        isLabelsLoading: false,
-      })
-    } catch {
-      this.setState({
-        isLabelsLoading: false,
-        isError: true,
-      })
-    }
+    await this.props.deleteLabel(id)
   }
 
   private isUniqueLabelName = (
     id: string | undefined,
     labelName: string,
   ): boolean => {
-    const { userLabels } = this.state
-    return !userLabels.some(
+    const { labels } = this.props
+    return !labels.some(
       label => label.name === labelName && label.id !== id,
     )
   }
 
-  private onLabelModalClose = (newLabel: Label | null) => {
-    // When ws is connected, let the message handler trigger the update
-    if (this.ws.isConnected()) {
-      return
-    }
-
-    if (!newLabel) {
-      // No creation or update was made
-      return
-    }
-
-    const { currentLabel } = this.state
-    if (!currentLabel) {
-      this.onLabelCreated(newLabel)
-      return
-    }
-
-    this.onLabelUpdated(newLabel)
-  }
-
   componentDidMount(): void {
-    this.loadLabels()
-    this.registerWebSocketListeners()
+    // this.registerWebSocketListeners()
 
     setTitle('Labels')
   }
 
-  componentWillUnmount(): void {
-    this.unregisterWebSocketListeners()
-  }
+  // componentWillUnmount(): void {
+  //   this.unregisterWebSocketListeners()
+  // }
 
-  private onLabelCreatedWS = (data: unknown) => {
-    const newLabel = (data as any).label as Label
-    this.onLabelCreated(newLabel)
-  }
+  // private onLabelCreatedWS = (data: unknown) => {
+  //   const newLabel = (data as any).label as Label
+  //   this.onLabelCreated(newLabel)
+  // }
 
-  private onLabelUpdatedWS = (data: unknown) => {
-    const updatedLabel = (data as any).label as Label
-    this.onLabelUpdated(updatedLabel)
-  }
+  // private onLabelUpdatedWS = (data: unknown) => {
+  //   const updatedLabel = (data as any).label as Label
+  //   this.onLabelUpdated(updatedLabel)
+  // }
 
-  private onLabelDeletedWS = (data: unknown) => {
-    const deletedLabelId = (data as any).id as string
-    this.onLabelDeleted(deletedLabelId)
-  }
+  // private onLabelDeletedWS = (data: unknown) => {
+  //   const deletedLabelId = (data as any).id as string
+  //   this.onLabelDeleted(deletedLabelId)
+  // }
 
-  private registerWebSocketListeners = () => {
-    this.ws.on('label_created', this.onLabelCreatedWS);
-    this.ws.on('label_updated', this.onLabelUpdatedWS);
-    this.ws.on('label_deleted', this.onLabelDeletedWS);
-  }
+  // private registerWebSocketListeners = () => {
+  //   this.ws.on('label_created', this.onLabelCreatedWS);
+  //   this.ws.on('label_updated', this.onLabelUpdatedWS);
+  //   this.ws.on('label_deleted', this.onLabelDeletedWS);
+  // }
 
-  private unregisterWebSocketListeners = () => {
-    this.ws.off('label_created', this.onLabelCreatedWS);
-    this.ws.off('label_updated', this.onLabelUpdatedWS);
-    this.ws.off('label_deleted', this.onLabelDeletedWS);
-  }
+  // private unregisterWebSocketListeners = () => {
+  //   this.ws.off('label_created', this.onLabelCreatedWS);
+  //   this.ws.off('label_updated', this.onLabelUpdatedWS);
+  //   this.ws.off('label_deleted', this.onLabelDeletedWS);
+  // }
 
   render(): React.ReactNode {
-    const { isLabelsLoading, userLabels, currentLabel, isError } = this.state
+    const { labels, isLoading } = this.props
+    const { currentLabel, isError } = this.state
     const currentColor = currentLabel
       ? colorOptionFromColor(currentLabel.color)
       : undefined
 
-    if (isLabelsLoading) {
+    if (isLoading) {
       return (
         <Box
           display='flex'
@@ -238,7 +171,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
             marginTop: '16px',
           }}
         >
-          {userLabels.map(label => (
+          {labels.map(label => (
             <div
               key={`label-${label.id}`}
               style={{
@@ -296,7 +229,7 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
           ))}
         </div>
 
-        {userLabels.length === 0 && (
+        {labels.length === 0 && (
           <Typography
             textAlign='center'
             mt={2}
@@ -306,8 +239,6 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
         )}
 
         <LabelModal
-          ref={this.modalRef}
-          onClose={this.onLabelModalClose}
           isUnique={this.isUniqueLabelName}
           id={currentLabel?.id}
           name={currentLabel?.name}
@@ -352,3 +283,18 @@ export class LabelView extends React.Component<LabelViewProps, LabelViewState> {
     )
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  isLoading: state.labels.status === 'loading',
+  labels: state.labels.items
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  deleteLabel: (id: string) => dispatch(deleteLabel(id)),
+  enterEditMode: () => dispatch(enterEditMode()),
+})
+
+export const LabelView = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LabelViewImpl)

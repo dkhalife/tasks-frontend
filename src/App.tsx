@@ -11,13 +11,18 @@ import { preloadSounds } from './utils/sound'
 import WebSocketManager from './utils/websocket'
 import { fetchLabels } from './store/labelsSlice'
 
-type AppProps = WithNavigate
-
 interface AppState {
   userProfile: User | null
 }
 
-export class App extends React.Component<AppProps, AppState> {
+import { AppDispatch } from './store/store'
+import { connect } from 'react-redux'
+
+type AppProps = {
+  fetchLabels: () => Promise<any>
+} & WithNavigate
+
+class AppImpl extends React.Component<AppProps> {
   constructor(props: AppProps) {
     super(props)
 
@@ -43,7 +48,7 @@ export class App extends React.Component<AppProps, AppState> {
       preloadSounds();
       WebSocketManager.getInstance().connect();
 
-      fetchLabels()
+      this.props.fetchLabels()
     }
   }
 
@@ -70,3 +75,15 @@ export class App extends React.Component<AppProps, AppState> {
     )
   }
 }
+
+const mapStateToProps = () => ({
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  fetchLabels: () => dispatch(fetchLabels()),
+})
+
+export const App = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AppImpl)
