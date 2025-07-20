@@ -37,7 +37,6 @@ import {
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
-import { GetLabels } from '@/api/labels'
 import {
   DueDateGroups,
   getDefaultExpandedState,
@@ -49,17 +48,19 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import WebSocketManager from '@/utils/websocket'
-import { store } from '@/store/store'
+import { RootState, store } from '@/store/store'
 import { taskUpserted, taskDeleted } from '@/store/tasksSlice'
+import { connect } from 'react-redux'
 
-type MyTasksProps = WithNavigate
+type MyTasksProps = {
+  userLabels: Label[]
+} & WithNavigate
 
 interface MyTasksState {
   isSnackbarOpen: boolean
   isMoreMenuOpen: boolean
   snackBarMessage: string | null
   tasks: Task[]
-  labels: Label[]
   groupBy: GROUP_BY
   groups: TaskGroups | null
   isExpanded: Record<keyof TaskGroups, boolean>
@@ -67,7 +68,7 @@ interface MyTasksState {
   contextMenuTask: Task | null
 }
 
-export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
+class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   private menuRef = React.createRef<HTMLDivElement>()
   private menuAnchorRef: HTMLDivElement
   private confirmationModalRef = React.createRef<ConfirmationModal>()
@@ -97,7 +98,6 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
       isMoreMenuOpen: false,
       snackBarMessage: null,
       tasks: [],
-      labels: [],
       groupBy,
       groups: null,
       isExpanded,
@@ -108,13 +108,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
   private loadTasks = async () => {
     const tasksData = await GetTasks()
-    const labelsData = await GetLabels()
 
     const tasks = tasksData.tasks
-    const labels = labelsData.labels
+    const { userLabels } = this.props
 
     const { groupBy } = this.state
-    const defaultExpanded = getDefaultExpandedState(groupBy, labels)
+    const defaultExpanded = getDefaultExpandedState(groupBy, userLabels)
     const isExpanded = {
       ...defaultExpanded,
       ...retrieveValue<Record<keyof TaskGroups, boolean>>(
@@ -125,8 +124,7 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
 
     this.setState({
       tasks,
-      labels,
-      groups: groupTasksBy(tasks, labels, groupBy),
+      groups: groupTasksBy(tasks, userLabels, groupBy),
       isExpanded,
       isLoading: false,
     })
@@ -304,13 +302,14 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onToggleGroupByClicked = () => {
-    const { groupBy, tasks, labels } = this.state
+    const { userLabels } = this.props
+    const { groupBy, tasks } = this.state
     const nextGroupBy = groupBy === 'due_date' ? 'labels' : 'due_date'
-    const nextExpanded = getDefaultExpandedState(nextGroupBy, labels)
+    const nextExpanded = getDefaultExpandedState(nextGroupBy, userLabels)
 
     this.setState({
       groupBy: nextGroupBy,
-      groups: groupTasksBy(tasks, labels, nextGroupBy),
+      groups: groupTasksBy(tasks, userLabels, nextGroupBy),
       isExpanded: nextExpanded,
     })
 
@@ -657,3 +656,12 @@ export class MyTasks extends React.Component<MyTasksProps, MyTasksState> {
     )
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  userLabels: state.labels.items,
+})
+
+export const MyTasks = connect(
+  mapStateToProps,
+)(MyTasksImpl)
+
