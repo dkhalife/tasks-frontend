@@ -18,6 +18,7 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { ThemeToggleButton } from '../Settings/ThemeToggleButton'
+import { SyncStatus } from './SyncStatus'
 import { NavBarLink } from './NavBarLink'
 import { getPathName, NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { isMobile } from '@/utils/dom'
@@ -88,6 +89,12 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
             sx={{
               fontWeight: 700,
               fontSize: 24,
+            }}
+          />
+          <SyncStatus
+            style={{
+              position: 'absolute',
+              right: 50,
             }}
           />
           <ThemeToggleButton
