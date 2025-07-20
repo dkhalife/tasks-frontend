@@ -1,7 +1,7 @@
-import { SkipTask, UpdateDueDate } from '@/api/tasks'
-import { deleteTask } from '@/store/tasksSlice'
+import { UpdateDueDate } from '@/api/tasks'
+import { skipTask, deleteTask } from '@/store/tasksSlice'
 import { Loading } from '@/Loading'
-import { TASK_UPDATE_EVENT } from '@/models/task'
+import { TASK_UPDATE_EVENT, Task } from '@/models/task'
 import {
   ExpandCircleDown,
   Add,
@@ -55,6 +55,7 @@ type MyTasksProps = {
   userLabels: Label[]
   tasks: TaskUI[]
   deleteTask: (taskId: string) => Promise<any>
+  skipTask: (taskId: string) => Promise<any>
 } & WithNavigate
 
 interface MyTasksState {
@@ -373,8 +374,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       throw new Error('Attempted to skip a task without a reference')
     }
 
-    const response = await SkipTask(task.id)
-    const taskUI = MakeTaskUI(response.task, this.props.userLabels)
+    const response = await this.props.skipTask(task.id)
+    const taskUI = MakeTaskUI(response.payload as Task, this.props.userLabels)
 
     this.dismissMoreMenu()
     this.onTaskUpdated(task, taskUI, 'skipped')
@@ -666,6 +667,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
+  skipTask: (taskId: string) => dispatch(skipTask(taskId)),
 })
 
 export const MyTasks = connect(
