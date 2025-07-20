@@ -2,7 +2,6 @@ import {
   CreateTask,
   SaveTask,
   DeleteTask,
-  GetTaskByID,
   SkipTask,
 } from '@/api/tasks'
 import { Label } from '@/models/label'
@@ -44,14 +43,17 @@ import {
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { format, parseISO } from 'date-fns'
-import { RootState } from '@/store/store'
+import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
+import { fetchTaskById } from '@/store/tasksSlice'
 
-export type TaskEditProps = WithNavigate & {
+export type TaskEditProps = {
   taskId: string | null
   userLabels: Label[]
   defaultNotificationTriggers: NotificationTriggerOptions
-}
+
+  getTaskById: (id: string) => Promise<any>
+} & WithNavigate
 
 type Errors = { [key: string]: string }
 
@@ -260,7 +262,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
   private loadTask = async (taskId: string) => {
     try {
-      const task = (await GetTaskByID(taskId)).task
+      const task = (await this.props.getTaskById(taskId)).payload as Task
       const { userLabels } = this.props
 
       this.setState({
@@ -746,6 +748,11 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+})
+
 export const TaskEdit = connect(
   mapStateToProps,
+  mapDispatchToProps,
 )(TaskEditImpl)

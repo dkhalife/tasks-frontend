@@ -1,4 +1,4 @@
-import { GetTaskByID, GetTaskHistory } from '@/api/tasks'
+import { GetTaskHistory } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { HistoryEntry } from '@/models/history'
 import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
@@ -9,9 +9,14 @@ import { Link } from 'react-router-dom'
 import { HistoryCard } from './HistoryCard'
 import { setTitle } from '@/utils/dom'
 import { differenceInHours, formatDuration, intervalToDuration } from 'date-fns'
+import { connect } from 'react-redux'
+import { AppDispatch } from '@/store/store'
+import { fetchTaskById } from '@/store/tasksSlice'
+import { Task } from '@/models/task'
 
 interface TaskHistoryProps {
   taskId: string
+  getTaskById: (id: string) => Promise<any>
 }
 
 interface HistoryInfo {
@@ -26,7 +31,7 @@ interface TaskHistoryState {
   historyInfo: HistoryInfo[]
 }
 
-export class TaskHistory extends React.Component<
+class TaskHistoryImpl extends React.Component<
   TaskHistoryProps,
   TaskHistoryState
 > {
@@ -41,8 +46,7 @@ export class TaskHistory extends React.Component<
   }
 
   private loadTask = async () => {
-    // TODO: Use local cache
-    const task = (await GetTaskByID(this.props.taskId)).task
+    const task = (await this.props.getTaskById(this.props.taskId)).payload as Task
     setTitle(task.title)
   }
 
@@ -221,3 +225,15 @@ export class TaskHistory extends React.Component<
     )
   }
 }
+
+const mapStateToProps = () => ({
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+})
+
+export const TaskHistory = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TaskHistoryImpl)
