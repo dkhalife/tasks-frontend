@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { GetTasks, GetTaskByID, MarkTaskComplete } from '@/api/tasks'
+import { GetTasks, GetTaskByID, MarkTaskComplete, DeleteTask } from '@/api/tasks'
 import { Task } from '@/models/task'
 import { RootState } from './store'
 
@@ -44,6 +44,11 @@ export const fetchTaskById = createAsyncThunk(
     const data = await GetTaskByID(id)
     return data.task
   },
+)
+
+export const deleteTask = createAsyncThunk(
+  'tasks/deleteTask',
+  async (taskId: string) => await DeleteTask(taskId),
 )
 
 const tasksSlice = createSlice({
@@ -119,6 +124,19 @@ const tasksSlice = createSlice({
         state.error = null
       })
       .addCase(completeTask.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Deleting tasks
+      .addCase(deleteTask.pending, state => {
+        state.status = 'loading'
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.items = state.items.filter(t => t.id !== action.meta.arg)
+        state.error = null
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message ?? null
       })

@@ -1,4 +1,5 @@
-import { DeleteTask, SkipTask, UpdateDueDate } from '@/api/tasks'
+import { SkipTask, UpdateDueDate } from '@/api/tasks'
+import { deleteTask } from '@/store/tasksSlice'
 import { Loading } from '@/Loading'
 import { TASK_UPDATE_EVENT } from '@/models/task'
 import {
@@ -46,13 +47,14 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import WebSocketManager from '@/utils/websocket'
-import { RootState } from '@/store/store'
+import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
 
 type MyTasksProps = {
   userLabels: Label[]
   tasks: TaskUI[]
+  deleteTask: (taskId: string) => Promise<any>
 } & WithNavigate
 
 interface MyTasksState {
@@ -401,7 +403,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     }
 
     if (isConfirmed === true) {
-      await DeleteTask(task.id)
+      await this.props.deleteTask(task.id)
 
       this.removeTask(task.id)
     }
@@ -662,7 +664,8 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
-const mapDispatchToProps = () => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
 })
 
 export const MyTasks = connect(

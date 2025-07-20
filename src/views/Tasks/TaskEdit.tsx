@@ -1,9 +1,9 @@
 import {
   CreateTask,
   SaveTask,
-  DeleteTask,
   SkipTask,
 } from '@/api/tasks'
+import { deleteTask } from '@/store/tasksSlice'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
@@ -54,6 +54,7 @@ export type TaskEditProps = {
   defaultNotificationTriggers: NotificationTriggerOptions
 
   getTaskById: (id: string) => Promise<any>
+  deleteTask: (id: string) => Promise<any>
 } & WithNavigate
 
 type Errors = { [key: string]: string }
@@ -235,7 +236,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
   private onTaskDelete = async (taskId: string) => {
     try {
-      await DeleteTask(taskId)
+      await this.props.deleteTask(taskId)
       this.navigateAway()
     } catch {
       this.setState({
@@ -755,6 +756,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+  deleteTask: (id: string) => dispatch(deleteTask(id)),
 })
 
 export const TaskEdit = connect(
