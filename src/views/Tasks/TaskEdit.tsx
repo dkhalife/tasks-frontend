@@ -1,9 +1,5 @@
-import {
-  CreateTask,
-  SaveTask,
-  SkipTask,
-} from '@/api/tasks'
-import { deleteTask } from '@/store/tasksSlice'
+import { CreateTask, SaveTask } from '@/api/tasks'
+import { skipTask, deleteTask } from '@/store/tasksSlice'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
@@ -55,6 +51,7 @@ export type TaskEditProps = {
 
   getTaskById: (id: string) => Promise<any>
   deleteTask: (id: string) => Promise<any>
+  skipTask: (id: string) => Promise<any>
 } & WithNavigate
 
 type Errors = { [key: string]: string }
@@ -259,7 +256,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       throw new Error('Attempted to skip while not editing a recurring task')
     }
 
-    SkipTask(taskId).then(() => {
+    this.props.skipTask(taskId).then(() => {
       this.navigateAway()
     })
   }
@@ -757,6 +754,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   getTaskById: (id: string) => dispatch(fetchTaskById(id)),
   deleteTask: (id: string) => dispatch(deleteTask(id)),
+  skipTask: (id: string) => dispatch(skipTask(id)),
 })
 
 export const TaskEdit = connect(

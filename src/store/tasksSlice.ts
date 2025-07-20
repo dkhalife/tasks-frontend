@@ -1,5 +1,11 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { GetTasks, GetTaskByID, MarkTaskComplete, DeleteTask } from '@/api/tasks'
+import {
+  GetTasks,
+  GetTaskByID,
+  MarkTaskComplete,
+  DeleteTask,
+  SkipTask,
+} from '@/api/tasks'
 import { Task } from '@/models/task'
 import { RootState } from './store'
 
@@ -26,6 +32,14 @@ export const completeTask = createAsyncThunk(
   'tasks/completeTask',
   async (taskId: string) => {
     const response = await MarkTaskComplete(taskId)
+    return response.task
+  },
+)
+
+export const skipTask = createAsyncThunk(
+  'tasks/skipTask',
+  async (taskId: string) => {
+    const response = await SkipTask(taskId)
     return response.task
   },
 )
@@ -124,6 +138,27 @@ const tasksSlice = createSlice({
         state.error = null
       })
       .addCase(completeTask.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Skip tasks
+      .addCase(skipTask.pending, state => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(skipTask.fulfilled, (state, action) => {
+        const taskId = action.meta.arg
+        state.items = state.items.filter(t => t.id !== taskId)
+
+        const newTask = action.payload
+        if (newTask.next_due_date) {
+          state.items.push(newTask)
+        }
+
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(skipTask.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
