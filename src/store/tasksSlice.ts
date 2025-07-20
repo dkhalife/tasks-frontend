@@ -5,6 +5,8 @@ import {
   MarkTaskComplete,
   DeleteTask,
   SkipTask,
+  CreateTask,
+  SaveTask,
 } from '@/api/tasks'
 import { Task } from '@/models/task'
 import { RootState } from './store'
@@ -65,6 +67,16 @@ export const deleteTask = createAsyncThunk(
   async (taskId: string) => await DeleteTask(taskId),
 )
 
+export const createTask = createAsyncThunk(
+  'tasks/createTask',
+  async (task: Omit<Task, 'id'>) => await CreateTask(task),
+)
+
+export const saveTask = createAsyncThunk(
+  'tasks/saveTask',
+  async (task: Task) => await SaveTask(task),
+)
+
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -118,7 +130,31 @@ const tasksSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
+      // Create tasks
+      .addCase(createTask.pending, state => {
+        state.status = 'loading'
+      })
+      .addCase(createTask.fulfilled, state => {
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(createTask.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
       // Edit tasks
+      .addCase(saveTask.pending, state => {
+        state.status = 'loading'
+      })
+      .addCase(saveTask.fulfilled, state => {
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(saveTask.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Mark tasks as complete
       .addCase(completeTask.pending, state => {
         state.status = 'loading'
         state.error = null
@@ -157,10 +193,6 @@ const tasksSlice = createSlice({
 
         state.status = 'succeeded'
         state.error = null
-      })
-      .addCase(skipTask.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.error.message ?? null
       })
       // Deleting tasks
       .addCase(deleteTask.pending, state => {
