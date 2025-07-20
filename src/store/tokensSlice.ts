@@ -1,11 +1,12 @@
 import { CreateLongLivedToken, DeleteLongLivedToken, GetLongLivedTokens } from '@/api/tokens'
+import { SyncState } from '@/models/sync'
 import { APIToken, ApiTokenScope } from '@/models/token'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 export interface TokensState {
   items: APIToken[]
   isEditing: boolean
-  status: 'loading' | 'succeeded' | 'failed'
+  status: SyncState
   lastFetched: number | null
   error: string | null
 }

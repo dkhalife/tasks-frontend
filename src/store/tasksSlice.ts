@@ -11,10 +11,11 @@ import {
 } from '@/api/tasks'
 import { Task } from '@/models/task'
 import { RootState } from './store'
+import { SyncState } from '@/models/sync'
 
 export interface TasksState {
   items: Task[]
-  status: 'loading' | 'succeeded' | 'failed'
+  status: SyncState
   lastFetched: number | null
   error: string | null
 }

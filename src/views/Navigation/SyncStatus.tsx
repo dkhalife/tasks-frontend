@@ -3,17 +3,29 @@ import { CircularProgress, IconButton, Tooltip } from '@mui/joy'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '@/store/store'
+import { SyncState } from '@/models/sync'
 
 interface SyncStatusProps {
   style?: React.CSSProperties
-  userStatus: 'loading' | 'succeeded' | 'failed'
+  userStatus: SyncState
   userError: string | null
-  tasksStatus: 'loading' | 'succeeded' | 'failed'
+  tasksStatus: SyncState
   tasksError: string | null
-  labelsStatus: 'loading' | 'succeeded' | 'failed'
+  labelsStatus: SyncState
   labelsError: string | null
-  tokensStatus: 'loading' | 'succeeded' | 'failed'
+  tokensStatus: SyncState
   tokensError: string | null
+}
+
+function getIcon(status: SyncState): React.ReactNode {
+  switch (status) {
+    case 'failed':
+      return <ErrorOutline color='error' />
+    case 'succeeded':
+      return <CheckCircleOutline color='success' />
+    default:
+      return <CircularProgress size='sm' />
+  }
 }
 
 class SyncStatusImpl extends React.Component<SyncStatusProps> {
@@ -38,29 +50,29 @@ class SyncStatusImpl extends React.Component<SyncStatusProps> {
 
     const anyFailed = statuses.some(s => s.status === 'failed')
     const allSucceeded = statuses.every(s => s.status === 'succeeded')
+    const icon = getIcon(anyFailed ? 'failed' : allSucceeded ? 'succeeded' : 'loading')
 
-    let icon: React.ReactNode
-    if (anyFailed) {
-      icon = <ErrorOutline color='danger' />
-    } else if (allSucceeded) {
-      icon = <CheckCircleOutline color='success' />
-    } else {
-      icon = <CircularProgress size='sm' />
-    }
-
-    const tooltipLines = statuses.map(s => `${s.name}: ${s.status}`)
-    const errorLines = statuses
-      .filter(s => s.error)
-      .map(s => `${s.name}: ${s.error}`)
-
-    let tooltipText = tooltipLines.join('\n')
-    if (errorLines.length > 0) {
-      tooltipText += `\n\nErrors:\n${errorLines.join('\n')}`
-    }
+    const tooltipText = (
+      <>
+        {statuses.map(s => (
+          <>
+            <span key={s.name}>{s.name}: {getIcon(s.status)}</span><br />
+          </>
+        ))}
+        {anyFailed && (
+          <>
+            <span><u><strong>Errors:</strong></u></span><br />
+            {statuses.filter(s => s.error).map(s => (
+              <span key={s.name + '-error'}>{s.name}: {s.error}</span>
+            ))}
+          </>
+        )}
+      </>
+    )
 
     return (
-      <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{tooltipText}</span>}>
-        <IconButton variant='plain' disabled style={this.props.style}>
+      <Tooltip title={tooltipText}>
+        <IconButton variant='plain' style={this.props.style}>
           {icon}
         </IconButton>
       </Tooltip>

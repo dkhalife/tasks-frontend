@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Label } from '@/models/label'
 import { CreateLabel, DeleteLabel, GetLabels, UpdateLabel } from '@/api/labels'
+import { SyncState } from '@/models/sync'
 
 export interface LabelsState {
   items: Label[]
   isEditing: boolean
-  status: 'loading' | 'succeeded' | 'failed'
+  status: SyncState
   lastFetched: number | null
   error: string | null
 }
