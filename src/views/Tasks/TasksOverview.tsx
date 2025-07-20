@@ -1,7 +1,6 @@
 import {
   DeleteTask,
   GetTasks,
-  MarkTaskComplete,
   MarshalledTask,
   UnmarshallTask,
   UpdateDueDate,
@@ -37,10 +36,13 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
 import WebSocketManager from '@/utils/websocket'
-import { store } from '@/store/store'
-import { taskUpserted, taskDeleted } from '@/store/tasksSlice'
+import { AppDispatch, store } from '@/store/store'
+import { taskUpserted, taskDeleted, completeTask } from '@/store/tasksSlice'
+import { connect } from 'react-redux'
 
-type TasksOverviewProps = object & WithNavigate
+type TasksOverviewProps = {
+  completeTask: (taskId: string) => Promise<any>
+} & WithNavigate
 
 interface TasksOverviewState {
   tasks: Task[]
@@ -50,7 +52,7 @@ interface TasksOverviewState {
   isLoading: boolean
 }
 
-export class TasksOverview extends React.Component<
+class TasksOverviewImpl extends React.Component<
   TasksOverviewProps,
   TasksOverviewState
 > {
@@ -89,12 +91,12 @@ export class TasksOverview extends React.Component<
 
     setTitle('Tasks Overview')
     this.registerKeyboardShortcuts()
-    this.registerWebSocketListeners()
+    // this.registerWebSocketListeners()
   }
 
   componentWillUnmount(): void {
     this.unregisterKeyboardShortcuts()
-    this.unregisterWebSocketListeners()
+    // this.unregisterWebSocketListeners()
   }
 
   private registerKeyboardShortcuts = () => {
@@ -105,23 +107,23 @@ export class TasksOverview extends React.Component<
     document.removeEventListener('keydown', this.onKeyDown)
   }
 
-  private registerWebSocketListeners = () => {
-    this.ws.on('task_created', this.onTaskCreatedWS);
-    this.ws.on('task_updated', this.onTaskUpdatedWS);
-    this.ws.on('task_deleted', this.onTaskDeletedWS);
-    this.ws.on('task_completed', this.onTaskCompletedWS);
-    this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
-    this.ws.on('task_skipped', this.onTaskSkippedWS);
-  }
+  // private registerWebSocketListeners = () => {
+  //   this.ws.on('task_created', this.onTaskCreatedWS);
+  //   this.ws.on('task_updated', this.onTaskUpdatedWS);
+  //   this.ws.on('task_deleted', this.onTaskDeletedWS);
+  //   this.ws.on('task_completed', this.onTaskCompletedWS);
+  //   this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
+  //   this.ws.on('task_skipped', this.onTaskSkippedWS);
+  // }
 
-  private unregisterWebSocketListeners = () => {
-    this.ws.off('task_created', this.onTaskCreatedWS);
-    this.ws.off('task_updated', this.onTaskUpdatedWS);
-    this.ws.off('task_deleted', this.onTaskDeletedWS);
-    this.ws.off('task_completed', this.onTaskCompletedWS);
-    this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
-    this.ws.off('task_skipped', this.onTaskSkippedWS);
-  }
+  // private unregisterWebSocketListeners = () => {
+  //   this.ws.off('task_created', this.onTaskCreatedWS);
+  //   this.ws.off('task_updated', this.onTaskUpdatedWS);
+  //   this.ws.off('task_deleted', this.onTaskDeletedWS);
+  //   this.ws.off('task_completed', this.onTaskCompletedWS);
+  //   this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
+  //   this.ws.off('task_skipped', this.onTaskSkippedWS);
+  // }
   
   private onTaskCreated = (newTask: Task) => {
     this.setState(prevState => {
@@ -225,13 +227,13 @@ export class TasksOverview extends React.Component<
   }
 
   private onCompleteTaskClicked = (task: Task) => async () => {
-    const data = await MarkTaskComplete(task.id)
+    const data = await this.props.completeTask(task.id)
 
     if (this.ws.isConnected()) {
       return
     }
 
-    const newTask = data.task
+    const newTask = data.payload
     this.onTaskCompleted(newTask)
 
     playSound(SoundEffect.TaskComplete)
@@ -484,3 +486,15 @@ export class TasksOverview extends React.Component<
     )
   }
 }
+
+const mapStateToProps = () => ({
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  completeTask: (taskId: string) => dispatch(completeTask(taskId)),
+})
+
+export const TasksOverview = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TasksOverviewImpl)

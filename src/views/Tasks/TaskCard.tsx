@@ -1,7 +1,4 @@
 import {
-  MarkTaskComplete,
-} from '@/api/tasks'
-import {
   TASK_UPDATE_EVENT,
   Task,
   getDueDateChipColor,
@@ -26,14 +23,19 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
+import { connect } from 'react-redux'
+import { completeTask } from '@/store/tasksSlice'
+import { AppDispatch } from '@/store/store'
 
 type TaskCardProps = WithNavigate & {
   task: Task
+
+  completeTask: (taskId: string) => Promise<any>
   onTaskUpdate: (updatedTask: Task, event: TASK_UPDATE_EVENT) => void
   onContextMenu: (event: React.MouseEvent<HTMLDivElement>, task: Task) => void
 }
 
-export class TaskCard extends React.Component<TaskCardProps> {
+class TaskCardImpl extends React.Component<TaskCardProps> {
   private getFrequencyIcon = (task: Task) => {
     if (task.frequency.type === 'once') {
       return <TimesOneMobiledata />
@@ -44,12 +46,13 @@ export class TaskCard extends React.Component<TaskCardProps> {
 
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
-    const response = await MarkTaskComplete(task.id)
-    
+    const response = await this.props.completeTask(task.id)
+    console.log(response)
+
     // Play the task completion sound
     playSound(SoundEffect.TaskComplete)
     
-    onTaskUpdate(response.task, 'completed')
+    onTaskUpdate(response.payload, 'completed')
   }
 
   private hasAnyNotificationsActive = () => {
@@ -230,3 +233,15 @@ export class TaskCard extends React.Component<TaskCardProps> {
     )
   }
 }
+
+const mapStateToProps = () => ({
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  completeTask: (taskId: string) => dispatch(completeTask(taskId)),
+})
+
+export const TaskCard = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TaskCardImpl)

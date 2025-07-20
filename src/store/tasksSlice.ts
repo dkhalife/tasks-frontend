@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { GetTasks, GetTaskByID } from '@/api/tasks'
+import { GetTasks, GetTaskByID, MarkTaskComplete } from '@/api/tasks'
 import { Task } from '@/models/task'
 import { RootState } from './store'
 
@@ -21,6 +21,14 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
   const data = await GetTasks()
   return data.tasks
 })
+
+export const completeTask = createAsyncThunk(
+  'tasks/completeTask',
+  async (taskId: string) => {
+    const response = await MarkTaskComplete(taskId)
+    return response.task
+  },
+)
 
 export const fetchTaskById = createAsyncThunk(
   'tasks/fetchTaskById',
@@ -56,6 +64,7 @@ const tasksSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+      // Fetch tasks
       .addCase(fetchTasks.pending, state => {
         state.status = 'loading'
         state.error = null
@@ -70,6 +79,7 @@ const tasksSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
+      // Fetch a specific task by ID
       .addCase(fetchTaskById.pending, state => {
         state.status = 'loading'
         state.error = null
@@ -86,6 +96,29 @@ const tasksSlice = createSlice({
         state.error = null
       })
       .addCase(fetchTaskById.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Edit tasks
+      .addCase(completeTask.pending, state => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(completeTask.fulfilled, (state, action) => {
+        const taskId = action.meta.arg
+        // Remove the old entry with taskId
+        state.items = state.items.filter(t => t.id !== taskId)
+
+        // For recurring tasks, we might have a new task with the same ID but updated details
+        const newTask = action.payload
+        if (newTask.next_due_date) {
+          state.items.push(newTask)
+        }
+
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(completeTask.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
