@@ -46,14 +46,14 @@ import { moveFocusToJoyInput } from '@/utils/joy'
 import { format, parseISO } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
-import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/marshalling'
+import { MakeTask, TaskUI } from '@/utils/marshalling'
 
 export type TaskEditProps = {
   taskId: string | null
   userLabels: Label[]
   defaultNotificationTriggers: NotificationTriggerOptions
 
-  getTaskById: (id: string) => Promise<any>
+  fetchTaskById: (id: string) => Promise<any>
   createTask: (task: Omit<Task, 'id'>) => Promise<any>
   saveTask: (task: Task) => Promise<any>
   skipTask: (id: string) => Promise<any>
@@ -79,6 +79,7 @@ export interface TaskEditState {
 class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   private titleInputRef = React.createRef<HTMLDivElement>()
   private confirmModalRef = React.createRef<ConfirmationModal>()
+  private taskBeingEdited: Task | null = null
 
   constructor(props: TaskEditProps) {
     super(props)
@@ -237,76 +238,40 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  private onTaskDelete = async (taskId: string) => {
-    try {
-      await this.props.deleteTask(taskId)
-      this.navigateAway()
-    } catch {
-      this.setState({
-        isSnackbarOpen: true,
-        snackbarMessage: 'Failed to delete task',
-        snackbarColor: 'danger',
-      })
-    }
-  }
+  private handleDelete = (taskId: string) => {
+    this.confirmModalRef.current?.open(async () => {
+      try {
+        await this.props.deleteTask(taskId)
 
-  private handleDelete = () => {
-    this.confirmModalRef.current?.open()
-  }
-
-  private onSkipClicked = () => {
-    const { taskId } = this.props
-    const { frequency } = this.state
-
-    if (!taskId || frequency.type === 'once') {
-      throw new Error('Attempted to skip while not editing a recurring task')
-    }
-
-    this.props.skipTask(taskId).then(() => {
-      this.navigateAway()
+        this.navigateAway()
+      } catch {
+        this.setState({
+          isSnackbarOpen: true,
+          snackbarMessage: 'Failed to delete task',
+          snackbarColor: 'danger',
+        })
+      }
     })
   }
 
-  private loadTask = async (taskId: string) => {
-    try {
-      const task = (await this.props.getTaskById(taskId)).payload as Task
-      const { userLabels } = this.props
-
-      const taskUI = MakeTaskUI(task, userLabels)
-
-      this.setState({
-        title: taskUI.title,
-        nextDueDate: taskUI.next_due_date,
-        endDate: taskUI.end_date,
-        frequency: taskUI.frequency,
-        isRolling: taskUI.is_rolling,
-        notification: taskUI.notification,
-        taskLabels: taskUI.labels
-          .map(taskLabel =>
-            userLabels.find(userLabel => userLabel.id === taskLabel.id),
-          )
-          .filter(Boolean) as Label[],
-      })
-
-      setTitle(taskUI.title)
-    } catch {
-      this.setState({
-        isSnackbarOpen: true,
-        snackbarMessage: 'You are not authorized to view this task.',
-        snackbarColor: 'danger',
-      })
-
-      setTimeout(() => {
-        this.navigateAway()
-      }, 3000)
-    }
+  private onSkipClicked = async (taskId: string) => {
+    await this.props.skipTask(taskId)
+    this.navigateAway()
   }
 
   private init = async () => {
     const { taskId } = this.props
+    if (!taskId) {
+      setTitle('Create Task')
+      return
+    }
 
-    if (taskId != null) {
-      await this.loadTask(taskId)
+    this.taskBeingEdited = await this.props.fetchTaskById(taskId)
+
+    if (this.taskBeingEdited != null) {
+      setTitle(`Edit Task: ${this.taskBeingEdited.title}`)
+    } else {
+      this.navigateAway()
     }
   }
 
@@ -317,7 +282,9 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ title: e.target.value })
+    this.setState({
+      title: e.target.value,
+    })
   }
 
   private onTitleKeyDown = (e: React.KeyboardEvent) => {
@@ -403,16 +370,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
   private onAddNewLabel = () => {
     this.props.navigate(NavigationPaths.Labels)
-  }
-
-  private onDeleteConfirmed = (isConfirmed: boolean) => {
-    if (this.props.taskId === null) {
-      throw new Error('Task ID is null')
-    }
-
-    if (isConfirmed === true) {
-      this.onTaskDelete(this.props.taskId)
-    }
   }
 
   private onSnackbarClose = () => {
@@ -693,7 +650,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
             <Button
               color='danger'
               variant='solid'
-              onClick={this.handleDelete}
+              onClick={() => this.handleDelete(taskId)}
             >
               Delete
             </Button>
@@ -702,7 +659,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
             <Button
               color='warning'
               variant='solid'
-              onClick={this.onSkipClicked}
+              onClick={() => this.onSkipClicked(taskId)}
             >
               Skip
             </Button>
@@ -721,7 +678,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this task?'
-          onClose={this.onDeleteConfirmed}
         />
         <Snackbar
           open={isSnackbarOpen}
@@ -739,7 +695,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => {  
+const mapStateToProps = (state: RootState) => {
   let defaultNotificationTriggers: NotificationTriggerOptions = {
     due_date: true,
     pre_due: false,
@@ -758,7 +714,7 @@ const mapStateToProps = (state: RootState) => {
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+  fetchTaskById: (id: string) => dispatch(fetchTaskById(id)),
   createTask: (task: Omit<Task, 'id'>) => dispatch(createTask(task)),
   saveTask: (task: Task) => dispatch(saveTask(task)),
   skipTask: (id: string) => dispatch(skipTask(id)),

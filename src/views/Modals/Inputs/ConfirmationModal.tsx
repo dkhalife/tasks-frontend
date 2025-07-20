@@ -8,51 +8,66 @@ import {
 } from '@mui/joy'
 import React from 'react'
 
+type ConfirmedHandler = () => void
+
 export interface ConfirmationModalProps {
   title: string
   message: string
   confirmText: string
   cancelText: string
   color?: ColorPaletteProp
-
-  onClose: (isConfirmed: boolean) => void
 }
 
-interface ConfirmationModalState {
-  isOpen: boolean
+type ConfirmationModalClosedState = {
+  isOpen: false
+  onClose: null
 }
+
+type ConfirmationModalOpenedState = {
+  isOpen: true
+  onClose: ConfirmedHandler
+}
+
+type ConfirmationModalState = ConfirmationModalClosedState | ConfirmationModalOpenedState
 
 export class ConfirmationModal extends React.Component<
   ConfirmationModalProps,
   ConfirmationModalState
 > {
-  private confirmButtonRef: React.RefObject<HTMLButtonElement> =
-    React.createRef()
+  private confirmButtonRef: React.RefObject<HTMLButtonElement> = React.createRef()
 
   constructor(props: ConfirmationModalProps) {
     super(props)
 
     this.state = {
       isOpen: false,
+      onClose: null,
     }
   }
 
-  public async open(): Promise<void> {
+  public async open(onClose: ConfirmedHandler): Promise<void> {
     await this.setState({
       isOpen: true,
+      onClose,
     })
 
     this.confirmButtonRef.current?.focus()
   }
 
   private onConfirm = () => {
-    this.setState({ isOpen: false })
-    this.props.onClose(true)
+    const { onClose } = this.state as ConfirmationModalOpenedState
+
+    this.setState({
+      isOpen: false,
+    })
+
+    onClose()
   }
 
   private onCancel = () => {
-    this.setState({ isOpen: false })
-    this.props.onClose(false)
+    this.setState({
+      isOpen: false,
+    })
   }
 
   public render(): React.ReactNode {

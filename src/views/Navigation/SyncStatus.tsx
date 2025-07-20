@@ -61,9 +61,12 @@ class SyncStatusImpl extends React.Component<SyncStatusProps> {
         ))}
         {anyFailed && (
           <>
+            <br />
             <span><u><strong>Errors:</strong></u></span><br />
             {statuses.filter(s => s.error).map(s => (
-              <span key={s.name + '-error'}>{s.name}: {s.error}</span>
+              <>
+                <span>{s.name}: {s.error}</span><br />
+              </>
             ))}
           </>
         )}

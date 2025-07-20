@@ -31,7 +31,7 @@ type TaskCardProps = WithNavigate & {
   task: TaskUI
 
   completeTask: (taskId: string) => Promise<any>
-  onTaskUpdate: (updatedTask: TaskUI, event: TASK_UPDATE_EVENT) => void
+  onTaskUpdate: (event: TASK_UPDATE_EVENT) => void
   onContextMenu: (event: React.MouseEvent<HTMLDivElement>, task: TaskUI) => void
 }
 
@@ -46,12 +46,12 @@ class TaskCardImpl extends React.Component<TaskCardProps> {
 
   private handleTaskCompletion = async () => {
     const { task, onTaskUpdate } = this.props
-    const response = await this.props.completeTask(task.id)
+    await this.props.completeTask(task.id)
 
     // Play the task completion sound
     playSound(SoundEffect.TaskComplete)
     
-    onTaskUpdate(response.payload, 'completed')
+    onTaskUpdate('completed')
   }
 
   private hasAnyNotificationsActive = () => {

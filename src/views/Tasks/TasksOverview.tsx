@@ -1,4 +1,4 @@
-import { deleteTask, completeTask, updateDueDate } from '@/store/tasksSlice'
+import { deleteTask, completeTask, updateDueDate, filterTasks } from '@/store/tasksSlice'
 import { getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
@@ -28,71 +28,37 @@ import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
-import WebSocketManager from '@/utils/websocket'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { Label } from '@/models/label'
 import { sortTasksByDueDate } from '@/utils/grouping'
-import { TaskUI, MarshallDate, MakeTaskUI } from '@/utils/marshalling'
+import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
 
 type TasksOverviewProps = {
   tasks: TaskUI[]
+  isLoading: boolean
   userLabels: Label[]
 
+  search: string
+  filterTasks: (searchQuery: string) => void
   completeTask: (taskId: string) => Promise<any>
   deleteTask: (taskId: string) => Promise<any>
   updateDueDate: (taskId: string, dueDate: string) => Promise<any>
 } & WithNavigate
 
-interface TasksOverviewState {
-  filteredTasks: TaskUI[]
-  search: string
-  taskId: string | null
-  isLoading: boolean
-}
-
-class TasksOverviewImpl extends React.Component<
-  TasksOverviewProps,
-  TasksOverviewState
-> {
+class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   private dateModalRef = React.createRef<DateModal>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private searchInputRef = React.createRef<HTMLInputElement>()
-  private taskBeingDeleted: TaskUI | null = null
-
-  private ws: WebSocketManager
-
-  constructor(props: TasksOverviewProps) {
-    super(props)
-
-    this.ws = WebSocketManager.getInstance()
-
-    this.state = {
-      filteredTasks: [],
-      search: '',
-      taskId: null,
-      isLoading: true,
-    }
-  }
-
-  private loadTasks = async () => {
-    this.setState({
-      filteredTasks: this.props.tasks,
-      isLoading: false,
-    })
-  }
 
   componentDidMount(): void {
-    this.loadTasks()
-
     setTitle('Tasks Overview')
+
     this.registerKeyboardShortcuts()
-    // this.registerWebSocketListeners()
   }
 
   componentWillUnmount(): void {
     this.unregisterKeyboardShortcuts()
-    // this.unregisterWebSocketListeners()
   }
 
   private registerKeyboardShortcuts = () => {
@@ -102,60 +68,6 @@ class TasksOverviewImpl extends React.Component<
   private unregisterKeyboardShortcuts = () => {
     document.removeEventListener('keydown', this.onKeyDown)
   }
-
-  // private registerWebSocketListeners = () => {
-  //   this.ws.on('task_created', this.onTaskCreatedWS);
-  //   this.ws.on('task_updated', this.onTaskUpdatedWS);
-  //   this.ws.on('task_deleted', this.onTaskDeletedWS);
-  //   this.ws.on('task_completed', this.onTaskCompletedWS);
-  //   this.ws.on('task_uncompleted', this.onTaskUncompletedWS);
-  //   this.ws.on('task_skipped', this.onTaskSkippedWS);
-  // }
-
-  // private unregisterWebSocketListeners = () => {
-  //   this.ws.off('task_created', this.onTaskCreatedWS);
-  //   this.ws.off('task_updated', this.onTaskUpdatedWS);
-  //   this.ws.off('task_deleted', this.onTaskDeletedWS);
-  //   this.ws.off('task_completed', this.onTaskCompletedWS);
-  //   this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
-  //   this.ws.off('task_skipped', this.onTaskSkippedWS);
-  // }
-
-  // private onTaskCreatedWS = (data: unknown) => {
-  //   const newTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskCreated(newTask)
-  //   store.dispatch(taskUpserted(newTask))
-  // }
-
-  // private onTaskUpdatedWS = (data: unknown) => {
-  //   const updatedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskUpdated(updatedTask)
-  //   store.dispatch(taskUpserted(updatedTask))
-  // }
-
-  // private onTaskDeletedWS = (data: unknown) => {
-  //   const deletedTaskId = (data as any).id as string
-  //   this.onTaskDeleted(deletedTaskId)
-  //   store.dispatch(taskDeleted(deletedTaskId))
-  // }
-
-  // private onTaskCompletedWS = (data: unknown) => {
-  //   const task = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskCompleted(task)
-  //   store.dispatch(taskUpserted(task))
-  // }
-
-  // private onTaskUncompletedWS = (data: unknown) => {
-  //   const uncompletedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskCreated(uncompletedTask)
-  //   store.dispatch(taskUpserted(uncompletedTask))
-  // }
-
-  // private onTaskSkippedWS = (data: unknown) => {
-  //   const skippedTask = UnmarshallTask(data as MarshalledTask)
-  //   this.onTaskUpdated(skippedTask)
-  //   store.dispatch(taskUpserted(skippedTask))
-  // }
 
   private onKeyDown = (event: KeyboardEvent) => {
     // Ctrl + F => Search
@@ -174,93 +86,28 @@ class TasksOverviewImpl extends React.Component<
     }
   }
 
-  private onDueDateModalClosed = async (date: Date | null) => {
-    if (!date) {
-      return
-    }
-
-    const { tasks } = this.props
-    const { taskId } = this.state
-    if (!taskId) {
-      return
-    }
-
-    const { userLabels } = this.props
-    const data = await this.props.updateDueDate(
-      taskId,
-      MarshallDate(date),
-    )
-    const newTaskUI = MakeTaskUI(data.task, userLabels)
-
-    let newTasks = [...tasks]
-
-    const index = newTasks.findIndex(c => c.id === newTaskUI.id)
-    newTasks[index] = newTaskUI
-
-    newTasks = sortTasksByDueDate(newTasks)
-
-    this.setState({
-      filteredTasks: newTasks,
-    })
-  }
-
   private onCompleteTaskClicked = (task: TaskUI) => async () => {
-    const data = await this.props.completeTask(task.id)
-
-    if (this.ws.isConnected()) {
-      return
-    }
-
-    const newTask = data.payload
-    this.onTaskCompleted(newTask)
+    await this.props.completeTask(task.id)
 
     playSound(SoundEffect.TaskComplete)
   }
 
-  private onTaskCompleted = (task: TaskUI) => {
-    const { tasks } = this.props
-    let newTasks = tasks.filter(t => t.id !== task.id)
-
-    if (task.next_due_date !== null) {
-      newTasks.push(task)
-
-      newTasks = sortTasksByDueDate(newTasks)
-    }
-
-    const index = newTasks.findIndex(c => c.id === task.id)
-    newTasks[index] = task
-
-    this.setState({
-      filteredTasks: newTasks,
-    })
-  }
-
   private onSearchTermsChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    const { tasks } = this.props
-    const newTasks = tasks.filter(task => {
-      return task.title.toLowerCase().includes(e.target.value.toLowerCase())
-    })
-
-    const newState = {
-      search: e.target.value,
-      filteredTasks: e.target.value === '' ? tasks : newTasks,
-    }
-    this.setState(newState)
+    this.props.filterTasks(e.target.value)
   }
 
   private onClearSearchClicked = () => {
-    const { tasks } = this.props
-    this.setState({
-      search: '',
-      filteredTasks: tasks,
-    })
+    this.props.filterTasks('')
   }
 
   private onRescheduleClicked = async (task: TaskUI) => {
-    await this.setState({
-      taskId: task.id,
+    this.dateModalRef.current?.open(task.next_due_date, (newDate: Date | null) => {
+      if (newDate === null) {
+        return
+      }
+
+      this.props.updateDueDate(task.id, MarshallDate(newDate))
     })
-    this.dateModalRef.current?.open(task.next_due_date)
   }
 
   private onViewHistoryClicked = (task: TaskUI) => {
@@ -274,28 +121,13 @@ class TasksOverviewImpl extends React.Component<
   }
 
   private onDeleteTaskClicked = async (task: TaskUI) => {
-    this.taskBeingDeleted = task
-    this.confirmationModalRef.current?.open()
-  }
-
-  private onDeleteConfirmed = async (isConfirmed: boolean) => {
-    const task = this.taskBeingDeleted
-    this.taskBeingDeleted = null
-
-    if (!isConfirmed) {
-      return
-    }
-
-    if (!task) {
-      throw new Error('Task to delete is not set')
-    }
-
-    await this.props.deleteTask(task.id)
+    this.confirmationModalRef.current?.open(async () => {
+      await this.props.deleteTask(task.id)
+    })
   }
 
   render(): React.ReactNode {
-    const { filteredTasks, search, taskId, isLoading } = this.state
-    const { navigate } = this.props
+    const { isLoading, search, tasks, navigate } = this.props
 
     if (isLoading) {
       return <Loading />
@@ -349,7 +181,7 @@ class TasksOverviewImpl extends React.Component<
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.map((task: TaskUI) => (
+            {tasks.map((task: TaskUI) => (
               <tr key={task.id}>
                 <td>
                   <Chip color={getDueDateChipColor(task.next_due_date)}>
@@ -436,9 +268,7 @@ class TasksOverviewImpl extends React.Component<
         </Table>
         <DateModal
           ref={this.dateModalRef}
-          key={taskId}
           title={`Change due date`}
-          onClose={this.onDueDateModalClosed}
         />
         <ConfirmationModal
           ref={this.confirmationModalRef}
@@ -446,7 +276,6 @@ class TasksOverviewImpl extends React.Component<
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this task?'
-          onClose={this.onDeleteConfirmed}
         />
       </Container>
     )
@@ -454,15 +283,21 @@ class TasksOverviewImpl extends React.Component<
 }
 
 const mapStateToProps = (state: RootState) => {
+  const isLoading = state.tasks.status === 'loading' || state.labels.status === 'loading'
   const userLabels = state.labels.items
+  const search = state.tasks.searchQuery
+  const tasks = sortTasksByDueDate(state.tasks.filteredItems.map(task => MakeTaskUI(task, userLabels)))
 
   return {
     userLabels,
-    tasks: state.tasks.items.map(task => MakeTaskUI(task, userLabels)),
+    isLoading,
+    search,
+    tasks,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  filterTasks: (searchQuery: string) => dispatch(filterTasks(searchQuery)),
   completeTask: (taskId: string) => dispatch(completeTask(taskId)),
   deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
   updateDueDate: (taskId: string, dueDate: string) =>
