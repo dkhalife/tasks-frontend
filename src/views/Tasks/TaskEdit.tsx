@@ -46,6 +46,7 @@ import { format, parseISO } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { fetchTaskById } from '@/store/tasksSlice'
+import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/tasks'
 
 export type TaskEditProps = {
   taskId: string | null
@@ -200,7 +201,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       notification,
     } = this.state
 
-    const task: Omit<Task, 'id'> = {
+    const taskUI: Omit<TaskUI, 'id'> = {
       title,
       labels: taskLabels,
       next_due_date: nextDueDate,
@@ -209,6 +210,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       notification,
     }
+
+    const task = MakeTask(taskUI)
 
     try {
       const promise =
@@ -265,21 +268,23 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       const task = (await this.props.getTaskById(taskId)).payload as Task
       const { userLabels } = this.props
 
+      const taskUI = MakeTaskUI(task, userLabels)
+
       this.setState({
-        title: task.title,
-        nextDueDate: task.next_due_date,
-        endDate: task.end_date,
-        frequency: task.frequency,
-        isRolling: task.is_rolling,
-        notification: task.notification,
-        taskLabels: task.labels
+        title: taskUI.title,
+        nextDueDate: taskUI.next_due_date,
+        endDate: taskUI.end_date,
+        frequency: taskUI.frequency,
+        isRolling: taskUI.is_rolling,
+        notification: taskUI.notification,
+        taskLabels: taskUI.labels
           .map(taskLabel =>
             userLabels.find(userLabel => userLabel.id === taskLabel.id),
           )
           .filter(Boolean) as Label[],
       })
 
-      setTitle(task.title)
+      setTitle(taskUI.title)
     } catch {
       this.setState({
         isSnackbarOpen: true,

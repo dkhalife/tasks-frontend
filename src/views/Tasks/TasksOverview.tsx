@@ -2,7 +2,7 @@ import {
   DeleteTask,
   UpdateDueDate,
 } from '@/api/tasks'
-import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
+import { getDueDateChipColor, getDueDateChipText } from '@/models/task'
 import {
   CancelRounded,
   SearchRounded,
@@ -27,7 +27,7 @@ import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
-import { sortTasksByDueDate } from '@/utils/tasks'
+import { MakeTaskUI, MarshallDate, sortTasksByDueDate, TaskUI } from '@/utils/tasks'
 import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
@@ -36,15 +36,17 @@ import WebSocketManager from '@/utils/websocket'
 import { AppDispatch, RootState } from '@/store/store'
 import { completeTask } from '@/store/tasksSlice'
 import { connect } from 'react-redux'
+import { Label } from '@/models/label'
 
 type TasksOverviewProps = {
-  tasks: Task[]
+  tasks: TaskUI[]
+  userLabels: Label[]
 
   completeTask: (taskId: string) => Promise<any>
 } & WithNavigate
 
 interface TasksOverviewState {
-  filteredTasks: Task[]
+  filteredTasks: TaskUI[]
   search: string
   taskId: string | null
   isLoading: boolean
@@ -57,7 +59,7 @@ class TasksOverviewImpl extends React.Component<
   private dateModalRef = React.createRef<DateModal>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private searchInputRef = React.createRef<HTMLInputElement>()
-  private taskBeingDeleted: Task | null = null
+  private taskBeingDeleted: TaskUI | null = null
 
   private ws: WebSocketManager
 
@@ -184,12 +186,14 @@ class TasksOverviewImpl extends React.Component<
       return
     }
 
-    const data = await UpdateDueDate(taskId, date)
-    const newTask = data.task
+    const { userLabels } = this.props
+    const data = await UpdateDueDate(taskId, MarshallDate(date))
+    const newTaskUI = MakeTaskUI(data.task, userLabels)
+
     let newTasks = [...tasks]
 
-    const index = newTasks.findIndex(c => c.id === newTask.id)
-    newTasks[index] = newTask
+    const index = newTasks.findIndex(c => c.id === newTaskUI.id)
+    newTasks[index] = newTaskUI
 
     newTasks = sortTasksByDueDate(newTasks)
 
@@ -198,7 +202,7 @@ class TasksOverviewImpl extends React.Component<
     })
   }
 
-  private onCompleteTaskClicked = (task: Task) => async () => {
+  private onCompleteTaskClicked = (task: TaskUI) => async () => {
     const data = await this.props.completeTask(task.id)
 
     if (this.ws.isConnected()) {
@@ -211,7 +215,7 @@ class TasksOverviewImpl extends React.Component<
     playSound(SoundEffect.TaskComplete)
   }
 
-  private onTaskCompleted = (task: Task) => {
+  private onTaskCompleted = (task: TaskUI) => {
     const { tasks } = this.props
     let newTasks = tasks.filter(t => t.id !== task.id)
 
@@ -250,14 +254,14 @@ class TasksOverviewImpl extends React.Component<
     })
   }
 
-  private onRescheduleClicked = async (task: Task) => {
+  private onRescheduleClicked = async (task: TaskUI) => {
     await this.setState({
       taskId: task.id,
     })
     this.dateModalRef.current?.open(task.next_due_date)
   }
 
-  private onViewHistoryClicked = (task: Task) => {
+  private onViewHistoryClicked = (task: TaskUI) => {
     const { navigate } = this.props
     navigate(NavigationPaths.TaskHistory(task.id))
   }
@@ -267,7 +271,7 @@ class TasksOverviewImpl extends React.Component<
     navigate(NavigationPaths.TaskCreate)
   }
 
-  private onDeleteTaskClicked = async (task: Task) => {
+  private onDeleteTaskClicked = async (task: TaskUI) => {
     this.taskBeingDeleted = task
     this.confirmationModalRef.current?.open()
   }
@@ -343,7 +347,7 @@ class TasksOverviewImpl extends React.Component<
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.map((task: Task) => (
+            {filteredTasks.map((task: TaskUI) => (
               <tr key={task.id}>
                 <td>
                   <Chip color={getDueDateChipColor(task.next_due_date)}>
@@ -447,9 +451,14 @@ class TasksOverviewImpl extends React.Component<
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  tasks: state.tasks.items,
-})
+const mapStateToProps = (state: RootState) => {
+  const userLabels = state.labels.items
+
+  return {
+    userLabels,
+    tasks: state.tasks.items.map(task => MakeTaskUI(task, userLabels)),
+  }
+}
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   completeTask: (taskId: string) => dispatch(completeTask(taskId)),

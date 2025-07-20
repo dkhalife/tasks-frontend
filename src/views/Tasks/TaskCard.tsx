@@ -1,6 +1,5 @@
 import {
   TASK_UPDATE_EVENT,
-  Task,
   getDueDateChipColor,
   getDueDateChipText,
   getRecurrentChipText,
@@ -26,17 +25,18 @@ import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { connect } from 'react-redux'
 import { completeTask } from '@/store/tasksSlice'
 import { AppDispatch } from '@/store/store'
+import { TaskUI } from '@/utils/tasks'
 
 type TaskCardProps = WithNavigate & {
-  task: Task
+  task: TaskUI
 
   completeTask: (taskId: string) => Promise<any>
-  onTaskUpdate: (updatedTask: Task, event: TASK_UPDATE_EVENT) => void
-  onContextMenu: (event: React.MouseEvent<HTMLDivElement>, task: Task) => void
+  onTaskUpdate: (updatedTask: TaskUI, event: TASK_UPDATE_EVENT) => void
+  onContextMenu: (event: React.MouseEvent<HTMLDivElement>, task: TaskUI) => void
 }
 
 class TaskCardImpl extends React.Component<TaskCardProps> {
-  private getFrequencyIcon = (task: Task) => {
+  private getFrequencyIcon = (task: TaskUI) => {
     if (task.frequency.type === 'once') {
       return <TimesOneMobiledata />
     } else {

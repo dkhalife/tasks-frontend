@@ -3,17 +3,75 @@ import { COLORS, TASK_COLOR } from './colors'
 import { Label } from '@/models/label'
 import { DueDateGroups, GROUP_BY, LabelGroups } from '@/utils/grouping'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
+import { HistoryEntry } from '@/models/history'
+
+export function MarshallDate(d: Date): string;
+export function MarshallDate(d: null): null;
+export function MarshallDate(d: Date | null): string | null;
+export function MarshallDate(d: Date | null): string | null {
+  return d?.toISOString() ?? null
+}
+
+export function MakeDateUI(d: string): Date;
+export function MakeDateUI(d: null): null;
+export function MakeDateUI(d: string | null): Date | null;
+export function MakeDateUI(d: string | null): Date | null {
+  return d ? new Date(d) : null
+}
+
+export function MakeLabels(labels: string[], userLabels: Label[]): Label[] {
+  return labels
+    .map(label => userLabels.find(userLabel => userLabel.id === label))
+    .filter((label): label is Label => Boolean(label))
+}
+
+export function MakeHistoryUI(entry: HistoryEntry): HistoryEntryUI {
+  return {
+    ...entry,
+    due_date: MakeDateUI(entry.due_date),
+    completed_date: MakeDateUI(entry.completed_date),
+  }
+}
+
+export type TaskUI = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
+  next_due_date: Date | null
+  end_date: Date | null
+  labels: Label[]
+};
+
+export const MakeTaskUI = (task: Task, userLabels: Label[]): TaskUI => {
+  return {
+    ...task,
+    next_due_date: MakeDateUI(task.next_due_date),
+    end_date: MakeDateUI(task.end_date),
+    labels: MakeLabels(task.labels, userLabels),
+  }
+}
+
+export const MakeTask = (taskUI: Omit<TaskUI, 'id'>): Omit<Task, 'id'> => {
+  return {
+    ...taskUI,
+    next_due_date: MarshallDate(taskUI.next_due_date),
+    end_date: MarshallDate(taskUI.end_date),
+    labels: taskUI.labels.map(label => label.id),
+  }
+}
+
+export type HistoryEntryUI = Omit<HistoryEntry, 'due_date' | 'completed_date'> & {
+  due_date: Date | null
+  completed_date: Date | null
+};
 
 export type TaskGroup = {
   name: string
-  content: Task[]
+  content: TaskUI[]
   color: string
 }
 
 export type TaskGroups = DueDateGroups | LabelGroups
 
 export const bucketIntoDueDateGroup = (
-  task: Task,
+  task: TaskUI,
   groups: DueDateGroups,
   now: number,
   endOfToday: number,
@@ -55,13 +113,13 @@ export const bucketIntoDueDateGroup = (
   groups['later'].content.push(task)
 }
 
-export const bucketIntoLabelGroups = (task: Task, groups: LabelGroups) => {
+export const bucketIntoLabelGroups = (task: TaskUI, groups: LabelGroups) => {
   task.labels.forEach(label => {
     groups[label.id].content.push(task)
   })
 }
 
-const groupByDueDate = (tasks: Task[]): DueDateGroups => {
+const groupByDueDate = (tasks: TaskUI[]): DueDateGroups => {
   const groups: DueDateGroups = {
     overdue: {
       name: 'Overdue',
@@ -121,7 +179,7 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups => {
   return groups
 }
 
-const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups => {
+const groupByLabels = (tasks: TaskUI[], userLabels: Label[]): LabelGroups => {
   const groups: LabelGroups = {}
 
   userLabels.forEach(label => {
@@ -144,7 +202,7 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups => {
 }
 
 export const groupTasksBy = (
-  tasks: Task[],
+  tasks: TaskUI[],
   userLabels: Label[],
   groupBy: GROUP_BY,
 ): TaskGroups => {
@@ -155,7 +213,7 @@ export const groupTasksBy = (
   return groupByLabels(tasks, userLabels)
 }
 
-export const sortTasksByDueDate = (tasks: Task[]): Task[] => {
+export const sortTasksByDueDate = (tasks: TaskUI[]): TaskUI[] => {
   return tasks.sort((a, b) => {
     if (a.next_due_date === null) {
       return 1

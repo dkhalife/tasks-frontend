@@ -1,4 +1,3 @@
-import { Label } from './label'
 import { ColorPaletteProp } from '@mui/joy'
 import { dayOfMonthSuffix } from '../utils/date'
 import { IntervalUnit } from '@/utils/recurrence'
@@ -64,12 +63,12 @@ export type Frequency =
 export interface Task {
   id: string
   title: string
-  next_due_date: Date | null
+  next_due_date: string | null
   frequency: Frequency
   notification: Notification
   is_rolling: boolean
-  labels: Label[]
-  end_date: Date | null
+  labels: string[]
+  end_date: string | null
 }
 
 export type TASK_UPDATE_EVENT = 'updated' | 'completed' | 'rescheduled' | 'skipped'

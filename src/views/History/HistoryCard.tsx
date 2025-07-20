@@ -1,12 +1,12 @@
-import { HistoryEntry } from '@/models/history'
 import { ListItemContent, ListDivider } from '@mui/joy'
 import { ListItem, Box, Typography } from '@mui/joy'
 import React from 'react'
 import { CompletedChip } from './CompletedChip'
 import { format, formatDistanceToNow } from 'date-fns'
+import { HistoryEntryUI } from '@/utils/tasks'
 
 interface HistoryCardProps {
-  historyEntry: HistoryEntry
+  historyEntry: HistoryEntryUI
 }
 
 export class HistoryCard extends React.Component<HistoryCardProps> {

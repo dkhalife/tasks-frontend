@@ -1,6 +1,6 @@
 import { DeleteTask, SkipTask, UpdateDueDate } from '@/api/tasks'
 import { Loading } from '@/Loading'
-import { Task, TASK_UPDATE_EVENT } from '@/models/task'
+import { TASK_UPDATE_EVENT } from '@/models/task'
 import {
   ExpandCircleDown,
   Add,
@@ -29,7 +29,10 @@ import {
 import React from 'react'
 import { TaskCard } from '@/views/Tasks/TaskCard'
 import {
+  MakeTaskUI,
+  MarshallDate,
   TaskGroups,
+  TaskUI,
   bucketIntoDueDateGroup,
   bucketIntoLabelGroups,
   groupTasksBy,
@@ -53,7 +56,7 @@ import { connect } from 'react-redux'
 
 type MyTasksProps = {
   userLabels: Label[]
-  tasks: Task[]
+  tasks: TaskUI[]
 } & WithNavigate
 
 interface MyTasksState {
@@ -64,7 +67,7 @@ interface MyTasksState {
   groups: TaskGroups | null
   isExpanded: Record<keyof TaskGroups, boolean>
   isLoading: boolean
-  contextMenuTask: Task | null
+  contextMenuTask: TaskUI | null
 }
 
 class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
@@ -124,7 +127,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private addTask = async (task: Task) => {
+  private addTask = async (task: TaskUI) => {
     const { groups, groupBy } = this.state
 
     if (!groups) {
@@ -157,8 +160,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onTaskUpdated = async (
-    oldTask: Task,
-    newTask: Task,
+    oldTask: TaskUI,
+    newTask: TaskUI,
     event: TASK_UPDATE_EVENT,
   ) => {
     this.removeTask(oldTask.id)
@@ -326,7 +329,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     this.menuAnchorRef.style.top = `${y}px`
   }
 
-  private showContextMenu = (event: React.MouseEvent, task: Task) => {
+  private showContextMenu = (event: React.MouseEvent, task: TaskUI) => {
     const { pageX, pageY } = event
     this.setMenuAnchorPos(pageX, pageY);
 
@@ -373,9 +376,10 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     }
 
     const response = await SkipTask(task.id)
+    const taskUI = MakeTaskUI(response.task, this.props.userLabels)
 
     this.dismissMoreMenu()
-    this.onTaskUpdated(task, response.task, 'skipped')
+    this.onTaskUpdated(task, taskUI, 'skipped')
   }
 
   private onChangeDueDateClicked = () => {
@@ -417,8 +421,10 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       throw new Error('Attempted to delete without task reference')
     }
 
-    const response = await UpdateDueDate(task.id, newDate)
-    this.onTaskUpdated(task, response.task, 'rescheduled')
+    const response = await UpdateDueDate(task.id, MarshallDate(newDate))
+    const newTaskUI = MakeTaskUI(response.task, this.props.userLabels)
+
+    this.onTaskUpdated(task, newTaskUI, 'rescheduled')
   }
 
   render(): React.ReactNode {
@@ -651,10 +657,14 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  userLabels: state.labels.items,
-  tasks: state.tasks.items,
-})
+const mapStateToProps = (state: RootState) => {
+  const userLabels = state.labels.items
+
+  return {
+    userLabels,
+    tasks: state.tasks.items.map(task => MakeTaskUI(task, userLabels)),
+  }
+}
 
 const mapDispatchToProps = () => ({
 })

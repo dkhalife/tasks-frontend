@@ -1,6 +1,5 @@
 import { GetTaskHistory } from '@/api/tasks'
 import { Loading } from '@/Loading'
-import { HistoryEntry } from '@/models/history'
 import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
 import { Sheet, ListItemContent, Grid } from '@mui/joy'
 import { Container, Typography, Button, ListItem, Chip, List } from '@mui/joy'
@@ -13,6 +12,7 @@ import { connect } from 'react-redux'
 import { AppDispatch } from '@/store/store'
 import { fetchTaskById } from '@/store/tasksSlice'
 import { Task } from '@/models/task'
+import { HistoryEntryUI, MakeHistoryUI } from '@/utils/tasks'
 
 interface TaskHistoryProps {
   taskId: string
@@ -26,7 +26,7 @@ interface HistoryInfo {
 }
 
 interface TaskHistoryState {
-  taskHistory: HistoryEntry[]
+  taskHistory: HistoryEntryUI[]
   isLoading: boolean
   historyInfo: HistoryInfo[]
 }
@@ -52,9 +52,14 @@ class TaskHistoryImpl extends React.Component<
 
   private loadHistory = async () => {
     try {
-      const data = await GetTaskHistory(this.props.taskId)
-      this.setState({ taskHistory: data.history })
-      this.updateHistoryInfo(data.history)
+      const data = (await GetTaskHistory(this.props.taskId)).history
+      const entries: HistoryEntryUI[] = data.map(MakeHistoryUI)
+
+      this.setState({
+        taskHistory: entries,
+      })
+
+      this.updateHistoryInfo(entries)
     } finally {
       this.setState({ isLoading: false })
     }
@@ -65,7 +70,7 @@ class TaskHistoryImpl extends React.Component<
     this.loadHistory()
   }
 
-  private updateHistoryInfo = (histories: HistoryEntry[]) => {
+  private updateHistoryInfo = (histories: HistoryEntryUI[]) => {
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, task) => {
