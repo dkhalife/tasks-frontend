@@ -1,6 +1,5 @@
-import { GetTaskByID, GetTaskHistory } from '@/api/tasks'
+import { GetTaskHistory } from '@/api/tasks'
 import { Loading } from '@/Loading'
-import { HistoryEntry } from '@/models/history'
 import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
 import { Sheet, ListItemContent, Grid } from '@mui/joy'
 import { Container, Typography, Button, ListItem, Chip, List } from '@mui/joy'
@@ -9,9 +8,15 @@ import { Link } from 'react-router-dom'
 import { HistoryCard } from './HistoryCard'
 import { setTitle } from '@/utils/dom'
 import { differenceInHours, formatDuration, intervalToDuration } from 'date-fns'
+import { connect } from 'react-redux'
+import { AppDispatch } from '@/store/store'
+import { fetchTaskById } from '@/store/tasksSlice'
+import { Task } from '@/models/task'
+import { HistoryEntryUI, MakeHistoryUI } from '@/utils/marshalling'
 
 interface TaskHistoryProps {
   taskId: string
+  getTaskById: (id: string) => Promise<any>
 }
 
 interface HistoryInfo {
@@ -21,12 +26,12 @@ interface HistoryInfo {
 }
 
 interface TaskHistoryState {
-  taskHistory: HistoryEntry[]
+  taskHistory: HistoryEntryUI[]
   isLoading: boolean
   historyInfo: HistoryInfo[]
 }
 
-export class TaskHistory extends React.Component<
+class TaskHistoryImpl extends React.Component<
   TaskHistoryProps,
   TaskHistoryState
 > {
@@ -41,16 +46,20 @@ export class TaskHistory extends React.Component<
   }
 
   private loadTask = async () => {
-    // TODO: Use local cache
-    const task = (await GetTaskByID(this.props.taskId)).task
+    const task = (await this.props.getTaskById(this.props.taskId)).payload as Task
     setTitle(task.title)
   }
 
   private loadHistory = async () => {
     try {
-      const data = await GetTaskHistory(this.props.taskId)
-      this.setState({ taskHistory: data.history })
-      this.updateHistoryInfo(data.history)
+      const data = (await GetTaskHistory(this.props.taskId)).history
+      const entries: HistoryEntryUI[] = data.map(MakeHistoryUI)
+
+      this.setState({
+        taskHistory: entries,
+      })
+
+      this.updateHistoryInfo(entries)
     } finally {
       this.setState({ isLoading: false })
     }
@@ -61,7 +70,7 @@ export class TaskHistory extends React.Component<
     this.loadHistory()
   }
 
-  private updateHistoryInfo = (histories: HistoryEntry[]) => {
+  private updateHistoryInfo = (histories: HistoryEntryUI[]) => {
     // average delay for task completaion from due date:
     const averageDelay =
       histories.reduce((acc, task) => {
@@ -221,3 +230,15 @@ export class TaskHistory extends React.Component<
     )
   }
 }
+
+const mapStateToProps = () => ({
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+})
+
+export const TaskHistory = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TaskHistoryImpl)

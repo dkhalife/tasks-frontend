@@ -1,6 +1,4 @@
-import { UpdateLabel, CreateLabel } from '@/api/labels'
-import { Label } from '@/models/label'
-import { LABEL_COLORS } from '@/utils/colors'
+import { ColorOption, LABEL_COLORS } from '@/utils/colors'
 import { ModalDialog } from '@mui/joy'
 import {
   Modal,
@@ -14,25 +12,31 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
-import { ColorOption } from '@/utils/labels'
 import { moveFocusToJoyInput } from '@/utils/joy'
+import { connect } from 'react-redux'
+import { Label } from '@/models/label'
+import { createLabel, exitEditMode, updateLabel } from '@/store/labelsSlice'
+import { AppDispatch, RootState } from '@/store/store'
 
 interface LabelModalProps {
   id: string | undefined
   name: string | undefined
   color: ColorOption | undefined
+  isOpen: boolean
   isUnique: (id: string | undefined, labelName: string) => boolean
-  onClose: (label: Label | null) => void
+
+  createLabel: (label: Omit<Label, 'id'>) => Promise<any>
+  updateLabel: (label: Label) => Promise<any>
+  exitEditMode: () => void
 }
 
 interface LabelModalState {
   labelName: string
   color: ColorOption | undefined
   error: string
-  isOpen: boolean
 }
 
-export class LabelModal extends React.Component<
+class LabelModalImpl extends React.Component<
   LabelModalProps,
   LabelModalState
 > {
@@ -44,7 +48,6 @@ export class LabelModal extends React.Component<
       labelName: props.name ?? '',
       color: props.color,
       error: '',
-      isOpen: false,
     }
   }
 
@@ -60,12 +63,10 @@ export class LabelModal extends React.Component<
         error: '',
       })
     }
-  }
 
-  public async open(): Promise<void> {
-    await this.setState({ isOpen: true })
-
-    moveFocusToJoyInput(this.inputRef)
+    if (this.props.isOpen && !prevProps.isOpen && this.inputRef.current) {
+      moveFocusToJoyInput(this.inputRef)
+    }
   }
 
   private validateLabel = () => {
@@ -98,39 +99,33 @@ export class LabelModal extends React.Component<
     }
 
     const { id } = this.props
-    let newLabel: Label | null = null
+
     if (id) {
       try {
-        newLabel = (
-          await UpdateLabel({
-            id: id,
-            name: labelName,
-            color: color.value,
-          })
-        ).label
+        await this.props.updateLabel({
+          id: id,
+          name: labelName,
+          color: color.value,
+        })
       } catch {
         this.setState({ error: 'Failed to save label. Please try again.' })
       }
     } else {
       try {
-        newLabel = (
-          await CreateLabel({
+          await this.props.createLabel({
             name: labelName,
             color: color.value,
           })
-        ).label
       } catch {
         this.setState({ error: 'Failed to create label. Please try again.' })
       }
     }
 
-    this.props.onClose(newLabel)
-    this.setState({ isOpen: false })
+    this.props.exitEditMode()
   }
 
   private onCancel = () => {
-    this.props.onClose(null)
-    this.setState({ isOpen: false })
+    this.props.exitEditMode()
   }
 
   private onLabelNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -147,8 +142,8 @@ export class LabelModal extends React.Component<
   }
 
   public render(): React.ReactNode {
-    const { id } = this.props
-    const { labelName, color, error, isOpen } = this.state
+    const { id, isOpen } = this.props
+    const { labelName, color, error } = this.state
 
     return (
       <Modal
@@ -261,3 +256,18 @@ export class LabelModal extends React.Component<
     )
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  isOpen: state.labels.isEditing,
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  createLabel: (label: Omit<Label, 'id'>) => dispatch(createLabel(label)),
+  updateLabel: (label: Label) => dispatch(updateLabel(label)),
+  exitEditMode: () => dispatch(exitEditMode()),
+})
+
+export const LabelModal = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LabelModalImpl)

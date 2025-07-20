@@ -2,7 +2,6 @@ import {
   CreateTask,
   SaveTask,
   DeleteTask,
-  GetTaskByID,
   SkipTask,
 } from '@/api/tasks'
 import { Label } from '@/models/label'
@@ -42,14 +41,20 @@ import {
   NotificationTriggerOptions,
 } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
-import { GetLabels } from '@/api/labels'
-import { GetUserProfile } from '@/api/users'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { format, parseISO } from 'date-fns'
+import { AppDispatch, RootState } from '@/store/store'
+import { connect } from 'react-redux'
+import { fetchTaskById } from '@/store/tasksSlice'
+import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/marshalling'
 
-export type TaskEditProps = WithNavigate & {
+export type TaskEditProps = {
   taskId: string | null
-}
+  userLabels: Label[]
+  defaultNotificationTriggers: NotificationTriggerOptions
+
+  getTaskById: (id: string) => Promise<any>
+} & WithNavigate
 
 type Errors = { [key: string]: string }
 
@@ -58,7 +63,6 @@ export interface TaskEditState {
   nextDueDate: Date | null
   endDate: Date | null
   taskLabels: Label[]
-  userLabels: Label[]
   frequency: Frequency
   isRolling: boolean
   notification: Notification
@@ -68,14 +72,9 @@ export interface TaskEditState {
   snackbarColor: ColorPaletteProp
 }
 
-export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
+class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   private titleInputRef = React.createRef<HTMLDivElement>()
   private confirmModalRef = React.createRef<ConfirmationModal>()
-  private defaultNotificationTriggers: NotificationTriggerOptions = {
-    due_date: true,
-    pre_due: false,
-    overdue: false,
-  }
 
   constructor(props: TaskEditProps) {
     super(props)
@@ -84,7 +83,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       nextDueDate: null,
       endDate: null,
       taskLabels: [],
-      userLabels: [],
       frequency: {
         type: 'once',
       },
@@ -203,7 +201,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       notification,
     } = this.state
 
-    const task: Omit<Task, 'id'> = {
+    const taskUI: Omit<TaskUI, 'id'> = {
       title,
       labels: taskLabels,
       next_due_date: nextDueDate,
@@ -212,6 +210,8 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       frequency,
       notification,
     }
+
+    const task = MakeTask(taskUI)
 
     try {
       const promise =
@@ -265,24 +265,26 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private loadTask = async (taskId: string) => {
     try {
-      const task = (await GetTaskByID(taskId)).task
-      const { userLabels } = this.state
+      const task = (await this.props.getTaskById(taskId)).payload as Task
+      const { userLabels } = this.props
+
+      const taskUI = MakeTaskUI(task, userLabels)
 
       this.setState({
-        title: task.title,
-        nextDueDate: task.next_due_date,
-        endDate: task.end_date,
-        frequency: task.frequency,
-        isRolling: task.is_rolling,
-        notification: task.notification,
-        taskLabels: task.labels
+        title: taskUI.title,
+        nextDueDate: taskUI.next_due_date,
+        endDate: taskUI.end_date,
+        frequency: taskUI.frequency,
+        isRolling: taskUI.is_rolling,
+        notification: taskUI.notification,
+        taskLabels: taskUI.labels
           .map(taskLabel =>
             userLabels.find(userLabel => userLabel.id === taskLabel.id),
           )
           .filter(Boolean) as Label[],
       })
 
-      setTitle(task.title)
+      setTitle(taskUI.title)
     } catch {
       this.setState({
         isSnackbarOpen: true,
@@ -298,17 +300,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
 
   private init = async () => {
     const { taskId } = this.props
-
-    const data = await GetLabels()
-    this.setState({
-      userLabels: data.labels,
-    })
-
-    const userProfile = (await GetUserProfile()).user
-    const defaultNotifications = userProfile.notifications
-    if (defaultNotifications.provider.provider !== 'none') {
-      this.defaultNotificationTriggers = defaultNotifications.triggers
-    }
 
     if (taskId != null) {
       await this.loadTask(taskId)
@@ -346,13 +337,15 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { defaultNotificationTriggers: defaults } = this.props
+
     this.setState({
       notification: e.target.checked
         ? {
             enabled: true,
-            due_date: this.defaultNotificationTriggers.due_date,
-            pre_due: this.defaultNotificationTriggers.pre_due,
-            overdue: this.defaultNotificationTriggers.overdue,
+            due_date: defaults.due_date,
+            pre_due: defaults.pre_due,
+            overdue: defaults.overdue,
           }
         : {
             enabled: false,
@@ -395,7 +388,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    const { userLabels } = this.state
+    const { userLabels } = this.props
     this.setState({
       taskLabels: userLabels.filter(
         userLabel =>
@@ -430,7 +423,7 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   render(): React.ReactNode {
-    const { taskId } = this.props
+    const { taskId, userLabels } = this.props
     const {
       title,
       frequency,
@@ -439,7 +432,6 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
       isRolling,
       notification,
       taskLabels,
-      userLabels,
       errors,
       isSnackbarOpen,
       snackbarMessage,
@@ -742,3 +734,30 @@ export class TaskEdit extends React.Component<TaskEditProps, TaskEditState> {
     )
   }
 }
+
+const mapStateToProps = (state: RootState) => {  
+  let defaultNotificationTriggers: NotificationTriggerOptions = {
+    due_date: true,
+    pre_due: false,
+    overdue: false,
+  }
+
+  const userNotificationSettings = state.user.profile.notifications
+  if (userNotificationSettings.provider.provider !== 'none') {
+      defaultNotificationTriggers = userNotificationSettings.triggers
+  }
+
+  return {
+    userLabels: state.labels.items,
+    defaultNotificationTriggers,
+  }
+}
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+})
+
+export const TaskEdit = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TaskEditImpl)

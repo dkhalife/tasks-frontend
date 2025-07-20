@@ -1,4 +1,9 @@
-export const LABEL_COLORS = [
+export type ColorOption = {
+  name: string
+  value: string
+}
+
+export const LABEL_COLORS: ColorOption[] = [
   { name: 'Default', value: '#FFFFFF' },
   { name: 'Salmon', value: '#ff7961' },
   { name: 'Teal', value: '#26a69a' },
@@ -82,4 +87,10 @@ export const getTextColorFromBackgroundColor = (
   const g = parseInt(hex.substring(2, 4), 16)
   const b = parseInt(hex.substring(4, 6), 16)
   return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? '#000000' : '#ffffff'
+}
+
+export const colorOptionFromColor = (
+  color: string,
+): ColorOption | undefined => {
+  return LABEL_COLORS.find(c => c.value === color) || undefined
 }

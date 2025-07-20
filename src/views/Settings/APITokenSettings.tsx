@@ -1,8 +1,3 @@
-import {
-  GetLongLiveTokens,
-  CreateLongLiveToken,
-  DeleteLongLiveToken,
-} from '@/api/tokens'
 import { APIToken, ApiTokenScope } from '@/models/token'
 import { CopyAll } from '@mui/icons-material'
 import {
@@ -18,16 +13,26 @@ import React from 'react'
 import { TokenModal } from '../Modals/Inputs/TokenModal'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { formatDistanceToNow } from 'date-fns'
-import WebSocketManager from '@/utils/websocket'
+import { connect } from 'react-redux'
+import { createToken, deleteToken } from '@/store/tokensSlice'
+import { AppDispatch, RootState } from '@/store/store'
 
-type APITokenSettingsProps = object
+type APITokenSettingsProps = {
+  tokens: APIToken[]
+
+  createToken: (token: {
+    name: string,
+    scopes: ApiTokenScope[],
+    expiration: number,
+  }) => Promise<any>
+  deleteToken: (tokenId: string) => Promise<any>
+}
 
 interface APITokenSettingsState {
-  tokens: APIToken[]
   showTokenId: string | null
 }
 
-export class APITokenSettings extends React.Component<
+class APITokenSettingsImpl extends React.Component<
   APITokenSettingsProps,
   APITokenSettingsState
 > {
@@ -35,54 +40,41 @@ export class APITokenSettings extends React.Component<
   private tokenToDelete: APIToken | null = null
   private confirmModalRef = React.createRef<ConfirmationModal>()
 
-  private ws: WebSocketManager
-
   constructor(props: APITokenSettingsProps) {
     super(props)
 
-    this.ws = WebSocketManager.getInstance()
-
     this.state = {
-      tokens: [],
       showTokenId: null,
     }
   }
 
-  private loadTokens = async () => {
-    const data = await GetLongLiveTokens()
-    this.setState({
-      tokens: data.tokens,
-    })
-  }
+  // componentDidMount(): void {
+  //   this.registerWebSocketListeners()
+  // }
 
-  componentDidMount(): void {
-    this.loadTokens()
-    this.registerWebSocketListeners()
-  }
-
-  componentWillUnmount(): void {
-    this.unregisterWebSocketListeners()
-  }
+  // componentWillUnmount(): void {
+  //   this.unregisterWebSocketListeners()
+  // }
   
-  private onTokenCreatedWS = (data: unknown) => {
-    const createdToken = data as APIToken
-    this.onTokenCreated(createdToken)
-  }
+  // private onTokenCreatedWS = (data: unknown) => {
+  //   const createdToken = data as APIToken
+  //   this.onTokenCreated(createdToken)
+  // }
 
-  private onTokenDeletedWS = (data: unknown) => {
-    const deletedTokenId = (data as APIToken).id
-    this.onTokenDeleted(deletedTokenId)
-  }
+  // private onTokenDeletedWS = (data: unknown) => {
+  //   const deletedTokenId = (data as APIToken).id
+  //   this.onTokenDeleted(deletedTokenId)
+  // }
 
-  private registerWebSocketListeners = () => {
-    this.ws.on('app_token_created', this.onTokenCreatedWS);
-    this.ws.on('app_token_deleted', this.onTokenDeletedWS);
-  }
+  // private registerWebSocketListeners = () => {
+  //   this.ws.on('app_token_created', this.onTokenCreatedWS);
+  //   this.ws.on('app_token_deleted', this.onTokenDeletedWS);
+  // }
 
-  private unregisterWebSocketListeners = () => {
-    this.ws.off('app_token_created', this.onTokenCreatedWS);
-    this.ws.off('app_token_deleted', this.onTokenDeletedWS);
-  }
+  // private unregisterWebSocketListeners = () => {
+  //   this.ws.off('app_token_created', this.onTokenCreatedWS);
+  //   this.ws.off('app_token_deleted', this.onTokenDeletedWS);
+  // }
 
   private onSaveTokenClicked = async (
     name: string | null,
@@ -93,22 +85,15 @@ export class APITokenSettings extends React.Component<
       return
     }
 
-    const data = await CreateLongLiveToken(name, scopes, expiration)
-    this.setState({
-      showTokenId: data.token.id,
+    const response = await this.props.createToken({
+      name,
+      scopes,
+      expiration
     })
 
-    if (this.ws.isConnected()) {
-      return
-    }
-
-    this.onTokenCreated(data.token)
-  }
-
-  private onTokenCreated = (token: APIToken) => {
-    this.setState((prevState) => ({
-      tokens: [...prevState.tokens, token],
-    }))
+    this.setState({
+      showTokenId: response.payload.id,
+    })
   }
 
   private onDeleteTokenClicked = async (token: APIToken) => {
@@ -126,20 +111,7 @@ export class APITokenSettings extends React.Component<
       throw new Error('No token to delete')
     }
 
-    await DeleteLongLiveToken(token.id)
-
-    if (this.ws.isConnected()) {
-      return
-    }
-
-    this.onTokenDeleted(token.id)
-  }
-
-  private onTokenDeleted = (tokenId: string) => {
-    const { tokens } = this.state
-    this.setState({
-      tokens: tokens.filter((t: APIToken) => t.id !== tokenId),
-    })
+    await this.props.deleteToken(token.id)
   }
 
   private onToggleTokenVisibilityClicked = (token: APIToken) => {
@@ -162,7 +134,8 @@ export class APITokenSettings extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { tokens, showTokenId } = this.state
+    const { tokens } = this.props
+    const { showTokenId } = this.state
 
     return (
       <Box sx={{ mt: 2 }}>
@@ -250,3 +223,22 @@ export class APITokenSettings extends React.Component<
     )
   }
 }
+
+
+const mapStateToProps = (state: RootState) => ({
+  tokens: state.tokens.items,
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  createToken: (token: {
+    name: string,
+    scopes: ApiTokenScope[],
+    expiration: number,
+  }) => dispatch(createToken(token)),
+  deleteToken: (tokenId: string) => dispatch(deleteToken(tokenId)),
+})
+
+export const APITokenSettings = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(APITokenSettingsImpl)

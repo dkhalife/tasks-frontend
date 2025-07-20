@@ -1,16 +1,29 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GetUserProfile } from '@/api/users'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 import { User } from '@/models/user'
+import { NotificationTriggerOptions, NotificationType } from '@/models/notifications'
 
 export interface UserState {
-  user: User | null
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  profile: User
+  status: 'loading' | 'succeeded' | 'failed'
   error: string | null
 }
 
 const initialState: UserState = {
-  user: null,
-  status: 'idle',
+  profile: {
+    display_name: '',
+    notifications: {
+      provider: {
+        provider: 'none'
+      },
+      triggers: {
+        pre_due: false,
+        due_date: false,
+        overdue: false,
+      },
+    },
+  },
+  status: 'loading',
   error: null,
 }
 
@@ -19,19 +32,14 @@ export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
   return data.user
 })
 
+export const updateNotificationSettings = createAsyncThunk(
+  'user/updateNotificationSettings',
+  async (settings: { type: NotificationType, options: NotificationTriggerOptions}) => await UpdateNotificationSettings(settings.type, settings.options))
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload
-    },
-    clearUser: state => {
-      state.user = null
-      state.status = 'idle'
-      state.error = null
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(fetchUser.pending, state => {
@@ -40,7 +48,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.user = action.payload
+        state.profile = action.payload
         state.error = null
       })
       .addCase(fetchUser.rejected, (state, action) => {
@@ -50,5 +58,4 @@ const userSlice = createSlice({
   },
 })
 
-export const { setUser, clearUser } = userSlice.actions
-export default userSlice.reducer
+export const userReducer = userSlice.reducer
