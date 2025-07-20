@@ -1,5 +1,10 @@
-import { CreateTask, SaveTask } from '@/api/tasks'
-import { skipTask, deleteTask } from '@/store/tasksSlice'
+import {
+  createTask,
+  saveTask,
+  skipTask,
+  deleteTask,
+  fetchTaskById,
+} from '@/store/tasksSlice'
 import { Label } from '@/models/label'
 import { Frequency, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
@@ -41,7 +46,6 @@ import { moveFocusToJoyInput } from '@/utils/joy'
 import { format, parseISO } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
-import { fetchTaskById } from '@/store/tasksSlice'
 import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/marshalling'
 
 export type TaskEditProps = {
@@ -50,8 +54,10 @@ export type TaskEditProps = {
   defaultNotificationTriggers: NotificationTriggerOptions
 
   getTaskById: (id: string) => Promise<any>
-  deleteTask: (id: string) => Promise<any>
+  createTask: (task: Omit<Task, 'id'>) => Promise<any>
+  saveTask: (task: Task) => Promise<any>
   skipTask: (id: string) => Promise<any>
+  deleteTask: (id: string) => Promise<any>
 } & WithNavigate
 
 type Errors = { [key: string]: string }
@@ -214,8 +220,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     try {
       const promise =
         taskId === null
-          ? CreateTask(task)
-          : SaveTask({
+          ? this.props.createTask(task)
+          : this.props.saveTask({
               ...task,
               id: taskId,
             })
@@ -753,8 +759,10 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   getTaskById: (id: string) => dispatch(fetchTaskById(id)),
-  deleteTask: (id: string) => dispatch(deleteTask(id)),
+  createTask: (task: Omit<Task, 'id'>) => dispatch(createTask(task)),
+  saveTask: (task: Task) => dispatch(saveTask(task)),
   skipTask: (id: string) => dispatch(skipTask(id)),
+  deleteTask: (id: string) => dispatch(deleteTask(id)),
 })
 
 export const TaskEdit = connect(
