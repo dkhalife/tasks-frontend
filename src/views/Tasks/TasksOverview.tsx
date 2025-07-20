@@ -50,7 +50,6 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   private dateModalRef = React.createRef<DateModal>()
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private searchInputRef = React.createRef<HTMLInputElement>()
-  private taskBeingDeleted: TaskUI | null = null
 
   componentDidMount(): void {
     setTitle('Tasks Overview')
@@ -139,23 +138,9 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   }
 
   private onDeleteTaskClicked = async (task: TaskUI) => {
-    this.taskBeingDeleted = task
-    this.confirmationModalRef.current?.open()
-  }
-
-  private onDeleteConfirmed = async (isConfirmed: boolean) => {
-    const task = this.taskBeingDeleted
-    this.taskBeingDeleted = null
-
-    if (!isConfirmed) {
-      return
-    }
-
-    if (!task) {
-      throw new Error('Task to delete is not set')
-    }
-
-    await this.props.deleteTask(task.id)
+    this.confirmationModalRef.current?.open(async () => {
+      await this.props.deleteTask(task.id)
+    })
   }
 
   render(): React.ReactNode {
@@ -308,7 +293,6 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
           confirmText='Delete'
           cancelText='Cancel'
           message='Are you sure you want to delete this task?'
-          onClose={this.onDeleteConfirmed}
         />
       </Container>
     )
