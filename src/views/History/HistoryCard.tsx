@@ -3,7 +3,7 @@ import { ListItem, Box, Typography } from '@mui/joy'
 import React from 'react'
 import { CompletedChip } from './CompletedChip'
 import { format, formatDistanceToNow } from 'date-fns'
-import { HistoryEntryUI } from '@/utils/tasks'
+import { HistoryEntryUI } from '@/utils/marshalling'
 
 interface HistoryCardProps {
   historyEntry: HistoryEntryUI

@@ -28,23 +28,18 @@ import {
 } from '@mui/joy'
 import React from 'react'
 import { TaskCard } from '@/views/Tasks/TaskCard'
-import {
-  MakeTaskUI,
-  MarshallDate,
-  TaskGroups,
-  TaskUI,
-  bucketIntoDueDateGroup,
-  bucketIntoLabelGroups,
-  groupTasksBy,
-} from '@/utils/tasks'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { Label } from '@/models/label'
 import {
+  bucketIntoDueDateGroup,
+  bucketIntoLabelGroups,
   DueDateGroups,
   getDefaultExpandedState,
   GROUP_BY,
+  groupTasksBy,
   LabelGroups,
+  TaskGroups,
 } from '@/utils/grouping'
 import { retrieveValue, storeValue } from '@/utils/storage'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
@@ -53,6 +48,7 @@ import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import WebSocketManager from '@/utils/websocket'
 import { RootState } from '@/store/store'
 import { connect } from 'react-redux'
+import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
 
 type MyTasksProps = {
   userLabels: Label[]

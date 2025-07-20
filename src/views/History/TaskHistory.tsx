@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import { AppDispatch } from '@/store/store'
 import { fetchTaskById } from '@/store/tasksSlice'
 import { Task } from '@/models/task'
-import { HistoryEntryUI, MakeHistoryUI } from '@/utils/tasks'
+import { HistoryEntryUI, MakeHistoryUI } from '@/utils/marshalling'
 
 interface TaskHistoryProps {
   taskId: string

@@ -46,7 +46,7 @@ import { format, parseISO } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { fetchTaskById } from '@/store/tasksSlice'
-import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/tasks'
+import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/marshalling'
 
 export type TaskEditProps = {
   taskId: string | null

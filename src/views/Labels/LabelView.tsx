@@ -1,5 +1,5 @@
 import { Label } from '@/models/label'
-import { getTextColorFromBackgroundColor } from '@/utils/colors'
+import { colorOptionFromColor, getTextColorFromBackgroundColor } from '@/utils/colors'
 import { Add } from '@mui/icons-material'
 import {
   Box,
@@ -14,7 +14,6 @@ import React from 'react'
 import { LabelModal } from '../Modals/Inputs/LabelModal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import { colorOptionFromColor } from '@/utils/labels'
 import { setTitle } from '@/utils/dom'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { AppDispatch, RootState } from '@/store/store'

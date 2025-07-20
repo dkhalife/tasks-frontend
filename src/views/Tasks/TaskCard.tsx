@@ -25,7 +25,7 @@ import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { connect } from 'react-redux'
 import { completeTask } from '@/store/tasksSlice'
 import { AppDispatch } from '@/store/store'
-import { TaskUI } from '@/utils/tasks'
+import { TaskUI } from '@/utils/marshalling'
 
 type TaskCardProps = WithNavigate & {
   task: TaskUI

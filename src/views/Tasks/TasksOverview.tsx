@@ -27,7 +27,6 @@ import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
-import { MakeTaskUI, MarshallDate, sortTasksByDueDate, TaskUI } from '@/utils/tasks'
 import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
@@ -37,6 +36,8 @@ import { AppDispatch, RootState } from '@/store/store'
 import { completeTask } from '@/store/tasksSlice'
 import { connect } from 'react-redux'
 import { Label } from '@/models/label'
+import { sortTasksByDueDate } from '@/utils/grouping'
+import { TaskUI, MarshallDate, MakeTaskUI } from '@/utils/marshalling'
 
 type TasksOverviewProps = {
   tasks: TaskUI[]

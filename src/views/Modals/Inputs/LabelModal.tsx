@@ -1,4 +1,4 @@
-import { LABEL_COLORS } from '@/utils/colors'
+import { ColorOption, LABEL_COLORS } from '@/utils/colors'
 import { ModalDialog } from '@mui/joy'
 import {
   Modal,
@@ -12,7 +12,6 @@ import {
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
-import { ColorOption } from '@/utils/labels'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { connect } from 'react-redux'
 import { Label } from '@/models/label'
