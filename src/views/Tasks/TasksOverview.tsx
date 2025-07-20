@@ -87,26 +87,9 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   }
 
   private onCompleteTaskClicked = (task: TaskUI) => async () => {
-    const data = await this.props.completeTask(task.id)
-
-    const newTask = data.payload
-    this.onTaskCompleted(newTask)
+    await this.props.completeTask(task.id)
 
     playSound(SoundEffect.TaskComplete)
-  }
-
-  private onTaskCompleted = (task: TaskUI) => {
-    const { tasks } = this.props
-    let newTasks = tasks.filter(t => t.id !== task.id)
-
-    if (task.next_due_date !== null) {
-      newTasks.push(task)
-
-      newTasks = sortTasksByDueDate(newTasks)
-    }
-
-    const index = newTasks.findIndex(c => c.id === task.id)
-    newTasks[index] = task
   }
 
   private onSearchTermsChanged = (e: ChangeEvent<HTMLInputElement>) => {
