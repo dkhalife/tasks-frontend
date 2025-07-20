@@ -1,8 +1,5 @@
 import {
   DeleteTask,
-  GetTasks,
-  MarshalledTask,
-  UnmarshallTask,
   UpdateDueDate,
 } from '@/api/tasks'
 import { Task, getDueDateChipColor, getDueDateChipText } from '@/models/task'
@@ -36,16 +33,17 @@ import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
 import WebSocketManager from '@/utils/websocket'
-import { AppDispatch, store } from '@/store/store'
-import { taskUpserted, taskDeleted, completeTask } from '@/store/tasksSlice'
+import { AppDispatch, RootState } from '@/store/store'
+import { completeTask } from '@/store/tasksSlice'
 import { connect } from 'react-redux'
 
 type TasksOverviewProps = {
+  tasks: Task[]
+
   completeTask: (taskId: string) => Promise<any>
 } & WithNavigate
 
 interface TasksOverviewState {
-  tasks: Task[]
   filteredTasks: Task[]
   search: string
   taskId: string | null
@@ -69,7 +67,6 @@ class TasksOverviewImpl extends React.Component<
     this.ws = WebSocketManager.getInstance()
 
     this.state = {
-      tasks: [],
       filteredTasks: [],
       search: '',
       taskId: null,
@@ -78,10 +75,8 @@ class TasksOverviewImpl extends React.Component<
   }
 
   private loadTasks = async () => {
-    const data = await GetTasks()
     this.setState({
-      tasks: data.tasks,
-      filteredTasks: data.tasks,
+      filteredTasks: this.props.tasks,
       isLoading: false,
     })
   }
@@ -124,65 +119,42 @@ class TasksOverviewImpl extends React.Component<
   //   this.ws.off('task_uncompleted', this.onTaskUncompletedWS);
   //   this.ws.off('task_skipped', this.onTaskSkippedWS);
   // }
-  
-  private onTaskCreated = (newTask: Task) => {
-    this.setState(prevState => {
-      const newTasks = sortTasksByDueDate([...prevState.tasks, newTask])
-      return {
-        tasks: newTasks,
-        filteredTasks: newTasks,
-      }
-    })
-  }
 
-  private onTaskUpdated = (updatedTask: Task) => {
-    this.setState(prevState => {
-      const newTasks = sortTasksByDueDate((prevState.tasks.map(task =>
-        task.id === updatedTask.id ? updatedTask : task
-      )))
+  // private onTaskCreatedWS = (data: unknown) => {
+  //   const newTask = UnmarshallTask(data as MarshalledTask)
+  //   this.onTaskCreated(newTask)
+  //   store.dispatch(taskUpserted(newTask))
+  // }
 
-      return {
-        tasks: newTasks,
-        filteredTasks: newTasks,
-      }
-    })
-  }
+  // private onTaskUpdatedWS = (data: unknown) => {
+  //   const updatedTask = UnmarshallTask(data as MarshalledTask)
+  //   this.onTaskUpdated(updatedTask)
+  //   store.dispatch(taskUpserted(updatedTask))
+  // }
 
-  private onTaskCreatedWS = (data: unknown) => {
-    const newTask = UnmarshallTask(data as MarshalledTask)
-    this.onTaskCreated(newTask)
-    store.dispatch(taskUpserted(newTask))
-  }
+  // private onTaskDeletedWS = (data: unknown) => {
+  //   const deletedTaskId = (data as any).id as string
+  //   this.onTaskDeleted(deletedTaskId)
+  //   store.dispatch(taskDeleted(deletedTaskId))
+  // }
 
-  private onTaskUpdatedWS = (data: unknown) => {
-    const updatedTask = UnmarshallTask(data as MarshalledTask)
-    this.onTaskUpdated(updatedTask)
-    store.dispatch(taskUpserted(updatedTask))
-  }
+  // private onTaskCompletedWS = (data: unknown) => {
+  //   const task = UnmarshallTask(data as MarshalledTask)
+  //   this.onTaskCompleted(task)
+  //   store.dispatch(taskUpserted(task))
+  // }
 
-  private onTaskDeletedWS = (data: unknown) => {
-    const deletedTaskId = (data as any).id as string
-    this.onTaskDeleted(deletedTaskId)
-    store.dispatch(taskDeleted(deletedTaskId))
-  }
+  // private onTaskUncompletedWS = (data: unknown) => {
+  //   const uncompletedTask = UnmarshallTask(data as MarshalledTask)
+  //   this.onTaskCreated(uncompletedTask)
+  //   store.dispatch(taskUpserted(uncompletedTask))
+  // }
 
-  private onTaskCompletedWS = (data: unknown) => {
-    const task = UnmarshallTask(data as MarshalledTask)
-    this.onTaskCompleted(task)
-    store.dispatch(taskUpserted(task))
-  }
-
-  private onTaskUncompletedWS = (data: unknown) => {
-    const uncompletedTask = UnmarshallTask(data as MarshalledTask)
-    this.onTaskCreated(uncompletedTask)
-    store.dispatch(taskUpserted(uncompletedTask))
-  }
-
-  private onTaskSkippedWS = (data: unknown) => {
-    const skippedTask = UnmarshallTask(data as MarshalledTask)
-    this.onTaskUpdated(skippedTask)
-    store.dispatch(taskUpserted(skippedTask))
-  }
+  // private onTaskSkippedWS = (data: unknown) => {
+  //   const skippedTask = UnmarshallTask(data as MarshalledTask)
+  //   this.onTaskUpdated(skippedTask)
+  //   store.dispatch(taskUpserted(skippedTask))
+  // }
 
   private onKeyDown = (event: KeyboardEvent) => {
     // Ctrl + F => Search
@@ -206,7 +178,8 @@ class TasksOverviewImpl extends React.Component<
       return
     }
 
-    const { tasks, taskId } = this.state
+    const { tasks } = this.props
+    const { taskId } = this.state
     if (!taskId) {
       return
     }
@@ -221,7 +194,6 @@ class TasksOverviewImpl extends React.Component<
     newTasks = sortTasksByDueDate(newTasks)
 
     this.setState({
-      tasks: newTasks,
       filteredTasks: newTasks,
     })
   }
@@ -240,7 +212,7 @@ class TasksOverviewImpl extends React.Component<
   }
 
   private onTaskCompleted = (task: Task) => {
-    const { tasks } = this.state
+    const { tasks } = this.props
     let newTasks = tasks.filter(t => t.id !== task.id)
 
     if (task.next_due_date !== null) {
@@ -253,13 +225,12 @@ class TasksOverviewImpl extends React.Component<
     newTasks[index] = task
 
     this.setState({
-      tasks: newTasks,
       filteredTasks: newTasks,
     })
   }
 
   private onSearchTermsChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    const { tasks } = this.state
+    const { tasks } = this.props
     const newTasks = tasks.filter(task => {
       return task.title.toLowerCase().includes(e.target.value.toLowerCase())
     })
@@ -272,7 +243,7 @@ class TasksOverviewImpl extends React.Component<
   }
 
   private onClearSearchClicked = () => {
-    const { tasks } = this.state
+    const { tasks } = this.props
     this.setState({
       search: '',
       filteredTasks: tasks,
@@ -301,16 +272,6 @@ class TasksOverviewImpl extends React.Component<
     this.confirmationModalRef.current?.open()
   }
 
-  private onTaskDeleted = (taskId: string) => {
-    const { tasks } = this.state
-    const newTasks = tasks.filter(t => t.id !== taskId)
-
-    this.setState({
-      tasks: newTasks,
-      filteredTasks: newTasks,
-    })
-  }
-
   private onDeleteConfirmed = async (isConfirmed: boolean) => {
     const task = this.taskBeingDeleted
     this.taskBeingDeleted = null
@@ -324,7 +285,6 @@ class TasksOverviewImpl extends React.Component<
     }
 
     await DeleteTask(task.id)
-    this.onTaskDeletedWS(task.id)
   }
 
   render(): React.ReactNode {
@@ -487,7 +447,8 @@ class TasksOverviewImpl extends React.Component<
   }
 }
 
-const mapStateToProps = () => ({
+const mapStateToProps = (state: RootState) => ({
+  tasks: state.tasks.items,
 })
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({

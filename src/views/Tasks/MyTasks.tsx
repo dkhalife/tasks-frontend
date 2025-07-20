@@ -1,4 +1,4 @@
-import { DeleteTask, GetTasks, SkipTask, UpdateDueDate } from '@/api/tasks'
+import { DeleteTask, SkipTask, UpdateDueDate } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { Task, TASK_UPDATE_EVENT } from '@/models/task'
 import {
@@ -53,13 +53,13 @@ import { connect } from 'react-redux'
 
 type MyTasksProps = {
   userLabels: Label[]
+  tasks: Task[]
 } & WithNavigate
 
 interface MyTasksState {
   isSnackbarOpen: boolean
   isMoreMenuOpen: boolean
   snackBarMessage: string | null
-  tasks: Task[]
   groupBy: GROUP_BY
   groups: TaskGroups | null
   isExpanded: Record<keyof TaskGroups, boolean>
@@ -96,7 +96,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       isSnackbarOpen: false,
       isMoreMenuOpen: false,
       snackBarMessage: null,
-      tasks: [],
       groupBy,
       groups: null,
       isExpanded,
@@ -106,10 +105,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private loadTasks = async () => {
-    const tasksData = await GetTasks()
-
-    const tasks = tasksData.tasks
-    const { userLabels } = this.props
+    const { userLabels, tasks } = this.props
 
     const { groupBy } = this.state
     const defaultExpanded = getDefaultExpandedState(groupBy, userLabels)
@@ -122,7 +118,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     }
 
     this.setState({
-      tasks,
       groups: groupTasksBy(tasks, userLabels, groupBy),
       isExpanded,
       isLoading: false,
@@ -301,8 +296,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   private onToggleGroupByClicked = () => {
-    const { userLabels } = this.props
-    const { groupBy, tasks } = this.state
+    const { userLabels, tasks } = this.props
+    const { groupBy } = this.state
     const nextGroupBy = groupBy === 'due_date' ? 'labels' : 'due_date'
     const nextExpanded = getDefaultExpandedState(nextGroupBy, userLabels)
 
@@ -658,6 +653,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 
 const mapStateToProps = (state: RootState) => ({
   userLabels: state.labels.items,
+  tasks: state.tasks.items,
 })
 
 const mapDispatchToProps = () => ({
