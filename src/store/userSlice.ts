@@ -2,10 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 import { User } from '@/models/user'
 import { NotificationTriggerOptions, NotificationType } from '@/models/notifications'
+import { SyncState } from '@/models/sync'
 
 export interface UserState {
   profile: User
-  status: 'loading' | 'succeeded' | 'failed'
+  status: SyncState
   error: string | null
 }
 
