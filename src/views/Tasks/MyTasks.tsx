@@ -41,6 +41,8 @@ import { connect } from 'react-redux'
 import { TaskUI, MarshallDate, MakeTaskGroupsUI } from '@/utils/marshalling'
 
 type MyTasksProps = {
+  isLoading: boolean
+
   groupBy: GROUP_BY
   groups: TaskGroups<TaskUI>
   expandedGroups: Record<keyof TaskGroups<TaskUI>, boolean>
@@ -81,7 +83,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       isSnackbarOpen: false,
       isMoreMenuOpen: false,
       snackBarMessage: null,
-      isLoading: true,
       contextMenuTask: null,
     }
   }
@@ -234,8 +235,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   render(): React.ReactNode {
-    const { groupBy, groups, expandedGroups } = this.props
-    const { isSnackbarOpen, isMoreMenuOpen, snackBarMessage, isLoading, contextMenuTask } =
+    const { groupBy, groups, expandedGroups, isLoading } = this.props
+    const { isSnackbarOpen, isMoreMenuOpen, snackBarMessage, contextMenuTask } =
       this.state
 
     if (isLoading || groups === null) {
@@ -461,9 +462,11 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 }
 
 const mapStateToProps = (state: RootState) => {
+  const isLoading = state.tasks.status === 'loading' || state.labels.status === 'loading'
   const userLabels = state.labels.items
 
   return {
+    isLoading,
     groupBy: state.tasks.groupBy,
     groups: MakeTaskGroupsUI(state.tasks.groupedItems, userLabels),
     expandedGroups: state.tasks.expandedGroups,
