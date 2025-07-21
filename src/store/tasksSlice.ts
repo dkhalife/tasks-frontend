@@ -12,7 +12,7 @@ import {
 import { Task } from '@/models/task'
 import { RootState } from './store'
 import { SyncState } from '@/models/sync'
-import { getDefaultExpandedState, GROUP_BY, groupTasksBy, TaskGroups } from '@/utils/grouping'
+import { getDefaultExpandedState, GROUP_BY, groupTaskBy, groupTasksBy, TaskGroups } from '@/utils/grouping'
 import { retrieveValue, storeValue } from '@/utils/storage'
 
 export interface TasksState {
@@ -156,6 +156,15 @@ function filterItems(items: Task[], query: string): Task[] {
   return items.filter(task => taskMatchesQuery(task, lowerQuery))
 }
 
+function deleteTaskFromGroups(taskId: string, groups: TaskGroups<Task>) {
+  const keys = Object.keys(groups) as (keyof TaskGroups<Task>)[]
+
+  keys.forEach(groupKey => {
+    const group = groups[groupKey]
+    group.content = group.content.filter(t => t.id !== taskId)
+  })
+}
+
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -167,8 +176,10 @@ const tasksSlice = createSlice({
     taskUpserted: (state, action: PayloadAction<Task>) => {
       const index = state.items.findIndex(t => t.id === action.payload.id)
       if (index >= 0) {
+        // Add to the main data source
         state.items[index] = action.payload
 
+        // Add to the filtered items if it should be
         if (state.searchQuery === '') {
           state.filteredItems[index] = action.payload
         } else {
@@ -177,6 +188,9 @@ const tasksSlice = createSlice({
             state.filteredItems[filteredIndex] = action.payload
           }
         }
+
+        // Add to the grouped list of items
+        groupTaskBy(action.payload, state.groupedItems, state.groupBy)
       } else {
         state.items.push(action.payload)
 
@@ -188,6 +202,8 @@ const tasksSlice = createSlice({
     taskDeleted: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(t => t.id !== action.payload)
       state.filteredItems = state.filteredItems.filter(t => t.id !== action.payload)
+
+      deleteTaskFromGroups(action.payload, state.groupedItems)
     },
     toggleGroup: (state, action: PayloadAction<keyof TaskGroups<Task>>) => {
       const groupKey = action.payload
@@ -241,6 +257,9 @@ const tasksSlice = createSlice({
             state.filteredItems.push(task)
           }
         }
+
+        groupTaskBy(task, state.groupedItems, state.groupBy)
+
         state.status = 'succeeded'
         state.error = null
       })
@@ -282,9 +301,21 @@ const tasksSlice = createSlice({
       .addCase(createTask.pending, state => {
         state.status = 'loading'
       })
-      .addCase(createTask.fulfilled, state => {
+      .addCase(createTask.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        // TODO: Update both items and filteredItems with the new task
+
+        const taskId = action.payload.task
+        const task: Task = {
+          id: taskId,
+          ...action.meta.arg,
+        }
+
+        state.items.push(task)
+        if (state.searchQuery === '' || taskMatchesQuery(task, state.searchQuery.toLowerCase())) {
+          state.filteredItems.push(task)
+        }
+        groupTaskBy(task, state.groupedItems, state.groupBy)
+
         state.error = null
       })
       .addCase(createTask.rejected, (state, action) => {
@@ -295,9 +326,25 @@ const tasksSlice = createSlice({
       .addCase(saveTask.pending, state => {
         state.status = 'loading'
       })
-      .addCase(saveTask.fulfilled, state => {
+      .addCase(saveTask.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        // TODO: Update both items and filteredItems with the saved task
+
+        const updatedTask = action.meta.arg
+        const index = state.items.findIndex(t => t.id === updatedTask.id)
+        if (index >= 0) {
+          state.items[index] = updatedTask
+        } else {
+          state.items.push(updatedTask)
+        }
+
+        state.filteredItems = state.filteredItems.filter(t => t.id !== updatedTask.id)
+        if (state.searchQuery === '' || taskMatchesQuery(updatedTask, state.searchQuery.toLowerCase())) {
+          state.filteredItems.push(updatedTask)
+        }
+
+        deleteTaskFromGroups(updatedTask.id, state.groupedItems)
+        groupTaskBy(updatedTask, state.groupedItems, state.groupBy)
+
         state.error = null
       })
       .addCase(saveTask.rejected, (state, action) => {
@@ -314,6 +361,7 @@ const tasksSlice = createSlice({
         // Remove the old entry with taskId
         state.items = state.items.filter(t => t.id !== taskId)
         state.filteredItems = state.filteredItems.filter(t => t.id !== taskId)
+        deleteTaskFromGroups(taskId, state.groupedItems)
 
         // For recurring tasks, we might have a new task with the same ID but updated details
         const newTask = action.payload
@@ -325,6 +373,8 @@ const tasksSlice = createSlice({
           } else if (taskMatchesQuery(newTask, state.searchQuery.toLowerCase())) {
             state.filteredItems.push(newTask)
           }
+
+          groupTaskBy(newTask, state.groupedItems, state.groupBy)
         }
 
         state.status = 'succeeded'
@@ -343,6 +393,7 @@ const tasksSlice = createSlice({
         const taskId = action.meta.arg
         state.items = state.items.filter(t => t.id !== taskId)
         state.filteredItems = state.filteredItems.filter(t => t.id !== taskId)
+        deleteTaskFromGroups(taskId, state.groupedItems)
 
         const newTask = action.payload
         if (newTask.next_due_date) {
@@ -350,9 +401,11 @@ const tasksSlice = createSlice({
 
           if (state.searchQuery === '') {
             state.filteredItems.push(newTask)
-          } else if (taskMatchesQuery(newTask, state.searchQuery)) {
+          } else if (taskMatchesQuery(newTask, state.searchQuery.toLowerCase())) {
             state.filteredItems.push(newTask)
           }
+
+          groupTaskBy(newTask, state.groupedItems, state.groupBy)
         }
 
         state.status = 'succeeded'
@@ -368,8 +421,10 @@ const tasksSlice = createSlice({
         state.error = null
       })
       .addCase(updateDueDate.fulfilled, (state, action) => {
+        const taskId = action.meta.arg.taskId
         const updatedTask = action.payload
-        const index = state.items.findIndex(t => t.id === updatedTask.id)
+        const index = state.items.findIndex(t => t.id === taskId)
+        deleteTaskFromGroups(taskId, state.groupedItems)
 
         if (index >= 0) {
           state.items[index] = updatedTask
@@ -387,10 +442,13 @@ const tasksSlice = createSlice({
 
           if (state.searchQuery === '') {
             state.filteredItems.push(updatedTask)
-          } else if (taskMatchesQuery(updatedTask, state.searchQuery)) {
+          } else if (taskMatchesQuery(updatedTask, state.searchQuery.toLowerCase())) {
             state.filteredItems.push(updatedTask)
           }
         }
+
+        groupTaskBy(updatedTask, state.groupedItems, state.groupBy)
+
         state.status = 'succeeded'
         state.error = null
       })
@@ -406,6 +464,7 @@ const tasksSlice = createSlice({
         state.status = 'succeeded'
         state.items = state.items.filter(t => t.id !== action.meta.arg)
         state.filteredItems = state.filteredItems.filter(t => t.id !== action.meta.arg)
+        deleteTaskFromGroups(action.meta.arg, state.groupedItems)
         state.error = null
       })
       .addCase(deleteTask.rejected, (state, action) => {

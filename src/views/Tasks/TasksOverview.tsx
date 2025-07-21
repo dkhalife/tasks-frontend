@@ -24,7 +24,6 @@ import { DateModal } from '@/views/Modals/Inputs/DateModal'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
 import { setTitle } from '@/utils/dom'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
-import { Loading } from '@/Loading'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
@@ -36,7 +35,6 @@ import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
 
 type TasksOverviewProps = {
   tasks: TaskUI[]
-  isLoading: boolean
   userLabels: Label[]
 
   search: string
@@ -127,11 +125,7 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   }
 
   render(): React.ReactNode {
-    const { isLoading, search, tasks, navigate } = this.props
-
-    if (isLoading) {
-      return <Loading />
-    }
+    const { search, tasks, navigate } = this.props
 
     return (
       <Container>
@@ -283,14 +277,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const isLoading = state.tasks.status === 'loading' || state.labels.status === 'loading'
   const userLabels = state.labels.items
   const search = state.tasks.searchQuery
   const tasks = sortTasksByDueDate(state.tasks.filteredItems.map(task => MakeTaskUI(task, userLabels)))
 
   return {
     userLabels,
-    isLoading,
     search,
     tasks,
   }

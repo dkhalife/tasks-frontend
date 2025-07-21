@@ -52,7 +52,17 @@ export function getDefaultExpandedState (
   return expanded
 }
 
-export const bucketIntoDueDateGroup = (
+const getDueDateBoundaries = () => {
+  const now = new Date().getTime()
+  const endOfToday = endOfDay(new Date()).getTime()
+  const endOfTomorrow = endOfDay(addDays(new Date(), 1)).getTime()
+  const endOfThisWeek = endOfWeek(new Date(), { weekStartsOn: 1 }).getTime()
+  const endOfNextWeek = endOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime()
+
+  return { now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek }
+}
+
+const bucketIntoDueDateGroup = (
   task: Task,
   groups: DueDateGroups<Task>,
   now: number,
@@ -134,11 +144,7 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups<Task> => {
     },
   }
 
-  const now = new Date().getTime()
-  const endOfToday = endOfDay(new Date()).getTime()
-  const endOfTomorrow = endOfDay(addDays(new Date(), 1)).getTime()
-  const endOfThisWeek = endOfWeek(new Date(), { weekStartsOn: 1 }).getTime()
-  const endOfNextWeek = endOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }).getTime()
+  const { now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek } = getDueDateBoundaries()
 
   tasks.forEach(task => {
     bucketIntoDueDateGroup(
@@ -153,6 +159,12 @@ const groupByDueDate = (tasks: Task[]): DueDateGroups<Task> => {
   })
 
   return groups
+}
+
+const bucketTaskIntoDueDateGroup = (task: Task, groups: DueDateGroups<Task>) => {
+  const { now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek } = getDueDateBoundaries()
+
+  bucketIntoDueDateGroup(task, groups, now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek)
 }
 
 const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> => {
@@ -177,6 +189,14 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> =>
   return groups
 }
 
+const bucketTaskIntoLabelGroups = (task: Task, groups: LabelGroups<Task>) => {
+  Object.keys(groups).forEach(key => {
+    if ((key === 'none' && task.labels.length === 0) || task.labels.includes(key)) {
+      groups[key].content.push(task)
+    }
+  })
+}
+
 export const groupTasksBy = (
   tasks: Task[],
   userLabels: Label[],
@@ -187,6 +207,20 @@ export const groupTasksBy = (
   }
 
   return groupByLabels(tasks, userLabels)
+}
+
+export const groupTaskBy = (
+  task: Task,
+  groups: TaskGroups<Task>,
+  groupBy: GROUP_BY,
+) => {
+  if (groupBy === 'due_date') {
+    const dueDateGroups = groups as DueDateGroups<Task>
+    bucketTaskIntoDueDateGroup(task, dueDateGroups)
+  } else if (groupBy === 'labels') {
+    const labelGroups = groups as LabelGroups<Task>
+    bucketTaskIntoLabelGroups(task, labelGroups)
+  }
 }
 
 export const sortTasksByDueDate = (tasks: TaskUI[]): TaskUI[] => {

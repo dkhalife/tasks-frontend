@@ -1,5 +1,4 @@
 import { skipTask, deleteTask, updateDueDate, setGroupBy, toggleGroup } from '@/store/tasksSlice'
-import { Loading } from '@/Loading'
 import { Task, TASK_UPDATE_EVENT } from '@/models/task'
 import {
   ExpandCircleDown,
@@ -41,8 +40,6 @@ import { connect } from 'react-redux'
 import { TaskUI, MarshallDate, MakeTaskGroupsUI } from '@/utils/marshalling'
 
 type MyTasksProps = {
-  isLoading: boolean
-
   groupBy: GROUP_BY
   groups: TaskGroups<TaskUI>
   expandedGroups: Record<keyof TaskGroups<TaskUI>, boolean>
@@ -232,13 +229,9 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   render(): React.ReactNode {
-    const { groupBy, groups, expandedGroups, isLoading } = this.props
+    const { groupBy, groups, expandedGroups } = this.props
     const { isSnackbarOpen, isMoreMenuOpen, snackBarMessage, contextMenuTask } =
       this.state
-
-    if (isLoading || groups === null) {
-      return <Loading />
-    }
 
     const { navigate } = this.props
     const hasTasks = this.hasTasks()
@@ -459,11 +452,9 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const isLoading = state.tasks.status === 'loading' || state.labels.status === 'loading'
   const userLabels = state.labels.items
 
   return {
-    isLoading,
     groupBy: state.tasks.groupBy,
     groups: MakeTaskGroupsUI(state.tasks.groupedItems, userLabels),
     expandedGroups: state.tasks.expandedGroups,
