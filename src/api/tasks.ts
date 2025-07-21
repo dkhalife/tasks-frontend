@@ -2,6 +2,10 @@ import { Task } from '@/models/task'
 import { Request } from '../utils/api'
 import { HistoryEntry } from '@/models/history'
 
+type TaskIdResponse = {
+  task: string
+}
+
 type SingleTaskResponse = {
   task: Task
 }
@@ -27,7 +31,7 @@ export const SkipTask = async (id: string): Promise<SingleTaskResponse> =>
     await Request<SingleTaskResponse>(`/tasks/${id}/skip`, 'POST')
 
 export const CreateTask = async (task: Omit<Task, 'id'>) =>
-  await Request<void>(`/tasks/`, 'POST', (task as Task))
+  await Request<TaskIdResponse>(`/tasks/`, 'POST', (task as Task))
 
 export const DeleteTask = async (id: string) =>
   await Request<void>(`/tasks/${id}`, 'DELETE')
