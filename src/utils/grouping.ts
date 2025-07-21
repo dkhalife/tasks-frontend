@@ -1,5 +1,5 @@
 import { Label } from '@/models/label'
-import { MakeDateUI } from './marshalling'
+import { MakeDateUI, TaskUI } from './marshalling'
 import { COLORS, TASK_COLOR } from './colors'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import { Task } from '@/models/task'
@@ -189,7 +189,7 @@ export const groupTasksBy = (
   return groupByLabels(tasks, userLabels)
 }
 
-export const sortTasksByDueDate = (tasks: Task[]): Task[] => {
+export const sortTasksByDueDate = (tasks: TaskUI[]): TaskUI[] => {
   return tasks.sort((a, b) => {
     if (a.next_due_date === null) {
       return 1
@@ -199,6 +199,6 @@ export const sortTasksByDueDate = (tasks: Task[]): Task[] => {
       return -1
     }
 
-    return MakeDateUI(a.next_due_date).getTime() - MakeDateUI(b.next_due_date).getTime()
+    return a.next_due_date.getTime() - b.next_due_date.getTime()
   })
 }
