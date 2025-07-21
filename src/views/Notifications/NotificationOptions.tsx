@@ -33,12 +33,6 @@ export class NotificationOptions extends React.Component<
     }
   }
 
-  private onNotificationSettingsUpdatedWS = (data: any) => {
-    this.setState({
-      notification: data.triggers,
-    })
-  }
-
   private onNotificationOptionChange = (item: NotificationTriggerOption) => {
     const { notification } = this.state
 
