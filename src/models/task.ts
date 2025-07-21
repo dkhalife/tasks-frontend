@@ -61,13 +61,13 @@ export type Frequency =
   | RepeatCustom
 
 export interface Task {
-  id: string
+  id: number
   title: string
   next_due_date: string | null
   frequency: Frequency
   notification: Notification
   is_rolling: boolean
-  labels: string[]
+  labels: number[]
   end_date: string | null
 }
 

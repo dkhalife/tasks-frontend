@@ -19,11 +19,11 @@ import { createLabel, exitEditMode, updateLabel } from '@/store/labelsSlice'
 import { AppDispatch, RootState } from '@/store/store'
 
 interface LabelModalProps {
-  id: string | undefined
+  id: number | undefined
   name: string | undefined
   color: ColorOption | undefined
   isOpen: boolean
-  isUnique: (id: string | undefined, labelName: string) => boolean
+  isUnique: (id: number | undefined, labelName: string) => boolean
 
   createLabel: (label: Omit<Label, 'id'>) => Promise<any>
   updateLabel: (label: Label) => Promise<any>

@@ -14,5 +14,5 @@ export const CreateLabel = async (label: Omit<Label, 'id'>) =>
 export const GetLabels = async () => await Request<LabelsResponse>(`/labels`)
 export const UpdateLabel = async (label: Label) =>
   await Request<SingleLabelResponse>(`/labels`, 'PUT', label)
-export const DeleteLabel = async (id: string) =>
+export const DeleteLabel = async (id: number) =>
   await Request<void>(`/labels/${id}`, 'DELETE')

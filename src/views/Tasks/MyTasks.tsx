@@ -47,9 +47,9 @@ type MyTasksProps = {
   setGroupBy: (groupBy: GROUP_BY) => void
   toggleGroup: (groupKey: keyof TaskGroups<Task>) => void
 
-  deleteTask: (taskId: string) => Promise<any>
-  skipTask: (taskId: string) => Promise<any>
-  updateDueDate: (taskId: string, dueDate: string) => Promise<any>
+  deleteTask: (taskId: number) => Promise<any>
+  skipTask: (taskId: number) => Promise<any>
+  updateDueDate: (taskId: number, dueDate: string) => Promise<any>
 } & WithNavigate
 
 interface MyTasksState {
@@ -465,9 +465,9 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   setGroupBy: (groupBy: GROUP_BY) => dispatch(setGroupBy(groupBy)),
   toggleGroup: (groupKey: keyof TaskGroups<Task>) => dispatch(toggleGroup(groupKey)),
 
-  deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
-  skipTask: (taskId: string) => dispatch(skipTask(taskId)),
-  updateDueDate: (taskId: string, dueDate: string) =>
+  deleteTask: (taskId: number) => dispatch(deleteTask(taskId)),
+  skipTask: (taskId: number) => dispatch(skipTask(taskId)),
+  updateDueDate: (taskId: number, dueDate: string) =>
     dispatch(updateDueDate({ taskId, dueDate })),
 })
 

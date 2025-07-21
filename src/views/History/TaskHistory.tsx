@@ -15,8 +15,8 @@ import { Task } from '@/models/task'
 import { HistoryEntryUI, MakeHistoryUI } from '@/utils/marshalling'
 
 interface TaskHistoryProps {
-  taskId: string
-  getTaskById: (id: string) => Promise<any>
+  taskId: number
+  getTaskById: (id: number) => Promise<any>
 }
 
 interface HistoryInfo {
@@ -235,7 +235,7 @@ const mapStateToProps = () => ({
 })
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  getTaskById: (id: string) => dispatch(fetchTaskById(id)),
+  getTaskById: (id: number) => dispatch(fetchTaskById(id)),
 })
 
 export const TaskHistory = connect(

@@ -32,7 +32,7 @@ export class RouterContext extends React.Component<object, RouterContextState> {
       navigateTo: null,
     }
   }
-  private getTaskId = (): string => {
+  private getTaskId = (): number => {
     const match = matchPath<'taskId', string>(
       {
         path: '/tasks/:taskId',
@@ -43,10 +43,10 @@ export class RouterContext extends React.Component<object, RouterContextState> {
     )
 
     if (!match) {
-      return ''
+      return -1
     }
 
-    return match.params.taskId as string
+    return parseInt(match.params.taskId as string)
   }
 
   private getMainRoute = () => {

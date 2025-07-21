@@ -3,7 +3,7 @@ import { Request } from '../utils/api'
 import { HistoryEntry } from '@/models/history'
 
 type TaskIdResponse = {
-  task: string
+  task: number
 }
 
 type SingleTaskResponse = {
@@ -21,29 +21,29 @@ type TaskHistoryResponse = {
 export const GetTasks = async (): Promise<TasksResponse> =>
   await Request<TasksResponse>(`/tasks/`)
 
-export const GetTaskByID = async (id: string): Promise<SingleTaskResponse> =>
+export const GetTaskByID = async (id: number): Promise<SingleTaskResponse> =>
     await Request<SingleTaskResponse>(`/tasks/${id}`)
 
-export const MarkTaskComplete = async (id: string): Promise<SingleTaskResponse> =>
+export const MarkTaskComplete = async (id: number): Promise<SingleTaskResponse> =>
     await Request<SingleTaskResponse>(`/tasks/${id}/do`, 'POST')
 
-export const SkipTask = async (id: string): Promise<SingleTaskResponse> =>
+export const SkipTask = async (id: number): Promise<SingleTaskResponse> =>
     await Request<SingleTaskResponse>(`/tasks/${id}/skip`, 'POST')
 
 export const CreateTask = async (task: Omit<Task, 'id'>) =>
   await Request<TaskIdResponse>(`/tasks/`, 'POST', (task as Task))
 
-export const DeleteTask = async (id: string) =>
+export const DeleteTask = async (id: number) =>
   await Request<void>(`/tasks/${id}`, 'DELETE')
 
 export const SaveTask = async (task: Task) =>
   await Request<void>(`/tasks/`, 'PUT', task)
 
-export const GetTaskHistory = async (taskId: string) =>
+export const GetTaskHistory = async (taskId: number) =>
   await Request<TaskHistoryResponse>(`/tasks/${taskId}/history`)
 
 export const UpdateDueDate = async (
-  id: string,
+  id: number,
   due_date: string,
 ): Promise<SingleTaskResponse> =>
   await Request<SingleTaskResponse>(`/tasks/${id}/dueDate`, 'PUT', {

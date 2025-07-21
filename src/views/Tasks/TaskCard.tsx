@@ -30,7 +30,7 @@ import { TaskUI } from '@/utils/marshalling'
 type TaskCardProps = WithNavigate & {
   task: TaskUI
 
-  completeTask: (taskId: string) => Promise<any>
+  completeTask: (taskId: number) => Promise<any>
   onTaskUpdate: (event: TASK_UPDATE_EVENT) => void
   onContextMenu: (event: React.MouseEvent<HTMLDivElement>, task: TaskUI) => void
 }
@@ -237,7 +237,7 @@ const mapStateToProps = () => ({
 })
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  completeTask: (taskId: string) => dispatch(completeTask(taskId)),
+  completeTask: (taskId: number) => dispatch(completeTask(taskId)),
 })
 
 export const TaskCard = connect(

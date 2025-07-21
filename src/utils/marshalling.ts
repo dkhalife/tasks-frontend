@@ -49,7 +49,7 @@ export function MakeDateUI(d: string | null): Date | null {
   return d ? new Date(d) : null
 }
 
-export function MakeLabels(labels: string[], userLabels: Label[]): Label[] {
+export function MakeLabels(labels: number[], userLabels: Label[]): Label[] {
   return labels
     .map(label => userLabels.find(userLabel => userLabel.id === label))
     .filter((label): label is Label => Boolean(label))
