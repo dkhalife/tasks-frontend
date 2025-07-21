@@ -143,7 +143,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     const currentState = this.state as RepeatDaysOfTheWeek
     const days = currentState.days
 
-    const day = parseInt(evt.target.value) as DayOfTheWeek
+    const day = parseInt(evt.target.value, 10) as DayOfTheWeek
     const newDays = days.includes(day)
       ? days.filter(d => d !== day)
       : [...days, day].sort()
@@ -173,7 +173,7 @@ export class RepeatOn extends React.Component<RepeatOnProps, RepeatOnState> {
     const currentState = this.state as RepeatDayOfTheMonths
     const months = currentState.months
 
-    const month = parseInt(evt.target.value) as Month
+    const month = parseInt(evt.target.value, 10) as Month
     const newMonths = months.includes(month)
       ? months.filter(m => m !== month)
       : [...months, month].sort()

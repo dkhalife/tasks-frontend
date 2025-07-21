@@ -1,4 +1,5 @@
 import { App } from '@/App'
+import { INVALID_TASK_ID } from '@/models/task'
 import { getHomeView, getPathName } from '@/utils/navigation'
 import { ForgotPasswordView } from '@/views/Authorization/ForgotPasswordView'
 import { LoginView } from '@/views/Authorization/LoginView'
@@ -43,10 +44,10 @@ export class RouterContext extends React.Component<object, RouterContextState> {
     )
 
     if (!match) {
-      return -1
+      return INVALID_TASK_ID
     }
 
-    return parseInt(match.params.taskId as string)
+    return parseInt(match.params.taskId as string, 10)
   }
 
   private getMainRoute = () => {

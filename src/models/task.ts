@@ -4,6 +4,8 @@ import { IntervalUnit } from '@/utils/recurrence'
 import { Notification } from '@/models/notifications'
 import { format, formatDistanceToNow, isPast, isToday, isTomorrow, setDay, setMonth } from 'date-fns'
 
+export const INVALID_TASK_ID = -1
+
 export type RepeatOnce = {
   type: 'once'
 }
