@@ -39,9 +39,9 @@ type TasksOverviewProps = {
 
   search: string
   filterTasks: (searchQuery: string) => void
-  completeTask: (taskId: string) => Promise<any>
-  deleteTask: (taskId: string) => Promise<any>
-  updateDueDate: (taskId: string, dueDate: string) => Promise<any>
+  completeTask: (taskId: number) => Promise<any>
+  deleteTask: (taskId: number) => Promise<any>
+  updateDueDate: (taskId: number, dueDate: string) => Promise<any>
 } & WithNavigate
 
 class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
@@ -290,9 +290,9 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   filterTasks: (searchQuery: string) => dispatch(filterTasks(searchQuery)),
-  completeTask: (taskId: string) => dispatch(completeTask(taskId)),
-  deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
-  updateDueDate: (taskId: string, dueDate: string) =>
+  completeTask: (taskId: number) => dispatch(completeTask(taskId)),
+  deleteTask: (taskId: number) => dispatch(deleteTask(taskId)),
+  updateDueDate: (taskId: number, dueDate: string) =>
     dispatch(updateDueDate({ taskId, dueDate })),
 })
 

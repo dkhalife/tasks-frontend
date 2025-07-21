@@ -191,7 +191,7 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> =>
 
 const bucketTaskIntoLabelGroups = (task: Task, groups: LabelGroups<Task>) => {
   Object.keys(groups).forEach(key => {
-    if ((key === 'none' && task.labels.length === 0) || task.labels.includes(key)) {
+    if ((key === 'none' && task.labels.length === 0) || task.labels.includes(parseInt(key, 10))) {
       groups[key].content.push(task)
     }
   })

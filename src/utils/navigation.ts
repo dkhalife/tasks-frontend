@@ -17,8 +17,8 @@ export const NavigationPaths = {
   Labels: '/labels',
   Settings: '/settings',
   TaskCreate: '/tasks/create',
-  TaskEdit: (taskId: string) => `/tasks/${taskId}/edit`,
-  TaskHistory: (taskId: string) => `/tasks/${taskId}/history`,
+  TaskEdit: (taskId: number) => `/tasks/${taskId}/edit`,
+  TaskHistory: (taskId: number) => `/tasks/${taskId}/history`,
 }
 
 export interface WithNavigate {

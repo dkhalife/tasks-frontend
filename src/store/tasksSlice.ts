@@ -58,7 +58,7 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
 
 export const completeTask = createAsyncThunk(
   'tasks/completeTask',
-  async (taskId: string) => {
+  async (taskId: number) => {
     const response = await MarkTaskComplete(taskId)
     return response.task
   },
@@ -66,7 +66,7 @@ export const completeTask = createAsyncThunk(
 
 export const skipTask = createAsyncThunk(
   'tasks/skipTask',
-  async (taskId: string) => {
+  async (taskId: number) => {
     const response = await SkipTask(taskId)
     return response.task
   },
@@ -74,10 +74,11 @@ export const skipTask = createAsyncThunk(
 
 export const fetchTaskById = createAsyncThunk(
   'tasks/fetchTaskById',
-  async (id: string, thunkAPI) => {
+  async (id: number, thunkAPI) => {
     const state = thunkAPI.getState() as RootState
     const tasks = state.tasks.items
     const task = tasks.find(t => t.id === id)
+
     if (task) {
       return task
     }
@@ -90,7 +91,7 @@ export const fetchTaskById = createAsyncThunk(
 
 export const deleteTask = createAsyncThunk(
   'tasks/deleteTask',
-  async (taskId: string) => await DeleteTask(taskId),
+  async (taskId: number) => await DeleteTask(taskId),
 )
 
 export const createTask = createAsyncThunk(
@@ -105,7 +106,7 @@ export const saveTask = createAsyncThunk(
 
 export const updateDueDate = createAsyncThunk(
   'tasks/updateDueDate',
-  async ({ taskId, dueDate }: { taskId: string; dueDate: string }) => {
+  async ({ taskId, dueDate }: { taskId: number; dueDate: string }) => {
     const response = await UpdateDueDate(taskId, dueDate)
     return response.task
   },
@@ -156,7 +157,7 @@ function filterItems(items: Task[], query: string): Task[] {
   return items.filter(task => taskMatchesQuery(task, lowerQuery))
 }
 
-function deleteTaskFromGroups(taskId: string, groups: TaskGroups<Task>) {
+function deleteTaskFromGroups(taskId: number, groups: TaskGroups<Task>) {
   const keys = Object.keys(groups) as (keyof TaskGroups<Task>)[]
 
   keys.forEach(groupKey => {
@@ -202,7 +203,7 @@ const tasksSlice = createSlice({
         groupTaskBy(action.payload, state.groupedItems, state.groupBy)
       }
     },
-    taskDeleted: (state, action: PayloadAction<string>) => {
+    taskDeleted: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter(t => t.id !== action.payload)
       state.filteredItems = state.filteredItems.filter(t => t.id !== action.payload)
 

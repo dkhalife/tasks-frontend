@@ -23,7 +23,7 @@ import { deleteLabel, enterEditMode } from '@/store/labelsSlice'
 type LabelViewProps = {
   isLoading: boolean
   labels: Label[]
-  deleteLabel: (id: string) => Promise<any>
+  deleteLabel: (id: number) => Promise<any>
   enterEditMode: () => void
 }
 
@@ -60,14 +60,14 @@ class LabelViewImpl extends React.Component<LabelViewProps, LabelViewState> {
     this.props.enterEditMode()
   }
 
-  private onDeleteLabelClicked = (id: string) => {
+  private onDeleteLabelClicked = (id: number) => {
     this.confirmModalRef.current?.open(async () => {
       await this.props.deleteLabel(id)
     })
   }
 
   private isUniqueLabelName = (
-    id: string | undefined,
+    id: number | undefined,
     labelName: string,
   ): boolean => {
     const { labels } = this.props
@@ -240,7 +240,7 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  deleteLabel: (id: string) => dispatch(deleteLabel(id)),
+  deleteLabel: (id: number) => dispatch(deleteLabel(id)),
   enterEditMode: () => dispatch(enterEditMode()),
 })
 

@@ -35,7 +35,7 @@ export const updateLabel = createAsyncThunk(
 
 export const deleteLabel = createAsyncThunk(
   'labels/deleteLabel',
-  async (labelId: string) => await DeleteLabel(labelId)
+  async (labelId: number) => await DeleteLabel(labelId)
 )
 
 const labelsSlice = createSlice({

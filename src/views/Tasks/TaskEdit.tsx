@@ -46,18 +46,18 @@ import { moveFocusToJoyInput } from '@/utils/joy'
 import { format, parseISO } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
-import { MakeTask, TaskUI } from '@/utils/marshalling'
+import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/marshalling'
 
 export type TaskEditProps = {
-  taskId: string | null
+  taskId: number | null
   userLabels: Label[]
   defaultNotificationTriggers: NotificationTriggerOptions
 
-  fetchTaskById: (id: string) => Promise<any>
+  fetchTaskById: (id: number) => Promise<any>
   createTask: (task: Omit<Task, 'id'>) => Promise<any>
   saveTask: (task: Task) => Promise<any>
-  skipTask: (id: string) => Promise<any>
-  deleteTask: (id: string) => Promise<any>
+  skipTask: (id: number) => Promise<any>
+  deleteTask: (id: number) => Promise<any>
 } & WithNavigate
 
 type Errors = { [key: string]: string }
@@ -79,7 +79,6 @@ export interface TaskEditState {
 class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   private titleInputRef = React.createRef<HTMLDivElement>()
   private confirmModalRef = React.createRef<ConfirmationModal>()
-  private taskBeingEdited: Task | null = null
 
   constructor(props: TaskEditProps) {
     super(props)
@@ -238,7 +237,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  private handleDelete = (taskId: string) => {
+  private handleDelete = (taskId: number) => {
     this.confirmModalRef.current?.open(async () => {
       try {
         await this.props.deleteTask(taskId)
@@ -254,22 +253,34 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
-  private onSkipClicked = async (taskId: string) => {
+  private onSkipClicked = async (taskId: number) => {
     await this.props.skipTask(taskId)
     this.navigateAway()
   }
 
   private init = async () => {
-    const { taskId } = this.props
+    const { taskId, userLabels } = this.props
     if (!taskId) {
       setTitle('Create Task')
       return
     }
 
-    this.taskBeingEdited = (await this.props.fetchTaskById(taskId)).payload
+    const task = (await this.props.fetchTaskById(taskId)).payload
 
-    if (this.taskBeingEdited != null) {
-      setTitle(`Edit Task: ${this.taskBeingEdited.title}`)
+    if (task != null) {
+      setTitle(`Edit Task: ${task.title}`)
+
+      const taskUI = MakeTaskUI(task, userLabels)
+
+      this.setState({
+        title: taskUI.title,
+        nextDueDate: taskUI.next_due_date,
+        endDate: taskUI.end_date,
+        frequency: taskUI.frequency,
+        isRolling: taskUI.is_rolling,
+        taskLabels: taskUI.labels,
+        notification: taskUI.notification,
+      })
     } else {
       this.navigateAway()
     }
@@ -714,11 +725,11 @@ const mapStateToProps = (state: RootState) => {
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  fetchTaskById: (id: string) => dispatch(fetchTaskById(id)),
+  fetchTaskById: (id: number) => dispatch(fetchTaskById(id)),
   createTask: (task: Omit<Task, 'id'>) => dispatch(createTask(task)),
   saveTask: (task: Task) => dispatch(saveTask(task)),
-  skipTask: (id: string) => dispatch(skipTask(id)),
-  deleteTask: (id: string) => dispatch(deleteTask(id)),
+  skipTask: (id: number) => dispatch(skipTask(id)),
+  deleteTask: (id: number) => dispatch(deleteTask(id)),
 })
 
 export const TaskEdit = connect(
