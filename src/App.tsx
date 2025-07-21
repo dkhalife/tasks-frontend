@@ -5,13 +5,7 @@ import React from 'react'
 import { WithNavigate } from './utils/navigation'
 import { CssBaseline, CssVarsProvider } from '@mui/joy'
 import { preloadSounds } from './utils/sound'
-import WebSocketManager from './utils/websocket'
-import { fetchLabels } from './store/labelsSlice'
-import { AppDispatch } from './store/store'
-import { connect } from 'react-redux'
-import { fetchUser } from './store/userSlice'
-import { fetchTokens } from './store/tokensSlice'
-import { fetchTasks, initGroups } from './store/tasksSlice'
+import { SyncManager } from './utils/sync'
 
 type AppProps = {
   fetchLabels: () => Promise<any>
@@ -21,17 +15,12 @@ type AppProps = {
   fetchTokens: () => Promise<any>
 } & WithNavigate
 
-class AppImpl extends React.Component<AppProps> {
+export class App extends React.Component<AppProps> {
   async componentDidMount(): Promise<void> {
-    if (isTokenValid()) {
-      preloadSounds();
-      WebSocketManager.getInstance().connect();
+    preloadSounds();
 
-      await this.props.fetchUser()
-      await this.props.fetchLabels()
-      await this.props.fetchTasks()
-      await this.props.fetchTokens()
-      await this.props.initGroups()
+    if (isTokenValid()) {
+      SyncManager.getInstance().startSync();
     }
   }
 
@@ -54,19 +43,3 @@ class AppImpl extends React.Component<AppProps> {
     )
   }
 }
-
-const mapStateToProps = () => ({
-})
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  fetchUser: () => dispatch(fetchUser()),
-  fetchLabels: () => dispatch(fetchLabels()),
-  fetchTasks: () => dispatch(fetchTasks()),
-  initGroups: () => dispatch(initGroups()),
-  fetchTokens: () => dispatch(fetchTokens()),
-})
-
-export const App = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(AppImpl)
