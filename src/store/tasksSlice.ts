@@ -190,6 +190,7 @@ const tasksSlice = createSlice({
         }
 
         // Add to the grouped list of items
+        deleteTaskFromGroups(action.payload.id, state.groupedItems)
         groupTaskBy(action.payload, state.groupedItems, state.groupBy)
       } else {
         state.items.push(action.payload)
@@ -197,6 +198,8 @@ const tasksSlice = createSlice({
         if (state.searchQuery === '' || taskMatchesQuery(action.payload, state.searchQuery.toLowerCase())) {
           state.filteredItems.push(action.payload)
         }
+
+        groupTaskBy(action.payload, state.groupedItems, state.groupBy)
       }
     },
     taskDeleted: (state, action: PayloadAction<string>) => {
