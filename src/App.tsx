@@ -11,25 +11,27 @@ import { AppDispatch } from './store/store'
 import { connect } from 'react-redux'
 import { fetchUser } from './store/userSlice'
 import { fetchTokens } from './store/tokensSlice'
-import { fetchTasks } from './store/tasksSlice'
+import { fetchTasks, initGroups } from './store/tasksSlice'
 
 type AppProps = {
   fetchLabels: () => Promise<any>
   fetchUser: () => Promise<any>
   fetchTasks: () => Promise<any>
+  initGroups: () => void
   fetchTokens: () => Promise<any>
 } & WithNavigate
 
 class AppImpl extends React.Component<AppProps> {
-  componentDidMount(): void {
+  async componentDidMount(): Promise<void> {
     if (isTokenValid()) {
       preloadSounds();
       WebSocketManager.getInstance().connect();
 
-      this.props.fetchUser()
-      this.props.fetchLabels()
-      this.props.fetchTasks()
-      this.props.fetchTokens()
+      await this.props.fetchUser()
+      await this.props.fetchLabels()
+      await this.props.fetchTasks()
+      await this.props.fetchTokens()
+      await this.props.initGroups()
     }
   }
 
@@ -60,6 +62,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   fetchUser: () => dispatch(fetchUser()),
   fetchLabels: () => dispatch(fetchLabels()),
   fetchTasks: () => dispatch(fetchTasks()),
+  initGroups: () => dispatch(initGroups()),
   fetchTokens: () => dispatch(fetchTokens()),
 })
 

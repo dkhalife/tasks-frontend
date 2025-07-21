@@ -1,4 +1,4 @@
-import { skipTask, deleteTask, updateDueDate, setGroupBy, toggleGroup, initGroups } from '@/store/tasksSlice'
+import { skipTask, deleteTask, updateDueDate, setGroupBy, toggleGroup } from '@/store/tasksSlice'
 import { Loading } from '@/Loading'
 import { Task, TASK_UPDATE_EVENT } from '@/models/task'
 import {
@@ -47,7 +47,6 @@ type MyTasksProps = {
   groups: TaskGroups<TaskUI>
   expandedGroups: Record<keyof TaskGroups<TaskUI>, boolean>
 
-  initGroups: () => void
   setGroupBy: (groupBy: GROUP_BY) => void
   toggleGroup: (groupKey: keyof TaskGroups<Task>) => void
 
@@ -112,8 +111,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 
   componentDidMount(): void {
     setTitle('My Tasks')
-
-    this.props.initGroups()
 
     document.addEventListener('click', this.dismissMoreMenu)
   }
@@ -474,7 +471,6 @@ const mapStateToProps = (state: RootState) => {
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  initGroups: () => dispatch(initGroups()),
   setGroupBy: (groupBy: GROUP_BY) => dispatch(setGroupBy(groupBy)),
   toggleGroup: (groupKey: keyof TaskGroups<Task>) => dispatch(toggleGroup(groupKey)),
 
