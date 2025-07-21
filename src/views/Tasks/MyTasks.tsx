@@ -1,6 +1,6 @@
-import { skipTask, deleteTask, updateDueDate } from '@/store/tasksSlice'
+import { skipTask, deleteTask, updateDueDate, setGroupBy, toggleGroup } from '@/store/tasksSlice'
 import { Loading } from '@/Loading'
-import { TASK_UPDATE_EVENT } from '@/models/task'
+import { Task, TASK_UPDATE_EVENT } from '@/models/task'
 import {
   ExpandCircleDown,
   Add,
@@ -30,24 +30,26 @@ import React from 'react'
 import { TaskCard } from '@/views/Tasks/TaskCard'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
-import { Label } from '@/models/label'
 import {
-  getDefaultExpandedState,
   GROUP_BY,
-  groupTasksBy,
   TaskGroups,
 } from '@/utils/grouping'
-import { retrieveValue, storeValue } from '@/utils/storage'
 import { ConfirmationModal } from '../Modals/Inputs/ConfirmationModal'
 import { DateModal } from '../Modals/Inputs/DateModal'
-import WebSocketManager from '@/utils/websocket'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
-import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
+import { TaskUI, MarshallDate, MakeTaskGroupsUI } from '@/utils/marshalling'
 
 type MyTasksProps = {
-  userLabels: Label[]
-  tasks: TaskUI[]
+  isLoading: boolean
+
+  groupBy: GROUP_BY
+  groups: TaskGroups<TaskUI>
+  expandedGroups: Record<keyof TaskGroups<TaskUI>, boolean>
+
+  setGroupBy: (groupBy: GROUP_BY) => void
+  toggleGroup: (groupKey: keyof TaskGroups<Task>) => void
+
   deleteTask: (taskId: string) => Promise<any>
   skipTask: (taskId: string) => Promise<any>
   updateDueDate: (taskId: string, dueDate: string) => Promise<any>
@@ -57,10 +59,7 @@ interface MyTasksState {
   isSnackbarOpen: boolean
   isMoreMenuOpen: boolean
   snackBarMessage: string | null
-  groupBy: GROUP_BY
-  groups: TaskGroups | null
-  isExpanded: Record<keyof TaskGroups, boolean>
-  isLoading: boolean
+
   contextMenuTask: TaskUI | null
 }
 
@@ -70,12 +69,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   private confirmationModalRef = React.createRef<ConfirmationModal>()
   private dateModalRef = React.createRef<DateModal>()
 
-  private ws: WebSocketManager
-
   constructor(props: MyTasksProps) {
     super(props)
-
-    this.ws = WebSocketManager.getInstance()
 
     this.menuAnchorRef = document.createElement('div')
     this.menuAnchorRef.style.position = 'absolute'
@@ -83,42 +78,12 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 
     document.body.appendChild(this.menuAnchorRef)
 
-    const groupBy: GROUP_BY = retrieveValue<GROUP_BY>('group_by', 'due_date')
-    const isExpanded = retrieveValue<Record<keyof TaskGroups, boolean>>(
-      'expanded_groups',
-      getDefaultExpandedState(groupBy, []),
-    )
-
     this.state = {
       isSnackbarOpen: false,
       isMoreMenuOpen: false,
       snackBarMessage: null,
-      groupBy,
-      groups: null,
-      isExpanded,
-      isLoading: true,
       contextMenuTask: null,
     }
-  }
-
-  private loadTasks = async () => {
-    const { userLabels, tasks } = this.props
-
-    const { groupBy } = this.state
-    const defaultExpanded = getDefaultExpandedState(groupBy, userLabels)
-    const isExpanded = {
-      ...defaultExpanded,
-      ...retrieveValue<Record<keyof TaskGroups, boolean>>(
-        'expanded_groups',
-        defaultExpanded,
-      ),
-    }
-
-    this.setState({
-      groups: groupTasksBy(tasks, userLabels, groupBy),
-      isExpanded,
-      isLoading: false,
-    })
   }
 
   private onEvent = (event: TASK_UPDATE_EVENT) => {
@@ -145,8 +110,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   componentDidMount(): void {
-    this.loadTasks()
-
     setTitle('My Tasks')
 
     document.addEventListener('click', this.dismissMoreMenu)
@@ -162,38 +125,17 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     })
   }
 
-  private onToggleGroupClicked = (groupKey: keyof TaskGroups) => {
-    const { isExpanded } = this.state
-    const nextExpanded = {
-      ...isExpanded,
-      [groupKey]: !isExpanded[groupKey],
-    }
-
-    this.setState({
-      isExpanded: nextExpanded,
-    })
-
-    storeValue('expanded_groups', nextExpanded)
+  private onToggleGroupClicked = (groupKey: keyof TaskGroups<TaskUI>) => {
+    this.props.toggleGroup(groupKey)
   }
 
   private onToggleGroupByClicked = () => {
-    const { userLabels, tasks } = this.props
-    const { groupBy } = this.state
-    const nextGroupBy = groupBy === 'due_date' ? 'labels' : 'due_date'
-    const nextExpanded = getDefaultExpandedState(nextGroupBy, userLabels)
-
-    this.setState({
-      groupBy: nextGroupBy,
-      groups: groupTasksBy(tasks, userLabels, nextGroupBy),
-      isExpanded: nextExpanded,
-    })
-
-    storeValue('group_by', nextGroupBy)
-    storeValue('expanded_groups', nextExpanded)
+    const nextGroupBy = this.props.groupBy === 'due_date' ? 'labels' : 'due_date'
+    this.props.setGroupBy(nextGroupBy)
   }
 
   private hasTasks = () => {
-    const { groups } = this.state
+    const { groups } = this.props
 
     if (!groups) {
       return true
@@ -280,7 +222,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   private onDeleteClicked = () => {
     const { contextMenuTask: task } = this.state
     if (task === null) {
-      throw new Error('Attempted to change due date without task reference')
+      throw new Error('Attempted to delete a task without task reference')
     }
 
     this.dismissMoreMenu()
@@ -290,7 +232,8 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
   }
 
   render(): React.ReactNode {
-    const { isSnackbarOpen, isMoreMenuOpen, snackBarMessage, isLoading, groups, groupBy, contextMenuTask } =
+    const { groupBy, groups, expandedGroups, isLoading } = this.props
+    const { isSnackbarOpen, isMoreMenuOpen, snackBarMessage, contextMenuTask } =
       this.state
 
     if (isLoading || groups === null) {
@@ -345,13 +288,13 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
             disableDivider
           >
             {Object.keys(groups).map(key => {
-              const groupKey = key as keyof TaskGroups
+              const groupKey = key as keyof TaskGroups<TaskUI>
               const group = groups[groupKey]
               if (group.content.length === 0) {
                 return null
               }
 
-              const isExpanded = this.state.isExpanded[groupKey]
+              const isExpanded = expandedGroups[groupKey]
               return (
                 <Accordion
                   key={`group-${key}`}
@@ -516,15 +459,21 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 }
 
 const mapStateToProps = (state: RootState) => {
+  const isLoading = state.tasks.status === 'loading' || state.labels.status === 'loading'
   const userLabels = state.labels.items
 
   return {
-    userLabels,
-    tasks: state.tasks.items.map(task => MakeTaskUI(task, userLabels)),
+    isLoading,
+    groupBy: state.tasks.groupBy,
+    groups: MakeTaskGroupsUI(state.tasks.groupedItems, userLabels),
+    expandedGroups: state.tasks.expandedGroups,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  setGroupBy: (groupBy: GROUP_BY) => dispatch(setGroupBy(groupBy)),
+  toggleGroup: (groupKey: keyof TaskGroups<Task>) => dispatch(toggleGroup(groupKey)),
+
   deleteTask: (taskId: string) => dispatch(deleteTask(taskId)),
   skipTask: (taskId: string) => dispatch(skipTask(taskId)),
   updateDueDate: (taskId: string, dueDate: string) =>

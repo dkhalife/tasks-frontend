@@ -12,20 +12,40 @@ import {
 import { Task } from '@/models/task'
 import { RootState } from './store'
 import { SyncState } from '@/models/sync'
+import { getDefaultExpandedState, GROUP_BY, groupTasksBy, TaskGroups } from '@/utils/grouping'
+import { retrieveValue, storeValue } from '@/utils/storage'
 
 export interface TasksState {
   items: Task[]
+
   searchQuery: string
   filteredItems: Task[]
+
+  groupBy: GROUP_BY
+  groupedItems: TaskGroups<Task>
+  expandedGroups: Record<keyof TaskGroups<Task>, boolean>
+
   status: SyncState
   lastFetched: number | null
   error: string | null
 }
 
+const initialGroupBy = retrieveValue<GROUP_BY>('group_by', 'due_date')
+const initialExpandedGroups = retrieveValue<Record<keyof TaskGroups<Task>, boolean>>(
+  'expanded_groups',
+  getDefaultExpandedState(initialGroupBy, []),
+)
+
 const initialState: TasksState = {
   items: [],
+
   searchQuery: '',
   filteredItems: [],
+
+  groupBy: initialGroupBy,
+  expandedGroups: initialExpandedGroups,
+  groupedItems: {},
+
   status: 'loading',
   lastFetched: null,
   error: null,
@@ -91,6 +111,38 @@ export const updateDueDate = createAsyncThunk(
   },
 )
 
+export const setGroupBy = createAsyncThunk(
+  'tasks/setGroupBy',
+  async (groupBy: GROUP_BY, thunkAPI) => {
+      const state = thunkAPI.getState() as RootState
+
+      const userLabels = state.labels.items
+      const tasks = state.tasks.items
+      const nextExpanded = getDefaultExpandedState(groupBy, userLabels)
+      const groupedItems = groupTasksBy(tasks, userLabels, groupBy)
+
+      storeValue('group_by', groupBy)
+      storeValue('expanded_groups', nextExpanded)
+
+      return {
+        groupBy,
+        groupedItems: groupedItems,
+        expandedGroups: nextExpanded,
+      }
+  },
+)
+
+export const initGroups = createAsyncThunk(
+  'tasks/initGroups',
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState() as RootState
+    const userLabels = state.labels.items
+    const tasks = state.tasks.items
+
+    return groupTasksBy(tasks, userLabels, initialGroupBy)
+  },
+)
+
 function taskMatchesQuery(task: Task, query: string): boolean {
   return task.title.toLowerCase().includes(query)
 }
@@ -127,13 +179,23 @@ const tasksSlice = createSlice({
         }
       } else {
         state.items.push(action.payload)
-        state.filteredItems.push(action.payload)
+
+        if (state.searchQuery === '' || taskMatchesQuery(action.payload, state.searchQuery.toLowerCase())) {
+          state.filteredItems.push(action.payload)
+        }
       }
     },
     taskDeleted: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(t => t.id !== action.payload)
       state.filteredItems = state.filteredItems.filter(t => t.id !== action.payload)
     },
+    toggleGroup: (state, action: PayloadAction<keyof TaskGroups<Task>>) => {
+      const groupKey = action.payload
+      const isExpanded = state.expandedGroups[groupKey]
+      state.expandedGroups[groupKey] = !isExpanded
+
+      storeValue('expanded_groups', state.expandedGroups)
+    }
   },
   extraReducers: builder => {
     builder
@@ -174,12 +236,45 @@ const tasksSlice = createSlice({
           }
         } else {
           state.items.push(task)
-          state.filteredItems.push(task)
+
+          if (state.searchQuery === '' || taskMatchesQuery(task, state.searchQuery.toLowerCase())) {
+            state.filteredItems.push(task)
+          }
         }
         state.status = 'succeeded'
         state.error = null
       })
       .addCase(fetchTaskById.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Initialize groups
+      .addCase(initGroups.pending, state => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(initGroups.fulfilled, (state, action) => {
+        state.groupedItems = action.payload
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(initGroups.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? null
+      })
+      // Change group by
+      .addCase(setGroupBy.pending, state => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(setGroupBy.fulfilled, (state, action) => {
+        state.groupBy = action.payload.groupBy
+        state.groupedItems = action.payload.groupedItems
+        state.expandedGroups = action.payload.expandedGroups
+        state.status = 'succeeded'
+        state.error = null
+      })
+      .addCase(setGroupBy.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
@@ -320,6 +415,6 @@ const tasksSlice = createSlice({
   },
 })
 
-export const { taskUpserted, taskDeleted, filterTasks } = tasksSlice.actions
+export const { taskUpserted, taskDeleted, filterTasks, toggleGroup } = tasksSlice.actions
 
 export const tasksReducer = tasksSlice.reducer

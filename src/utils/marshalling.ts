@@ -1,6 +1,7 @@
 import { HistoryEntry } from "@/models/history"
 import { Label } from "@/models/label"
 import { Task } from "@/models/task"
+import { TaskGroup, TaskGroups } from "./grouping";
 
 export type TaskUI = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
   next_due_date: Date | null
@@ -20,6 +21,18 @@ export const MakeTaskUI = (task: Task, userLabels: Label[]): TaskUI => {
     end_date: MakeDateUI(task.end_date),
     labels: MakeLabels(task.labels, userLabels),
   }
+}
+
+export const MakeTaskGroupsUI = (groups: TaskGroups<Task>, userLabels: Label[]): TaskGroups<TaskUI> => {
+  return Object.fromEntries<TaskGroup<TaskUI>>(
+    Object.entries<TaskGroup<Task>>(groups).map(([key, group]) => [
+      key,
+      {
+        ...group,
+        content: group.content.map(task => MakeTaskUI(task, userLabels)),
+      },
+    ])
+  )
 }
 
 export function MarshallDate(d: Date): string;

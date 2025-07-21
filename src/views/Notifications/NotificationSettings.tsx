@@ -20,7 +20,6 @@ import {
   NotificationTypeWebhook,
   WebhookMethod,
 } from '@/models/notifications'
-import WebSocketManager from '@/utils/websocket'
 import { RootState, AppDispatch } from '@/store/store'
 import { connect } from 'react-redux'
 import { updateNotificationSettings } from '@/store/userSlice'
@@ -43,12 +42,8 @@ class NotificationSettingsImpl extends React.Component<
   NotificationSettingProps,
   NotificationSettingState
 > {
-  private ws: WebSocketManager
-
   constructor(props: NotificationSettingProps) {
     super(props)
-
-    this.ws = WebSocketManager.getInstance()
 
     this.state = {
       saved: true,
@@ -57,32 +52,6 @@ class NotificationSettingsImpl extends React.Component<
       options: props.initialOptions,
     }
   }
-
-  // componentDidMount(): void {
-  //   this.registerWebSocketListeners()
-  // }
-
-  // componentWillUnmount(): void {
-  //   this.unregisterWebSocketListeners()
-  // }
-
-  // private registerWebSocketListeners = () => {
-  //   this.ws.on('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
-  // }
-
-  // private unregisterWebSocketListeners = () => {
-  //   this.ws.off('notification_settings_updated', this.onNotificationSettingsUpdatedWS);
-  // }
-
-  // private onNotificationSettingsUpdatedWS = (data: any) => {
-  //   this.setState({
-  //     type: data.provider,
-  //     options: {
-  //       ...data.triggers,
-  //     },
-  //     saved: true,
-  //   })
-  // }
 
   private onNotificationProviderChange = (
     e: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,

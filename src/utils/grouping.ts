@@ -1,33 +1,34 @@
 import { Label } from '@/models/label'
-import { TaskUI } from './marshalling'
+import { MakeDateUI, TaskUI } from './marshalling'
 import { COLORS, TASK_COLOR } from './colors'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
+import { Task } from '@/models/task'
 
 export type GROUP_BY = 'due_date' | 'labels'
 
-export type TaskGroup = {
+export type TaskGroup<T> = {
   name: string
-  content: TaskUI[]
+  content: T[]
   color: string
 }
 
-export interface DueDateGroups {
-  overdue: TaskGroup
-  today: TaskGroup
-  tomorrow: TaskGroup
-  this_week: TaskGroup
-  next_week: TaskGroup
-  later: TaskGroup
-  any_time: TaskGroup
+export type DueDateGroups<T> = {
+  overdue: TaskGroup<T>
+  today: TaskGroup<T>
+  tomorrow: TaskGroup<T>
+  this_week: TaskGroup<T>
+  next_week: TaskGroup<T>
+  later: TaskGroup<T>
+  any_time: TaskGroup<T>
 }
 
-export type LabelGroups = Record<string, TaskGroup>
-export type TaskGroups = DueDateGroups | LabelGroups
+export type LabelGroups<T> = Record<string, TaskGroup<T>>
+export type TaskGroups<T> = DueDateGroups<T> | LabelGroups<T>
 
-export const getDefaultExpandedState = (
+export function getDefaultExpandedState (
   groupBy: GROUP_BY,
   labels: Label[],
-): Record<keyof TaskGroups, boolean> => {
+): Record<keyof TaskGroups<Task>, boolean> {
   if (groupBy === 'due_date') {
     return {
       overdue: false,
@@ -52,8 +53,8 @@ export const getDefaultExpandedState = (
 }
 
 export const bucketIntoDueDateGroup = (
-  task: TaskUI,
-  groups: DueDateGroups,
+  task: Task,
+  groups: DueDateGroups<Task>,
   now: number,
   endOfToday: number,
   endOfTomorrow: number,
@@ -65,7 +66,7 @@ export const bucketIntoDueDateGroup = (
     return
   }
 
-  const due_date = task.next_due_date.getTime()
+  const due_date = MakeDateUI(task.next_due_date).getTime()
   if (now >= due_date) {
     groups['overdue'].content.push(task)
     return
@@ -94,14 +95,8 @@ export const bucketIntoDueDateGroup = (
   groups['later'].content.push(task)
 }
 
-export const bucketIntoLabelGroups = (task: TaskUI, groups: LabelGroups) => {
-  task.labels.forEach(label => {
-    groups[label.id].content.push(task)
-  })
-}
-
-const groupByDueDate = (tasks: TaskUI[]): DueDateGroups => {
-  const groups: DueDateGroups = {
+const groupByDueDate = (tasks: Task[]): DueDateGroups<Task> => {
+  const groups: DueDateGroups<Task> = {
     overdue: {
       name: 'Overdue',
       content: [],
@@ -160,14 +155,14 @@ const groupByDueDate = (tasks: TaskUI[]): DueDateGroups => {
   return groups
 }
 
-const groupByLabels = (tasks: TaskUI[], userLabels: Label[]): LabelGroups => {
-  const groups: LabelGroups = {}
+const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> => {
+  const groups: LabelGroups<Task> = {}
 
   userLabels.forEach(label => {
     groups[label.id] = {
       name: label.name,
       content: tasks.filter(
-        task => task.labels.findIndex(l => l.id === label.id) !== -1,
+        task => task.labels.findIndex(labelId => labelId === label.id) !== -1,
       ),
       color: label.color,
     }
@@ -183,10 +178,10 @@ const groupByLabels = (tasks: TaskUI[], userLabels: Label[]): LabelGroups => {
 }
 
 export const groupTasksBy = (
-  tasks: TaskUI[],
+  tasks: Task[],
   userLabels: Label[],
   groupBy: GROUP_BY,
-): TaskGroups => {
+): TaskGroups<Task> => {
   if (groupBy === 'due_date') {
     return groupByDueDate(tasks)
   }

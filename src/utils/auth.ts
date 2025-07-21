@@ -1,6 +1,5 @@
 import { Login } from '@/api/auth'
 import { NavigationPaths } from './navigation'
-import WebSocketManager from './websocket'
 
 export const doLogin = async (
   email: string,
@@ -10,7 +9,6 @@ export const doLogin = async (
   const data = await Login(email, password)
   localStorage.setItem('ca_token', data.token)
   localStorage.setItem('ca_expiration', data.expiration)
-  WebSocketManager.getInstance().connect()
 
   const redirectUrl = localStorage.getItem('ca_redirect')
   if (redirectUrl) {
