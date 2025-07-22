@@ -174,7 +174,7 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> =>
     groups[label.id] = {
       name: label.name,
       content: tasks.filter(
-        task => task.labels.findIndex(taskLabel => taskLabel.id === label.id) !== -1,
+        task => task.labels.some(taskLabel => taskLabel.id === label.id),
       ),
       color: label.color,
     }
