@@ -452,11 +452,9 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const userLabels = state.labels.items
-
   return {
     groupBy: state.tasks.groupBy,
-    groups: MakeTaskGroupsUI(state.tasks.groupedItems, userLabels),
+    groups: MakeTaskGroupsUI(state.tasks.groupedItems),
     expandedGroups: state.tasks.expandedGroups,
   }
 }

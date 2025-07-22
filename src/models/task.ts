@@ -3,6 +3,7 @@ import { dayOfMonthSuffix } from '../utils/date'
 import { IntervalUnit } from '@/utils/recurrence'
 import { Notification } from '@/models/notifications'
 import { format, formatDistanceToNow, isPast, isToday, isTomorrow, setDay, setMonth } from 'date-fns'
+import { Label } from './label'
 
 export const INVALID_TASK_ID = -1
 
@@ -69,7 +70,7 @@ export interface Task {
   frequency: Frequency
   notification: Notification
   is_rolling: boolean
-  labels: number[]
+  labels: Label[]
   end_date: string | null
 }
 

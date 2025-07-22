@@ -29,13 +29,11 @@ import { moveFocusToJoyInput } from '@/utils/joy'
 import { playSound, SoundEffect } from '@/utils/sound'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
-import { Label } from '@/models/label'
 import { sortTasksByDueDate } from '@/utils/grouping'
 import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
 
 type TasksOverviewProps = {
   tasks: TaskUI[]
-  userLabels: Label[]
 
   search: string
   filterTasks: (searchQuery: string) => void
@@ -277,12 +275,10 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const userLabels = state.labels.items
   const search = state.tasks.searchQuery
-  const tasks = sortTasksByDueDate(state.tasks.filteredItems.map(task => MakeTaskUI(task, userLabels)))
+  const tasks = sortTasksByDueDate(state.tasks.filteredItems.map(task => MakeTaskUI(task)))
 
   return {
-    userLabels,
     search,
     tasks,
   }

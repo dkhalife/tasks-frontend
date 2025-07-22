@@ -259,7 +259,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private init = async () => {
-    const { taskId, userLabels } = this.props
+    const { taskId } = this.props
     if (!taskId) {
       setTitle('Create Task')
       return
@@ -270,7 +270,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     if (task != null) {
       setTitle(`Edit Task: ${task.title}`)
 
-      const taskUI = MakeTaskUI(task, userLabels)
+      const taskUI = MakeTaskUI(task)
 
       this.setState({
         title: taskUI.title,

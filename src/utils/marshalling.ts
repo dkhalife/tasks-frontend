@@ -14,22 +14,21 @@ export type HistoryEntryUI = Omit<HistoryEntry, 'due_date' | 'completed_date'> &
   completed_date: Date | null
 };
 
-export const MakeTaskUI = (task: Task, userLabels: Label[]): TaskUI => {
+export const MakeTaskUI = (task: Task): TaskUI => {
   return {
     ...task,
     next_due_date: MakeDateUI(task.next_due_date),
     end_date: MakeDateUI(task.end_date),
-    labels: MakeLabels(task.labels, userLabels),
   }
 }
 
-export const MakeTaskGroupsUI = (groups: TaskGroups<Task>, userLabels: Label[]): TaskGroups<TaskUI> => {
+export const MakeTaskGroupsUI = (groups: TaskGroups<Task>): TaskGroups<TaskUI> => {
   return Object.fromEntries<TaskGroup<TaskUI>>(
     Object.entries<TaskGroup<Task>>(groups).map(([key, group]) => [
       key,
       {
         ...group,
-        content: group.content.map(task => MakeTaskUI(task, userLabels)),
+        content: group.content.map(task => MakeTaskUI(task)),
       },
     ])
   )
@@ -49,12 +48,6 @@ export function MakeDateUI(d: string | null): Date | null {
   return d ? new Date(d) : null
 }
 
-export function MakeLabels(labels: number[], userLabels: Label[]): Label[] {
-  return labels
-    .map(label => userLabels.find(userLabel => userLabel.id === label))
-    .filter((label): label is Label => Boolean(label))
-}
-
 export function MakeHistoryUI(entry: HistoryEntry): HistoryEntryUI {
   return {
     ...entry,
@@ -68,6 +61,5 @@ export const MakeTask = (taskUI: Omit<TaskUI, 'id'>): Omit<Task, 'id'> => {
     ...taskUI,
     next_due_date: MarshallDate(taskUI.next_due_date),
     end_date: MarshallDate(taskUI.end_date),
-    labels: taskUI.labels.map(label => label.id),
   }
 }
