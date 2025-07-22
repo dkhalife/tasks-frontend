@@ -174,7 +174,7 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> =>
     groups[label.id] = {
       name: label.name,
       content: tasks.filter(
-        task => task.labels.findIndex(labelId => labelId === label.id) !== -1,
+        task => task.labels.some(taskLabel => taskLabel.id === label.id),
       ),
       color: label.color,
     }
@@ -191,7 +191,7 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> =>
 
 const bucketTaskIntoLabelGroups = (task: Task, groups: LabelGroups<Task>) => {
   Object.keys(groups).forEach(key => {
-    if ((key === 'none' && task.labels.length === 0) || task.labels.includes(parseInt(key, 10))) {
+    if ((key === 'none' && task.labels.length === 0) || task.labels.some(label => label.id === parseInt(key, 10))) {
       groups[key].content.push(task)
     }
   })
