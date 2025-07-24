@@ -74,6 +74,21 @@ export interface Task {
   end_date: string | null
 }
 
+export const newTask = (): Task => ({
+  id: INVALID_TASK_ID,
+  title: '',
+  next_due_date: null,
+  end_date: null,
+  frequency: {
+    type: 'once',
+  },
+  notification: {
+    enabled: false,
+  },
+  is_rolling: false,
+  labels: [],
+})
+
 export type TASK_UPDATE_EVENT = 'updated' | 'completed' | 'rescheduled' | 'skipped'
 
 export const getDueDateChipText = (nextDueDate: Date | null): string => {

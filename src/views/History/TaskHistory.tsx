@@ -231,14 +231,11 @@ class TaskHistoryImpl extends React.Component<
   }
 }
 
-const mapStateToProps = () => ({
-})
-
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   getTaskById: (id: number) => dispatch(fetchTaskById(id)),
 })
 
 export const TaskHistory = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 )(TaskHistoryImpl)

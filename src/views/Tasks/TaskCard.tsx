@@ -233,14 +233,11 @@ class TaskCardImpl extends React.Component<TaskCardProps> {
   }
 }
 
-const mapStateToProps = () => ({
-})
-
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   completeTask: (taskId: number) => dispatch(completeTask(taskId)),
 })
 
 export const TaskCard = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 )(TaskCardImpl)
