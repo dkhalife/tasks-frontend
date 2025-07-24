@@ -57,7 +57,12 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
       return INVALID_TASK_ID
     }
 
-    return parseInt(match.params.taskId as string, 10)
+    const maybeTaskId = parseInt(match.params.taskId as string, 10)
+    if (isNaN(maybeTaskId)) {
+      return INVALID_TASK_ID
+    }
+
+    return maybeTaskId
   }
 
   private getMainRoute = () => {
