@@ -1,12 +1,10 @@
 import { HistoryEntry } from "@/models/history"
-import { Label } from "@/models/label"
 import { Task } from "@/models/task"
 import { TaskGroup, TaskGroups } from "./grouping";
 
-export type TaskUI = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
+export type TaskUI = Omit<Task, 'next_due_date' | 'end_date'> & {
   next_due_date: Date | null
   end_date: Date | null
-  labels: Label[]
 };
 
 export type HistoryEntryUI = Omit<HistoryEntry, 'due_date' | 'completed_date'> & {
@@ -61,5 +59,12 @@ export const MakeTask = (taskUI: Omit<TaskUI, 'id'>): Omit<Task, 'id'> => {
     ...taskUI,
     next_due_date: MarshallDate(taskUI.next_due_date),
     end_date: MarshallDate(taskUI.end_date),
+  }
+}
+
+export const MarshallLabels = (task: Task): Omit<Task, 'labels'> & {labels: number[] } => {
+  return {
+    ...task,
+    labels: task.labels.map(label => label.id),
   }
 }
