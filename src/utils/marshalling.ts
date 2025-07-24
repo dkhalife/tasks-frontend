@@ -1,12 +1,10 @@
 import { HistoryEntry } from "@/models/history"
-import { Label } from "@/models/label"
 import { Task } from "@/models/task"
 import { TaskGroup, TaskGroups } from "./grouping";
 
-export type TaskUI = Omit<Task, 'next_due_date' | 'end_date' | 'labels'> & {
+export type TaskUI = Omit<Task, 'next_due_date' | 'end_date'> & {
   next_due_date: Date | null
   end_date: Date | null
-  labels: Label[]
 };
 
 export type HistoryEntryUI = Omit<HistoryEntry, 'due_date' | 'completed_date'> & {
