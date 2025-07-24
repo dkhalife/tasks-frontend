@@ -9,13 +9,14 @@ import {
   SaveTask,
   UpdateDueDate,
 } from '@/api/tasks'
-import { Task } from '@/models/task'
+import { newTask, Task } from '@/models/task'
 import { RootState } from './store'
 import { SyncState } from '@/models/sync'
 import { getDefaultExpandedState, GROUP_BY, groupTaskBy, groupTasksBy, TaskGroups } from '@/utils/grouping'
 import { retrieveValue, storeValue } from '@/utils/storage'
 
 export interface TasksState {
+  draft: Task
   items: Task[]
 
   searchQuery: string
@@ -37,6 +38,7 @@ const initialExpandedGroups = retrieveValue<Record<keyof TaskGroups<Task>, boole
 )
 
 const initialState: TasksState = {
+  draft: newTask(),
   items: [],
 
   searchQuery: '',
@@ -170,6 +172,9 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    setDraft: (state, action: PayloadAction<Task>) => {
+      state.draft = action.payload
+    },
     filterTasks: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload
       state.filteredItems = filterItems(state.items, action.payload)
@@ -478,6 +483,6 @@ const tasksSlice = createSlice({
   },
 })
 
-export const { taskUpserted, taskDeleted, filterTasks, toggleGroup } = tasksSlice.actions
+export const { setDraft, taskUpserted, taskDeleted, filterTasks, toggleGroup } = tasksSlice.actions
 
 export const tasksReducer = tasksSlice.reducer

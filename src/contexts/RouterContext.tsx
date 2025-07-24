@@ -1,5 +1,7 @@
 import { App } from '@/App'
-import { INVALID_TASK_ID } from '@/models/task'
+import { INVALID_TASK_ID, newTask, Task } from '@/models/task'
+import { AppDispatch } from '@/store/store'
+import { fetchTaskById, setDraft } from '@/store/tasksSlice'
 import { getHomeView, getPathName } from '@/utils/navigation'
 import { ForgotPasswordView } from '@/views/Authorization/ForgotPasswordView'
 import { LoginView } from '@/views/Authorization/LoginView'
@@ -13,6 +15,7 @@ import { MyTasks } from '@/views/Tasks/MyTasks'
 import { TaskEdit } from '@/views/Tasks/TaskEdit'
 import { TasksOverview } from '@/views/Tasks/TasksOverview'
 import React from 'react'
+import { connect } from 'react-redux'
 import {
   BrowserRouter,
   matchPath,
@@ -21,15 +24,22 @@ import {
   Routes,
 } from 'react-router-dom'
 
-type RouterContextState = {
-  navigateTo: string | null
+type RouterContextProps = {
+  setDraft: (draft: Task) => void
+  fetchTaskById(id: number): Promise<any | null>
 }
 
-export class RouterContext extends React.Component<object, RouterContextState> {
-  constructor(props: object) {
+type RouterContextState = {
+  navigateTo: string | null
+  lastTaskId: number
+}
+
+class RouterContextImpl extends React.Component<RouterContextProps, RouterContextState> {
+  constructor(props: RouterContextProps) {
     super(props)
 
     this.state = {
+      lastTaskId: this.getTaskId(),
       navigateTo: null,
     }
   }
@@ -66,10 +76,33 @@ export class RouterContext extends React.Component<object, RouterContextState> {
     })
   }
 
-  componentDidUpdate(): void {
+  private updateDraftState = async (taskId: number) => {
+    const { fetchTaskById, setDraft } = this.props
+
+    if (taskId !== INVALID_TASK_ID) {
+      const result = await fetchTaskById(taskId)
+      setDraft(result.payload)
+    } else {
+      setDraft(newTask())
+    }
+  }
+
+  componentDidMount(): void {
+    this.updateDraftState(this.state.lastTaskId)
+  }
+
+  async componentDidUpdate(): Promise<void> {
     if (this.state.navigateTo !== null) {
       this.setState({
         navigateTo: null,
+      })
+    }
+
+    const taskId = this.getTaskId()
+    if (taskId !== this.state.lastTaskId) {
+      await this.updateDraftState(taskId)
+      this.setState({
+        lastTaskId: taskId,
       })
     }
   }
@@ -101,7 +134,6 @@ export class RouterContext extends React.Component<object, RouterContextState> {
               path='/tasks/:taskId/edit'
               element={
                 <TaskEdit
-                  taskId={this.getTaskId()}
                   navigate={this.navigate}
                 />
               }
@@ -110,7 +142,6 @@ export class RouterContext extends React.Component<object, RouterContextState> {
               path='/tasks/create'
               element={
                 <TaskEdit
-                  taskId={null}
                   navigate={this.navigate}
                 />
               }
@@ -151,3 +182,16 @@ export class RouterContext extends React.Component<object, RouterContextState> {
     )
   }
 }
+
+const mapStateToProps = () => ({
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  setDraft: (task: Task) => dispatch(setDraft(task)),
+  fetchTaskById: (id: number) => dispatch(fetchTaskById(id)),
+})
+
+export const RouterContext = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(RouterContextImpl)

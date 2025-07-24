@@ -3,10 +3,10 @@ import {
   saveTask,
   skipTask,
   deleteTask,
-  fetchTaskById,
+  setDraft,
 } from '@/store/tasksSlice'
 import { Label } from '@/models/label'
-import { Frequency, Task } from '@/models/task'
+import { Frequency, INVALID_TASK_ID, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { Add } from '@mui/icons-material'
 import {
@@ -37,23 +37,21 @@ import { RepeatOption } from './RepeatOption'
 import { SelectValue } from '@mui/base/useSelect/useSelect.types'
 import { setTitle } from '@/utils/dom'
 import { NavigationPaths, WithNavigate } from '@/utils/navigation'
-import {
-  Notification,
-  NotificationTriggerOptions,
-} from '@/models/notifications'
+import { NotificationTriggerOptions } from '@/models/notifications'
 import { NotificationOptions } from '@/views/Notifications/NotificationOptions'
 import { moveFocusToJoyInput } from '@/utils/joy'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
-import { MakeTask, MakeTaskUI, TaskUI } from '@/utils/marshalling'
+import { MakeDateUI, MarshallDate } from '@/utils/marshalling'
 
 export type TaskEditProps = {
-  taskId: number | null
+  draft: Task
+
   userLabels: Label[]
   defaultNotificationTriggers: NotificationTriggerOptions
 
-  fetchTaskById: (id: number) => Promise<any>
+  setDraft: (task: Task) => void
   createTask: (task: Omit<Task, 'id'>) => Promise<any>
   saveTask: (task: Task) => Promise<any>
   skipTask: (id: number) => Promise<any>
@@ -63,13 +61,6 @@ export type TaskEditProps = {
 type Errors = { [key: string]: string }
 
 export interface TaskEditState {
-  title: string
-  nextDueDate: Date | null
-  endDate: Date | null
-  taskLabels: Label[]
-  frequency: Frequency
-  isRolling: boolean
-  notification: Notification
   errors: Errors
   isSnackbarOpen: boolean
   snackbarMessage: React.ReactNode
@@ -83,17 +74,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   constructor(props: TaskEditProps) {
     super(props)
     this.state = {
-      title: '',
-      nextDueDate: null,
-      endDate: null,
-      taskLabels: [],
-      frequency: {
-        type: 'once',
-      },
-      isRolling: false,
-      notification: {
-        enabled: false,
-      },
       isSnackbarOpen: false,
       snackbarMessage: null,
       snackbarColor: 'warning',
@@ -108,7 +88,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private HandleValidateTask = () => {
-    const { title, frequency, nextDueDate } = this.state
+    const { draft } = this.props
+    const { title, frequency, next_due_date: nextDueDate } = draft
     const errors: Errors = {}
 
     if (title.trim() === '') {
@@ -169,62 +150,40 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     return isSuccessful
   }
 
-  private handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+  private onDueDateChanged = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       return
     }
 
-    this.setState({
-      nextDueDate: parseISO(e.target.value),
+    this.props.setDraft({
+      ...this.props.draft,
+      next_due_date: MarshallDate(MakeDateUI(e.target.value)),
     })
   }
 
-  private handleEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+  private onEndDateChanged = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       return
     }
 
-    this.setState({
-      endDate: parseISO(e.target.value),
+    this.props.setDraft({
+      ...this.props.draft,
+      end_date: MarshallDate(MakeDateUI(e.target.value)),
     })
   }
 
-  private HandleSaveTask = async () => {
+  private onSaveClicked = async () => {
     if (!this.HandleValidateTask()) {
       return
     }
 
-    const { taskId } = this.props
-    const {
-      title,
-      frequency,
-      nextDueDate,
-      endDate,
-      isRolling,
-      taskLabels,
-      notification,
-    } = this.state
-
-    const taskUI: Omit<TaskUI, 'id'> = {
-      title,
-      labels: taskLabels,
-      next_due_date: nextDueDate,
-      end_date: endDate,
-      is_rolling: isRolling,
-      frequency,
-      notification,
-    }
-
-    const task = MakeTask(taskUI)
+    const { draft } = this.props
 
     try {
       const promise =
-        taskId === null
-          ? this.props.createTask(task)
-          : this.props.saveTask({
-              ...task,
-              id: taskId,
-            })
+        draft.id === INVALID_TASK_ID
+          ? this.props.createTask(draft)
+          : this.props.saveTask(draft)
 
       await promise
       this.navigateAway()
@@ -237,7 +196,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     }
   }
 
-  private handleDelete = (taskId: number) => {
+  private onDeleteClicked = (taskId: number) => {
     this.confirmModalRef.current?.open(async () => {
       try {
         await this.props.deleteTask(taskId)
@@ -259,31 +218,9 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private init = async () => {
-    const { taskId } = this.props
-    if (!taskId) {
-      setTitle('Create Task')
-      return
-    }
-
-    const task = (await this.props.fetchTaskById(taskId)).payload
-
-    if (task != null) {
-      setTitle(`Edit Task: ${task.title}`)
-
-      const taskUI = MakeTaskUI(task)
-
-      this.setState({
-        title: taskUI.title,
-        nextDueDate: taskUI.next_due_date,
-        endDate: taskUI.end_date,
-        frequency: taskUI.frequency,
-        isRolling: taskUI.is_rolling,
-        taskLabels: taskUI.labels,
-        notification: taskUI.notification,
-      })
-    } else {
-      this.navigateAway()
-    }
+    const { draft } = this.props
+    setTitle(draft.id === INVALID_TASK_ID ? 'Create Task' : `Edit Task: ${draft.title}`)
+    return
   }
 
   componentDidMount(): void {
@@ -292,36 +229,40 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     moveFocusToJoyInput(this.titleInputRef)
   }
 
-  private onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
+  private onTitleChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    this.props.setDraft({
+      ...this.props.draft,
       title: e.target.value,
     })
   }
 
   private onTitleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      this.HandleSaveTask()
+      this.onSaveClicked()
       e.preventDefault()
       e.stopPropagation()
     }
   }
 
-  private onDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      nextDueDate: e.target.checked ? new Date() : null,
+  private onHasDueDateChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    this.props.setDraft({
+      ...this.props.draft,
+      next_due_date: MarshallDate(e.target.checked ? new Date() : null),
     })
   }
 
-  private onEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      endDate: e.target.checked ? new Date() : null,
+  private onHasEndDateChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    this.props.setDraft({
+      ...this.props.draft,
+      end_date: MarshallDate(e.target.checked ? new Date() : null),
     })
   }
 
-  private onNotificationsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { defaultNotificationTriggers: defaults } = this.props
+  private onHasNotificationsChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    const { defaultNotificationTriggers: defaults, draft, setDraft } = this.props
 
-    this.setState({
+    setDraft({
+      ...draft,
       notification: e.target.checked
         ? {
             enabled: true,
@@ -335,34 +276,41 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     })
   }
 
-  private onNotificationOptionsChange = (
+  private onNotificationOptionsChanged = (
     notification: NotificationTriggerOptions,
   ) => {
-    if (!this.state.notification.enabled) {
+    const { draft, setDraft } = this.props
+
+    if (!draft.notification.enabled) {
       throw new Error('Notifications are disabled')
     }
 
-    this.setState({
+    setDraft({
+      ...draft,
       notification: {
-        ...this.state.notification,
+        ...draft.notification,
         ...notification,
       },
     })
   }
 
-  private onRescheduleFromDueDate = () => {
-    this.setState({
-      isRolling: false,
+  private onRescheduleFromDueDateSelected = () => {
+    const { draft, setDraft } = this.props
+    setDraft({
+      ...draft,
+      is_rolling: false,
     })
   }
 
-  private onRescheduleFromCompletionDate = () => {
-    this.setState({
-      isRolling: true,
+  private onRescheduleFromCompletionDateSelected = () => {
+    const { draft, setDraft } = this.props
+    setDraft({
+      ...draft,
+      is_rolling: true,
     })
   }
 
-  private onLabelsChange = (
+  private onLabelsChanged = (
     event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
     value: SelectValue<Label[], false>,
   ) => {
@@ -370,20 +318,21 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    const { userLabels } = this.props
-    this.setState({
-      taskLabels: userLabels.filter(
+    const { userLabels, draft, setDraft } = this.props
+    setDraft({
+      ...draft,
+      labels: userLabels.filter(
         userLabel =>
-          value.findIndex(selected => selected.id === userLabel.id) !== -1,
+          value.some(selected => selected.id === userLabel.id),
       ),
     })
   }
 
-  private onAddNewLabel = () => {
+  private onAddNewLabelClicked = () => {
     this.props.navigate(NavigationPaths.Labels)
   }
 
-  private onSnackbarClose = () => {
+  private onSnackbarClosed = () => {
     this.setState({
       isSnackbarOpen: false,
       snackbarMessage: null,
@@ -394,16 +343,37 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     this.navigateAway()
   }
 
+  private onFrequencyChanged = (newFrequency: Frequency) => {
+    const { draft, setDraft } = this.props
+    setDraft({
+      ...draft,
+      frequency: newFrequency,
+    })
+  }
+
   render(): React.ReactNode {
-    const { taskId, userLabels } = this.props
+    const { userLabels, draft } = this.props
+
     const {
+      id: taskId,
       title,
       frequency,
-      nextDueDate,
-      endDate,
-      isRolling,
+      is_rolling,
       notification,
-      taskLabels,
+      labels,
+    } = draft
+
+    const nextDueDate = MakeDateUI(draft.next_due_date)
+    const endDate = MakeDateUI(draft.end_date)
+
+    const nextDueDateUI = nextDueDate ? format(nextDueDate, "yyyy-MM-dd'T'HH:mm") : ""
+    const endDateUI = endDate ? format(endDate, "yyyy-MM-dd'T'HH:mm") : ""
+
+    const taskLabels = userLabels.filter(label =>
+      labels.some(taskLabel => taskLabel.id === label.id),
+    )
+
+    const {
       errors,
       isSnackbarOpen,
       snackbarMessage,
@@ -427,7 +397,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
             <Input
               ref={this.titleInputRef}
               value={title}
-              onChange={this.onTitleChange}
+              onChange={this.onTitleChanged}
               onKeyDown={this.onTitleKeyDown}
             />
           </FormControl>
@@ -437,7 +407,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           <Typography>How should this task be categorized?</Typography>
           <Select
             multiple
-            onChange={this.onLabelsChange}
+            onChange={this.onLabelsChanged}
             value={taskLabels}
             renderValue={() => (
               <Box
@@ -494,7 +464,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
               ))}
             <MenuItem
               key={'addNewLabel'}
-              onClick={this.onAddNewLabel}
+              onClick={this.onAddNewLabelClicked}
             >
               <Add />
               Add New Label
@@ -509,7 +479,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
           <FormControl sx={{ mt: 1 }}>
             <Checkbox
-              onChange={this.onDueDateChange}
+              onChange={this.onHasDueDateChanged}
               checked={nextDueDate !== null}
               overlay
               label='Give this task a due date'
@@ -525,8 +495,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
               </Typography>
               <Input
               type='datetime-local'
-              value={format(nextDueDate, "yyyy-MM-dd'T'HH:mm")}
-              onChange={this.handleDueDateChange}
+              value={nextDueDateUI}
+              onChange={this.onDueDateChanged}
               />
             </FormControl>
           )}
@@ -536,11 +506,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           <RepeatOption
             nextDueDate={nextDueDate}
             frequency={frequency}
-            onFrequencyUpdate={newFrequency =>
-              this.setState({
-                frequency: newFrequency,
-              })
-            }
+            onFrequencyUpdate={this.onFrequencyChanged}
             frequencyError={errors?.frequency}
           />
         )}
@@ -565,8 +531,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
                 <FormControl>
                   <Radio
                     overlay
-                    checked={!isRolling}
-                    onClick={this.onRescheduleFromDueDate}
+                    checked={!is_rolling}
+                    onClick={this.onRescheduleFromDueDateSelected}
                     label='Reschedule from due date'
                   />
                   <FormHelperText>
@@ -577,8 +543,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
                 <FormControl>
                   <Radio
                     overlay
-                    checked={isRolling}
-                    onClick={this.onRescheduleFromCompletionDate}
+                    checked={is_rolling}
+                    onClick={this.onRescheduleFromCompletionDateSelected}
                     label='Reschedule from completion date'
                   />
                   <FormHelperText>
@@ -591,7 +557,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
             <Box mt={2}>
               <FormControl sx={{ mt: 1 }}>
                 <Checkbox
-                  onChange={this.onEndDateChange}
+                  onChange={this.onHasEndDateChanged}
                   checked={endDate !== null}
                   overlay
                   label='Give this task an end date'
@@ -603,8 +569,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
                   <FormHelperText>When should the recurrence end?</FormHelperText>
                   <Input
                     type='datetime-local'
-                    value={format(endDate, "yyyy-MM-dd'T'HH:mm")}
-                    onChange={this.handleEndDateChange}
+                    value={endDateUI}
+                    onChange={this.onEndDateChanged}
                     />
                 </FormControl>
               )}
@@ -618,7 +584,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
             <FormControl sx={{ mt: 1 }}>
               <Checkbox
-                onChange={this.onNotificationsChange}
+                onChange={this.onHasNotificationsChanged}
                 checked={notificationsEnabled}
                 overlay
                 label='Notify for this task'
@@ -630,7 +596,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
         {notificationsEnabled && (
           <NotificationOptions
             notification={notification}
-            onChange={this.onNotificationOptionsChange}
+            onChange={this.onNotificationOptionsChanged}
           />
         )}
 
@@ -657,16 +623,16 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           >
             Cancel
           </Button>
-          {taskId != null && (
+          {taskId !== INVALID_TASK_ID && (
             <Button
               color='danger'
               variant='solid'
-              onClick={() => this.handleDelete(taskId)}
+              onClick={() => this.onDeleteClicked(taskId)}
             >
               Delete
             </Button>
           )}
-          {taskId != null && frequency.type !== 'once' && (
+          {taskId !== INVALID_TASK_ID && frequency.type !== 'once' && (
             <Button
               color='warning'
               variant='solid'
@@ -678,9 +644,9 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           <Button
             color='primary'
             variant='solid'
-            onClick={this.HandleSaveTask}
+            onClick={this.onSaveClicked}
           >
-            {taskId != null ? 'Save' : 'Create'}
+            {taskId !== INVALID_TASK_ID ? 'Save' : 'Create'}
           </Button>
         </Sheet>
         <ConfirmationModal
@@ -692,7 +658,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
         />
         <Snackbar
           open={isSnackbarOpen}
-          onClose={this.onSnackbarClose}
+          onClose={this.onSnackbarClosed}
           color={snackbarColor}
           autoHideDuration={4000}
           sx={{ bottom: 70 }}
@@ -719,13 +685,14 @@ const mapStateToProps = (state: RootState) => {
   }
 
   return {
+    draft: state.tasks.draft,
     userLabels: state.labels.items,
     defaultNotificationTriggers,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  fetchTaskById: (id: number) => dispatch(fetchTaskById(id)),
+  setDraft: (task: Task) => dispatch(setDraft(task)),
   createTask: (task: Omit<Task, 'id'>) => dispatch(createTask(task)),
   saveTask: (task: Task) => dispatch(saveTask(task)),
   skipTask: (id: number) => dispatch(skipTask(id)),
