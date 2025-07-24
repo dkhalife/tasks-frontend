@@ -220,7 +220,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   private init = async () => {
     const { draft } = this.props
     setTitle(draft.id === INVALID_TASK_ID ? 'Create Task' : `Edit Task: ${draft.title}`)
-    return
   }
 
   componentDidMount(): void {

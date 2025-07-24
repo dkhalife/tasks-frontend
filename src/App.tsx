@@ -55,9 +55,6 @@ class AppImpl extends React.Component<AppProps> {
   }
 }
 
-const mapStateToProps = () => ({
-})
-
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   fetchUser: () => dispatch(fetchUser()),
   fetchLabels: () => dispatch(fetchLabels()),
@@ -67,6 +64,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
 })
 
 export const App = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 )(AppImpl)

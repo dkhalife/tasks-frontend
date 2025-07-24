@@ -91,7 +91,7 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
     this.updateDraftState(this.state.lastTaskId)
   }
 
-  async componentDidUpdate(): Promise<void> {
+  componentDidUpdate(): void {
     if (this.state.navigateTo !== null) {
       this.setState({
         navigateTo: null,
@@ -100,9 +100,10 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
 
     const taskId = this.getTaskId()
     if (taskId !== this.state.lastTaskId) {
-      await this.updateDraftState(taskId)
-      this.setState({
-        lastTaskId: taskId,
+      this.updateDraftState(taskId).then(() => {
+        this.setState({
+          lastTaskId: taskId,
+        })
       })
     }
   }
@@ -183,15 +184,12 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
   }
 }
 
-const mapStateToProps = () => ({
-})
-
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   setDraft: (task: Task) => dispatch(setDraft(task)),
   fetchTaskById: (id: number) => dispatch(fetchTaskById(id)),
 })
 
 export const RouterContext = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 )(RouterContextImpl)
