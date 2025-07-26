@@ -1,4 +1,3 @@
-import { GetTaskHistory } from '@/api/tasks'
 import { Loading } from '@/Loading'
 import { Checklist, Timelapse, EventBusy } from '@mui/icons-material'
 import { Sheet, ListItemContent, Grid } from '@mui/joy'
@@ -9,14 +8,19 @@ import { HistoryCard } from './HistoryCard'
 import { setTitle } from '@/utils/dom'
 import { differenceInHours, formatDuration, intervalToDuration } from 'date-fns'
 import { connect } from 'react-redux'
-import { AppDispatch } from '@/store/store'
+import { AppDispatch, RootState } from '@/store/store'
 import { fetchTaskById } from '@/store/tasksSlice'
+import { fetchTaskHistory } from '@/store/historySlice'
 import { Task } from '@/models/task'
-import { HistoryEntryUI, MakeHistoryUI } from '@/utils/marshalling'
+import { HistoryEntryUI } from '@/utils/marshalling'
+import { SyncState } from '@/models/sync'
 
 interface TaskHistoryProps {
   taskId: number
   getTaskById: (id: number) => Promise<any>
+  fetchTaskHistory: (taskId: number) => Promise<any>
+  history: HistoryEntryUI[]
+  historyStatus: SyncState
 }
 
 interface HistoryInfo {
@@ -26,8 +30,6 @@ interface HistoryInfo {
 }
 
 interface TaskHistoryState {
-  taskHistory: HistoryEntryUI[]
-  isLoading: boolean
   historyInfo: HistoryInfo[]
 }
 
@@ -39,8 +41,6 @@ class TaskHistoryImpl extends React.Component<
     super(props)
 
     this.state = {
-      taskHistory: [],
-      isLoading: true,
       historyInfo: [],
     }
   }
@@ -51,23 +51,21 @@ class TaskHistoryImpl extends React.Component<
   }
 
   private loadHistory = async () => {
-    try {
-      const data = (await GetTaskHistory(this.props.taskId)).history
-      const entries: HistoryEntryUI[] = data.map(MakeHistoryUI)
-
-      this.setState({
-        taskHistory: entries,
-      })
-
-      this.updateHistoryInfo(entries)
-    } finally {
-      this.setState({ isLoading: false })
+    const result = await this.props.fetchTaskHistory(this.props.taskId)
+    if (result && result.payload) {
+      this.updateHistoryInfo(result.payload as HistoryEntryUI[])
     }
   }
 
   componentDidMount(): void {
     this.loadTask()
     this.loadHistory()
+  }
+
+  componentDidUpdate(prevProps: TaskHistoryProps): void {
+    if (prevProps.history !== this.props.history) {
+      this.updateHistoryInfo(this.props.history)
+    }
   }
 
   private updateHistoryInfo = (histories: HistoryEntryUI[]) => {
@@ -121,9 +119,9 @@ class TaskHistoryImpl extends React.Component<
   }
 
   render() {
-    const { taskHistory, isLoading, historyInfo } = this.state
-
-    if (isLoading) {
+    const { history: taskHistory, historyStatus } = this.props
+    const { historyInfo } = this.state
+    if (historyStatus === 'loading') {
       return <Loading />
     }
 
@@ -231,11 +229,17 @@ class TaskHistoryImpl extends React.Component<
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  history: state.history.entries,
+  historyStatus: state.history.status,
+})
+
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   getTaskById: (id: number) => dispatch(fetchTaskById(id)),
+  fetchTaskHistory: (taskId: number) => dispatch(fetchTaskHistory(taskId)),
 })
 
 export const TaskHistory = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(TaskHistoryImpl)

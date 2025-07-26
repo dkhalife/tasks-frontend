@@ -15,6 +15,8 @@ interface SyncStatusProps {
   labelsError: string | null
   tokensStatus: SyncState
   tokensError: string | null
+  historyStatus: SyncState
+  historyError: string | null
 }
 
 function getIcon(status: SyncState): React.ReactNode {
@@ -35,10 +37,12 @@ class SyncStatusImpl extends React.Component<SyncStatusProps> {
       tasksStatus,
       labelsStatus,
       tokensStatus,
+      historyStatus,
       userError,
       tasksError,
       labelsError,
       tokensError,
+      historyError,
     } = this.props
 
     const statuses = [
@@ -46,6 +50,7 @@ class SyncStatusImpl extends React.Component<SyncStatusProps> {
       { name: 'Tasks', status: tasksStatus, error: tasksError },
       { name: 'Labels', status: labelsStatus, error: labelsError },
       { name: 'Tokens', status: tokensStatus, error: tokensError },
+      { name: 'History', status: historyStatus, error: historyError },
     ]
 
     const anyFailed = statuses.some(s => s.status === 'failed')
@@ -92,6 +97,8 @@ const mapStateToProps = (state: RootState) => ({
   labelsError: state.labels.error,
   tokensStatus: state.tokens.status,
   tokensError: state.tokens.error,
+  historyStatus: state.history.status,
+  historyError: state.history.error,
 })
 
 export const SyncStatus = connect(mapStateToProps)(SyncStatusImpl)
