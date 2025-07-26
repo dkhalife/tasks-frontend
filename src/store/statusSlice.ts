@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit'
 import { Status } from '@/models/status'
+import { AppDispatch } from './store'
 
 export interface StatusState {
   items: Status[]
@@ -28,7 +29,7 @@ export { dismissStatus }
 
 export const pushStatus = (
   status: Omit<Status, 'id' | 'createdAt'>,
-) => (dispatch: any) => {
+) => (dispatch: AppDispatch) => {
   const id = nanoid()
   const createdAt = Date.now()
   dispatch(addStatus({ ...status, id, createdAt }))

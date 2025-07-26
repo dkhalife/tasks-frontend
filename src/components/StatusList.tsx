@@ -27,13 +27,10 @@ class StatusListImpl extends React.Component<StatusListProps> {
 
   render(): React.ReactNode {
     const { statuses, dismiss } = this.props
-    const items = [...statuses]
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 3)
 
     return (
       <>
-        {items.map(status => (
+        {statuses.map(status => (
           <Snackbar
             key={status.id}
             open={true}
