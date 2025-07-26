@@ -12,6 +12,11 @@ export const featureFlagDefinitions: FeatureFlagDefinition[] = [
     description: 'Use websockets',
     defaultValue: false,
   },
+  {
+    name: 'refreshStaleData',
+    description: 'Refresh stale data when tab becomes visible',
+    defaultValue: false,
+  },
 ]
 
 export const FEATURE_FLAG_PREFIX = 'featureFlags.'
