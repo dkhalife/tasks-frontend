@@ -4,6 +4,7 @@ import { tasksReducer } from './tasksSlice'
 import { labelsReducer } from './labelsSlice'
 import { userReducer } from './userSlice'
 import { tokensReducer } from './tokensSlice'
+import { historyReducer } from './historySlice'
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     labels: labelsReducer,
     user: userReducer,
     tokens: tokensReducer,
+    history: historyReducer,
   },
 })
 
