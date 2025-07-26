@@ -7,6 +7,7 @@ import { SyncState } from '@/models/sync'
 export interface UserState {
   profile: User
   status: SyncState
+  lastFetched: number | null
   error: string | null
 }
 
@@ -25,6 +26,7 @@ const initialState: UserState = {
     },
   },
   status: 'loading',
+  lastFetched: null,
   error: null,
 }
 
@@ -50,6 +52,7 @@ const userSlice = createSlice({
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.status = 'succeeded'
         state.profile = action.payload
+        state.lastFetched = Date.now()
         state.error = null
       })
       .addCase(fetchUser.rejected, (state, action) => {
