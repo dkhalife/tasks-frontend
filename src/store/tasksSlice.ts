@@ -325,6 +325,8 @@ const tasksSlice = createSlice({
         }
         groupTaskBy(task, state.groupedItems, state.groupBy)
 
+        state.draft = newTask()
+
         state.error = null
       })
       .addCase(createTask.rejected, (state, action) => {
@@ -353,6 +355,8 @@ const tasksSlice = createSlice({
 
         deleteTaskFromGroups(updatedTask.id, state.groupedItems)
         groupTaskBy(updatedTask, state.groupedItems, state.groupBy)
+
+        state.draft = newTask()
 
         state.error = null
       })
