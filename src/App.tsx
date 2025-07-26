@@ -11,6 +11,7 @@ import { AppDispatch, store } from './store/store'
 import { connect } from 'react-redux'
 import { fetchUser } from './store/userSlice'
 import { fetchTokens } from './store/tokensSlice'
+import { StatusList } from './components/StatusList'
 import { fetchTasks, initGroups } from './store/tasksSlice'
 import { getFeatureFlag } from './constants/featureFlags'
 
@@ -100,6 +101,7 @@ class AppImpl extends React.Component<AppProps> {
         >
           <NavBar navigate={navigate} />
           <Outlet />
+          <StatusList />
         </CssVarsProvider>
       </div>
     )
