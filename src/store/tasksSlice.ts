@@ -315,8 +315,8 @@ const tasksSlice = createSlice({
 
         const taskId = action.payload.task
         const task: Task = {
-          id: taskId,
           ...action.meta.arg,
+          id: taskId,
         }
 
         state.items.push(task)
