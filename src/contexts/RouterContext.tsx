@@ -1,8 +1,8 @@
 import { App } from '@/App'
 import { INVALID_TASK_ID, newTask, Task } from '@/models/task'
-import { AppDispatch } from '@/store/store'
-import { fetchTaskById, setDraft } from '@/store/tasksSlice'
-import { getHomeView, getPathName } from '@/utils/navigation'
+import { AppDispatch, RootState } from '@/store/store'
+import { setDraft } from '@/store/tasksSlice'
+import { getHomeView, getPathName, NavigationPaths } from '@/utils/navigation'
 import { ForgotPasswordView } from '@/views/Authorization/ForgotPasswordView'
 import { LoginView } from '@/views/Authorization/LoginView'
 import { SignupView } from '@/views/Authorization/Signup'
@@ -25,8 +25,9 @@ import {
 } from 'react-router-dom'
 
 type RouterContextProps = {
+  tasks: Task[]
+
   setDraft: (draft: Task) => void
-  fetchTaskById(id: number): Promise<any | null>
 }
 
 type RouterContextState = {
@@ -82,11 +83,15 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
   }
 
   private updateDraftState = async (taskId: number) => {
-    const { fetchTaskById, setDraft } = this.props
+    const { setDraft } = this.props
 
     if (taskId !== INVALID_TASK_ID) {
-      const result = await fetchTaskById(taskId)
-      setDraft(result.payload)
+      const task = await this.props.tasks.find((task) => task.id === taskId)
+      if (task) {
+        setDraft(task)
+      } else {
+        this.navigate(NavigationPaths.HomeView())
+      }
     } else {
       setDraft(newTask())
     }
@@ -154,7 +159,7 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
             />
             <Route
               path='/tasks/:taskId/history'
-              element={<TaskHistory taskId={this.getTaskId()} />}
+              element={<TaskHistory />}
             />
             <Route
               path='/my/tasks'
@@ -189,12 +194,15 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  tasks: state.tasks.items,
+})
+
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   setDraft: (task: Task) => dispatch(setDraft(task)),
-  fetchTaskById: (id: number) => dispatch(fetchTaskById(id)),
 })
 
 export const RouterContext = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(RouterContextImpl)

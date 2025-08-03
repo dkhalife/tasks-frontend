@@ -1,7 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   GetTasks,
-  GetTaskByID,
   MarkTaskComplete,
   DeleteTask,
   SkipTask,
@@ -71,23 +70,6 @@ export const skipTask = createAsyncThunk(
   async (taskId: number) => {
     const response = await SkipTask(taskId)
     return response.task
-  },
-)
-
-export const fetchTaskById = createAsyncThunk(
-  'tasks/fetchTaskById',
-  async (id: number, thunkAPI) => {
-    const state = thunkAPI.getState() as RootState
-    const tasks = state.tasks.items
-    const task = tasks.find(t => t.id === id)
-
-    if (task) {
-      return task
-    }
-
-    // Task is not in local state for some reason, fetch it from the API
-    const data = await GetTaskByID(id)
-    return data.task
   },
 )
 
@@ -237,42 +219,6 @@ const tasksSlice = createSlice({
         state.error = null
       })
       .addCase(fetchTasks.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.error.message ?? null
-      })
-      // Fetch a specific task by ID
-      .addCase(fetchTaskById.pending, state => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(fetchTaskById.fulfilled, (state, action) => {
-        const task = action.payload
-        const index = state.items.findIndex(t => t.id === task.id)
-        if (index >= 0) {
-          state.items[index] = task
-
-          if (state.searchQuery === '') {
-            state.filteredItems[index] = task
-          } else {
-            const filteredIndex = state.filteredItems.findIndex(t => t.id === task.id)
-            if (filteredIndex >= 0) {
-              state.filteredItems[filteredIndex] = task
-            }
-          }
-        } else {
-          state.items.push(task)
-
-          if (state.searchQuery === '' || taskMatchesQuery(task, state.searchQuery.toLowerCase())) {
-            state.filteredItems.push(task)
-          }
-        }
-
-        groupTaskBy(task, state.groupedItems, state.groupBy)
-
-        state.status = 'succeeded'
-        state.error = null
-      })
-      .addCase(fetchTaskById.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
