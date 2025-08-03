@@ -9,14 +9,12 @@ import { HistoryCard } from './HistoryCard'
 import { setTitle } from '@/utils/dom'
 import { differenceInHours, formatDuration, intervalToDuration } from 'date-fns'
 import { connect } from 'react-redux'
-import { AppDispatch } from '@/store/store'
-import { fetchTaskById } from '@/store/tasksSlice'
-import { Task } from '@/models/task'
 import { HistoryEntryUI, MakeHistoryUI } from '@/utils/marshalling'
+import { Task } from '@/models/task'
+import { RootState } from '@/store/store'
 
 interface TaskHistoryProps {
-  taskId: number
-  getTaskById: (id: number) => Promise<any>
+  task: Task
 }
 
 interface HistoryInfo {
@@ -46,13 +44,14 @@ class TaskHistoryImpl extends React.Component<
   }
 
   private loadTask = async () => {
-    const task = (await this.props.getTaskById(this.props.taskId)).payload as Task
+    const task = this.props.task
     setTitle(task.title)
   }
 
   private loadHistory = async () => {
     try {
-      const data = (await GetTaskHistory(this.props.taskId)).history
+      const { task } = this.props
+      const data = (await GetTaskHistory(task.id)).history
       const entries: HistoryEntryUI[] = data.map(MakeHistoryUI)
 
       this.setState({
@@ -231,11 +230,10 @@ class TaskHistoryImpl extends React.Component<
   }
 }
 
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  getTaskById: (id: number) => dispatch(fetchTaskById(id)),
+const mapStateToProps = (state: RootState) => ({
+  task: state.tasks.draft,
 })
 
 export const TaskHistory = connect(
-  null,
-  mapDispatchToProps,
+  mapStateToProps,
 )(TaskHistoryImpl)
