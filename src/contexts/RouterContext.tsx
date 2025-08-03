@@ -82,11 +82,11 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
     })
   }
 
-  private updateDraftState = async (taskId: number) => {
+  private updateDraftState = (taskId: number) => {
     const { setDraft } = this.props
 
     if (taskId !== INVALID_TASK_ID) {
-      const task = await this.props.tasks.find((task) => task.id === taskId)
+      const task = this.props.tasks.find((task) => task.id === taskId)
       if (task) {
         setDraft(task)
       } else {
