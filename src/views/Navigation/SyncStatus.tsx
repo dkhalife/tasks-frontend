@@ -1,5 +1,5 @@
 import { CheckCircleOutline, ErrorOutline } from '@mui/icons-material'
-import { CircularProgress, IconButton, Tooltip } from '@mui/joy'
+import { CircularProgress, IconButton, Modal, ModalDialog, Typography, Box, Divider } from '@mui/joy'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '@/store/store'
@@ -17,6 +17,10 @@ interface SyncStatusProps {
   tokensError: string | null
 }
 
+interface SyncStatusState {
+  modalOpen: boolean
+}
+
 function getIcon(status: SyncState): React.ReactNode {
   switch (status) {
     case 'failed':
@@ -28,8 +32,27 @@ function getIcon(status: SyncState): React.ReactNode {
   }
 }
 
-class SyncStatusImpl extends React.Component<SyncStatusProps> {
-  render(): React.ReactNode {
+class SyncStatusImpl extends React.Component<SyncStatusProps, SyncStatusState> {
+  constructor(props: SyncStatusProps) {
+    super(props)
+    this.state = {
+      modalOpen: false
+    }
+  }
+
+  private handleIconClick = () => {
+    this.setState({
+      modalOpen: true,
+    })
+  }
+
+  private handleModalClose = () => {
+    this.setState({
+      modalOpen: false,
+    })
+  }
+
+  private getStatuses = () => {
     const {
       userStatus,
       tasksStatus,
@@ -41,44 +64,79 @@ class SyncStatusImpl extends React.Component<SyncStatusProps> {
       tokensError,
     } = this.props
 
-    const statuses = [
+    return [
       { name: 'User', status: userStatus, error: userError },
       { name: 'Tasks', status: tasksStatus, error: tasksError },
       { name: 'Labels', status: labelsStatus, error: labelsError },
       { name: 'Tokens', status: tokensStatus, error: tokensError },
     ]
+  }
 
+  private renderStatusDetails = () => {
+    const statuses = this.getStatuses()
+    const hasErrors = statuses.some(s => s.error)
+
+    return (
+      <Box>
+        {statuses.map((s) => (
+          <Box key={s.name} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <Typography level="body-sm" sx={{ minWidth: '60px' }}>
+              {s.name}:
+            </Typography>
+            {getIcon(s.status)}
+          </Box>
+        ))}
+        {hasErrors && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Typography level="title-sm" sx={{ mb: 1 }}>
+              Errors:
+            </Typography>
+            {statuses.filter(s => s.error).map(s => (
+              <Box key={`error-${s.name}`} sx={{ mb: 1 }}>
+                <Typography level="body-sm" color="danger">
+                  <strong>{s.name}:</strong> {s.error}
+                </Typography>
+              </Box>
+            ))}
+          </>
+        )}
+      </Box>
+    )
+  }
+  render(): React.ReactNode {
+    const statuses = this.getStatuses()
     const anyFailed = statuses.some(s => s.status === 'failed')
     const allSucceeded = statuses.every(s => s.status === 'succeeded')
     const icon = getIcon(anyFailed ? 'failed' : allSucceeded ? 'succeeded' : 'loading')
 
-    const tooltipText = (
-      <>
-        {statuses.map(s => (
-          <>
-            <span key={s.name}>{s.name}: {getIcon(s.status)}</span><br />
-          </>
-        ))}
-        {anyFailed && (
-          <>
-            <br />
-            <span><u><strong>Errors:</strong></u></span><br />
-            {statuses.filter(s => s.error).map(s => (
-              <>
-                <span>{s.name}: {s.error}</span><br />
-              </>
-            ))}
-          </>
-        )}
-      </>
-    )
-
     return (
-      <Tooltip title={tooltipText}>
-        <IconButton variant='plain' style={this.props.style}>
+      <>
+        <IconButton 
+          variant='plain' 
+          style={this.props.style}
+          onClick={this.handleIconClick}
+        >
           {icon}
         </IconButton>
-      </Tooltip>
+        
+        <Modal
+          open={this.state.modalOpen}
+          onClose={this.handleModalClose}
+        >
+          <ModalDialog
+            sx={{
+              minWidth: '120px',
+              maxWidth: '90vw',
+            }}
+          >
+            <Typography level="title-lg" sx={{ mb: 1 }}>
+              Sync Status
+            </Typography>
+            {this.renderStatusDetails()}
+          </ModalDialog>
+        </Modal>
+      </>
     )
   }
 }
