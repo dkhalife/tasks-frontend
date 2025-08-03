@@ -163,7 +163,13 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
           </Grid>
         </Grid>
 
-        <Table>
+        <Table
+          sx={{
+            '& tbody tr:hover': {
+              backgroundColor: '#111',
+            }
+          }}
+        >
           <thead>
             <tr>
               <th>Due</th>
@@ -216,6 +222,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={this.onCompleteTaskClicked(task)}
                       aria-setsize={2}
+                      sx={{ 
+                        '&:hover': { 
+                          color: '#10b981',
+                          '& svg': { color: '#10b981' }
+                        } 
+                      }}
                     >
                       <CheckBox />
                     </IconButton>
@@ -224,6 +236,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={() => this.onRescheduleClicked(task)}
                       aria-setsize={2}
+                      sx={{ 
+                        '&:hover': { 
+                          color: '#3b82f6',
+                          '& svg': { color: '#3b82f6' }
+                        } 
+                      }}
                     >
                       <CalendarMonth />
                     </IconButton>
@@ -232,6 +250,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={() => this.onViewHistoryClicked(task)}
                       aria-setsize={2}
+                      sx={{ 
+                        '&:hover': { 
+                          color: '#a21caf', // vibrant purple
+                          '& svg': { color: '#a21caf' }
+                        }
+                      }}
                     >
                       <History />
                     </IconButton>
@@ -241,6 +265,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       onClick={() =>
                         navigate(NavigationPaths.TaskEdit(task.id))
                       }
+                      sx={{ 
+                        '&:hover': { 
+                          color: '#f59e0b',
+                          '& svg': { color: '#f59e0b' }
+                        } 
+                      }}
                     >
                       <Edit />
                     </IconButton>
@@ -249,6 +279,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={() => this.onDeleteTaskClicked(task)}
                       aria-setsize={2}
+                      sx={{ 
+                        '&:hover': { 
+                          color: '#ef4444',
+                          '& svg': { color: '#ef4444' }
+                        } 
+                      }}
                     >
                       <Delete />
                     </IconButton>

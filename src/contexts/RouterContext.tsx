@@ -110,10 +110,9 @@ class RouterContextImpl extends React.Component<RouterContextProps, RouterContex
 
     const taskId = this.getTaskId()
     if (taskId !== this.state.lastTaskId) {
-      this.updateDraftState(taskId).then(() => {
-        this.setState({
-          lastTaskId: taskId,
-        })
+      this.updateDraftState(taskId)
+      this.setState({
+        lastTaskId: taskId,
       })
     }
   }
