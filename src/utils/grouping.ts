@@ -1,5 +1,5 @@
 import { Label } from '@/models/label'
-import { MakeDateUI, TaskUI } from './marshalling'
+import { MakeDateUI } from './marshalling'
 import { COLORS, TASK_COLOR } from './colors'
 import { addDays, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import { Task } from '@/models/task'
@@ -62,6 +62,11 @@ const getDueDateBoundaries = () => {
   return { now, endOfToday, endOfTomorrow, endOfThisWeek, endOfNextWeek }
 }
 
+const pushAndSort = (group: Task[], task: Task) => {
+  group.push(task)
+  sortTasksByDueDate(group)
+}
+
 const bucketIntoDueDateGroup = (
   task: Task,
   groups: DueDateGroups<Task>,
@@ -72,37 +77,37 @@ const bucketIntoDueDateGroup = (
   endOfNextWeek: number,
 ) => {
   if (task.next_due_date === null) {
-    groups['any_time'].content.push(task)
+    pushAndSort(groups['any_time'].content, task)
     return
   }
 
   const due_date = MakeDateUI(task.next_due_date).getTime()
   if (now >= due_date) {
-    groups['overdue'].content.push(task)
+    pushAndSort(groups['overdue'].content, task)
     return
   }
 
   if (endOfToday > due_date) {
-    groups['today'].content.push(task)
+    pushAndSort(groups['today'].content, task)
     return
   }
 
   if (endOfTomorrow > due_date) {
-    groups['tomorrow'].content.push(task)
+    pushAndSort(groups['tomorrow'].content, task)
     return
   }
 
   if (endOfThisWeek > due_date) {
-    groups['this_week'].content.push(task)
+    pushAndSort(groups['this_week'].content, task)
     return
   }
 
   if (endOfNextWeek > due_date) {
-    groups['next_week'].content.push(task)
+    pushAndSort(groups['next_week'].content, task)
     return
   }
 
-  groups['later'].content.push(task)
+  pushAndSort(groups['later'].content, task)
 }
 
 const groupByDueDate = (tasks: Task[]): DueDateGroups<Task> => {
@@ -192,7 +197,7 @@ const groupByLabels = (tasks: Task[], userLabels: Label[]): LabelGroups<Task> =>
 const bucketTaskIntoLabelGroups = (task: Task, groups: LabelGroups<Task>) => {
   Object.keys(groups).forEach(key => {
     if ((key === 'none' && task.labels.length === 0) || task.labels.some(label => label.id === parseInt(key, 10))) {
-      groups[key].content.push(task)
+      pushAndSort(groups[key].content, task)
     }
   })
 }
@@ -223,7 +228,7 @@ export const groupTaskBy = (
   }
 }
 
-export const sortTasksByDueDate = (tasks: TaskUI[]): TaskUI[] => {
+const sortTasksByDueDate = (tasks: Task[]): Task[] => {
   return tasks.sort((a, b) => {
     if (a.next_due_date === null) {
       return 1
@@ -233,6 +238,6 @@ export const sortTasksByDueDate = (tasks: TaskUI[]): TaskUI[] => {
       return -1
     }
 
-    return a.next_due_date.getTime() - b.next_due_date.getTime()
+    return MakeDateUI(a.next_due_date).getTime() - MakeDateUI(b.next_due_date).getTime()
   })
 }
