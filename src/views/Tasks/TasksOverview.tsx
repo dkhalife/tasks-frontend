@@ -185,8 +185,8 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
         <Table
           sx={{
             '& tbody tr:hover': {
-              backgroundColor: '#111',
-            }
+              backgroundColor: 'var(--joy-palette-background-level2)',
+            },
           }}
         >
           <thead>
@@ -241,11 +241,11 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={this.onCompleteTaskClicked(task)}
                       aria-setsize={2}
-                      sx={{ 
-                        '&:hover': { 
-                          color: '#10b981',
-                          '& svg': { color: '#10b981' }
-                        } 
+                      sx={{
+                        '&:hover': {
+                          color: 'var(--joy-palette-success-500)',
+                          '& svg': { color: 'var(--joy-palette-success-500)' },
+                        },
                       }}
                     >
                       <CheckBox />
@@ -255,11 +255,11 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={() => this.onRescheduleClicked(task)}
                       aria-setsize={2}
-                      sx={{ 
-                        '&:hover': { 
-                          color: '#3b82f6',
-                          '& svg': { color: '#3b82f6' }
-                        } 
+                      sx={{
+                        '&:hover': {
+                          color: 'var(--joy-palette-primary-500)',
+                          '& svg': { color: 'var(--joy-palette-primary-500)' },
+                        },
                       }}
                     >
                       <CalendarMonth />
@@ -269,11 +269,11 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={() => this.onViewHistoryClicked(task)}
                       aria-setsize={2}
-                      sx={{ 
-                        '&:hover': { 
-                          color: '#a21caf', // vibrant purple
-                          '& svg': { color: '#a21caf' }
-                        }
+                      sx={{
+                        '&:hover': {
+                          color: 'var(--joy-palette-secondary-500)',
+                          '& svg': { color: 'var(--joy-palette-secondary-500)' },
+                        },
                       }}
                     >
                       <History />
@@ -284,11 +284,11 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       onClick={() =>
                         navigate(NavigationPaths.TaskEdit(task.id))
                       }
-                      sx={{ 
-                        '&:hover': { 
-                          color: '#f59e0b',
-                          '& svg': { color: '#f59e0b' }
-                        } 
+                      sx={{
+                        '&:hover': {
+                          color: 'var(--joy-palette-warning-500)',
+                          '& svg': { color: 'var(--joy-palette-warning-500)' },
+                        },
                       }}
                     >
                       <Edit />
@@ -298,11 +298,11 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
                       size='sm'
                       onClick={() => this.onDeleteTaskClicked(task)}
                       aria-setsize={2}
-                      sx={{ 
-                        '&:hover': { 
-                          color: '#ef4444',
-                          '& svg': { color: '#ef4444' }
-                        } 
+                      sx={{
+                        '&:hover': {
+                          color: 'var(--joy-palette-danger-500)',
+                          '& svg': { color: 'var(--joy-palette-danger-500)' },
+                        },
                       }}
                     >
                       <Delete />
