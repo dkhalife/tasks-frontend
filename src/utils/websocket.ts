@@ -1,4 +1,3 @@
-import { getFeatureFlag } from '@/constants/featureFlags'
 import { WSEvent, WSRequest, WSResponse } from '@/models/websocket'
 import { store } from '@/store/store'
 import { wsConnecting, wsConnected, wsDisconnected } from '@/store/wsSlice'
@@ -10,12 +9,26 @@ export class WebSocketManager {
   private socket: WebSocket | null = null
   private retryCount = 0
   private manualClose = false
-  private enabled: boolean
+  private enabled: boolean = store.getState().featureFlags.useWebsockets
   private listeners: Map<WSEvent, Set<(data: unknown) => void>> = new Map()
   private dispatch = store.dispatch
 
   private constructor() {
-    this.enabled = getFeatureFlag('useWebsockets', false)
+    store.subscribe(() => {
+      const newState = store.getState()
+      const newEnabledState = newState.featureFlags.useWebsockets
+
+      // If websockets were disabled, disconnect
+      if (this.enabled && !newEnabledState) {
+        this.enabled = newEnabledState
+        this.disconnect()
+      }
+      // If websockets were enabled, try to connect
+      else if (!this.enabled && newEnabledState) {
+        this.enabled = newEnabledState
+        this.connect()
+      }
+    })
   }
 
   static getInstance(): WebSocketManager {
@@ -26,13 +39,9 @@ export class WebSocketManager {
   }
 
   connect() {
-    if (!this.enabled) {
-      this.dispatch(wsDisconnected(null))
-      return
-    }
     const token = localStorage.getItem('ca_token')
     if (!token) {
-      this.dispatch(wsDisconnected(null))
+      this.dispatch(wsDisconnected("User is not signed in"))
       return
     }
 

@@ -6,9 +6,11 @@ import { userReducer } from './userSlice'
 import { tokensReducer } from './tokensSlice'
 import { statusReducer } from './statusSlice'
 import { wsReducer } from './wsSlice'
+import { featureFlagsReducer } from './featureFlagsSlice'
 
 export const store = configureStore({
   reducer: {
+    featureFlags: featureFlagsReducer,
     tasks: tasksReducer,
     labels: labelsReducer,
     user: userReducer,

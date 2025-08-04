@@ -7,15 +7,16 @@ import { CssBaseline, CssVarsProvider } from '@mui/joy'
 import { preloadSounds } from './utils/sound'
 import WebSocketManager from './utils/websocket'
 import { fetchLabels } from './store/labelsSlice'
-import { AppDispatch, store } from './store/store'
+import { AppDispatch, RootState, store } from './store/store'
 import { connect } from 'react-redux'
 import { fetchUser } from './store/userSlice'
 import { fetchTokens } from './store/tokensSlice'
 import { StatusList } from './components/StatusList'
 import { fetchTasks, initGroups } from './store/tasksSlice'
-import { getFeatureFlag } from './constants/featureFlags'
 
 type AppProps = {
+  refreshStaleData: boolean
+
   fetchLabels: () => Promise<any>
   fetchUser: () => Promise<any>
   fetchTasks: () => Promise<any>
@@ -31,7 +32,7 @@ class AppImpl extends React.Component<AppProps> {
   }
 
   private refreshStaleData = async () => {
-    if (!getFeatureFlag('refreshStaleData', false)) {
+    if (!this.props.refreshStaleData) {
       return
     }
 
@@ -108,6 +109,10 @@ class AppImpl extends React.Component<AppProps> {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  refreshStaleData: state.featureFlags.refreshStaleData,
+})
+
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   fetchUser: () => dispatch(fetchUser()),
   fetchLabels: () => dispatch(fetchLabels()),
@@ -117,6 +122,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
 })
 
 export const App = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(AppImpl)

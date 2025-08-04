@@ -4,9 +4,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '@/store/store'
 import { SyncState } from '@/models/sync'
-import { getFeatureFlag } from '@/constants/featureFlags'
 
 interface SyncStatusProps {
+  websocketsEnabled: boolean
+
   style?: React.CSSProperties
   userStatus: SyncState
   userError: string | null
@@ -76,7 +77,7 @@ class SyncStatusImpl extends React.Component<SyncStatusProps, SyncStatusState> {
       { name: 'Tokens', status: tokensStatus, error: tokensError },
     ]
 
-    if (getFeatureFlag('useWebsockets', false)) {
+    if (this.props.websocketsEnabled) {
       statuses.push({ name: 'WebSocket', status: wsStatus, error: wsError })
     }
 
@@ -153,6 +154,7 @@ class SyncStatusImpl extends React.Component<SyncStatusProps, SyncStatusState> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  websocketsEnabled: state.featureFlags.useWebsockets,
   userStatus: state.user.status,
   userError: state.user.error,
   tasksStatus: state.tasks.status,

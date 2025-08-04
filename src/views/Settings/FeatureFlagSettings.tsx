@@ -1,42 +1,25 @@
 import React from 'react'
 import { Box, Typography, Divider, FormControl, Checkbox } from '@mui/joy'
-import {
-  FeatureFlag,
-  featureFlagDefinitions,
-  getFeatureFlag,
-  setFeatureFlag,
-} from '@/constants/featureFlags'
+import { FeatureFlag, featureFlagDefinitions } from '@/constants/featureFlags'
+import { connect } from 'react-redux'
+import { AppDispatch, RootState } from '@/store/store'
+import { setFlag } from '@/store/featureFlagsSlice'
 
-type FeatureFlagSettingsProps = object
-
-interface FeatureFlagSettingsState {
+type FeatureFlagSettingsProps = {
   flags: Record<string, boolean>
+  setFlag: (name: FeatureFlag, value: boolean) => void
 }
 
-export class FeatureFlagSettings extends React.Component<
-  FeatureFlagSettingsProps,
-  FeatureFlagSettingsState
-> {
-  constructor(props: FeatureFlagSettingsProps) {
-    super(props)
-
-    const flags: Record<string, boolean> = {}
-    featureFlagDefinitions.forEach(def => {
-      flags[def.name] = getFeatureFlag(def.name, def.defaultValue)
-    })
-
-    this.state = { flags }
-  }
-
+class FeatureFlagSettingsImpl extends React.Component<FeatureFlagSettingsProps> {
   private onToggle = (name: FeatureFlag) => {
-    const { flags } = this.state
+    const { flags, setFlag } = this.props
+
     const next = !flags[name]
-    this.setState({ flags: { ...flags, [name]: next } })
-    setFeatureFlag(name, next)
+    setFlag(name, next)
   }
 
   render(): React.ReactNode {
-    const { flags } = this.state
+    const { flags } = this.props
     return (
       <Box sx={{ mt: 2 }}>
         <Typography level='h3'>Feature Flags</Typography>
@@ -55,3 +38,16 @@ export class FeatureFlagSettings extends React.Component<
     )
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  flags: state.featureFlags,
+})
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  setFlag: (name: FeatureFlag, value: boolean) => dispatch(setFlag({ name, value })),
+})
+
+export const FeatureFlagSettings = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(FeatureFlagSettingsImpl)
