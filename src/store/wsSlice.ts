@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SyncState } from '@/models/sync'
+import { registerWebSocketListeners as registerLabelsWs, unregisterWebSocketListeners as unregisterLabelsWs } from './labelsSlice'
+import WebSocketManager from '@/utils/websocket'
 
 export interface WSState {
   status: SyncState
@@ -26,11 +28,17 @@ const wsSlice = createSlice({
       state.status = 'succeeded'
       state.error = null
       state.lastUpdated = Date.now()
+
+      const mgr = WebSocketManager.getInstance()
+      registerLabelsWs(mgr)
     },
     wsDisconnected: (state, action: PayloadAction<string | null>) => {
       state.status = 'failed'
       state.error = action.payload
       state.lastUpdated = Date.now()
+
+      const mgr = WebSocketManager.getInstance()
+      unregisterLabelsWs(mgr)
     },
   },
 })

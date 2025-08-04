@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Label } from '@/models/label'
 import { CreateLabel, DeleteLabel, GetLabels, UpdateLabel } from '@/api/labels'
 import { SyncState } from '@/models/sync'
+import WebSocketManager from '@/utils/websocket'
+import { store } from './store'
 
 export interface LabelsState {
   items: Label[]
@@ -48,6 +50,18 @@ const labelsSlice = createSlice({
     exitEditMode(state) {
       state.isEditing = false
     },
+    labelUpserted(state, action) {
+      const upsertedLabel = action.payload
+      const index = state.items.findIndex(label => label.id === upsertedLabel.id)
+      if (index !== -1) {
+        state.items[index] = upsertedLabel
+      } else {
+        state.items.push(upsertedLabel)
+      }
+    },
+    labelDeleted(state, action) {
+      state.items = state.items.filter(label => label.id !== action.payload)
+    },
   },
   extraReducers: builder => {
     builder
@@ -72,7 +86,10 @@ const labelsSlice = createSlice({
       })
       .addCase(createLabel.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.items.push(action.payload.label)
+        labelsSlice.caseReducers.labelUpserted(state, {
+          payload: action.payload.label,
+          type: 'labels/labelUpserted',
+        })
         state.error = null
       })
       .addCase(createLabel.rejected, (state, action) => {
@@ -85,11 +102,11 @@ const labelsSlice = createSlice({
       })
       .addCase(updateLabel.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        const updatedLabel = action.payload.label
-        const index = state.items.findIndex(label => label.id === updatedLabel.id)
-        if (index !== -1) {
-          state.items[index] = updatedLabel
-        }
+        const label = action.payload.label
+        labelsSlice.caseReducers.labelUpserted(state, {
+          payload: label,
+          type: 'labels/labelUpserted',
+        })
         state.error = null
       })
       .addCase(updateLabel.rejected, (state, action) => {
@@ -102,7 +119,10 @@ const labelsSlice = createSlice({
       })
       .addCase(deleteLabel.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.items = state.items.filter(label => label.id !== action.meta.arg)
+        labelsSlice.caseReducers.labelDeleted(state, {
+          payload: action.meta.arg,
+          type: 'labels/labelDeleted',
+        })
         state.error = null
       })
       .addCase(deleteLabel.rejected, (state, action) => {
@@ -114,3 +134,32 @@ const labelsSlice = createSlice({
 
 export const labelsReducer = labelsSlice.reducer
 export const { enterEditMode, exitEditMode } = labelsSlice.actions
+
+const { labelUpserted, labelDeleted } = labelsSlice.actions
+
+const onLabelCreated = (data: unknown) => {
+  const label = (data as any).label as Label
+  store.dispatch(labelUpserted(label))
+}
+
+const onlabelUpserted = (data: unknown) => {
+  const label = (data as any).label as Label
+  store.dispatch(labelUpserted(label))
+}
+
+const onLabelDeleted = (data: unknown) => {
+  const labelId = (data as any).id as number
+  store.dispatch(labelDeleted(labelId))
+}
+
+export const registerWebSocketListeners = (ws: WebSocketManager) => {
+  ws.on('label_created', onLabelCreated)
+  ws.on('label_updated', onlabelUpserted)
+  ws.on('label_deleted', onLabelDeleted)
+}
+
+export const unregisterWebSocketListeners = (ws: WebSocketManager) => {
+  ws.off('label_created', onLabelCreated)
+  ws.off('label_updated', onlabelUpserted)
+  ws.off('label_deleted', onLabelDeleted)
+}
