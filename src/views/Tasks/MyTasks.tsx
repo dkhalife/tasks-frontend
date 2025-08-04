@@ -20,7 +20,6 @@ import {
   Chip,
   AccordionDetails,
   IconButton,
-  Snackbar,
   Typography,
   MenuItem,
   Menu,
@@ -38,6 +37,8 @@ import { DateModal } from '../Modals/Inputs/DateModal'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { TaskUI, MarshallDate, MakeTaskGroupsUI } from '@/utils/marshalling'
+import { pushStatus } from '@/store/statusSlice'
+import { Status } from '@/models/status'
 
 type MyTasksProps = {
   groupBy: GROUP_BY
@@ -50,13 +51,11 @@ type MyTasksProps = {
   deleteTask: (taskId: number) => Promise<any>
   skipTask: (taskId: number) => Promise<any>
   updateDueDate: (taskId: number, dueDate: string) => Promise<any>
+  pushStatus: (status: Status) => void
 } & WithNavigate
 
 interface MyTasksState {
-  isSnackbarOpen: boolean
   isMoreMenuOpen: boolean
-  snackBarMessage: string | null
-
   contextMenuTask: TaskUI | null
 }
 
@@ -76,9 +75,7 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     document.body.appendChild(this.menuAnchorRef)
 
     this.state = {
-      isSnackbarOpen: false,
       isMoreMenuOpen: false,
-      snackBarMessage: null,
       contextMenuTask: null,
     }
   }
@@ -95,14 +92,18 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
       case 'skipped':
         message = 'Task skipped'
         break
+      case 'deleted':
+        message = 'Task deleted'
+        break
 
       default:
         return
     }
 
-    this.setState({
-      snackBarMessage: message,
-      isSnackbarOpen: true,
+    this.props.pushStatus({
+      message,
+      severity: 'success',
+      timeout: 3000,
     })
   }
 
@@ -114,12 +115,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
 
   componentWillUnmount(): void {
     document.removeEventListener('click', this.dismissMoreMenu)
-  }
-
-  private onSnackbarClosed = () => {
-    this.setState({
-      isSnackbarOpen: false,
-    })
   }
 
   private onToggleGroupClicked = (groupKey: keyof TaskGroups<TaskUI>) => {
@@ -225,13 +220,14 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
     this.dismissMoreMenu()
     this.confirmationModalRef.current?.open(async () => {
       await this.props.deleteTask(task.id)
+
+      this.onEvent('deleted')
     })
   }
 
   render(): React.ReactNode {
     const { groupBy, groups, expandedGroups } = this.props
-    const { isSnackbarOpen, isMoreMenuOpen, snackBarMessage, contextMenuTask } =
-      this.state
+    const { isMoreMenuOpen, contextMenuTask } = this.state
 
     const { navigate } = this.props
     const hasTasks = this.hasTasks()
@@ -435,17 +431,6 @@ class MyTasksImpl extends React.Component<MyTasksProps, MyTasksState> {
             message='Are you sure you want to delete this task?'
           />
         </Box>
-        <Snackbar
-          open={isSnackbarOpen}
-          onClose={this.onSnackbarClosed}
-          autoHideDuration={3000}
-          variant='soft'
-          color='success'
-          size='lg'
-          invertedColors
-        >
-          <Typography level='title-md'>{snackBarMessage}</Typography>
-        </Snackbar>
       </Container>
     )
   }
@@ -465,8 +450,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
 
   deleteTask: (taskId: number) => dispatch(deleteTask(taskId)),
   skipTask: (taskId: number) => dispatch(skipTask(taskId)),
-  updateDueDate: (taskId: number, dueDate: string) =>
-    dispatch(updateDueDate({ taskId, dueDate })),
+  updateDueDate: (taskId: number, dueDate: string) => dispatch(updateDueDate({ taskId, dueDate })),
+  pushStatus: (status: Status) => dispatch(pushStatus(status)),
 })
 
 export const MyTasks = connect(

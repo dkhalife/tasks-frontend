@@ -1,13 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Alert, IconButton, Snackbar } from '@mui/joy'
-import CloseIcon from '@mui/icons-material/Close'
+import { Snackbar } from '@mui/joy'
 import { RootState, AppDispatch } from '@/store/store'
-import { Status, StatusSeverity } from '@/models/status'
+import { StatusSeverity, TrackedStatus } from '@/models/status'
 import { dismissStatus } from '@/store/statusSlice'
 
 interface StatusListProps {
-  statuses: Status[]
+  statuses: TrackedStatus[]
   dismiss: (id: string) => void
 }
 
@@ -34,25 +33,10 @@ class StatusListImpl extends React.Component<StatusListProps> {
           <Snackbar
             key={status.id}
             open={true}
-            autoHideDuration={status.timeout}
+            color={this.mapSeverity(status.severity)}
             onClose={() => dismiss(status.id)}
-            sx={{ zIndex: 2000 }}
           >
-            <Alert
-              color={this.mapSeverity(status.severity)}
-              variant='soft'
-              endDecorator={
-                <IconButton
-                  onClick={() => dismiss(status.id)}
-                  variant='plain'
-                  size='sm'
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            >
-              {status.message}
-            </Alert>
+            {status.message}
           </Snackbar>
         ))}
       </>

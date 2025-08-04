@@ -1,9 +1,12 @@
 export type StatusSeverity = 'error' | 'success' | 'info' | 'warning'
 
-export interface Status {
-  id: string
+export type Status = {
   message: string
   severity: StatusSeverity
   timeout?: number
+}
+
+export type TrackedStatus = Status & {
+  id: string
   createdAt: number
 }
