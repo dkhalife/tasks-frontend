@@ -1,7 +1,9 @@
 import { retrieveValue, storeValue } from '@/utils/storage'
 
+export type FeatureFlag = 'useWebsockets' | 'refreshStaleData'
+
 export interface FeatureFlagDefinition {
-  name: string
+  name: FeatureFlag
   description: string
   defaultValue: boolean
 }
@@ -22,10 +24,10 @@ export const featureFlagDefinitions: FeatureFlagDefinition[] = [
 export const FEATURE_FLAG_PREFIX = 'featureFlags.'
 
 export const getFeatureFlag = (
-  name: string,
+  name: FeatureFlag,
   defaultValue: boolean,
 ): boolean => retrieveValue<boolean>(FEATURE_FLAG_PREFIX + name, defaultValue)
 
-export const setFeatureFlag = (name: string, value: boolean): void => {
+export const setFeatureFlag = (name: FeatureFlag, value: boolean): void => {
   storeValue<boolean>(FEATURE_FLAG_PREFIX + name, value)
 }

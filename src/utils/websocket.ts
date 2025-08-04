@@ -1,5 +1,7 @@
 import { getFeatureFlag } from '@/constants/featureFlags'
 import { WSEvent, WSRequest, WSResponse } from '@/models/websocket'
+import { store } from '@/store/store'
+import { wsConnecting, wsConnected, wsDisconnected } from '@/store/wsSlice'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -10,6 +12,7 @@ export class WebSocketManager {
   private manualClose = false
   private enabled: boolean
   private listeners: Map<WSEvent, Set<(data: unknown) => void>> = new Map()
+  private dispatch = store.dispatch
 
   private constructor() {
     this.enabled = getFeatureFlag('useWebsockets', false)
@@ -24,10 +27,12 @@ export class WebSocketManager {
 
   connect() {
     if (!this.enabled) {
+      this.dispatch(wsDisconnected(null))
       return
     }
     const token = localStorage.getItem('ca_token')
     if (!token) {
+      this.dispatch(wsDisconnected(null))
       return
     }
 
@@ -39,6 +44,7 @@ export class WebSocketManager {
       return
     }
 
+    this.dispatch(wsConnecting())
     this.manualClose = false
 
     const wsProtocol = API_URL.startsWith('https') ? 'wss' : 'ws'
@@ -47,13 +53,15 @@ export class WebSocketManager {
 
     try {
       this.socket = new WebSocket(url, [wsProtocol, token])
-    } catch {
+    } catch (err: any) {
+      this.dispatch(wsDisconnected(err.message || 'Failed to connect'))
       this.scheduleReconnect()
       return
     }
 
     this.socket.onopen = () => {
       this.retryCount = 0
+      this.dispatch(wsConnected())
     }
 
     this.socket.onmessage = (event) => {
@@ -71,11 +79,13 @@ export class WebSocketManager {
  
     this.socket.onclose = () => {
       this.socket = null
+      this.dispatch(wsDisconnected(null))
       this.scheduleReconnect()
     }
 
     this.socket.onerror = (event) => {
       console.debug('WebSocket error:', event)
+      this.dispatch(wsDisconnected('error'))
     }
   }
 
@@ -148,7 +158,9 @@ export class WebSocketManager {
     if (this.socket) {
       this.socket.close()
       this.socket = null
+      this.dispatch(wsDisconnected(null))
     }
+
     this.retryCount = 0
   }
 

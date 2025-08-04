@@ -5,6 +5,7 @@ import { labelsReducer } from './labelsSlice'
 import { userReducer } from './userSlice'
 import { tokensReducer } from './tokensSlice'
 import { statusReducer } from './statusSlice'
+import { wsReducer } from './wsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     user: userReducer,
     tokens: tokensReducer,
     status: statusReducer,
+    ws: wsReducer,
   },
 })
 
