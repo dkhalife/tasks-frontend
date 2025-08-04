@@ -161,41 +161,6 @@ const tasksSlice = createSlice({
       state.searchQuery = action.payload
       state.filteredItems = filterItems(state.items, action.payload)
     },
-    taskUpserted: (state, action: PayloadAction<Task>) => {
-      const index = state.items.findIndex(t => t.id === action.payload.id)
-      if (index >= 0) {
-        // Add to the main data source
-        state.items[index] = action.payload
-
-        // Add to the filtered items if it should be
-        if (state.searchQuery === '') {
-          state.filteredItems[index] = action.payload
-        } else {
-          const filteredIndex = state.filteredItems.findIndex(t => t.id === action.payload.id)
-          if (filteredIndex >= 0) {
-            state.filteredItems[filteredIndex] = action.payload
-          }
-        }
-
-        // Add to the grouped list of items
-        deleteTaskFromGroups(action.payload.id, state.groupedItems)
-        groupTaskBy(action.payload, state.groupedItems, state.groupBy)
-      } else {
-        state.items.push(action.payload)
-
-        if (state.searchQuery === '' || taskMatchesQuery(action.payload, state.searchQuery.toLowerCase())) {
-          state.filteredItems.push(action.payload)
-        }
-
-        groupTaskBy(action.payload, state.groupedItems, state.groupBy)
-      }
-    },
-    taskDeleted: (state, action: PayloadAction<number>) => {
-      state.items = state.items.filter(t => t.id !== action.payload)
-      state.filteredItems = state.filteredItems.filter(t => t.id !== action.payload)
-
-      deleteTaskFromGroups(action.payload, state.groupedItems)
-    },
     toggleGroup: (state, action: PayloadAction<keyof TaskGroups<Task>>) => {
       const groupKey = action.payload
       const isExpanded = state.expandedGroups[groupKey]
@@ -433,6 +398,6 @@ const tasksSlice = createSlice({
   },
 })
 
-export const { setDraft, taskUpserted, taskDeleted, filterTasks, toggleGroup } = tasksSlice.actions
+export const { setDraft, filterTasks, toggleGroup } = tasksSlice.actions
 
 export const tasksReducer = tasksSlice.reducer
