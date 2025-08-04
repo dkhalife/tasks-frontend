@@ -1,7 +1,7 @@
 import { CreateLongLivedToken, DeleteLongLivedToken, GetLongLivedTokens } from '@/api/tokens'
 import { SyncState } from '@/models/sync'
 import { APIToken, ApiTokenScope } from '@/models/token'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import WebSocketManager from '@/utils/websocket'
 import { store } from './store'
 
@@ -43,8 +43,8 @@ const tokensSlice = createSlice({
   name: 'tokens',
   initialState,
   reducers: {
-    tokenUpserted(state, action) {
-      const token = action.payload as APIToken
+    tokenUpserted: (state: TokensState, action: PayloadAction<APIToken>) => {
+      const token = action.payload
       const index = state.items.findIndex(t => t.id === token.id)
       if (index !== -1) {
         state.items[index] = token
@@ -52,7 +52,7 @@ const tokensSlice = createSlice({
         state.items.push(token)
       }
     },
-    tokenDeleted(state, action) {
+    tokenDeleted: (state: TokensState, action: PayloadAction<string>) => {
       state.items = state.items.filter(token => token.id !== action.payload)
     },
   },
@@ -112,14 +112,20 @@ export const tokensReducer = tokensSlice.reducer
 
 const { tokenUpserted, tokenDeleted } = tokensSlice.actions
 
-const onTokenCreated = (data: unknown) => {
-  const token = (data as any).token as APIToken
-  store.dispatch(tokenUpserted(token))
+interface TokenCreatedEvent {
+  token: APIToken
 }
 
-const onTokenDeleted = (data: unknown) => {
-  const tokenId = (data as any).id as string
-  store.dispatch(tokenDeleted(tokenId))
+interface TokenDeletedEvent {
+  id: string
+}
+
+const onTokenCreated = (data: TokenCreatedEvent) => {
+  store.dispatch(tokenUpserted(data.token))
+}
+
+const onTokenDeleted = (data: TokenDeletedEvent) => {
+  store.dispatch(tokenDeleted(data.id))
 }
 
 export const registerWebSocketListeners = (ws: WebSocketManager) => {

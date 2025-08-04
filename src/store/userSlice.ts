@@ -99,8 +99,17 @@ export const userReducer = userSlice.reducer
 
 const { notificationSettingsUpdated } = userSlice.actions
 
-const onNotificationSettingsUpdated = (data: unknown) => {
-  const settings = (data as any).settings ?? (data as any)
+interface NotificationSettingsPayload {
+  provider: NotificationType
+  triggers: NotificationTriggerOptions
+}
+
+type NotificationSettingsEvent =
+  | { settings: NotificationSettingsPayload }
+  | NotificationSettingsPayload
+
+const onNotificationSettingsUpdated = (data: NotificationSettingsEvent) => {
+  const settings = 'settings' in data ? data.settings : data
   store.dispatch(
     notificationSettingsUpdated({
       provider: settings.provider,

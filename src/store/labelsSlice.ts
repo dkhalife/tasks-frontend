@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Label } from '@/models/label'
 import { CreateLabel, DeleteLabel, GetLabels, UpdateLabel } from '@/api/labels'
 import { SyncState } from '@/models/sync'
@@ -44,13 +44,13 @@ const labelsSlice = createSlice({
   name: 'labels',
   initialState,
   reducers: {
-    enterEditMode(state) {
+    enterEditMode: (state: LabelsState) => {
       state.isEditing = true
     },
-    exitEditMode(state) {
+    exitEditMode: (state: LabelsState) => {
       state.isEditing = false
     },
-    labelUpserted(state, action) {
+    labelUpserted: (state: LabelsState, action: PayloadAction<Label>) => {
       const upsertedLabel = action.payload
       const index = state.items.findIndex(label => label.id === upsertedLabel.id)
       if (index !== -1) {
@@ -59,7 +59,7 @@ const labelsSlice = createSlice({
         state.items.push(upsertedLabel)
       }
     },
-    labelDeleted(state, action) {
+    labelDeleted: (state: LabelsState, action: PayloadAction<number>) => {
       state.items = state.items.filter(label => label.id !== action.payload)
     },
   },
@@ -137,29 +137,34 @@ export const { enterEditMode, exitEditMode } = labelsSlice.actions
 
 const { labelUpserted, labelDeleted } = labelsSlice.actions
 
-const onLabelCreated = (data: unknown) => {
-  const label = (data as any).label as Label
-  store.dispatch(labelUpserted(label))
+interface LabelEvent {
+  label: Label
 }
 
-const onlabelUpserted = (data: unknown) => {
-  const label = (data as any).label as Label
-  store.dispatch(labelUpserted(label))
+interface LabelDeletedEvent {
+  id: number
 }
 
-const onLabelDeleted = (data: unknown) => {
-  const labelId = (data as any).id as number
-  store.dispatch(labelDeleted(labelId))
+const onLabelCreated = (data: LabelEvent) => {
+  store.dispatch(labelUpserted(data.label))
+}
+
+const onLabelUpserted = (data: LabelEvent) => {
+  store.dispatch(labelUpserted(data.label))
+}
+
+const onLabelDeleted = (data: LabelDeletedEvent) => {
+  store.dispatch(labelDeleted(data.id))
 }
 
 export const registerWebSocketListeners = (ws: WebSocketManager) => {
   ws.on('label_created', onLabelCreated)
-  ws.on('label_updated', onlabelUpserted)
+  ws.on('label_updated', onLabelUpserted)
   ws.on('label_deleted', onLabelDeleted)
 }
 
 export const unregisterWebSocketListeners = (ws: WebSocketManager) => {
   ws.off('label_created', onLabelCreated)
-  ws.off('label_updated', onlabelUpserted)
+  ws.off('label_updated', onLabelUpserted)
   ws.off('label_deleted', onLabelDeleted)
 }
