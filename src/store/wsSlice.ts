@@ -8,6 +8,10 @@ import {
   registerWebSocketListeners as registerTokensWs,
   unregisterWebSocketListeners as unregisterTokensWs,
 } from './tokensSlice'
+import {
+  registerWebSocketListeners as registerNotificationsWs,
+  unregisterWebSocketListeners as unregisterNotificationsWs,
+} from './userSlice'
 import WebSocketManager from '@/utils/websocket'
 
 export interface WSState {
@@ -39,6 +43,7 @@ const wsSlice = createSlice({
       const mgr = WebSocketManager.getInstance()
       registerLabelsWs(mgr)
       registerTokensWs(mgr)
+      registerNotificationsWs(mgr)
     },
     wsDisconnected: (state, action: PayloadAction<string | null>) => {
       state.status = 'failed'
@@ -48,6 +53,7 @@ const wsSlice = createSlice({
       const mgr = WebSocketManager.getInstance()
       unregisterLabelsWs(mgr)
       unregisterTokensWs(mgr)
+      unregisterNotificationsWs(mgr)
     },
   },
 })
