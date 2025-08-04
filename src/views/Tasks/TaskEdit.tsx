@@ -167,8 +167,8 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           ? this.props.createTask(draft)
           : this.props.saveTask(draft)
 
-      this.navigateAway()
       await promise
+      this.navigateAway()
 
       pushStatus({
         message: 'Task saved',
