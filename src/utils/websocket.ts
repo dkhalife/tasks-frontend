@@ -12,10 +12,9 @@ export class WebSocketManager {
   private enabled: boolean = store.getState().featureFlags.useWebsockets
   private listeners: Map<WSEvent, Set<(data: unknown) => void>> = new Map()
   private dispatch = store.dispatch
-  private unsubscribe: () => void
 
   private constructor() {
-    this.unsubscribe = store.subscribe(() => {
+    store.subscribe(() => {
       const newState = store.getState()
       const newEnabledState = newState.featureFlags.useWebsockets
 
@@ -30,11 +29,6 @@ export class WebSocketManager {
         this.connect()
       }
     })
-  }
-
-  public destroy() {
-    this.unsubscribe()
-    this.disconnect()
   }
 
   static getInstance(): WebSocketManager {
