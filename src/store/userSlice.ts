@@ -1,8 +1,10 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { GetUserProfile, UpdateNotificationSettings } from '@/api/users'
 import { User } from '@/models/user'
 import { NotificationTriggerOptions, NotificationType } from '@/models/notifications'
 import { SyncState } from '@/models/sync'
+import WebSocketManager from '@/utils/websocket'
+import { store } from './store'
 
 export interface UserState {
   profile: User
@@ -42,7 +44,18 @@ export const updateNotificationSettings = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    notificationSettingsUpdated(
+      state,
+      action: PayloadAction<{
+        provider: NotificationType
+        triggers: NotificationTriggerOptions
+      }>,
+    ) {
+      state.profile.notifications.provider = action.payload.provider
+      state.profile.notifications.triggers = action.payload.triggers
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(fetchUser.pending, state => {
@@ -59,7 +72,47 @@ const userSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message ?? null
       })
+      .addCase(updateNotificationSettings.pending, state => {
+        state.status = 'loading'
+      })
+      .addCase(updateNotificationSettings.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        userSlice.caseReducers.notificationSettingsUpdated(state, {
+          payload: {
+            provider: action.meta.arg.type,
+            triggers: action.meta.arg.options,
+          },
+          type: 'user/notificationSettingsUpdated',
+        })
+        state.error = null
+      })
+      .addCase(updateNotificationSettings.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error =
+          action.error.message ??
+          'An unknown error occurred while updating notification settings.'
+      })
   },
 })
 
 export const userReducer = userSlice.reducer
+
+const { notificationSettingsUpdated } = userSlice.actions
+
+const onNotificationSettingsUpdated = (data: unknown) => {
+  const settings = (data as any).settings ?? (data as any)
+  store.dispatch(
+    notificationSettingsUpdated({
+      provider: settings.provider,
+      triggers: settings.triggers,
+    }),
+  )
+}
+
+export const registerWebSocketListeners = (ws: WebSocketManager) => {
+  ws.on('notification_settings_updated', onNotificationSettingsUpdated)
+}
+
+export const unregisterWebSocketListeners = (ws: WebSocketManager) => {
+  ws.off('notification_settings_updated', onNotificationSettingsUpdated)
+}
