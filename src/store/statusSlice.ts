@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit'
-import { Status } from '@/models/status'
+import { Status, TrackedStatus } from '@/models/status'
 import { AppDispatch } from './store'
 
 export interface StatusState {
-  items: Status[]
+  items: TrackedStatus[]
 }
 
 const initialState: StatusState = {
@@ -14,7 +14,7 @@ const statusSlice = createSlice({
   name: 'status',
   initialState,
   reducers: {
-    addStatus: (state, action: PayloadAction<Status>) => {
+    addStatus: (state, action: PayloadAction<TrackedStatus>) => {
       state.items.push(action.payload)
     },
     dismissStatus: (state, action: PayloadAction<string>) => {
@@ -28,7 +28,7 @@ const { addStatus, dismissStatus } = statusSlice.actions
 export { dismissStatus }
 
 export const pushStatus = (
-  status: Omit<Status, 'id' | 'createdAt'>,
+  status: Status,
 ) => (dispatch: AppDispatch) => {
   const id = nanoid()
   const createdAt = Date.now()

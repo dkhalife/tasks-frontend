@@ -10,11 +10,7 @@ import { Frequency, INVALID_TASK_ID, Task } from '@/models/task'
 import { getTextColorFromBackgroundColor } from '@/utils/colors'
 import { Add } from '@mui/icons-material'
 import {
-  ColorPaletteProp,
-  ListItem,
-  Stack,
   Typography,
-  List,
   Container,
   Box,
   FormControl,
@@ -28,7 +24,6 @@ import {
   MenuItem,
   Sheet,
   Button,
-  Snackbar,
   Option,
 } from '@mui/joy'
 import React, { ChangeEvent } from 'react'
@@ -44,6 +39,8 @@ import { format } from 'date-fns'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { MakeDateUI, MarshallDate } from '@/utils/marshalling'
+import { pushStatus } from '@/store/statusSlice'
+import { Status } from '@/models/status'
 
 export type TaskEditProps = {
   draft: Task
@@ -56,15 +53,13 @@ export type TaskEditProps = {
   saveTask: (task: Task) => Promise<any>
   skipTask: (id: number) => Promise<any>
   deleteTask: (id: number) => Promise<any>
+  pushStatus: (status: Status) => void
 } & WithNavigate
 
 type Errors = { [key: string]: string }
 
 export interface TaskEditState {
   errors: Errors
-  isSnackbarOpen: boolean
-  snackbarMessage: React.ReactNode
-  snackbarColor: ColorPaletteProp
 }
 
 class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
@@ -74,9 +69,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   constructor(props: TaskEditProps) {
     super(props)
     this.state = {
-      isSnackbarOpen: false,
-      snackbarMessage: null,
-      snackbarColor: 'warning',
       errors: {},
     }
   }
@@ -88,7 +80,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
   }
 
   private HandleValidateTask = () => {
-    const { draft } = this.props
+    const { draft, pushStatus } = this.props
     const { title, frequency, next_due_date: nextDueDate } = draft
     const errors: Errors = {}
 
@@ -127,22 +119,12 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
     let isSuccessful = true
     if (Object.keys(errors).length > 0) {
-      const errorList = Object.keys(errors).map(key => (
-        <ListItem key={key}>{errors[key]}</ListItem>
-      ))
-
-      newState.snackbarMessage = (
-        <Stack spacing={0.5}>
-          <Typography level='title-md'>
-            Please resolve the following errors:
-          </Typography>
-          <List>{errorList}</List>
-        </Stack>
-      )
-
-      newState.snackbarColor = 'danger'
-      newState.isSnackbarOpen = true
-
+      const errorMessages = Object.values(errors).join(', ')
+      pushStatus({
+        message: `Please resolve the following errors: ${errorMessages}`,
+        severity: 'error',
+        timeout: 4000,
+      })
       isSuccessful = false
     }
 
@@ -177,7 +159,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       return
     }
 
-    const { draft } = this.props
+    const { draft, pushStatus } = this.props
 
     try {
       const promise =
@@ -187,11 +169,17 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
       await promise
       this.navigateAway()
+
+      pushStatus({
+        message: 'Task saved',
+        severity: 'success',
+        timeout: 4000,
+      })
     } catch {
-      this.setState({
-        isSnackbarOpen: true,
-        snackbarMessage: 'Failed to save task',
-        snackbarColor: 'danger',
+      pushStatus({
+        message: 'Failed to save task',
+        severity: 'error',
+        timeout: 4000,
       })
     }
   }
@@ -202,11 +190,17 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
         await this.props.deleteTask(taskId)
 
         this.navigateAway()
+
+        this.props.pushStatus({
+          message: 'Task deleted',
+          severity: 'success',
+          timeout: 4000,
+        })
       } catch {
-        this.setState({
-          isSnackbarOpen: true,
-          snackbarMessage: 'Failed to delete task',
-          snackbarColor: 'danger',
+        this.props.pushStatus({
+          message: 'Failed to delete task',
+          severity: 'error',
+          timeout: 4000,
         })
       }
     })
@@ -214,6 +208,13 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
 
   private onSkipClicked = async (taskId: number) => {
     await this.props.skipTask(taskId)
+
+    this.props.pushStatus({
+      message: 'Task skipped',
+      severity: 'success',
+      timeout: 3000,
+    })
+
     this.navigateAway()
   }
 
@@ -331,13 +332,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
     this.props.navigate(NavigationPaths.Labels)
   }
 
-  private onSnackbarClosed = () => {
-    this.setState({
-      isSnackbarOpen: false,
-      snackbarMessage: null,
-    })
-  }
-
   private onCancelClicked = () => {
     this.navigateAway()
   }
@@ -372,12 +366,7 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
       labels.some(taskLabel => taskLabel.id === label.id),
     )
 
-    const {
-      errors,
-      isSnackbarOpen,
-      snackbarMessage,
-      snackbarColor,
-    } = this.state
+    const { errors } = this.state
     const frequencyType = frequency.type
     const isRecurring = frequencyType !== 'once'
     const notificationsEnabled = notification.enabled
@@ -655,17 +644,6 @@ class TaskEditImpl extends React.Component<TaskEditProps, TaskEditState> {
           cancelText='Cancel'
           message='Are you sure you want to delete this task?'
         />
-        <Snackbar
-          open={isSnackbarOpen}
-          onClose={this.onSnackbarClosed}
-          color={snackbarColor}
-          autoHideDuration={4000}
-          sx={{ bottom: 70 }}
-          invertedColors={true}
-          variant='soft'
-        >
-          {snackbarMessage}
-        </Snackbar>
       </Container>
     )
   }
@@ -696,6 +674,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   saveTask: (task: Task) => dispatch(saveTask(task)),
   skipTask: (id: number) => dispatch(skipTask(id)),
   deleteTask: (id: number) => dispatch(deleteTask(id)),
+  pushStatus: (status: Status) => dispatch(pushStatus(status)),
 })
 
 export const TaskEdit = connect(

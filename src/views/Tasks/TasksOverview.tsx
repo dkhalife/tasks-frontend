@@ -30,6 +30,8 @@ import { playSound, SoundEffect } from '@/utils/sound'
 import { AppDispatch, RootState } from '@/store/store'
 import { connect } from 'react-redux'
 import { TaskUI, MakeTaskUI, MarshallDate } from '@/utils/marshalling'
+import { pushStatus } from '@/store/statusSlice'
+import { Status } from '@/models/status'
 
 type TasksOverviewProps = {
   tasks: TaskUI[]
@@ -39,6 +41,7 @@ type TasksOverviewProps = {
   completeTask: (taskId: number) => Promise<any>
   deleteTask: (taskId: number) => Promise<any>
   updateDueDate: (taskId: number, dueDate: string) => Promise<any>
+  pushStatus: (status: Status) => void
 } & WithNavigate
 
 class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
@@ -85,6 +88,11 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
     await this.props.completeTask(task.id)
 
     playSound(SoundEffect.TaskComplete)
+    this.props.pushStatus({
+      message: 'Task completed',
+      severity: 'success',
+      timeout: 3000,
+    })
   }
 
   private onSearchTermsChanged = (e: ChangeEvent<HTMLInputElement>) => {
@@ -96,12 +104,18 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   }
 
   private onRescheduleClicked = async (task: TaskUI) => {
-    this.dateModalRef.current?.open(task.next_due_date, (newDate: Date | null) => {
+    this.dateModalRef.current?.open(task.next_due_date, async (newDate: Date | null) => {
       if (newDate === null) {
         return
       }
 
-      this.props.updateDueDate(task.id, MarshallDate(newDate))
+      await this.props.updateDueDate(task.id, MarshallDate(newDate))
+
+      this.props.pushStatus({
+        message: 'Task rescheduled',
+        severity: 'success',
+        timeout: 3000,
+      })
     })
   }
 
@@ -118,6 +132,12 @@ class TasksOverviewImpl extends React.Component<TasksOverviewProps> {
   private onDeleteTaskClicked = async (task: TaskUI) => {
     this.confirmationModalRef.current?.open(async () => {
       await this.props.deleteTask(task.id)
+
+      this.props.pushStatus({
+        message: 'Task deleted',
+        severity: 'success',
+        timeout: 3000,
+      })
     })
   }
 
@@ -323,8 +343,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   filterTasks: (searchQuery: string) => dispatch(filterTasks(searchQuery)),
   completeTask: (taskId: number) => dispatch(completeTask(taskId)),
   deleteTask: (taskId: number) => dispatch(deleteTask(taskId)),
-  updateDueDate: (taskId: number, dueDate: string) =>
-    dispatch(updateDueDate({ taskId, dueDate })),
+  updateDueDate: (taskId: number, dueDate: string) => dispatch(updateDueDate({ taskId, dueDate })),
+  pushStatus: (status: Status) => dispatch(pushStatus(status)),
 })
 
 export const TasksOverview = connect(
