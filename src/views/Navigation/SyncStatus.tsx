@@ -4,6 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '@/store/store'
 import { SyncState } from '@/models/sync'
+import { getFeatureFlag } from '@/constants/featureFlags'
 
 interface SyncStatusProps {
   style?: React.CSSProperties
@@ -15,6 +16,8 @@ interface SyncStatusProps {
   labelsError: string | null
   tokensStatus: SyncState
   tokensError: string | null
+  wsStatus: SyncState
+  wsError: string | null
 }
 
 interface SyncStatusState {
@@ -36,7 +39,7 @@ class SyncStatusImpl extends React.Component<SyncStatusProps, SyncStatusState> {
   constructor(props: SyncStatusProps) {
     super(props)
     this.state = {
-      modalOpen: false
+      modalOpen: false,
     }
   }
 
@@ -62,14 +65,22 @@ class SyncStatusImpl extends React.Component<SyncStatusProps, SyncStatusState> {
       tasksError,
       labelsError,
       tokensError,
+      wsStatus,
+      wsError,
     } = this.props
 
-    return [
+    const statuses = [
       { name: 'User', status: userStatus, error: userError },
       { name: 'Tasks', status: tasksStatus, error: tasksError },
       { name: 'Labels', status: labelsStatus, error: labelsError },
       { name: 'Tokens', status: tokensStatus, error: tokensError },
     ]
+
+    if (getFeatureFlag('useWebsockets', false)) {
+      statuses.push({ name: 'WebSocket', status: wsStatus, error: wsError })
+    }
+
+    return statuses
   }
 
   private renderStatusDetails = () => {
@@ -150,6 +161,8 @@ const mapStateToProps = (state: RootState) => ({
   labelsError: state.labels.error,
   tokensStatus: state.tokens.status,
   tokensError: state.tokens.error,
+  wsStatus: state.ws.status,
+  wsError: state.ws.error,
 })
 
 export const SyncStatus = connect(mapStateToProps)(SyncStatusImpl)

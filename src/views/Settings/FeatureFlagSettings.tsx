@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Typography, Divider, FormControl, Checkbox } from '@mui/joy'
 import {
+  FeatureFlag,
   featureFlagDefinitions,
   getFeatureFlag,
   setFeatureFlag,
@@ -27,7 +28,7 @@ export class FeatureFlagSettings extends React.Component<
     this.state = { flags }
   }
 
-  private onToggle = (name: string) => {
+  private onToggle = (name: FeatureFlag) => {
     const { flags } = this.state
     const next = !flags[name]
     this.setState({ flags: { ...flags, [name]: next } })
