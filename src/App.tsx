@@ -72,7 +72,7 @@ class AppImpl extends React.Component<AppProps> {
   async componentDidMount(): Promise<void> {
     if (isTokenValid()) {
       preloadSounds();
-      WebSocketManager.getInstance().connect();
+      WebSocketManager.getInstance();
 
       await this.props.fetchUser()
       await this.props.fetchLabels()

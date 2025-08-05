@@ -113,7 +113,7 @@ export const tokensReducer = tokensSlice.reducer
 const { tokenUpserted, tokenDeleted } = tokensSlice.actions
 
 const onTokenCreated = (data: unknown) => {
-  const token = (data as any).token as APIToken
+  const token = data as APIToken
   store.dispatch(tokenUpserted(token))
 }
 
