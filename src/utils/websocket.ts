@@ -14,6 +14,10 @@ export class WebSocketManager {
   private dispatch = store.dispatch
 
   private constructor() {
+    if (this.enabled) {
+      this.connect()
+    }
+
     store.subscribe(() => {
       const newState = store.getState()
       const newEnabledState = newState.featureFlags.useWebsockets

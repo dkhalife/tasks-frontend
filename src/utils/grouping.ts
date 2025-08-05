@@ -228,7 +228,7 @@ export const groupTaskBy = (
   }
 }
 
-const sortTasksByDueDate = (tasks: Task[]): Task[] => {
+export const sortTasksByDueDate = (tasks: Task[]): Task[] => {
   return tasks.sort((a, b) => {
     if (a.next_due_date === null) {
       return 1
