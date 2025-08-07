@@ -13,6 +13,7 @@ import { fetchUser } from './store/userSlice'
 import { fetchTokens } from './store/tokensSlice'
 import { StatusList } from './components/StatusList'
 import { fetchTasks, initGroups } from './store/tasksSlice'
+import { FIVE_MINUTES_MS } from '@/constants/time'
 
 type AppProps = {
   refreshStaleData: boolean
@@ -40,27 +41,26 @@ class AppImpl extends React.Component<AppProps> {
       return
     }
 
-    const FIVE_MINUTES = 5 * 60 * 1000
     const state = store.getState()
     const now = Date.now()
 
     let groupsOutdated = false
 
-    if (!state.user.lastFetched || now - state.user.lastFetched > FIVE_MINUTES) {
+    if (!state.user.lastFetched || now - state.user.lastFetched > FIVE_MINUTES_MS) {
       await this.props.fetchUser()
     }
 
-    if (!state.labels.lastFetched || now - state.labels.lastFetched > FIVE_MINUTES) {
+    if (!state.labels.lastFetched || now - state.labels.lastFetched > FIVE_MINUTES_MS) {
       await this.props.fetchLabels()
       groupsOutdated = true
     }
 
-    if (!state.tasks.lastFetched || now - state.tasks.lastFetched > FIVE_MINUTES) {
+    if (!state.tasks.lastFetched || now - state.tasks.lastFetched > FIVE_MINUTES_MS) {
       await this.props.fetchTasks()
       groupsOutdated = true
     }
 
-    if (!state.tokens.lastFetched || now - state.tokens.lastFetched > FIVE_MINUTES) {
+    if (!state.tokens.lastFetched || now - state.tokens.lastFetched > FIVE_MINUTES_MS) {
       await this.props.fetchTokens()
     }
 

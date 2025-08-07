@@ -1,4 +1,5 @@
 import { RefreshToken } from '@/api/auth'
+import { TOKEN_REFRESH_THRESHOLD_MS } from '@/constants/time'
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -13,7 +14,7 @@ const isTokenNearExpiration = () => {
   const now = new Date()
   const expiration = localStorage.getItem('ca_expiration') || ''
   const expire = new Date(expiration)
-  return now.getTime() + 24 * 60 * 60 * 1000 > expire.getTime()
+  return now.getTime() + TOKEN_REFRESH_THRESHOLD_MS > expire.getTime()
 }
 
 export const isTokenValid = (): boolean => {
@@ -72,7 +73,7 @@ export async function Request<SuccessfulResponse>(
     headers,
   }
 
-  if (method != 'GET') {
+  if (method !== 'GET') {
     options.body = JSON.stringify(body)
   }
 
